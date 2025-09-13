@@ -37,22 +37,6 @@ const nextConfig: NextConfig = {
   // Move these options out of experimental in newer Next.js versions
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
-  // Disable strict Server Actions checking for Replit
-  experimental: {
-    allowedDevOrigins: [
-      "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000",
-      "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev",
-      "localhost:5000",
-      "0.0.0.0:5000"
-    ],
-    serverActions: {
-      allowedOrigins: [
-        "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev",
-        "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000"
-      ],
-      bodySizeLimit: '2mb'
-    }
-  },
   images: {
     remotePatterns: [
       {
