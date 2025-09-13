@@ -1,6 +1,6 @@
 
-import { genkit } from 'genkit';
-import { vertexAI } from '@genkit-ai/vertexai';
+// Replaced problematic Genkit VertexAI with direct Google AI implementation
+import { generateAIResponse, generateEmotionalResponse, generateMultilingualResponse, testGoogleAI } from './google-ai';
 
 // -----------------------------------------------------------------------------
 // Genkit AI Initialization with Vertex AI (Gemini)
@@ -96,14 +96,18 @@ if (activeApiKey) {
   console.error("Genkit: No API key found for Vertex AI configuration");
 }
 
-export const ai = genkit({
-  plugins: activeApiKey && projectId ?
-    [
-      vertexAI(vertexAIConfig),
-    ] :
-    [], // Initialize with no plugins if no valid API key or project ID is found
-  model: 'vertexai/gemini-2.0-flash-lite-001', // Updated to use the specific model you requested
-});
+// Export new Google AI functions that replace Genkit functionality
+export const ai = {
+  generateResponse: generateAIResponse,
+  generateEmotionalResponse: generateEmotionalResponse,
+  generateMultilingualResponse: generateMultilingualResponse,
+  testConnection: testGoogleAI
+};
+
+// Compatibility wrapper for existing Genkit-style calls
+export const generate = async (prompt: string) => {
+  return await generateAIResponse(prompt);
+};
 
 // --- VERY IMPORTANT NOTES ON VERTEX AI CONFIGURATION ---
 //
