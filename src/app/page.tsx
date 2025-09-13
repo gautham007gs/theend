@@ -150,28 +150,21 @@ const ChatListPage: React.FC = () => {
               
               {showDropdown && (
                 <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
-                    <div className="flex items-center gap-2">
-                      <Zap size={16} className="text-blue-500" />
-                      <span className="font-medium">AI Powered Chat</span>
-                    </div>
-                  </div>
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                    <Info size={16} />
+                    New group
+                  </button>
                   <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                     <Star size={16} />
                     Starred messages
                   </button>
                   <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
                     <Settings size={16} />
-                    AI Chat Settings
+                    Settings
                   </button>
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
-                    <HelpCircle size={16} />
-                    Help & Support
-                  </button>
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
-                    <Info size={16} />
-                    About WhatApp
-                  </button>
+                  <div className="px-4 py-2 text-xs text-gray-400 text-center border-t border-gray-100 mt-1">
+                    <span>Enhanced conversations</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -179,7 +172,7 @@ const ChatListPage: React.FC = () => {
         </div>
         
         {/* Navigation Tabs */}
-        <div className="flex bg-green-500 items-center">
+        <div className="flex bg-green-500">
           <div className="flex-1">
             <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white">
               CHATS
@@ -191,11 +184,6 @@ const ChatListPage: React.FC = () => {
                 STATUS
               </button>
             </Link>
-          </div>
-          <div className="px-3">
-            <button className="p-1.5 hover:bg-green-400 rounded-full transition-colors">
-              <Share2 size={16} className="text-white" />
-            </button>
           </div>
         </div>
       </div>
@@ -220,7 +208,7 @@ const ChatListPage: React.FC = () => {
               Start chatting with {effectiveAIProfile.name} - your friend who's always ready to talk!
             </p>
             <p className="text-xs text-gray-500 mt-2">
-              Powered by AI chat
+              Smart conversations
             </p>
           </div>
           
@@ -233,12 +221,17 @@ const ChatListPage: React.FC = () => {
               </button>
             </Link>
             
-            <Link href="/status">
-              <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
-                <span>👁️</span>
-                <span>View Status</span>
+            <div className="flex space-x-3">
+              <Link href="/status" className="flex-1">
+                <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                  <span>👁️</span>
+                  <span>View Status</span>
+                </button>
+              </Link>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                <Share2 size={20} />
               </button>
-            </Link>
+            </div>
           </div>
           
         </div>
