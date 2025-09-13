@@ -2,37 +2,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Helper to normalize headers for Replit environment
-function normalizeHeadersForReplit(request: NextRequest): NextRequest {
-  const { headers, nextUrl } = request;
-  
-  // Check if we're in Replit environment
-  const forwardedHost = headers.get('x-forwarded-host');
-  const origin = headers.get('origin');
-  
-  if (forwardedHost && origin && forwardedHost.includes('replit.dev')) {
-    // Create new headers to fix the mismatch
-    const newHeaders = new Headers(headers);
-    
-    // Normalize the origin to match forwarded host (remove port if present)
-    const normalizedOrigin = forwardedHost.startsWith('http') 
-      ? forwardedHost 
-      : `https://${forwardedHost}`;
-    
-    newHeaders.set('origin', normalizedOrigin);
-    newHeaders.set('host', forwardedHost);
-    
-    // Create a new request with normalized headers
-    return new NextRequest(request.url, {
-      method: request.method,
-      headers: newHeaders,
-      body: request.body,
-    });
-  }
-  
-  return request;
-}
-
 function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
   if (userAgent) {
     // Common patterns for Instagram's in-app browser user agent string
@@ -42,17 +11,23 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 }
 
 export function middleware(request: NextRequest) {
-  // First, normalize headers for Replit environment
-  const normalizedRequest = normalizeHeadersForReplit(request);
+  const { pathname, searchParams, origin } = request.nextUrl;
+  const userAgent = request.headers.get('user-agent');
   
-  // For Server Actions and API routes, just normalize and continue
-  if (normalizedRequest.nextUrl.pathname.startsWith('/api/') || 
-      normalizedRequest.method === 'POST') {
-    return NextResponse.next();
+  // For Server Actions and API routes, fix headers and continue
+  if (pathname.startsWith('/api/') || request.method === 'POST') {
+    const response = NextResponse.next();
+    
+    // Fix CORS and header issues for Replit
+    const forwardedHost = request.headers.get('x-forwarded-host');
+    if (forwardedHost && forwardedHost.includes('replit.dev')) {
+      response.headers.set('Access-Control-Allow-Origin', `https://${forwardedHost}`);
+      response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto');
+    }
+    
+    return response;
   }
-  
-  const { pathname, searchParams, origin, search } = normalizedRequest.nextUrl;
-  const userAgent = normalizedRequest.headers.get('user-agent');
 
   // Check if our redirect trick has already been attempted for this request flow
   const hasRedirectAttemptedFlag = searchParams.has('external_redirect_attempted');
@@ -130,18 +105,12 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Configure the matcher to run on most page routes, excluding API, static assets, etc.
+// Configure the matcher to run on page routes and API routes for header fixes
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - /media/ (local media assets like audio)
-     * - and other files with extensions (e.g. .png, .jpg)
+     * Match all request paths except static files
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|media/|.*\\.[^.]+$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(png|jpg|jpeg|gif|svg|ico|css|js)$).*)',
   ],
 };

@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Allow dev origins for Replit and disable strict checking
+  // Disable strict Server Actions checking for Replit
   experimental: {
     allowedDevOrigins: [
       "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000",
@@ -46,8 +46,11 @@ const nextConfig: NextConfig = {
       allowedOrigins: [
         "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev",
         "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000"
-      ]
-    }
+      ],
+      bodySizeLimit: '2mb'
+    },
+    skipMiddlewareUrlNormalize: true,
+    skipTrailingSlashRedirect: true
   },
   images: {
     remotePatterns: [
