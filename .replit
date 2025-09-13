@@ -8,3 +8,15 @@ channel = "stable-25_05"
 [[ports]]
 localPort = 9002
 externalPort = 80
+
+[workflows]
+runButton = "Run Next.js App"
+
+[[workflows.workflow]]
+name = "Run Next.js App"
+author = 47545497
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"

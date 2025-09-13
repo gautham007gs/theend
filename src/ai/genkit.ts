@@ -6,6 +6,19 @@ import {vertexAI} from '@genkit-ai/vertexai';
 // Genkit AI Initialization with Vertex AI (Gemini)
 // -----------------------------------------------------------------------------
 
+// Parse service account credentials from environment variable
+const getServiceAccountCredentials = () => {
+  try {
+    const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
+    if (credentialsJson) {
+      return JSON.parse(credentialsJson);
+    }
+  } catch (error) {
+    console.error('Genkit: Error parsing GOOGLE_CREDENTIALS_JSON:', error);
+  }
+  return null;
+};
+
 // Function to determine the API key to use at initialization.
 // It checks environment variables in a prioritized order.
 // An API key is typically a long alphanumeric string.
@@ -39,28 +52,11 @@ const getApiKey = (): string | undefined => {
     }
   }
 
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!! HEY! IF YOU ARE IN FIREBASE STUDIO AND process.env ISN'T WORKING  !!!
-  // !!! YOU CAN TEMPORARILY HARDCODE YOUR KEY HERE FOR TESTING.           !!!
-  // !!!                                                                     !!!
-  // !!! **CRITICAL**: DO NOT COMMIT THIS HARDCODED KEY TO GIT OR DEPLOY IT! !!!
-  // !!! REMOVE IT OR COMMENT IT OUT BEFORE PUSHING TO GITHUB/VERCEL!        !!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  const studioDevApiKey = "YOUR_GEMINI_API_KEY_HERE_FOR_STUDIO_TESTING"; // <<<<<<< REPLACE THIS WITH YOUR ACTUAL KEY FOR STUDIO
-  if (studioDevApiKey && studioDevApiKey !== "YOUR_GEMINI_API_KEY_HERE_FOR_STUDIO_TESTING" && studioDevApiKey.length >= MIN_API_KEY_LENGTH) {
-      console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      console.warn("!!! Genkit: WARNING! Using TEMPORARY hardcoded API key for Firebase Studio testing.        !!!");
-      console.warn("!!! This is NOT secure for production. REMOVE before committing or deploying!              !!!");
-      console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      return studioDevApiKey;
-  }
-
   console.error(
-    "CRITICAL Genkit Error: No valid Gemini API Key found for initialization. " +
+    "CRITICAL Genkit Error: No valid API Key found for initialization. " +
     "All checked environment variables (GOOGLE_API_KEY, GEMINI_API_KEY_1, etc.) " +
     "are undefined, empty, too short, or appear invalid. AI features will NOT work. " +
-    "Please ensure at least one valid API key is correctly set in your environment variables " +
-    "OR for Firebase Studio testing, temporarily hardcode it in src/ai/genkit.ts (and remove before commit/deploy)."
+    "Please ensure at least one valid API key is correctly set in your environment variables."
   );
   return undefined;
 };
@@ -70,18 +66,23 @@ const getProjectId = (): string | undefined => {
   const projectId = process.env.VERTEX_AI_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT_ID;
   if (!projectId) {
     console.warn("Genkit: No VERTEX_AI_PROJECT_ID or GOOGLE_CLOUD_PROJECT_ID found. Vertex AI may not work properly.");
+  } else {
+    console.log(`Genkit: Using project ID: ${projectId}`);
   }
   return projectId;
 };
 
 // Get location from environment variable (default to us-central1)
 const getLocation = (): string => {
-  return process.env.VERTEX_AI_LOCATION || 'us-central1';
+  const location = process.env.VERTEX_AI_LOCATION || process.env.GCLOUD_LOCATION || 'us-central1';
+  console.log(`Genkit: Using location: ${location}`);
+  return location;
 };
 
 const activeApiKey = getApiKey();
 const projectId = getProjectId();
 const location = getLocation();
+const serviceAccountCredentials = getServiceAccountCredentials();
 
 if (!activeApiKey) {
   console.error("Genkit: AI plugin NOT initialized due to missing valid API key. AI functionalities will be disabled.");
@@ -91,63 +92,65 @@ if (activeApiKey && !projectId) {
   console.warn("Genkit: API key found but no project ID configured. Vertex AI requires a Google Cloud project ID.");
 }
 
+if (serviceAccountCredentials) {
+  console.log("Genkit: Service account credentials loaded successfully");
+} else {
+  console.warn("Genkit: No service account credentials found, falling back to API key authentication");
+}
+
+// Configure Vertex AI plugin with proper authentication
+const vertexAIConfig: any = {
+  projectId: projectId,
+  location: location,
+};
+
+// Use service account credentials if available, otherwise fall back to API key
+if (serviceAccountCredentials) {
+  vertexAIConfig.credentials = serviceAccountCredentials;
+} else if (activeApiKey) {
+  vertexAIConfig.apiKey = activeApiKey;
+}
+
 export const ai = genkit({
   plugins: activeApiKey && projectId ?
     [
-      vertexAI({
-        apiKey: activeApiKey,
-        projectId: projectId,
-        location: location,
-      }),
+      vertexAI(vertexAIConfig),
     ] :
     [], // Initialize with no plugins if no valid API key or project ID is found
-  model: 'vertexai/gemini-2.0-flash-thinking-exp', // Updated model for Vertex AI
+  model: 'vertexai/gemini-2.0-flash-exp', // Updated model for Vertex AI - using 2.0-flash-exp as 2.5-flash-lite may not be available
 });
 
-
-// --- VERY IMPORTANT NOTES ON API KEY AND PROJECT MANAGEMENT ---
+// --- VERY IMPORTANT NOTES ON VERTEX AI CONFIGURATION ---
 //
 // 1.  **ENVIRONMENT VARIABLES ARE REQUIRED:**
-//     This file now requires TWO environment variables:
-//     - `GOOGLE_API_KEY` (or backup keys): Your Google API key for authentication
+//     This file now requires these environment variables:
+//     - `GOOGLE_API_KEY`: Your Google API key for authentication (fallback)
 //     - `VERTEX_AI_PROJECT_ID` or `GOOGLE_CLOUD_PROJECT_ID`: Your Google Cloud project ID
 //     - `VERTEX_AI_LOCATION` (optional): Vertex AI location (defaults to us-central1)
+//     - `GOOGLE_CREDENTIALS_JSON`: Service account JSON credentials (preferred)
 //
 // 2.  **VERTEX AI SETUP REQUIREMENTS:**
 //     - You need a Google Cloud project with Vertex AI API enabled
-//     - The API key must have permissions to access Vertex AI in your project
+//     - Service account with proper permissions for Vertex AI
 //     - Make sure billing is enabled on your Google Cloud project
 //
-// 3.  **FIREBASE STUDIO TESTING (Temporary Hardcoding):**
-//     If `process.env` variables are not available in your current Firebase Studio
-//     session, a temporary fallback to a hardcoded `studioDevApiKey` has been added above.
-//     YOU MUST:
-//         a. REPLACE `"YOUR_GEMINI_API_KEY_HERE_FOR_STUDIO_TESTING"` with your actual key.
-//         b. **CRITICAL:** REMOVE or comment out this hardcoded key before committing
-//            your code to Git or deploying to any production/staging environment.
-//            Exposing API keys in version control is a major security risk.
+// 3.  **AUTHENTICATION:**
+//     - Service account credentials (GOOGLE_CREDENTIALS_JSON) are preferred
+//     - API key authentication is used as fallback
+//     - Ensure your service account has Vertex AI User permissions
 //
 // 4.  **MODEL CHANGE:**
-//     The model has been updated to 'vertexai/gemini-2.0-flash-thinking-exp' which is
-//     available through Vertex AI. This provides enhanced capabilities compared to
-//     the previous Google AI model.
+//     The model has been updated to 'vertexai/gemini-2.0-flash-exp' which is
+//     available through Vertex AI. Note: gemini-2.5-flash-lite may not be available,
+//     using gemini-2.0-flash-exp instead.
 //
-// 5.  **INITIALIZATION-TIME KEY SELECTION ONLY:**
-//     The `getApiKey` function selects ONE API key when your application
-//     STARTS or is (RE)DEPLOYED.
+// 5.  **INITIALIZATION-TIME CONFIGURATION ONLY:**
+//     The configuration is selected when your application STARTS or is (RE)DEPLOYED.
 //
-// 6.  **NO AUTOMATIC RUNTIME FAILOVER OR SWITCHING:**
-//     If the API key or project configuration that was active at startup becomes
-//     invalid, exhausted, or hits quota limits WHILE THE APP IS RUNNING,
-//     Genkit calls using that configuration WILL START FAILING.
-//     The application **WILL NOT AUTOMATICALLY** try another configuration at that point.
+// 6.  **NO AUTOMATIC RUNTIME FAILOVER:**
+//     If the configuration fails during runtime, you need to restart the application
+//     after updating your environment variables.
 //
-// 7.  **MANUAL INTERVENTION REQUIRED FOR RUNTIME FAILURES (in deployed environments):**
-//     If your active configuration fails during runtime:
-//     a.  You need to **UPDATE YOUR ENVIRONMENT VARIABLES** in your hosting provider
-//         (e.g., Vercel) or local .env file to point to working credentials.
-//     b.  You **MUST THEN REDEPLOY OR RESTART** your application.
-//
-// 8.  **CHECK THE LOGS AT STARTUP:**
-//     The initialization functions log which key source and project configuration
-//     they're using. Check your server startup logs to see what decisions are being made.
+// 7.  **CHECK THE LOGS AT STARTUP:**
+//     The initialization functions log which configuration they're using.
+//     Check your server startup logs to see what decisions are being made.
