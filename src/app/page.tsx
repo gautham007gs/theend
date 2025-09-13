@@ -8,7 +8,7 @@ import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
-import { MessageSquarePlus, Camera, Search, MoreVertical, Share2 } from 'lucide-react';
+import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, HelpCircle, Star, Zap } from 'lucide-react';
 import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
 import { useAIProfile } from '@/contexts/AIProfileContext'; 
 import { cn } from '@/lib/utils';
@@ -83,6 +83,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile(); 
   const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
   
   useEffect(() => {
     const lastInteraction = localStorage.getItem('messages_kruthika');
@@ -139,14 +140,46 @@ const ChatListPage: React.FC = () => {
             <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
               <Search size={20} className="text-white" />
             </button>
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
-              <MoreVertical size={20} className="text-white" />
-            </button>
+            <div className="relative">
+              <button 
+                className="hover:bg-green-400 rounded-full p-1.5 transition-colors"
+                onClick={() => setShowDropdown(!showDropdown)}
+              >
+                <MoreVertical size={20} className="text-white" />
+              </button>
+              
+              {showDropdown && (
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <Zap size={16} className="text-blue-500" />
+                      <span className="font-medium">AI Powered Chat</span>
+                    </div>
+                  </div>
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                    <Star size={16} />
+                    Starred messages
+                  </button>
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                    <Settings size={16} />
+                    AI Chat Settings
+                  </button>
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                    <HelpCircle size={16} />
+                    Help & Support
+                  </button>
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                    <Info size={16} />
+                    About WhatApp
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
         {/* Navigation Tabs */}
-        <div className="flex bg-green-500">
+        <div className="flex bg-green-500 items-center">
           <div className="flex-1">
             <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white">
               CHATS
@@ -159,9 +192,11 @@ const ChatListPage: React.FC = () => {
               </button>
             </Link>
           </div>
-          <button className="px-4 py-3 hover:bg-green-400 transition-colors">
-            <Share2 size={18} className="text-white" />
-          </button>
+          <div className="px-3">
+            <button className="p-1.5 hover:bg-green-400 rounded-full transition-colors">
+              <Share2 size={16} className="text-white" />
+            </button>
+          </div>
         </div>
       </div>
 

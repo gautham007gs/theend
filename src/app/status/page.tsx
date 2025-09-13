@@ -6,7 +6,7 @@ import Image from 'next/image';
 import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Camera, X as XIcon } from 'lucide-react';
+import { PlusCircle, Camera, X as XIcon, ArrowLeft, Search, MoreVertical, Share2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import type { AdminStatusDisplay, ManagedContactStatus, AdSettings, AIProfile } from '@/types';
 import { defaultAIProfile, defaultAdminStatusDisplay, defaultManagedContactStatuses } from '@/config/ai';
@@ -230,18 +230,21 @@ const StatusPage: React.FC = () => {
         <div className="px-4 py-3 flex items-center">
           <button 
             onClick={() => window.history.back()} 
-            className="mr-4 hover:bg-green-400 rounded-full p-1 transition-colors"
+            className="mr-4 hover:bg-green-400 rounded-full p-1.5 transition-colors"
           >
-            <span className="text-lg">←</span>
+            <ArrowLeft size={20} className="text-white" />
           </button>
           <h1 className="text-xl font-semibold">Status</h1>
-          <div className="flex items-center space-x-2 ml-auto">
-            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-              <span className="text-xs">🔍</span>
-            </div>
-            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-              <span className="text-xs">⋮</span>
-            </div>
+          <div className="flex items-center space-x-3 ml-auto">
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+              <Search size={20} className="text-white" />
+            </button>
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+              <MoreVertical size={20} className="text-white" />
+            </button>
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+              <Share2 size={16} className="text-white" />
+            </button>
           </div>
         </div>
       </div>
