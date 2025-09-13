@@ -6,7 +6,7 @@ import Image from 'next/image';
 import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Camera, X as XIcon, ArrowLeft, Search, MoreVertical, Share2 } from 'lucide-react';
+import { PlusCircle, Camera, X as XIcon, ArrowLeft, Search, MoreVertical } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import type { AdminStatusDisplay, ManagedContactStatus, AdSettings, AIProfile } from '@/types';
 import { defaultAIProfile, defaultAdminStatusDisplay, defaultManagedContactStatuses } from '@/config/ai';
@@ -241,9 +241,6 @@ const StatusPage: React.FC = () => {
             </button>
             <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
               <MoreVertical size={20} className="text-white" />
-            </button>
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
-              <Share2 size={16} className="text-white" />
             </button>
           </div>
         </div>
