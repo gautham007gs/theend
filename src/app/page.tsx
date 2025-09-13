@@ -61,6 +61,10 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
         <div className="flex-grow overflow-hidden min-w-0">
           <h2 className="font-semibold text-md truncate text-foreground">{profile.name}</h2>
           <p className="text-sm text-muted-foreground truncate">{displayLastMessage}</p>
+          <div className="flex items-center mt-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            <span className="text-xs text-green-600 font-medium">Online</span>
+          </div>
         </div>
         <div className="flex flex-col items-end text-xs ml-2 shrink-0">
           <span className="text-muted-foreground mb-1">{timestamp}</span>
@@ -124,33 +128,96 @@ const ChatListPage: React.FC = () => {
   
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
-      <AppHeader title="Chats" />
-      <div className="flex-grow overflow-y-auto custom-scrollbar relative">
-        <ChatListItem
-          profile={effectiveAIProfile} 
-          lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
-          timestamp={lastMessageTime || ""}
-        />
+      {/* WhatsApp-style Header */}
+      <div className="bg-green-500 text-white">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <h1 className="text-xl font-semibold">WhatsApp</h1>
+          <div className="flex items-center space-x-2">
+            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+              <span className="text-xs">📷</span>
+            </div>
+            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+              <span className="text-xs">🔍</span>
+            </div>
+            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+              <span className="text-xs">⋮</span>
+            </div>
+          </div>
+        </div>
         
-        <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md mt-2 mb-1" />
-        
-        <div className="p-2">
-             <BannerAdDisplay adType="native" placementKey="chatListNative" className="my-2" />
+        {/* Navigation Tabs */}
+        <div className="flex bg-green-500">
+          <button className="flex-1 py-3 px-4 text-center font-medium border-b-2 border-white">
+            CHATS
+          </button>
+          <Link href="/status">
+            <button className="flex-1 py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300">
+              STATUS
+            </button>
+          </Link>
         </div>
       </div>
+
+      <div className="flex-grow overflow-y-auto custom-scrollbar relative bg-gray-50">
+        {/* Chat Item showing AI profile */}
+        <div className="bg-white">
+          <ChatListItem
+            profile={effectiveAIProfile} 
+            lastMessage="Just a girl navigating the world, one cup of chai at a time. Trying to make it as a fashion designer. Let's talk..."
+            timestamp={lastMessageTime || "07:21 PM"}
+          />
+        </div>
+        
+        {/* Welcome Section */}
+        <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm">
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+              Welcome to WhatsApp! 👋
+            </h2>
+            <p className="text-gray-600">
+              Start chatting with {effectiveAIProfile.name} - your friend who's always ready to talk!
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Powered by smart conversation technology
+            </p>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col space-y-3 w-full max-w-sm">
+            <Link href="/maya-chat">
+              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                <MessageSquarePlus size={20} />
+                <span>Start Chatting</span>
+              </button>
+            </Link>
+            
+            <Link href="/status">
+              <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                <span>👁️</span>
+                <span>View Status</span>
+              </button>
+            </Link>
+          </div>
+          
+          {/* Share Button */}
+          <button className="mt-4 p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors">
+            <span className="text-sm">📤</span>
+          </button>
+        </div>
+        
+        <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md mt-2 mb-1" />
+      </div>
+      
+      {/* Floating Action Button */}
       <Link
         href="/maya-chat"
         aria-label={`New chat with ${effectiveAIProfile.name}`}
-        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-10 bg-primary text-primary-foreground p-4 rounded-full shadow-lg hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-10 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
       >
         <span>
           <MessageSquarePlus size={24} />
         </span>
       </Link>
-      <footer className="p-2 text-center border-t border-border">
-        
-        <p className="text-xs text-muted-foreground/70 mt-1">AI Chat Experience.</p>
-      </footer>
     </div>
   );
 };
