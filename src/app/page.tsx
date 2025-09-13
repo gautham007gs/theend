@@ -163,7 +163,7 @@ const ChatListPage: React.FC = () => {
         <div className="bg-white">
           <ChatListItem
             profile={effectiveAIProfile} 
-            lastMessage="Just a girl navigating the world, one cup of chai at a time. Trying to make it as a fashion designer. Let's talk..."
+            lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
             timestamp={lastMessageTime || "07:21 PM"}
           />
         </div>

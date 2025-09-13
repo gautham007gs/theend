@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import type { AdminStatusDisplay, ManagedContactStatus, AdSettings, AIProfile } from '@/types';
 import { defaultAIProfile, defaultAdminStatusDisplay, defaultManagedContactStatuses } from '@/config/ai';
 import { tryShowRotatedAd } from '@/app/maya-chat/page'; 
+import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
 import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useGlobalStatus } from '@/contexts/GlobalStatusContext'; 
 import { useAdSettings } from '@/contexts/AdSettingsContext'; 
@@ -224,7 +225,26 @@ const StatusPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
-      <AppHeader title="Status" />
+      {/* WhatsApp-style Header with Back Navigation */}
+      <div className="bg-green-500 text-white">
+        <div className="px-4 py-3 flex items-center">
+          <button 
+            onClick={() => window.history.back()} 
+            className="mr-4 hover:bg-green-400 rounded-full p-1 transition-colors"
+          >
+            <span className="text-lg">←</span>
+          </button>
+          <h1 className="text-xl font-semibold">Status</h1>
+          <div className="flex items-center space-x-2 ml-auto">
+            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+              <span className="text-xs">🔍</span>
+            </div>
+            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+              <span className="text-xs">⋮</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="flex-grow overflow-y-auto custom-scrollbar">
         <StatusItemDisplay
             statusKey="admin-own-status-item"
@@ -267,6 +287,12 @@ const StatusPage: React.FC = () => {
             isKruthikaProfile={false}
           />
         ))}
+
+        {/* Ads Section */}
+        <div className="p-4">
+          <BannerAdDisplay adType="standard" placementKey="statusPageBottom" className="mx-auto max-w-md mt-2 mb-1" />
+          <BannerAdDisplay adType="native" placementKey="statusPageNative" className="my-2" />
+        </div>
 
       </div>
       <div className="p-4 border-t border-border flex justify-end">
