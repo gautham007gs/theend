@@ -34,6 +34,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Move these options out of experimental in newer Next.js versions
+  skipMiddlewareUrlNormalize: true,
+  skipTrailingSlashRedirect: true,
   // Disable strict Server Actions checking for Replit
   experimental: {
     allowedDevOrigins: [
@@ -48,9 +51,7 @@ const nextConfig: NextConfig = {
         "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000"
       ],
       bodySizeLimit: '2mb'
-    },
-    skipMiddlewareUrlNormalize: true,
-    skipTrailingSlashRedirect: true
+    }
   },
   images: {
     remotePatterns: [

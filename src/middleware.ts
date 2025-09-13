@@ -111,6 +111,6 @@ export const config = {
     /*
      * Match all request paths except static files
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(png|jpg|jpeg|gif|svg|ico|css|js)$).*)',
+    '/:path((?!_next/static|_next/image|favicon.ico|.*\\.(png|jpg|jpeg|gif|svg|ico|css|js)$).*)',
   ],
 };
