@@ -1,0 +1,20 @@
+NEXT_PUBLIC_SUPABASE_URL=https://wubzdjzosbbbghdlfcgc.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1Ynpkanpvc2JiYmdoZGxmY2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2NzY5MzgsImV4cCI6MjA3MzI1MjkzOH0.B0L7vLaujfwwg5cTNX_pTXJd2EXnqEkrFLkpyYNj1nU
+
+# Make sure your GOOGLE_API_KEY is also set for Genkit
+GOOGLE_API_KEY=AIzaSyBMx3bm9eljnTpYw8Wnfq7s6D1Kec45YmE
+
+GCLOUD_LOCATION='us-central1'
+GOOGLE_CREDENTIALS_JSON='{
+  "type": "service_account",
+  "project_id": "maya-chatbot-470113",
+  "private_key_id": "f6bb819b89b07ae3f4e6603800511179b721a9ba",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXFIRHxOPgYUYo\nqGrjpNk8OLa6ya9Tdf3AO5A34h5OSXZ2hOAeP4xVctBQ3tIUXkb9MKs6kIehIIlF\nXFekhXhGBviEY6y9SNHwJplsUYiuFkYoBxyEj3bVS6212f404s6CfysqlYf3GT5z\npMK+/1zTXmGdhTHMfReIXAMTyL2WGKj31eyr5qiXPEgYdjPtLgmSDURXC5y7gUrR\nYWLvJoOtrJz3CRKnCtdSLeJTaDE54O75nQKuqVMB+E14A95uihwrGL1fRwsEecld\nnrCNpbtPWvbgsVdnRzRnXa5gO+DPnZtJhQLbyRuSkfHXgOWV6pjzaBeirt/2067d\n9KCxNCeLAgMBAAECggEAMDC+qwfeKh3NG73w7nEQS/nJK5aWorghuzYkn/az9QPQ\n0ig7NtrNYBox4YHZn96cpTlnfNRKNvaiYqn8WMGsJiYmElCa8nuuX3xodtkhEGqR\ncUYnbg829/1eSQHiaKsp9Q0sTzaIOqTmO0wERJk+2jsiRvUL9+602W2EG8Tt2FjC\nixsYzkvLB9U+Ba/VsD30HMWyiRGpoePpdVgufDu9XwPpjhu8+M2esxdjEgEjPAWH\nR5VK/Yof1T4tQFhtvPFZ7mnEjNc8aAStLGXAkN8H9eialBds2NnPEBaVFsr+NPMM\niyIvlT5pPtuDXrSnjWSvdsd/m+vENILVLEptZvaDpQKBgQDTt245u0pejgak5YEG\ngksgj9Ut4gRHoHHO8KJCfXfxrkohiTQcylqAwl0Kp73/2LGUGPaG6ReQF+8w760y\nGyt/rMUljJ+sEtMUTITy85VVvI7q0vQWhox7YCZGUFSJVZ69QU7aWKYYkBdeAgJT\nUAIWQP8jaH3d4lWluI1XsUs9FwKBgQC2rkBgq+PSOVutBXcH+uS34WIhlFuoNrMV\nEXXK6vo50OHtWUd6vRSRHT7nJRn0YShCweGFd3ZAfoB7JWyP6PYnLZXKSCiL6jXs\ngqqSBCUxXNVii8O4XD4IiaYJRB08sePbxTp0OZxgpY7PvVH3udJJFdMndcuI61Bq\nn8QT/+R5rQKBgGkY9KG6BIf9rvSqbStjAJJQdD3Lpd48mmJk99dT23fg0jHlnzXv\niY/DbFZ+wIXB9x0Sa0a7bRP9naJISEzISgaeKFukfBr6WUgJWDIWkvo1mSiewcZw\n0knoh/d9pwlptFw0kEU5nnIxDTiAfNEItZCAgWb9VwYPdf7HJ3rxquzPAoGAO/o3\n/sVQtjvIwqTRsNgJ8elYu6em9DKJV3h1ERtW7laLZs7yLfUYZJCSj3dZ7yda/ZgE\nQDq5o3ElI8lkvFcDQlewH0rTrSRHchBwiiI8R9mv4Xv71XLLlygCUHaBluTc59H4\nYCJuGjkhC0mgONJUnVRCEGmXWqvPqkIsMVjJnb0CgYEAtVZnobmYSISAlUHXVqgb\n/RpJj6xU3pKTkseB5D5cl9blYE9enSRVVqP/g7yHjJHwyqaL78bMYdMNTwbo97km\nfwZc+LFHm+xPHE6omTp1xBZ5AB/p75iRLfIx5QaG+XZTyOHSiaKdtHmbUkTuan53\nfyn1TYg0WcgF43PCleS8Uxc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "vertex-ai-service@maya-chatbot-470113.iam.gserviceaccount.com",
+  "client_id": "105090263088696022932",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vertex-ai-service%40maya-chatbot-470113.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}'
