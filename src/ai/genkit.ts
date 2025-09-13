@@ -6,18 +6,7 @@ import { vertexAI } from '@genkit-ai/vertexai';
 // Genkit AI Initialization with Vertex AI (Gemini)
 // -----------------------------------------------------------------------------
 
-// Parse service account credentials from environment variable
-const getServiceAccountCredentials = () => {
-  try {
-    const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
-    if (credentialsJson) {
-      return JSON.parse(credentialsJson);
-    }
-  } catch (error) {
-    console.error('Genkit: Error parsing GOOGLE_CREDENTIALS_JSON:', error);
-  }
-  return null;
-};
+// For Replit, we'll use API key authentication only to avoid authentication issues
 
 // Function to determine the API key to use at initialization.
 // It checks environment variables in a prioritized order.
@@ -82,7 +71,6 @@ const getLocation = (): string => {
 const activeApiKey = getApiKey();
 const projectId = getProjectId();
 const location = getLocation();
-const serviceAccountCredentials = getServiceAccountCredentials();
 
 if (!activeApiKey) {
   console.error("Genkit: AI plugin NOT initialized due to missing valid API key. AI functionalities will be disabled.");
@@ -92,40 +80,20 @@ if (activeApiKey && !projectId) {
   console.warn("Genkit: API key found but no project ID configured. Vertex AI requires a Google Cloud project ID.");
 }
 
-if (serviceAccountCredentials) {
-  console.log("Genkit: Service account credentials loaded successfully");
-} else {
-  console.warn("Genkit: No service account credentials found, falling back to API key authentication");
-}
+console.log("Genkit: Using API key authentication for Replit compatibility");
 
-// Configure Vertex AI plugin with proper authentication
+// Configure Vertex AI plugin with API key authentication only for Replit compatibility
 const vertexAIConfig: any = {
   projectId: projectId,
   location: location,
 };
 
-// For Replit environment, we need to set the credentials as environment variable
-if (serviceAccountCredentials) {
-  // Set the Google Application Credentials environment variable
-  process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = JSON.stringify(serviceAccountCredentials);
-  // Also set individual credential fields that Vertex AI might expect
-  process.env.GOOGLE_CLOUD_PROJECT = serviceAccountCredentials.project_id;
-  process.env.GOOGLE_CLOUD_QUOTA_PROJECT = serviceAccountCredentials.project_id;
-  
-  // Force the SDK to use our credentials instead of trying metadata server
-  process.env.GCLOUD_PROJECT = serviceAccountCredentials.project_id;
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = JSON.stringify(serviceAccountCredentials);
-  
-  vertexAIConfig.credentials = serviceAccountCredentials;
-  
-  // For Replit, we should prioritize using API key over service account to avoid metadata server issues
-  if (activeApiKey) {
-    console.log("Genkit: Using API key authentication instead of service account for Replit compatibility");
-    vertexAIConfig.apiKey = activeApiKey;
-    delete vertexAIConfig.credentials;
-  }
-} else if (activeApiKey) {
+// Use API key authentication only for Replit environment
+if (activeApiKey) {
   vertexAIConfig.apiKey = activeApiKey;
+  console.log("Genkit: Configured Vertex AI with API key authentication");
+} else {
+  console.error("Genkit: No API key found for Vertex AI configuration");
 }
 
 export const ai = genkit({
