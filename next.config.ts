@@ -37,8 +37,8 @@ const nextConfig: NextConfig = {
   // Allow dev origins for Replit
   experimental: {
     allowedDevOrigins: [
-      /^https:\/\/.*\.replit\.dev$/,
-      /^https:\/\/.*\.pike\.replit\.dev$/
+      "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000",
+      "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev"
     ]
   },
   images: {
@@ -104,7 +104,21 @@ const nextConfig: NextConfig = {
       {
         // Apply these headers to all routes in your application.
         source: '/:path*',
-        headers: securityHeaders,
+        headers: [
+          ...securityHeaders,
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto',
+          },
+        ],
       },
     ];
   },
