@@ -1,9 +1,9 @@
 
 import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
+import {vertexAI} from '@genkit-ai/vertexai';
 
 // -----------------------------------------------------------------------------
-// Genkit AI Initialization with Google AI (Gemini)
+// Genkit AI Initialization with Vertex AI (Gemini)
 // -----------------------------------------------------------------------------
 
 // Function to determine the API key to use at initialization.
@@ -65,32 +65,60 @@ const getApiKey = (): string | undefined => {
   return undefined;
 };
 
+// Get project ID from environment variable
+const getProjectId = (): string | undefined => {
+  const projectId = process.env.VERTEX_AI_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT_ID;
+  if (!projectId) {
+    console.warn("Genkit: No VERTEX_AI_PROJECT_ID or GOOGLE_CLOUD_PROJECT_ID found. Vertex AI may not work properly.");
+  }
+  return projectId;
+};
+
+// Get location from environment variable (default to us-central1)
+const getLocation = (): string => {
+  return process.env.VERTEX_AI_LOCATION || 'us-central1';
+};
+
 const activeApiKey = getApiKey();
+const projectId = getProjectId();
+const location = getLocation();
 
 if (!activeApiKey) {
   console.error("Genkit: AI plugin NOT initialized due to missing valid API key. AI functionalities will be disabled.");
 }
 
+if (activeApiKey && !projectId) {
+  console.warn("Genkit: API key found but no project ID configured. Vertex AI requires a Google Cloud project ID.");
+}
+
 export const ai = genkit({
-  plugins: activeApiKey ?
+  plugins: activeApiKey && projectId ?
     [
-      googleAI({
+      vertexAI({
         apiKey: activeApiKey,
+        projectId: projectId,
+        location: location,
       }),
     ] :
-    [], // Initialize with no plugins if no valid API key is found
-  model: 'googleai/gemini-1.5-flash-latest', // Default model
+    [], // Initialize with no plugins if no valid API key or project ID is found
+  model: 'vertexai/gemini-2.0-flash-thinking-exp', // Updated model for Vertex AI
 });
 
 
-// --- VERY IMPORTANT NOTES ON API KEY MANAGEMENT ---
+// --- VERY IMPORTANT NOTES ON API KEY AND PROJECT MANAGEMENT ---
 //
-// 1.  **ENVIRONMENT VARIABLES ARE PREFERRED:**
-//     This file is designed to read API keys from environment variables
-//     (e.g., `GOOGLE_API_KEY`, `GEMINI_API_KEY_1`) which are set in your
-//     hosting environment (like Vercel) or a local `.env` file.
+// 1.  **ENVIRONMENT VARIABLES ARE REQUIRED:**
+//     This file now requires TWO environment variables:
+//     - `GOOGLE_API_KEY` (or backup keys): Your Google API key for authentication
+//     - `VERTEX_AI_PROJECT_ID` or `GOOGLE_CLOUD_PROJECT_ID`: Your Google Cloud project ID
+//     - `VERTEX_AI_LOCATION` (optional): Vertex AI location (defaults to us-central1)
 //
-// 2.  **FIREBASE STUDIO TESTING (Temporary Hardcoding):**
+// 2.  **VERTEX AI SETUP REQUIREMENTS:**
+//     - You need a Google Cloud project with Vertex AI API enabled
+//     - The API key must have permissions to access Vertex AI in your project
+//     - Make sure billing is enabled on your Google Cloud project
+//
+// 3.  **FIREBASE STUDIO TESTING (Temporary Hardcoding):**
 //     If `process.env` variables are not available in your current Firebase Studio
 //     session, a temporary fallback to a hardcoded `studioDevApiKey` has been added above.
 //     YOU MUST:
@@ -99,31 +127,27 @@ export const ai = genkit({
 //            your code to Git or deploying to any production/staging environment.
 //            Exposing API keys in version control is a major security risk.
 //
-// 3.  **INITIALIZATION-TIME KEY SELECTION ONLY:**
+// 4.  **MODEL CHANGE:**
+//     The model has been updated to 'vertexai/gemini-2.0-flash-thinking-exp' which is
+//     available through Vertex AI. This provides enhanced capabilities compared to
+//     the previous Google AI model.
+//
+// 5.  **INITIALIZATION-TIME KEY SELECTION ONLY:**
 //     The `getApiKey` function selects ONE API key when your application
 //     STARTS or is (RE)DEPLOYED.
 //
-// 4.  **NO AUTOMATIC RUNTIME FAILOVER OR SWITCHING:**
-//     If the API key that was active at startup becomes
-//     exhausted, invalid, or hits quota limits WHILE THE APP IS RUNNING,
-//     Genkit calls using that key WILL START FAILING.
-//     The application **WILL NOT AUTOMATICALLY** try another key at that point.
+// 6.  **NO AUTOMATIC RUNTIME FAILOVER OR SWITCHING:**
+//     If the API key or project configuration that was active at startup becomes
+//     invalid, exhausted, or hits quota limits WHILE THE APP IS RUNNING,
+//     Genkit calls using that configuration WILL START FAILING.
+//     The application **WILL NOT AUTOMATICALLY** try another configuration at that point.
 //
-// 5.  **MANUAL INTERVENTION REQUIRED FOR RUNTIME FAILURES (in deployed environments):**
-//     If your active key fails during runtime (e.g., due to quota or it being revoked):
+// 7.  **MANUAL INTERVENTION REQUIRED FOR RUNTIME FAILURES (in deployed environments):**
+//     If your active configuration fails during runtime:
 //     a.  You need to **UPDATE YOUR ENVIRONMENT VARIABLES** in your hosting provider
-//         (e.g., Vercel) or local .env file to point to a working key.
+//         (e.g., Vercel) or local .env file to point to working credentials.
 //     b.  You **MUST THEN REDEPLOY OR RESTART** your application.
 //
-// 6.  **CHECK THE LOGS AT STARTUP:**
-//     The `getApiKey` function logs which key source it's using or if it
-//     finds an invalid-looking key, or if no key is found. Check your server startup logs
-//     (Vercel deployment logs or your local `npm run dev` terminal output, or Firebase Studio console)
-//     to see what API key decision is being made.
-//
-// If the logs show "CRITICAL Genkit Error: No valid Gemini API Key found...",
-// and you haven't hardcoded `studioDevApiKey` for Studio testing, then NO API KEY
-// IS BEING PASSED TO THE GOOGLE AI PLUGIN.
-// The `ai` object will be initialized with no plugins in that case,
-// and any call to `ai.generate()` will likely fail.
-    
+// 8.  **CHECK THE LOGS AT STARTUP:**
+//     The initialization functions log which key source and project configuration
+//     they're using. Check your server startup logs to see what decisions are being made.
