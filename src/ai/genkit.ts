@@ -104,8 +104,13 @@ const vertexAIConfig: any = {
   location: location,
 };
 
-// Use service account credentials if available, otherwise fall back to API key
+// For Replit environment, we need to set the credentials as environment variable
 if (serviceAccountCredentials) {
+  // Set the Google Application Credentials environment variable
+  process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON = JSON.stringify(serviceAccountCredentials);
+  // Also set individual credential fields that Vertex AI might expect
+  process.env.GOOGLE_CLOUD_PROJECT = serviceAccountCredentials.project_id;
+  process.env.GOOGLE_CLOUD_QUOTA_PROJECT = serviceAccountCredentials.project_id;
   vertexAIConfig.credentials = serviceAccountCredentials;
 } else if (activeApiKey) {
   vertexAIConfig.apiKey = activeApiKey;
