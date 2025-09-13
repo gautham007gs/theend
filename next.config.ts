@@ -34,12 +34,20 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Allow dev origins for Replit
+  // Allow dev origins for Replit and disable strict checking
   experimental: {
     allowedDevOrigins: [
       "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000",
-      "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev"
-    ]
+      "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev",
+      "localhost:5000",
+      "0.0.0.0:5000"
+    ],
+    serverActions: {
+      allowedOrigins: [
+        "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev",
+        "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000"
+      ]
+    }
   },
   images: {
     remotePatterns: [
@@ -116,11 +124,19 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto',
+            value: 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
           },
         ],
       },
     ];
+  },
+  // Additional configuration for Replit compatibility
+  async rewrites() {
+    return [];
   },
 };
 

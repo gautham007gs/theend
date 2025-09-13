@@ -2,6 +2,37 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Helper to normalize headers for Replit environment
+function normalizeHeadersForReplit(request: NextRequest): NextRequest {
+  const { headers, nextUrl } = request;
+  
+  // Check if we're in Replit environment
+  const forwardedHost = headers.get('x-forwarded-host');
+  const origin = headers.get('origin');
+  
+  if (forwardedHost && origin && forwardedHost.includes('replit.dev')) {
+    // Create new headers to fix the mismatch
+    const newHeaders = new Headers(headers);
+    
+    // Normalize the origin to match forwarded host (remove port if present)
+    const normalizedOrigin = forwardedHost.startsWith('http') 
+      ? forwardedHost 
+      : `https://${forwardedHost}`;
+    
+    newHeaders.set('origin', normalizedOrigin);
+    newHeaders.set('host', forwardedHost);
+    
+    // Create a new request with normalized headers
+    return new NextRequest(request.url, {
+      method: request.method,
+      headers: newHeaders,
+      body: request.body,
+    });
+  }
+  
+  return request;
+}
+
 function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
   if (userAgent) {
     // Common patterns for Instagram's in-app browser user agent string
@@ -11,8 +42,17 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 }
 
 export function middleware(request: NextRequest) {
-  const { pathname, searchParams, origin, search } = request.nextUrl;
-  const userAgent = request.headers.get('user-agent');
+  // First, normalize headers for Replit environment
+  const normalizedRequest = normalizeHeadersForReplit(request);
+  
+  // For Server Actions and API routes, just normalize and continue
+  if (normalizedRequest.nextUrl.pathname.startsWith('/api/') || 
+      normalizedRequest.method === 'POST') {
+    return NextResponse.next();
+  }
+  
+  const { pathname, searchParams, origin, search } = normalizedRequest.nextUrl;
+  const userAgent = normalizedRequest.headers.get('user-agent');
 
   // Check if our redirect trick has already been attempted for this request flow
   const hasRedirectAttemptedFlag = searchParams.has('external_redirect_attempted');
