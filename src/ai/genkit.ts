@@ -1,6 +1,6 @@
 
-import {genkit} from 'genkit';
-import {vertexAI} from '@genkit-ai/vertexai';
+import { genkit } from 'genkit';
+import { vertexAI } from '@genkit-ai/vertexai';
 
 // -----------------------------------------------------------------------------
 // Genkit AI Initialization with Vertex AI (Gemini)
@@ -117,7 +117,7 @@ export const ai = genkit({
       vertexAI(vertexAIConfig),
     ] :
     [], // Initialize with no plugins if no valid API key or project ID is found
-  model: 'vertexai/gemini-2.0-flash-exp', // Updated model for Vertex AI - using 2.0-flash-exp as 2.5-flash-lite may not be available
+  model: 'vertexai/gemini-2.0-flash-lite-001', // Updated to use the specific model you requested
 });
 
 // --- VERY IMPORTANT NOTES ON VERTEX AI CONFIGURATION ---
@@ -140,9 +140,8 @@ export const ai = genkit({
 //     - Ensure your service account has Vertex AI User permissions
 //
 // 4.  **MODEL CHANGE:**
-//     The model has been updated to 'vertexai/gemini-2.0-flash-exp' which is
-//     available through Vertex AI. Note: gemini-2.5-flash-lite may not be available,
-//     using gemini-2.0-flash-exp instead.
+//     The model has been updated to 'vertexai/gemini-2.0-flash-lite-001' as requested.
+//     This is a lightweight version of Gemini 2.0 Flash available through Vertex AI.
 //
 // 5.  **INITIALIZATION-TIME CONFIGURATION ONLY:**
 //     The configuration is selected when your application STARTS or is (RE)DEPLOYED.
