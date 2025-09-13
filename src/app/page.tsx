@@ -195,19 +195,17 @@ const ChatListPage: React.FC = () => {
             profile={effectiveAIProfile} 
             lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
             timestamp={lastMessageTime || "07:21 PM"}
+            unreadCount={1}
           />
         </div>
         
         {/* Welcome Section */}
         <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm">
           <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Welcome to WhatApp! 👋
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">
+              Chat with {effectiveAIProfile.name}
             </h2>
-            <p className="text-gray-600">
-              Start chatting with {effectiveAIProfile.name} - your friend who's always ready to talk!
-            </p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500">
               Smart conversations
             </p>
           </div>
