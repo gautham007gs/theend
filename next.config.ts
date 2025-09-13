@@ -34,6 +34,13 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Allow dev origins for Replit
+  experimental: {
+    allowedDevOrigins: [
+      /^https:\/\/.*\.replit\.dev$/,
+      /^https:\/\/.*\.pike\.replit\.dev$/
+    ]
+  },
   images: {
     remotePatterns: [
       {
