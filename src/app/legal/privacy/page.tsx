@@ -12,28 +12,20 @@ const PrivacyPolicyPage = () => {
       <div className="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar">
         <Card className="bg-card text-card-foreground">
           <CardHeader>
-            <CardTitle>Privacy Policy for Kruthika Chat</CardTitle>
-            <CardDescription>Last Updated: [Date - Please fill this in]</CardDescription>
+            <CardTitle>Privacy Policy for WhatApp</CardTitle>
+            <CardDescription>Last Updated: September 13, 2025</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 border border-destructive/50 rounded-md bg-destructive/10 text-destructive">
-              <h3 className="font-semibold">Important: Placeholder Content</h3>
-              <p className="text-sm">
-                The content on this page is a template and NOT legally binding. You MUST replace `[Date]`, `[Your Company Name/Your Name]`, `[Your Contact Email Address]`, and other bracketed placeholders with your specific information.
-                This policy needs to be reviewed by a legal professional to ensure it accurately reflects your data practices and complies with all relevant privacy laws (e.g., GDPR, CCPA, etc.).
-              </p>
-            </div>
-
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">1. Introduction</h2>
               <p className="text-muted-foreground">
-                Welcome to Kruthika Chat (the "Service"), operated by [Your Company Name/Your Name] ("we", "us", or "our").
+                Welcome to WhatApp (the "Service"), operated by WhatApp Technologies ("we", "us", or "our").
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service.
                 By using the Service, you agree to the collection and use of information in accordance with this policy.
               </p>
               <p className="text-muted-foreground mt-2">
                 The character "Kruthika" you interact with is an Artificial Intelligence (AI) language model.
-                Your interactions are with this AI and are not with a real human.
+                Your interactions are with this AI and are not with a real human. We prioritize your privacy and data security.
               </p>
             </section>
 
@@ -46,17 +38,18 @@ const PrivacyPolicyPage = () => {
               
               <h4 className="text-md font-medium mt-2">Chat Data & AI Interaction</h4>
                <p className="text-muted-foreground">
-                When you use Kruthika Chat, the messages you send and receive (including text and any images you choose to upload) are processed to provide the chat functionality.
-                This data is sent to third-party Generative AI service providers (e.g., Google via Genkit for the Gemini model) to generate Kruthika's responses.
-                These providers have their own privacy policies governing their use of data.
+                When you use WhatApp, messages you send are processed to provide AI chat functionality.
+                This data is sent to Google AI services to generate responses. Google has their own privacy policies governing data use.
+                We implement industry-standard encryption and security measures to protect your data in transit.
                </p>
                <p className="text-muted-foreground mt-1">
-                We temporarily store your chat history in your browser's local storage to maintain conversation context during your session.
-                We do not permanently store your detailed chat conversations or uploaded images on our servers beyond what is necessary for the AI to respond and for you to view your current session history.
-                Images you send are processed by the AI and are not retained by our application servers after processing.
+                We store chat history locally in your browser for session continuity. No detailed conversations or personal data
+                are permanently stored on our servers. All chat data is automatically deleted after 24 hours for your privacy protection.
+                We do not retain uploaded images beyond processing time.
                </p>
-               <p className="text-[10px] text-muted-foreground/80 mt-1">
-                Please be aware: You acknowledge that you are interacting with an AI language model, not a human. Do not share highly sensitive personal information that you would not want processed by an AI system.
+               <p className="text-sm text-orange-600 font-medium mt-2 p-2 bg-orange-50 rounded">
+                Important: Do not share sensitive personal information, financial details, passwords, or confidential data. 
+                This is an AI service for entertainment and general conversation only.
                </p>
 
               <h4 className="text-md font-medium mt-2">Usage Data</h4>

@@ -13,62 +13,117 @@ const TermsOfServicePage = () => {
         <Card className="bg-card text-card-foreground">
           <CardHeader>
             <CardTitle>Terms of Service</CardTitle>
-            <CardDescription>Last Updated: [Date]</CardDescription>
+            <CardDescription>Last Updated: September 13, 2025</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-4 border border-destructive/50 rounded-md bg-destructive/10 text-destructive">
-              <h3 className="font-semibold">Important: Placeholder Content</h3>
-              <p className="text-sm">
-                The content on this page is a template and NOT legally binding. You MUST replace this with your own
-                Terms of Service, drafted or reviewed by a legal professional, to suit your specific application,
-                data handling practices, and jurisdiction.
-              </p>
-            </div>
-
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">1. Introduction</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground">
-                Welcome to Maya Chat ("the Service"). These Terms of Service ("Terms") govern your use of our
-                application and services. By accessing or using the Service, you agree to be bound by these Terms.
-                If you disagree with any part of the terms, then you may not access the Service.
+                Welcome to WhatApp ("the Service"). These Terms of Service ("Terms") govern your use of our
+                AI chat application and services operated by WhatApp Technologies. By accessing or using the Service, 
+                you agree to be bound by these Terms. If you disagree with any part of these terms, you may not access the Service.
               </p>
               <p className="text-muted-foreground mt-2">
-                The character "Maya" you interact with is an Artificial Intelligence (AI) language model.
-                Interactions are simulated and not with a real human.
+                The character "Kruthika" you interact with is an Artificial Intelligence (AI) language model.
+                All interactions are simulated conversations with AI technology, not with a real human being.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">2. AI Interaction</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">2. AI Service Limitations</h2>
               <p className="text-muted-foreground">
-                You acknowledge that "Maya" is an AI and not a real person. The Service is provided for
-                entertainment and informational purposes. Do not rely on the AI for professional advice (e.g.,
-                medical, legal, financial).
+                You acknowledge that "Kruthika" is an AI assistant designed for entertainment and general conversation. 
+                The Service is NOT intended to provide professional advice of any kind, including but not limited to:
+                medical, legal, financial, therapeutic, or crisis intervention services.
               </p>
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-red-800 font-medium">⚠️ Important Safety Notice:</p>
+                <p className="text-red-700 text-sm">
+                  If you are experiencing a mental health crisis or emergency, immediately contact emergency services 
+                  or a crisis helpline in your area. This AI service cannot provide emergency assistance.
+                </p>
+              </div>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">3. User Conduct</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">3. Prohibited Uses & User Conduct</h2>
               <p className="text-muted-foreground">
                 You agree not to use the Service to:
               </p>
-              <ul className="list-disc list-inside ml-4 text-muted-foreground">
-                <li>Transmit any content that is unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable.</li>
-                <li>Attempt to elicit harmful or inappropriate responses from the AI.</li>
-                <li>Impersonate any person or entity.</li>
-                {/* Add more specific user conduct clauses as needed */}
+              <ul className="list-disc list-inside ml-4 text-muted-foreground space-y-1">
+                <li>Transmit content that is unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable</li>
+                <li>Attempt to elicit harmful, illegal, or inappropriate responses from the AI</li>
+                <li>Share personal information of others without consent</li>
+                <li>Attempt to circumvent safety measures or content filters</li>
+                <li>Use the service for commercial purposes without authorization</li>
+                <li>Impersonate any person or entity</li>
+                <li>Attempt to extract training data or reverse engineer the AI model</li>
+                <li>Use the service to generate content that violates intellectual property rights</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">4. Content</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">4. Content & Accuracy Disclaimer</h2>
               <p className="text-muted-foreground">
-                While we strive to ensure the AI provides appropriate responses, we cannot guarantee the accuracy,
-                completeness, or appropriateness of any information provided by the AI. You understand that
-                all content generated by the AI is for informational and entertainment purposes only.
+                AI-generated content is provided "as is" for entertainment purposes only. We do not guarantee 
+                the accuracy, completeness, reliability, or appropriateness of any AI responses. Users must verify 
+                all information independently before making any decisions based on AI-generated content.
               </p>
               <p className="text-muted-foreground mt-2">
-                We employ safety filters, but some AI responses may be unexpected. Please use the service responsibly.
+                We implement content moderation and safety filters, but AI responses may sometimes be unexpected 
+                or inappropriate. Please report any concerning content immediately.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">5. Age Restrictions & Safety</h2>
+              <p className="text-muted-foreground">
+                Users must be at least 13 years old to use this service. Users under 18 should have parental 
+                guidance and supervision when using AI chat services. Parents and guardians are responsible 
+                for monitoring their children's use of the service.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">6. Privacy & Data Protection</h2>
+              <p className="text-muted-foreground">
+                Your privacy is important to us. Please review our Privacy Policy to understand how we collect, 
+                use, and protect your information. By using the service, you consent to our data practices as 
+                described in the Privacy Policy.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">7. Limitation of Liability</h2>
+              <p className="text-muted-foreground">
+                WhatApp Technologies shall not be liable for any direct, indirect, incidental, consequential, 
+                or punitive damages arising from your use of the service. The service is provided on an "as is" 
+                and "as available" basis without warranties of any kind.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">8. Termination</h2>
+              <p className="text-muted-foreground">
+                We reserve the right to terminate or suspend access to the service immediately, without prior 
+                notice, for conduct that we believe violates these Terms or is harmful to other users or third parties.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">9. Changes to Terms</h2>
+              <p className="text-muted-foreground">
+                We reserve the right to modify these Terms at any time. We will notify users of significant 
+                changes via the service interface. Your continued use of the service after changes constitutes 
+                acceptance of the new Terms.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">10. Contact Information</h2>
+              <p className="text-muted-foreground">
+                For questions about these Terms of Service, please contact us through the appropriate channels 
+                provided in the application interface.
               </p>
             </section>
             

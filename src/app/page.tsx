@@ -8,7 +8,7 @@ import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
-import { MessageSquarePlus } from 'lucide-react';
+import { MessageSquarePlus, Camera, Search, MoreVertical, Share2 } from 'lucide-react';
 import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
 import { useAIProfile } from '@/contexts/AIProfileContext'; 
 import { cn } from '@/lib/utils';
@@ -131,30 +131,37 @@ const ChatListPage: React.FC = () => {
       {/* WhatsApp-style Header */}
       <div className="bg-green-500 text-white">
         <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">WhatsApp</h1>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-              <span className="text-xs">📷</span>
-            </div>
-            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-              <span className="text-xs">🔍</span>
-            </div>
-            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-              <span className="text-xs">⋮</span>
-            </div>
+          <h1 className="text-xl font-semibold">WhatApp</h1>
+          <div className="flex items-center space-x-3">
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+              <Camera size={20} className="text-white" />
+            </button>
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+              <Search size={20} className="text-white" />
+            </button>
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+              <MoreVertical size={20} className="text-white" />
+            </button>
           </div>
         </div>
         
         {/* Navigation Tabs */}
         <div className="flex bg-green-500">
-          <button className="flex-1 py-3 px-4 text-center font-medium border-b-2 border-white">
-            CHATS
-          </button>
-          <Link href="/status">
-            <button className="flex-1 py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300">
-              STATUS
+          <div className="flex-1">
+            <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white">
+              CHATS
             </button>
-          </Link>
+          </div>
+          <div className="flex-1">
+            <Link href="/status">
+              <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300">
+                STATUS
+              </button>
+            </Link>
+          </div>
+          <button className="px-4 py-3 hover:bg-green-400 transition-colors">
+            <Share2 size={18} className="text-white" />
+          </button>
         </div>
       </div>
 
@@ -172,13 +179,13 @@ const ChatListPage: React.FC = () => {
         <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm">
           <div className="mb-6">
             <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-              Welcome to WhatsApp! 👋
+              Welcome to WhatApp! 👋
             </h2>
             <p className="text-gray-600">
               Start chatting with {effectiveAIProfile.name} - your friend who's always ready to talk!
             </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Powered by smart conversation technology
+            <p className="text-xs text-gray-500 mt-2">
+              Powered by AI chat
             </p>
           </div>
           
@@ -199,10 +206,6 @@ const ChatListPage: React.FC = () => {
             </Link>
           </div>
           
-          {/* Share Button */}
-          <button className="mt-4 p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors">
-            <span className="text-sm">📤</span>
-          </button>
         </div>
         
         <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md mt-2 mb-1" />
