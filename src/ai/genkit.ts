@@ -111,7 +111,19 @@ if (serviceAccountCredentials) {
   // Also set individual credential fields that Vertex AI might expect
   process.env.GOOGLE_CLOUD_PROJECT = serviceAccountCredentials.project_id;
   process.env.GOOGLE_CLOUD_QUOTA_PROJECT = serviceAccountCredentials.project_id;
+  
+  // Force the SDK to use our credentials instead of trying metadata server
+  process.env.GCLOUD_PROJECT = serviceAccountCredentials.project_id;
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = JSON.stringify(serviceAccountCredentials);
+  
   vertexAIConfig.credentials = serviceAccountCredentials;
+  
+  // For Replit, we should prioritize using API key over service account to avoid metadata server issues
+  if (activeApiKey) {
+    console.log("Genkit: Using API key authentication instead of service account for Replit compatibility");
+    vertexAIConfig.apiKey = activeApiKey;
+    delete vertexAIConfig.credentials;
+  }
 } else if (activeApiKey) {
   vertexAIConfig.apiKey = activeApiKey;
 }
