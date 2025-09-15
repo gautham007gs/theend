@@ -1,7 +1,7 @@
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 
-export async function sendMessage(message: string) {
+export async function sendMessage(message: string, currentMood?: string, chatHistory?: string[]) {
   try {
     console.log('Server Action: Received message:', message);
     
@@ -11,12 +11,16 @@ export async function sendMessage(message: string) {
                      hour >= 12 && hour < 17 ? 'afternoon' : 
                      hour >= 17 && hour < 21 ? 'evening' : 'night';
     
-    // Build enhanced input for emotional AI system
+    // Enhanced mood selection with psychological variation
+    const moods = ['flirty', 'mysterious', 'bubbly', 'melancholic', 'excited', 'stressed'];
+    const dynamicMood = currentMood || moods[Math.floor(Math.random() * moods.length)];
+    
+    // Build enhanced input for emotional AI system with memory
     const input: EmotionalStateInput = {
       userMessage: message,
       timeOfDay,
-      mood: 'flirty', // Default mood - in real app this would be dynamic
-      recentInteractions: [], // In real app this would be from chat history
+      mood: dynamicMood,
+      recentInteractions: chatHistory?.slice(-5) || [], // Last 5 interactions for context
       availableImages: [],
       availableAudio: []
     };
@@ -31,7 +35,15 @@ export async function sendMessage(message: string) {
         : "Hey! What's up? 😊";
     
     console.log('Server Action: Generated enhanced response:', response);
-    return { success: true, response };
+    console.log('Server Action: New mood:', aiResponse.newMood);
+    
+    // Return response with mood for persistence
+    return { 
+      success: true, 
+      response,
+      newMood: aiResponse.newMood || dynamicMood,
+      usedMood: dynamicMood
+    };
   } catch (error) {
     console.error('Server Action: Error generating response:', error);
     return { 
