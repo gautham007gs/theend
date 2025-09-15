@@ -224,17 +224,22 @@ const KruthikaChatPage: NextPage = () => {
       const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
 
       if (lastActiveDate !== today) {
-        supabase
-          .from('daily_activity_log')
-          .insert({ user_pseudo_id: userPseudoId, activity_date: today, chat_id: 'kruthika_chat' })
-          .then(({ error }) => {
+        // Use async/await for better Promise handling
+        (async () => {
+          try {
+            const { error } = await supabase
+              .from('daily_activity_log')
+              .insert({ user_pseudo_id: userPseudoId, activity_date: today, chat_id: 'kruthika_chat' });
+            
             if (error && error.code !== '23505') { 
               console.error('Error logging daily activity to Supabase:', error.message);
             } else if (!error) {
               localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
             }
-          })
-          .catch((e: any) => console.error('Supabase daily activity logging failed (catch):', e?.message || String(e)));
+          } catch (e: any) {
+            console.error('Supabase daily activity logging failed:', e?.message || String(e));
+          }
+        })();
       }
     }
   }, []);
