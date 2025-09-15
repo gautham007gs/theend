@@ -20,10 +20,20 @@ export function middleware(request: NextRequest) {
     
     // Fix CORS and header issues for Replit
     const forwardedHost = request.headers.get('x-forwarded-host');
+    const origin = request.headers.get('origin');
+    
     if (forwardedHost && forwardedHost.includes('replit.dev')) {
+      // For Server Actions, ensure consistent host/origin headers
+      if (request.method === 'POST' && pathname.startsWith('/maya-chat')) {
+        // Normalize the headers to match - remove port from origin if present
+        const normalizedOrigin = origin?.replace(':5000', '') || forwardedHost;
+        response.headers.set('x-forwarded-host', normalizedOrigin);
+        response.headers.set('host', normalizedOrigin);
+      }
+      
       response.headers.set('Access-Control-Allow-Origin', `https://${forwardedHost}`);
       response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin');
     }
     
     return response;

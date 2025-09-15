@@ -41,16 +41,20 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: [
-        "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev",
-        "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev:5000",
+        "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
+        "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000",
+        "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
+        "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
       bodySizeLimit: '2mb'
     },
     allowedDevOrigins: [
-      "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev",
-      "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev:5000"
+      "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
+      "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000",
+      "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
+      "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000"
     ]
   },
   images: {
@@ -120,7 +124,7 @@ const nextConfig: NextConfig = {
           ...securityHeaders,
           {
             key: 'Access-Control-Allow-Origin',
-            value: '57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev',
+            value: '9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev',
           },
           {
             key: 'Access-Control-Allow-Methods',
