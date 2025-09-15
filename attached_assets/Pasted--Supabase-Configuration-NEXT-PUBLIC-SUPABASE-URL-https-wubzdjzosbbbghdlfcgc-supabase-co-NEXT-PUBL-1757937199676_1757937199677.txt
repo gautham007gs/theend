@@ -1,0 +1,34 @@
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://wubzdjzosbbbghdlfcgc.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1Ynpkanpvc2JiYmdoZGxmY2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc2NzY5MzgsImV4cCI6MjA3MzI1MjkzOH0.B0L7vLaujfwwg5cTNX_pTXJd2EXnqEkrFLkpyYNj1nU
+
+# Vertex AI Configuration
+VERTEX_AI_PROJECT_ID=maya-chatbot-470113
+VERTEX_AI_LOCATION=us-central1
+GOOGLE_CLOUD_PROJECT_ID=maya-chatbot-470113
+GCLOUD_LOCATION=us-central1
+
+# Vertex AI Service Account Credentials (JSON format)
+GOOGLE_CREDENTIALS_JSON={
+  "type": "service_account",
+  "project_id": "maya-chatbot-470113",
+  "private_key_id": "14a943f1adece67852ed4eb57242c9cc0eac477c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCn/2e6Ffu51tkj\n5T/sp6Ln3Ie2czdhFkkDuA+fwu9nIyJGAKHRlQaCSToMHXonNCkABIPM3MU+wiDQ\nN4zfV+ok1rJ47yzZgrBX0OvBYuCMcTKy6uzy+czBMHw4htJxn1+FE+f/e18TEwz8\nsq8UYiuizFBZWYN0my1ZUc/S2wFeWGOcOhzq7QfurLzxcxNZbKS8iE4X/6uPIM+/\nRaOU1W4zFM2q3hoG6NNPQAbkVl7GcXv+o8PtRCZn+KAN/rrg9A55r5EZhSOa8F2S\nJen7gfDVUACqr5RKwHW/19+TvoBIeYPbC0lDwWCLO7yVMSXJTsMwSSRcMbJqMQZ5\n2ePrfDwzAgMBAAECggEAAWX/y6jBV14RjZUYLoOEQmf+UJikUMGnqBf1/QbFxFIF\nAwR4yoToSUVaxqcKoAmIp68TKwYC0z5MSrRX+z3PzDpl6LKShoqHpn1VLzfYuIPL\nLD8GiUzJLgKCPFxgfBS5FUrQg0SJe+nu1luqHII/xTN2MZvnTIl/YK4KRvznaCqN\nqVeXh6W03BcZ4o92MA/jm9YUwpMRjGK7BBYpsTijeRCYbp8Z7NJd+wv/9fDIy7ya\nWake7+hvYbzCWVLFQqlaD2zXElJPtgg1bAGQ3gkYY1effBByjBIQlnIU3+rggABk\nuquu/mfLg0E/DAi8zJzHYgkzjmXuIO7UtNvYVs0OAQKBgQDT11Q2avqECzuMw4O1\nIYp8V4T4zoUIVhaYrOFCMW6gY8KcOSlfHBgnDjQ9MpClfHZ0zGHPjIhm2cvR5x5I\niX0xbO7o6gakYYSTLG7HhraHLd1eO4DB+fH6AuwRNAdDkdGXwjFzfgyTMq7V3k/F\n/Gap69Hatz15/zLP3Pruwxh3wQKBgQDLBGsM1LNS9s76165UxI2zbL0rZUgwQdxv\npkUUbgDUOturh982Z7fSk0jAjcJGHJBbUrRRdWL+f/V21KC21N3oF4UnEBcsCj5r\nk/Ycb0DRaH1KywuqOLIEz70N+i7iIYRZQqyVHesO6SjqTQArw8qlTW6+WnljQdNI\nX64rgWaQ8wKBgQCcalPN0nOi58BSkVJAfcGJSf3u0F4954LLvGqeu20ZlE9vlm1L\nwqy6uawsu5c9+YZlezuFShi1CH+MPwCHQq1jvzEwXQwGd9Kx8I7jWD6R1XWsTHcn\nwuu+VEYF9cqfQ53kVgi5ZArY7QVW+M0iPNl5AZxzx/TmjV3xSRMnFHqOgQKBgQCM\nXkyp/XLTnSR1GaVGpPQYp8mP9KJaA1+nrr26p2hZVSzHR9WUp1fY987om9tEYMGK\n8v8MB27f6pdMhy1r3Hhl3cVJwf1TjO2lshMLi/y0DVv717IECtlDLGNaA65g2a3J\njakIHTyF/b41afIBUImPi59Ta/jcIQo10zn4iKri8wKBgFQ6+W3l329U7hBxXtr8\n837CXIzFGC4rp4wsq4b0mMAqqVAOBLpk8SjE4ZRU8lDuKv/n8flbpSRBFIhmRyuj\nBzM1AKU3HPzAVDwg9NCfJV4B7dDG1Hx/AdHCL77vqFuyVvB5VPzpOWnGC65ozkbe\n02tFAAR+fMD/yNx18VWTROy+\n-----END PRIVATE KEY-----\n",
+  "client_email": "vertex-ai-service@maya-chatbot-470113.iam.gserviceaccount.com",
+  "client_id": "105090263088696022932",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vertex-ai-service%40maya-chatbot-470113.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
+
+
+# Google API Key (Required for Google AI)
+GOOGLE_API_KEY=AIzaSyDYour_Actual_Google_API_Key_Here
+
+# Backup API keys
+GEMINI_API_KEY_1=AIzaSyDYour_Actual_Google_API_Key_Here
+
+# Environment
+NODE_ENV=development
