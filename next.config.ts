@@ -41,13 +41,17 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: [
-        "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev",
-        "f83d00c5-217b-4916-9a73-820e35c29efb-00-3q5sfpmqy6g34.pike.replit.dev:5000",
+        "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev",
+        "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev:5000",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
       bodySizeLimit: '2mb'
-    }
+    },
+    allowedDevOrigins: [
+      "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev",
+      "57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev:5000"
+    ]
   },
   images: {
     remotePatterns: [
@@ -116,7 +120,7 @@ const nextConfig: NextConfig = {
           ...securityHeaders,
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*',
+            value: '57d1212b-7e80-446e-b47c-75ce4ea58447-00-3uuwkmb05wglg.kirk.replit.dev',
           },
           {
             key: 'Access-Control-Allow-Methods',

@@ -1,17 +1,11 @@
 
-import { generate } from '@/ai/genkit';
+import { generateAIResponse } from '@/ai/vertex-ai';
 
 export async function sendMessage(message: string) {
   try {
     console.log('Server Action: Received message:', message);
     
-    const response = await generate({
-      prompt: message,
-      config: {
-        temperature: 0.7,
-        maxOutputTokens: 1000,
-      }
-    });
+    const response = await generateAIResponse(message);
     
     console.log('Server Action: Generated response:', response);
     return { success: true, response };
