@@ -234,7 +234,7 @@ const KruthikaChatPage: NextPage = () => {
               localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
             }
           })
-          .catch(e => console.error('Supabase daily activity logging failed (catch):', e?.message || String(e)));
+          .catch((e: any) => console.error('Supabase daily activity logging failed (catch):', e?.message || String(e)));
       }
     }
   }, []);
