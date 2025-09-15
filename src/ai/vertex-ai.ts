@@ -1,76 +1,113 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { VertexAI } from '@google-cloud/vertexai';
 
 // -----------------------------------------------------------------------------
-// Google AI Direct Implementation (Replaces Problematic Genkit VertexAI)
+// Vertex AI Implementation - Complete Replacement
 // -----------------------------------------------------------------------------
 
-// Initialize Google AI with API key from environment
-const getGoogleAI = (): GoogleGenerativeAI | null => {
-  const apiKey = process.env.GOOGLE_API_KEY;
-  
-  if (!apiKey) {
-    console.error('Google AI: GOOGLE_API_KEY not found in environment variables');
+// Initialize Vertex AI with service account credentials
+const getVertexAI = (): VertexAI | null => {
+  try {
+    const projectId = process.env.VERTEX_AI_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT_ID;
+    const location = process.env.VERTEX_AI_LOCATION || process.env.GCLOUD_LOCATION || 'us-central1';
+    const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
+
+    if (!projectId) {
+      console.error('Vertex AI: PROJECT_ID not found in environment variables');
+      return null;
+    }
+
+    if (!credentialsJson) {
+      console.error('Vertex AI: GOOGLE_CREDENTIALS_JSON not found in environment variables');
+      return null;
+    }
+
+    // Parse the service account credentials
+    let credentials;
+    try {
+      credentials = JSON.parse(credentialsJson);
+    } catch (error) {
+      console.error('Vertex AI: Invalid GOOGLE_CREDENTIALS_JSON format');
+      return null;
+    }
+
+    console.log(`Vertex AI: Initializing with project ${projectId} in location ${location}`);
+    
+    // Initialize Vertex AI with service account credentials
+    const vertexAI = new VertexAI({
+      project: projectId,
+      location: location,
+      googleAuthOptions: {
+        credentials: credentials
+      }
+    });
+
+    console.log('Vertex AI: Successfully initialized with service account credentials');
+    return vertexAI;
+
+  } catch (error) {
+    console.error('Vertex AI: Initialization error:', error);
     return null;
   }
-  
-  if (apiKey.length < 30 || apiKey.includes('your_') || apiKey.includes('<')) {
-    console.error('Google AI: Invalid GOOGLE_API_KEY format');
-    return null;
-  }
-  
-  console.log('Google AI: Successfully initialized with API key');
-  return new GoogleGenerativeAI(apiKey);
 };
 
-// Get the AI instance
-const googleAI = getGoogleAI();
+// Get the Vertex AI instance
+const vertexAI = getVertexAI();
 
-// Available models
-export const MODELS = {
-  GEMINI_FLASH: 'gemini-2.0-flash-exp',
-  GEMINI_PRO: 'gemini-1.5-pro-latest',
-  GEMINI_FLASH_8B: 'gemini-1.5-flash-8b-latest'
+// Available Vertex AI models
+export const VERTEX_MODELS = {
+  GEMINI_PRO: 'gemini-1.5-pro-001',
+  GEMINI_FLASH: 'gemini-1.5-flash-001',
+  GEMINI_2_FLASH: 'gemini-2.0-flash-001'
 };
 
-// Main chat function that replaces Genkit flows
+// Main chat function using Vertex AI
 export async function generateAIResponse(
   userMessage: string,
   systemPrompt?: string,
-  model: string = MODELS.GEMINI_FLASH
+  model: string = VERTEX_MODELS.GEMINI_2_FLASH
 ): Promise<string> {
   
-  if (!googleAI) {
-    throw new Error('Google AI not initialized. Check your GOOGLE_API_KEY environment variable.');
+  if (!vertexAI) {
+    throw new Error('Vertex AI not initialized. Check your environment variables.');
   }
 
   try {
-    console.log(`Google AI: Generating response using model ${model}`);
+    console.log(`Vertex AI: Generating response using model ${model}`);
     
-    const genAI = googleAI.getGenerativeModel({ model });
+    // Get the generative model
+    const generativeModel = vertexAI.getGenerativeModel({
+      model: model,
+      generationConfig: {
+        maxOutputTokens: 2048,
+        temperature: 0.7,
+        topP: 0.9,
+        topK: 40
+      }
+    });
     
     // Combine system prompt with user message if provided
     const prompt = systemPrompt 
       ? `${systemPrompt}\n\nUser: ${userMessage}`
       : userMessage;
     
-    const result = await genAI.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const result = await generativeModel.generateContent(prompt);
+    const response = result.response;
+    const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!text) {
-      throw new Error('Empty response from Google AI');
+      throw new Error('Empty response from Vertex AI');
     }
     
-    console.log('Google AI: Successfully generated response');
+    console.log('Vertex AI: Successfully generated response');
     return text;
     
   } catch (error) {
-    console.error('Google AI: Error generating response:', error);
+    console.error('Vertex AI: Error generating response:', error);
     throw new Error(`Failed to generate AI response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
-// Specific function for emotional state simulation (replaces Genkit flow)
+// Specific function for emotional state simulation using Vertex AI
 export async function generateEmotionalResponse(
   userMessage: string,
   characterName: string = 'Kruthika'
@@ -136,7 +173,7 @@ IMPORTANT: After your response, on separate lines, include these lines exactly i
     };
     
   } catch (error) {
-    console.error('Google AI: Error in emotional response generation:', error);
+    console.error('Vertex AI: Error in emotional response generation:', error);
     throw error;
   }
 }
@@ -189,15 +226,15 @@ export async function generateMultilingualResponse(
   return await generateAIResponse(userMessage, systemPrompt);
 }
 
-// Test function to verify the AI is working
-export async function testGoogleAI(): Promise<boolean> {
+// Test function to verify Vertex AI is working
+export async function testVertexAI(): Promise<boolean> {
   try {
-    const response = await generateAIResponse('Hello, please respond with "AI is working correctly"');
-    return response.toLowerCase().includes('ai is working');
+    const response = await generateAIResponse('Hello, please respond with "Vertex AI is working correctly"');
+    return response.toLowerCase().includes('vertex ai is working');
   } catch (error) {
-    console.error('Google AI: Test failed:', error);
+    console.error('Vertex AI: Test failed:', error);
     return false;
   }
 }
 
-console.log('Google AI: Direct implementation loaded, replacing Genkit VertexAI');
+console.log('Vertex AI: Implementation loaded with service account authentication');

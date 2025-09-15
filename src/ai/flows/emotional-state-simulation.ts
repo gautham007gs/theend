@@ -1,11 +1,11 @@
 'use server';
 
 /**
- * @fileOverview Emotional State Simulation using Direct Google AI Implementation
- * Replaces problematic Genkit VertexAI with working Google AI SDK
+ * @fileOverview Emotional State Simulation using Vertex AI SDK Implementation
+ * Uses Vertex AI with service account authentication for emotional responses
  */
 
-import { generateAIResponse } from '@/ai/google-ai';
+import { generateAIResponse } from '@/ai/vertex-ai';
 
 // Input and output types (keeping the same interface for compatibility)
 export interface EmotionalStateInput {

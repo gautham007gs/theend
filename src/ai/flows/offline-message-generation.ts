@@ -1,11 +1,11 @@
 'use server';
 
 /**
- * @fileOverview Offline Message Generation using Direct Google AI Implementation
+ * @fileOverview Offline Message Generation using Vertex AI SDK Implementation
  * Generates offline messages to encourage users to return to chat with Kruthika.
  */
 
-import { generateAIResponse } from '@/ai/google-ai';
+import { generateAIResponse } from '@/ai/vertex-ai';
 
 // Input and output types (keeping the same interface for compatibility)
 export interface OfflineMessageInput {
