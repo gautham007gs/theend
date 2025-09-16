@@ -37,7 +37,7 @@ const createMockClient = (reason: string): SupabaseClient => {
     }),
     // Add other top-level Supabase client methods if needed by the app, e.g., auth
     auth: {
-        signInWithPassword: async (credentials) => {
+        signInWithPassword: async (credentials: any) => {
             console.warn('Supabase (mock client): Mock signInWithPassword.');
             return { data: null, user: null, session: null, error: { message: `Mock client: ${reason}`, name: 'AuthApiError', status: 400 } as any };
         },

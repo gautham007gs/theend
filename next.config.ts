@@ -41,20 +41,20 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: [
-        "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
-        "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000",
-        "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
-        "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000",
+        "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
+        "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000",
+        "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
+        "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
       bodySizeLimit: '2mb'
     },
     allowedDevOrigins: [
-      "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
-      "9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000",
-      "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev",
-      "https://9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev:5000"
+      "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
+      "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000",
+      "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
+      "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000"
     ]
   },
   images: {
@@ -124,7 +124,7 @@ const nextConfig: NextConfig = {
           ...securityHeaders,
           {
             key: 'Access-Control-Allow-Origin',
-            value: '9e898fe8-9288-40dc-b907-4414250f6b91-00-19srxrdejagbw.spock.replit.dev',
+            value: '9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev',
           },
           {
             key: 'Access-Control-Allow-Methods',
