@@ -30,13 +30,24 @@ export function parseGoogleCredentials(): any | null {
     // Fix escaped quotes
     cleanedCredentials = cleanedCredentials.replace(/\\"/g, '"');
     
-    // Check if the JSON needs formatting (has literal newlines that need escaping)
+    // Try multiple formatting approaches
+    console.log('Credential Utils: Processing credentials JSON...');
+    
+    // First attempt: Check if it needs basic formatting
     if (needsJsonFormatting(cleanedCredentials)) {
       console.log('Credential Utils: Formatting unescaped JSON...');
       cleanedCredentials = formatUnescapedJson(cleanedCredentials);
     } else {
-      // Fix escaped newlines in private key for already formatted JSON
-      cleanedCredentials = cleanedCredentials.replace(/\\n/g, '\n');
+      // Second attempt: Fix escaped newlines in private key
+      cleanedCredentials = cleanedCredentials.replace(/\\\\n/g, '\\n');
+    }
+    
+    // Final safety check: Try to parse and fix common issues
+    try {
+      JSON.parse(cleanedCredentials);
+    } catch (parseError) {
+      console.log('Credential Utils: Standard parsing failed, trying cleanup...');
+      cleanedCredentials = aggressiveJsonCleanup(cleanedCredentials);
     }
     
     // Parse the JSON
@@ -82,12 +93,16 @@ function formatUnescapedJson(jsonString: string): string {
   try {
     // First, try to fix common JSON formatting issues
     let fixed = jsonString
-      // Escape literal newlines
-      .replace(/\n/g, '\\n')
-      // Escape literal carriage returns
-      .replace(/\r/g, '\\r')
-      // Escape literal tabs
-      .replace(/\t/g, '\\t')
+      // Remove any potential BOM or invisible characters at start
+      .replace(/^\uFEFF/, '')
+      // Escape literal newlines (but not already escaped ones)
+      .replace(/(?<!\\)\n/g, '\\n')
+      // Escape literal carriage returns (but not already escaped ones)
+      .replace(/(?<!\\)\r/g, '\\r')
+      // Escape literal tabs (but not already escaped ones)  
+      .replace(/(?<!\\)\t/g, '\\t')
+      // Escape other common control characters
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
       // Fix any double escaping that might occur
       .replace(/\\\\n/g, '\\n')
       .replace(/\\\\r/g, '\\r')
@@ -98,8 +113,34 @@ function formatUnescapedJson(jsonString: string): string {
     return fixed;
   } catch (error) {
     console.error('Credential Utils: Failed to format JSON:', error);
-    throw error;
+    // Try a more aggressive approach
+    return aggressiveJsonCleanup(jsonString);
   }
+}
+
+// More aggressive JSON cleanup for stubborn cases
+function aggressiveJsonCleanup(jsonString: string): string {
+  let cleaned = jsonString;
+  
+  // Remove wrapping quotes if present
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  
+  // Replace all control characters and problematic whitespace
+  cleaned = cleaned
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')  // Remove control chars
+    .replace(/\r?\n/g, '\\n')  // Convert newlines
+    .replace(/\t/g, '\\t')     // Convert tabs
+    .replace(/\r/g, '\\r')     // Convert carriage returns
+    .replace(/\\/g, '\\\\')    // Escape backslashes
+    .replace(/\\\\n/g, '\\n')  // Fix double-escaped newlines
+    .replace(/\\\\r/g, '\\r')  // Fix double-escaped returns
+    .replace(/\\\\t/g, '\\t')  // Fix double-escaped tabs
+    .replace(/\\\\\\/g, '\\\\'); // Fix triple-escaped backslashes
+  
+  return cleaned;
 }
 
 // Alternative parsing method for edge cases
