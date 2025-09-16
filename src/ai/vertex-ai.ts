@@ -1,4 +1,5 @@
 import { VertexAI } from '@google-cloud/vertexai';
+import { parseGoogleCredentials } from './credential-utils';
 
 // -----------------------------------------------------------------------------
 // Vertex AI Implementation - Complete Replacement
@@ -22,19 +23,10 @@ const getVertexAI = (): VertexAI | null => {
       return null;
     }
 
-    if (!credentialsJson) {
-      console.error('Vertex AI: GOOGLE_CREDENTIALS_JSON not found in environment variables');
-      return null;
-    }
-
-    // Parse the service account credentials
-    let credentials;
-    try {
-      credentials = JSON.parse(credentialsJson);
-      console.log('Vertex AI: Credentials parsed successfully');
-      console.log('Service account email:', credentials.client_email);
-    } catch (error) {
-      console.error('Vertex AI: Invalid GOOGLE_CREDENTIALS_JSON format:', error);
+    // Parse the service account credentials using utility
+    const credentials = parseGoogleCredentials();
+    if (!credentials) {
+      console.error('Vertex AI: Failed to parse Google credentials');
       return null;
     }
 

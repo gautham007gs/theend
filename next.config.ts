@@ -42,21 +42,20 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: [
         "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
-        "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000",
         "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
-        "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000",
+        "*.replit.dev",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
       bodySizeLimit: '2mb'
-    },
-    allowedDevOrigins: [
-      "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
-      "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000",
-      "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
-      "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev:5000"
-    ]
+    }
   },
+  // Move allowedDevOrigins to root level
+  allowedDevOrigins: [
+    "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
+    "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
+    "*.replit.dev"
+  ],
   images: {
     remotePatterns: [
       {
