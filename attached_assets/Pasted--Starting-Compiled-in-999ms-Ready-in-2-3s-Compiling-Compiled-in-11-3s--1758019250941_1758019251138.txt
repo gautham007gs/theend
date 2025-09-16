@@ -1,0 +1,52 @@
+ ✓ Starting...
+ ✓ Compiled in 999ms
+ ✓ Ready in 2.3s
+ ○ Compiling / ...
+ ✓ Compiled / in 11.3s
+Supabase Client: Successfully initialized REAL Supabase client.
+ GET / 200 in 11971ms
+ ○ Compiling /maya-chat ...
+ ✓ Compiled /maya-chat in 6.7s
+Credential Utils: Loaded credential formatting utilities
+Vertex AI: Checking environment variables...
+Project ID: Found
+Location: us-central1
+Credentials JSON: Found
+Credential Utils: Error parsing credentials: SyntaxError: Bad control character in string literal in JSON at position 163
+    at JSON.parse (<anonymous>)
+    at parseGoogleCredentials (src/ai/credential-utils.ts:37:29)
+    at getVertexAI (src/ai/vertex-ai.ts:27:45)
+    at [project]/src/ai/vertex-ai.ts [app-rsc] (ecmascript) (src/ai/vertex-ai.ts:55:17)
+    at [project]/src/ai/flows/emotional-state-simulation.ts [app-rsc] (ecmascript) (src/ai/flows/emotional-state-simulation.ts:8:0)
+    at [project]/.next-internal/server/app/maya-chat/page/actions.js { ACTIONS_MODULE0 => "[project]/src/ai/flows/emotional-state-simulation.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/ai/flows/offline-message-generation.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <module evaluation> (.next/server/chunks/ssr/[root of the server]__c741842f._.js:774:180)
+    at [project]/.next-internal/server/app/maya-chat/page/actions.js { ACTIONS_MODULE0 => "[project]/src/ai/flows/emotional-state-simulation.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/ai/flows/offline-message-generation.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) (.next/server/chunks/ssr/[root of the server]__c741842f._.js:804:563)
+    at Object.<anonymous> (.next/server/app/maya-chat/page.js:16:9)
+  35 |     
+  36 |     // Parse the JSON
+> 37 |     const credentials = JSON.parse(cleanedCredentials);
+     |                             ^
+  38 |     
+  39 |     // Validate required fields
+  40 |     const requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
+Credential Utils: All parsing methods failed: SyntaxError: Bad control character in string literal in JSON at position 163
+    at JSON.parse (<anonymous>)
+    at tryAlternativeParsing (src/ai/credential-utils.ts:80:16)
+    at parseGoogleCredentials (src/ai/credential-utils.ts:58:11)
+    at getVertexAI (src/ai/vertex-ai.ts:27:45)
+    at [project]/src/ai/vertex-ai.ts [app-rsc] (ecmascript) (src/ai/vertex-ai.ts:55:17)
+    at [project]/src/ai/flows/emotional-state-simulation.ts [app-rsc] (ecmascript) (src/ai/flows/emotional-state-simulation.ts:8:0)
+    at [project]/.next-internal/server/app/maya-chat/page/actions.js { ACTIONS_MODULE0 => "[project]/src/ai/flows/emotional-state-simulation.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/ai/flows/offline-message-generation.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) <module evaluation> (.next/server/chunks/ssr/[root of the server]__c741842f._.js:774:180)
+    at [project]/.next-internal/server/app/maya-chat/page/actions.js { ACTIONS_MODULE0 => "[project]/src/ai/flows/emotional-state-simulation.ts [app-rsc] (ecmascript)", ACTIONS_MODULE1 => "[project]/src/ai/flows/offline-message-generation.ts [app-rsc] (ecmascript)" } [app-rsc] (server actions loader, ecmascript) (.next/server/chunks/ssr/[root of the server]__c741842f._.js:804:563)
+    at Object.<anonymous> (.next/server/app/maya-chat/page.js:16:9)
+  78 |       .replace(/^["']|["']$/g, ''); // Remove wrapping quotes
+  79 |     
+> 80 |     return JSON.parse(manualFixed);
+     |                ^
+  81 |     
+  82 |   } catch (error) {
+  83 |     console.error('Credential Utils: All parsing methods failed:', error);
+Vertex AI: Failed to parse Google credentials
+Vertex AI: Implementation loaded with service account authentication
+Google AI: Emotional state simulation loaded with direct Google AI implementation
+Google AI: Offline message generation loaded with direct Google AI implementation
+ GET /maya-chat 200 in 7527ms
