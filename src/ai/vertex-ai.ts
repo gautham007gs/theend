@@ -11,8 +11,14 @@ const getVertexAI = (): VertexAI | null => {
     const location = process.env.VERTEX_AI_LOCATION || process.env.GCLOUD_LOCATION || 'us-central1';
     const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
 
+    console.log('Vertex AI: Checking environment variables...');
+    console.log('Project ID:', projectId ? 'Found' : 'Missing');
+    console.log('Location:', location);
+    console.log('Credentials JSON:', credentialsJson ? 'Found' : 'Missing');
+
     if (!projectId) {
       console.error('Vertex AI: PROJECT_ID not found in environment variables');
+      console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('VERTEX') || key.includes('GOOGLE')));
       return null;
     }
 
@@ -25,8 +31,10 @@ const getVertexAI = (): VertexAI | null => {
     let credentials;
     try {
       credentials = JSON.parse(credentialsJson);
+      console.log('Vertex AI: Credentials parsed successfully');
+      console.log('Service account email:', credentials.client_email);
     } catch (error) {
-      console.error('Vertex AI: Invalid GOOGLE_CREDENTIALS_JSON format');
+      console.error('Vertex AI: Invalid GOOGLE_CREDENTIALS_JSON format:', error);
       return null;
     }
 
@@ -37,7 +45,8 @@ const getVertexAI = (): VertexAI | null => {
       project: projectId,
       location: location,
       googleAuthOptions: {
-        credentials: credentials
+        credentials: credentials,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
       }
     });
 
@@ -67,7 +76,17 @@ export async function generateAIResponse(
   model: string = VERTEX_MODELS.GEMINI_2_FLASH
 ): Promise<string> {
   
+  console.log('Vertex AI: Starting generateAIResponse...');
+  console.log('User message length:', userMessage.length);
+  console.log('System prompt provided:', !!systemPrompt);
+  console.log('Model:', model);
+  
   if (!vertexAI) {
+    console.error('Vertex AI: Not initialized - checking environment...');
+    const projectId = process.env.VERTEX_AI_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT_ID;
+    const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
+    console.error('Project ID available:', !!projectId);
+    console.error('Credentials available:', !!credentialsJson);
     throw new Error('Vertex AI not initialized. Check your environment variables.');
   }
 
@@ -90,19 +109,27 @@ export async function generateAIResponse(
       ? `${systemPrompt}\n\nUser: ${userMessage}`
       : userMessage;
     
+    console.log('Vertex AI: Sending request to model...');
     const result = await generativeModel.generateContent(prompt);
+    console.log('Vertex AI: Received response from model');
+    
     const response = result.response;
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text;
     
     if (!text) {
+      console.error('Vertex AI: Empty response - full response object:', JSON.stringify(response, null, 2));
       throw new Error('Empty response from Vertex AI');
     }
     
-    console.log('Vertex AI: Successfully generated response');
+    console.log('Vertex AI: Successfully generated response, length:', text.length);
     return text;
     
   } catch (error) {
-    console.error('Vertex AI: Error generating response:', error);
+    console.error('Vertex AI: Detailed error generating response:', {
+      error: error,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
     throw new Error(`Failed to generate AI response: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
