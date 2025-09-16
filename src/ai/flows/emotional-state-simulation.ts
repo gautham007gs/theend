@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -29,50 +28,50 @@ export interface EmotionalStateOutput {
 // Advanced language detection with Indian language patterns
 function detectLanguage(text: string): string {
   const lower = text.toLowerCase();
-  
+
   // Hindi patterns
-  if (/[\u0900-\u097F]/.test(text) || 
+  if (/[\u0900-\u097F]/.test(text) ||
       /\b(kya|hai|kaise|kahan|kab|kyun|aap|tum|main|hoon|nahin|nahi|achha|theek|bas|arre|yaar)\b/.test(lower)) {
     return 'hindi';
   }
-  
-  // Tamil patterns  
+
+  // Tamil patterns
   if (/[\u0B80-\u0BFF]/.test(text) ||
       /\b(enna|epdi|enga|epo|en|nee|naan|illai|seri|da|di)\b/.test(lower)) {
     return 'tamil';
   }
-  
+
   // Telugu patterns
   if (/[\u0C00-\u0C7F]/.test(text) ||
       /\b(enti|ela|ekkada|eppudu|enduku|nuvvu|nenu|ledu|sare|ra|ri)\b/.test(lower)) {
     return 'telugu';
   }
-  
+
   // Kannada patterns
   if (/[\u0C80-\u0CFF]/.test(text) ||
       /\b(yenu|hege|elli|yaavaga|yaake|neevu|naanu|illa|sari|guru|akka)\b/.test(lower)) {
     return 'kannada';
   }
-  
+
   // Marathi patterns
   if (/[\u0900-\u097F]/.test(text) ||
       /\b(kay|kase|kuthe|kevha|ka|tu|mi|nahi|thik|arre|bhau|tai)\b/.test(lower)) {
     return 'marathi';
   }
-  
+
   // Bengali patterns
   if (/[\u0980-\u09FF]/.test(text) ||
       /\b(ki|kemon|kothay|kokhon|keno|tumi|ami|na|thik|dada|didi)\b/.test(lower)) {
     return 'bengali';
   }
-  
+
   return 'english';
 }
 
 // Get contextual mood based on time and situation
 function getContextualMood(timeOfDay: string, recentInteractions: string[]): string {
   const recentText = recentInteractions.join(' ').toLowerCase();
-  
+
   // Detect emotional context
   if (recentText.includes('sad') || recentText.includes('problem') || recentText.includes('upset')) {
     return 'supportive';
@@ -83,7 +82,7 @@ function getContextualMood(timeOfDay: string, recentInteractions: string[]): str
   if (recentText.includes('love') || recentText.includes('boyfriend') || recentText.includes('crush')) {
     return 'shy_flirty';
   }
-  
+
   // Time-based moods
   switch (timeOfDay) {
     case 'morning': return Math.random() > 0.5 ? 'sleepy_cute' : 'fresh_energetic';
@@ -94,20 +93,68 @@ function getContextualMood(timeOfDay: string, recentInteractions: string[]): str
   }
 }
 
+// Determine user relationship status
+function determineUserType(recentInteractions: string[], userMessage: string): string {
+  if (recentInteractions.length === 0 && userMessage.length < 10) {
+    return 'new_user';
+  }
+  if (recentInteractions.length < 3) {
+    return 'returning_user';
+  }
+  return 'old_user';
+}
+
+// Provide instructions based on user type
+function getUserTypeInstructions(userType: string): string {
+  switch (userType) {
+    case 'new_user':
+      return `Be welcoming and friendly. Ask their name or what they're up to. Start building rapport.`;
+    case 'returning_user':
+      return `Acknowledge them warmly. Maybe ask how they've been.`;
+    case 'old_user':
+      return `Be casual and familiar. Refer to past conversations if possible (though not explicitly implemented here).`;
+    default:
+      return '';
+  }
+}
+
+// Generate user-specific prompts for the system
+function getUserSpecificPrompts(userType: string, mood: string): string {
+  switch (userType) {
+    case 'new_user':
+      if (mood === 'studious') return `For new users who are studious, be encouraging and ask about their studies briefly.`;
+      if (mood === 'shy_flirty') return `For new users who seem shy/flirty, be a bit playful but not aggressive.`;
+      return `For new users, be extra friendly and ask "Who dis?" or "What's up?".`;
+    case 'returning_user':
+      return `For returning users, say "Hey again!" or "Nice to see ya!".`;
+    case 'old_user':
+      if (mood === 'relaxed_chatty') return `For old users who are chatty, keep the conversation light and engaging, but still short.`;
+      return `For old users, just keep it super casual.`;
+    default:
+      return '';
+  }
+}
+
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
     console.log('Kruthika AI: Generating authentic response');
-    
+
     const detectedLang = detectLanguage(input.userMessage);
     const contextualMood = getContextualMood(input.timeOfDay, input.recentInteractions);
-    
-    // Ultra-realistic system prompt for authentic Indian girl personality
+
+    // Determine user relationship status
+    const userType = determineUserType(input.recentInteractions, input.userMessage);
+
+    // Ultra-realistic system prompt with user differentiation
     const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. Reply EXACTLY like a real Indian girl would - natural, short, authentic.
+
+USER TYPE: ${userType}
+${getUserTypeInstructions(userType)}
 
 LANGUAGE: Detected user language is ${detectedLang}. Reply in same language mix:
 - English: Use natural Hinglish with "yaar", "na", "hai na", "arre"
 - Hindi: Mix with English words naturally, use "क्या", "हां", "नहीं", "यार"
-- Tamil: Mix with English, use "என்ன", "சரி", "இல्है"
+- Tamil: Mix with English, use "என்ன", "சரி", "இலืhै"
 - Other Indian languages: Natural code-switching with English
 
 PERSONALITY CORE:
@@ -117,8 +164,8 @@ PERSONALITY CORE:
 - Uses phone a lot - types fast, makes typos, uses shortcuts
 
 RESPONSE STYLE (CRITICAL):
-- MAX 1-2 sentences per response
-- Use real girl texting patterns: "lol", "omg", "wtf", "ikr"  
+- MAX 5-8 words per response (ULTRA SHORT)
+- Use real girl texting patterns: "lol", "omg", "wtf", "ikr"
 - Make spelling mistakes sometimes: "ur" instead of "your", "n" instead of "and"
 - Use emojis naturally but not excessively
 - Sometimes ignore questions if uninterested
@@ -130,56 +177,61 @@ Mood: ${contextualMood}
 Recent: ${input.recentInteractions.slice(-1).join('')}
 
 RESPONSE PATTERNS:
-Short: "haa", "nah", "lol", "omg", "seriously?", "wtf"
-Medium: "arre yaar kya bol raha hai tu" / "lol that's so random"
+Ultra-Short: "haa", "nah", "lol", "omg", "who dis?", "wtf"
+Short: "arre yaar kya hai" / "lol that's random"
 Never: Long explanations, formal language, robotic responses
 
-SITUATIONAL RESPONSES:
-- Flirting: Be shy but interested - "😅", "stop na", "you're sweet"
-- Problems: Show empathy but keep it real - "that sucks yaar", "been there"
-- Questions: Sometimes dodge, sometimes answer briefly
-- Compliments: React naturally - shy, happy, or brush off
+USER-SPECIFIC RESPONSES:
+${getUserSpecificPrompts(userType, contextualMood)}
 
 Be HUMAN. Be REAL. Be a 23-year-old Mumbai girl.
 
 User: ${input.userMessage}`;
 
     const response = await generateAIResponse(input.userMessage, systemPrompt);
-    
+
     // Process response to ensure it's ultra-short and natural
     let processedResponse = response.trim()
       .replace(/^["']|["']$/g, '') // Remove quotes
       .replace(/\n+/g, ' ') // Single line
-      .substring(0, 150); // Hard limit
-    
-    // If response is still too long, break into parts
+      .substring(0, 80); // Hard limit for ultra-short
+
+    // If response is still too long, break into parts (though aim is ultra-short now)
     let finalResponse: string | string[];
-    
-    if (processedResponse.length > 80) {
+
+    if (processedResponse.length > 50) { // Adjust threshold for ultra-short
       const parts = processedResponse.split(/[.!?]+/).filter(p => p.trim());
-      finalResponse = parts.slice(0, 2).map(p => p.trim() + (p.includes('?') ? '' : ''));
+      finalResponse = parts.slice(0, 1).map(p => p.trim() + (p.includes('?') ? '' : '')); // Take only the first part
+      if (finalResponse.length === 0 || finalResponse[0].length > 20) { // Ensure it's really short
+          finalResponse = [processedResponse.split(' ').slice(0, 4).join(' ')]; // Take first 4 words
+      }
     } else {
       finalResponse = processedResponse;
     }
-    
-    // Sometimes be unpredictable - very short responses
-    const shortChance = Math.random();
-    if (shortChance < 0.3) { // 30% chance for ultra-short
-      const ultraShort = [
-        "lol", "haan", "nah", "omg", "seriously?", "😂", "wtf", "ikr", 
-        "arre yaar", "kya", "haa na", "nahi re", "😅", "ok", "hmm"
-      ];
-      finalResponse = ultraShort[Math.floor(Math.random() * ultraShort.length)];
+
+    // Ensure the response is ultra-short as per instructions
+    if (Array.isArray(finalResponse)) {
+        finalResponse = finalResponse.map(part => part.split(' ').slice(0, 5).join(' ')); // Max 5 words per part
+    } else {
+        finalResponse = finalResponse.split(' ').slice(0, 5).join(' '); // Max 5 words
     }
     
-    // Dynamic mood assignment
+    // Handle specific greetings for new users if response is still too generic
+    if (userType === 'new_user' && (finalResponse === 'hello' || finalResponse === 'hi')) {
+      finalResponse = "who dis?";
+    } else if (userType === 'new_user' && !finalResponse.includes('?')) {
+      finalResponse = `${finalResponse}??`;
+    }
+
+
+    // Dynamic mood assignment (simplified for ultra-short responses)
     let newMood = contextualMood;
     if (response.includes('😂') || response.includes('lol')) newMood = 'happy_laughing';
     else if (response.includes('😅') || response.includes('shy')) newMood = 'shy_cute';
-    else if (response.includes('wtf') || response.includes('seriously')) newMood = 'confused_annoyed';
-    
+    else if (response.includes('wtf') || response.includes('seriously') || response.includes('??')) newMood = 'confused_annoyed';
+
     console.log('Kruthika AI: Generated authentic response');
-    
+
     return {
       response: finalResponse,
       newMood: newMood
@@ -187,15 +239,15 @@ User: ${input.userMessage}`;
 
   } catch (error) {
     console.error('Kruthika AI: Error generating response:', error);
-    
+
     // Authentic error responses
     const errorResponses = [
       "ugh my brain's not working rn 😅",
-      "sorry yaar, connection issues",  
+      "sorry yaar, connection issues",
       "wtf is happening with my phone",
       "give me a sec, something's wrong"
     ];
-    
+
     return {
       response: errorResponses[Math.floor(Math.random() * errorResponses.length)],
       newMood: 'frustrated'
