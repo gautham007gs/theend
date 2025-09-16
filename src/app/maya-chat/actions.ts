@@ -1,4 +1,6 @@
 
+'use server'
+
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 
 export async function sendMessage(message: string, currentMood?: string, chatHistory?: string[]) {

@@ -450,8 +450,33 @@ const KruthikaChatPage: NextPage = () => {
         ));
     }, 300 + Math.random() * 200);
 
-    const typingAppearDelay = 700 + Math.random() * 800;
-    setTimeout(() => setIsAiTyping(true), typingAppearDelay);
+    // Enhanced multi-cycle typing animation to simulate real person behavior
+    const simulateRealisticTyping = async () => {
+      const cycles = Math.floor(Math.random() * 3) + 2; // 2-4 typing cycles
+      
+      for (let cycle = 0; cycle < cycles; cycle++) {
+        // Initial delay before typing starts
+        const startDelay = cycle === 0 ? (700 + Math.random() * 800) : (200 + Math.random() * 400);
+        await new Promise(resolve => setTimeout(resolve, startDelay));
+        
+        // Show typing
+        setIsAiTyping(true);
+        
+        // Typing duration for this cycle
+        const typingDuration = 800 + Math.random() * 1200; // 0.8-2s of typing
+        await new Promise(resolve => setTimeout(resolve, typingDuration));
+        
+        // Hide typing if not the last cycle (simulate thinking/pausing)
+        if (cycle < cycles - 1) {
+          setIsAiTyping(false);
+          const pauseDuration = 300 + Math.random() * 700; // 0.3-1s pause
+          await new Promise(resolve => setTimeout(resolve, pauseDuration));
+        }
+      }
+      // Keep typing indicator on for the final response
+    };
+    
+    simulateRealisticTyping();
 
     try {
       const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
