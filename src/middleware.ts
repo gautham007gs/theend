@@ -25,10 +25,15 @@ export function middleware(request: NextRequest) {
     if (forwardedHost && forwardedHost.includes('replit.dev')) {
       // For Server Actions, ensure consistent host/origin headers
       if (request.method === 'POST' && pathname.startsWith('/maya-chat')) {
-        // Normalize the headers to match - remove port from origin if present
-        const normalizedOrigin = origin?.replace(':5000', '') || forwardedHost;
-        response.headers.set('x-forwarded-host', normalizedOrigin);
-        response.headers.set('host', normalizedOrigin);
+        // Extract hostname without protocol from forwardedHost
+        const hostWithoutProtocol = forwardedHost.replace(/^https?:\/\//, '');
+        
+        // Set consistent headers - remove port from both if present
+        response.headers.set('x-forwarded-host', hostWithoutProtocol);
+        response.headers.set('host', hostWithoutProtocol);
+        
+        // Also set origin to match
+        response.headers.set('origin', `https://${hostWithoutProtocol}`);
       }
       
       response.headers.set('Access-Control-Allow-Origin', `https://${forwardedHost}`);

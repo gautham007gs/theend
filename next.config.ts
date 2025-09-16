@@ -42,7 +42,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: [
         "*.replit.dev",
-        "*.replit.app",
+        "*.replit.app", 
+        "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
@@ -122,7 +123,7 @@ const nextConfig: NextConfig = {
           ...securityHeaders,
           {
             key: 'Access-Control-Allow-Origin',
-            value: '9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev',
+            value: 'https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev',
           },
           {
             key: 'Access-Control-Allow-Methods',
