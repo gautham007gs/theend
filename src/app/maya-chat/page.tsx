@@ -450,12 +450,19 @@ const KruthikaChatPage: NextPage = () => {
         ));
     }, 300 + Math.random() * 200);
 
-    // Realistic typing delay based on message length
+    // Realistic typing delay for short, natural responses
     const calculateTypingDelay = (text: string): number => {
       const words = text.trim().split(' ').length;
-      const baseDelay = 300; // Start typing after 300ms
-      const typingSpeed = 40; // ms per character (realistic human speed)
-      const thinkingTime = words > 5 ? 500 : 200; // Extra thinking for longer messages
+      const baseDelay = 200; // Quick response like real texting
+      
+      // Much faster for short responses (like real girls text)
+      if (text.length <= 10) return baseDelay + 300; // Very short: "lol", "ok", "nah"
+      if (text.length <= 30) return baseDelay + 600; // Short phrases
+      if (text.length <= 60) return baseDelay + 1200; // Medium responses
+      
+      // Longer responses get normal delay
+      const typingSpeed = 35; // Slightly faster typing
+      const thinkingTime = words > 8 ? 400 : 100; // Less thinking for short msgs
       
       return baseDelay + (text.length * typingSpeed) + thinkingTime;
     };

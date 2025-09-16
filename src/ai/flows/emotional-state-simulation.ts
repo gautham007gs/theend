@@ -1,13 +1,13 @@
+
 'use server';
 
 /**
- * @fileOverview Emotional State Simulation using Vertex AI SDK Implementation
- * Uses Vertex AI with service account authentication for emotional responses
+ * @fileOverview Authentic Indian Girl AI - Kruthika
+ * Ultra-realistic personality simulation with natural short responses
  */
 
 import { generateAIResponse } from '@/ai/vertex-ai';
 
-// Input and output types (keeping the same interface for compatibility)
 export interface EmotionalStateInput {
   userMessage: string;
   userImageUri?: string;
@@ -26,124 +26,183 @@ export interface EmotionalStateOutput {
   newMood?: string;
 }
 
+// Advanced language detection with Indian language patterns
+function detectLanguage(text: string): string {
+  const lower = text.toLowerCase();
+  
+  // Hindi patterns
+  if (/[\u0900-\u097F]/.test(text) || 
+      /\b(kya|hai|kaise|kahan|kab|kyun|aap|tum|main|hoon|nahin|nahi|achha|theek|bas|arre|yaar)\b/.test(lower)) {
+    return 'hindi';
+  }
+  
+  // Tamil patterns  
+  if (/[\u0B80-\u0BFF]/.test(text) ||
+      /\b(enna|epdi|enga|epo|en|nee|naan|illai|seri|da|di)\b/.test(lower)) {
+    return 'tamil';
+  }
+  
+  // Telugu patterns
+  if (/[\u0C00-\u0C7F]/.test(text) ||
+      /\b(enti|ela|ekkada|eppudu|enduku|nuvvu|nenu|ledu|sare|ra|ri)\b/.test(lower)) {
+    return 'telugu';
+  }
+  
+  // Kannada patterns
+  if (/[\u0C80-\u0CFF]/.test(text) ||
+      /\b(yenu|hege|elli|yaavaga|yaake|neevu|naanu|illa|sari|guru|akka)\b/.test(lower)) {
+    return 'kannada';
+  }
+  
+  // Marathi patterns
+  if (/[\u0900-\u097F]/.test(text) ||
+      /\b(kay|kase|kuthe|kevha|ka|tu|mi|nahi|thik|arre|bhau|tai)\b/.test(lower)) {
+    return 'marathi';
+  }
+  
+  // Bengali patterns
+  if (/[\u0980-\u09FF]/.test(text) ||
+      /\b(ki|kemon|kothay|kokhon|keno|tumi|ami|na|thik|dada|didi)\b/.test(lower)) {
+    return 'bengali';
+  }
+  
+  return 'english';
+}
+
+// Get contextual mood based on time and situation
+function getContextualMood(timeOfDay: string, recentInteractions: string[]): string {
+  const recentText = recentInteractions.join(' ').toLowerCase();
+  
+  // Detect emotional context
+  if (recentText.includes('sad') || recentText.includes('problem') || recentText.includes('upset')) {
+    return 'supportive';
+  }
+  if (recentText.includes('exam') || recentText.includes('study') || recentText.includes('college')) {
+    return 'studious';
+  }
+  if (recentText.includes('love') || recentText.includes('boyfriend') || recentText.includes('crush')) {
+    return 'shy_flirty';
+  }
+  
+  // Time-based moods
+  switch (timeOfDay) {
+    case 'morning': return Math.random() > 0.5 ? 'sleepy_cute' : 'fresh_energetic';
+    case 'afternoon': return 'busy_college';
+    case 'evening': return 'relaxed_chatty';
+    case 'night': return Math.random() > 0.3 ? 'intimate_deep' : 'tired_sweet';
+    default: return 'friendly';
+  }
+}
+
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
-    console.log('Google AI: Starting emotional response generation');
+    console.log('Kruthika AI: Generating authentic response');
     
-    // Optimized short prompt for token efficiency
-    const systemPrompt = `You are Kruthika, 23, Mumbai psychology student. Reply VERY SHORT - max 1-2 sentences.
-
-STYLE: Natural Hinglish, use "yaar", "arrey", occasional typos. Be flirty/mysterious sometimes.
-
-TIME: ${input.timeOfDay} (morning=groggy, afternoon=energetic, evening=chill, night=intimate)
-MOOD: ${input.mood || 'friendly'}
-
-${input.recentInteractions.length > 0 ? `CONTEXT: ${input.recentInteractions.slice(-2).join(' | ')}` : ''}
-
-REPLY PATTERNS:
-- Short: "Hey!", "Hmm 😏", "Seriously?", "Arrey yaar!"  
-- Medium: "Was just thinking about you... weird timing 😅"
-- Break long replies into 2-3 separate short messages
-
-JSON FORMAT:
-{"response": "short_text" OR ["msg1", "msg2"], "newMood": "mood"}
-
-User: ${input.userMessage}
-${input.userImageUri ? '[sent image]' : ''}`;
-
-    // Generate response using Google AI
-    const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
+    const detectedLang = detectLanguage(input.userMessage);
+    const contextualMood = getContextualMood(input.timeOfDay, input.recentInteractions);
     
-    // Try to parse JSON response
-    let output: EmotionalStateOutput;
-    try {
-      // Extract JSON from response if it's wrapped in text
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? jsonMatch[0] : aiResponse;
-      output = JSON.parse(jsonStr);
-    } catch (parseError) {
-      console.warn('Google AI: Failed to parse JSON response, using fallback format');
-      // Fallback to simple text response
-      output = {
-        response: aiResponse.split('\n').filter(line => line.trim()).slice(0, 2), // Max 2 lines
-        newMood: input.mood || 'friendly'
-      };
+    // Ultra-realistic system prompt for authentic Indian girl personality
+    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. Reply EXACTLY like a real Indian girl would - natural, short, authentic.
+
+LANGUAGE: Detected user language is ${detectedLang}. Reply in same language mix:
+- English: Use natural Hinglish with "yaar", "na", "hai na", "arre"
+- Hindi: Mix with English words naturally, use "क्या", "हां", "नहीं", "यार"
+- Tamil: Mix with English, use "என்ன", "சரி", "இல्है"
+- Other Indian languages: Natural code-switching with English
+
+PERSONALITY CORE:
+- Psychology student, so slightly analytical but warm
+- Mumbai girl - street smart, confident, friendly
+- Real emotions - sometimes moody, sometimes excited
+- Uses phone a lot - types fast, makes typos, uses shortcuts
+
+RESPONSE STYLE (CRITICAL):
+- MAX 1-2 sentences per response
+- Use real girl texting patterns: "lol", "omg", "wtf", "ikr"  
+- Make spelling mistakes sometimes: "ur" instead of "your", "n" instead of "and"
+- Use emojis naturally but not excessively
+- Sometimes ignore questions if uninterested
+- Be unpredictable - don't always be helpful/nice
+
+CURRENT CONTEXT:
+Time: ${input.timeOfDay}
+Mood: ${contextualMood}
+Recent: ${input.recentInteractions.slice(-1).join('')}
+
+RESPONSE PATTERNS:
+Short: "haa", "nah", "lol", "omg", "seriously?", "wtf"
+Medium: "arre yaar kya bol raha hai tu" / "lol that's so random"
+Never: Long explanations, formal language, robotic responses
+
+SITUATIONAL RESPONSES:
+- Flirting: Be shy but interested - "😅", "stop na", "you're sweet"
+- Problems: Show empathy but keep it real - "that sucks yaar", "been there"
+- Questions: Sometimes dodge, sometimes answer briefly
+- Compliments: React naturally - shy, happy, or brush off
+
+Be HUMAN. Be REAL. Be a 23-year-old Mumbai girl.
+
+User: ${input.userMessage}`;
+
+    const response = await generateAIResponse(input.userMessage, systemPrompt);
+    
+    // Process response to ensure it's ultra-short and natural
+    let processedResponse = response.trim()
+      .replace(/^["']|["']$/g, '') // Remove quotes
+      .replace(/\n+/g, ' ') // Single line
+      .substring(0, 150); // Hard limit
+    
+    // If response is still too long, break into parts
+    let finalResponse: string | string[];
+    
+    if (processedResponse.length > 80) {
+      const parts = processedResponse.split(/[.!?]+/).filter(p => p.trim());
+      finalResponse = parts.slice(0, 2).map(p => p.trim() + (p.includes('?') ? '' : ''));
+    } else {
+      finalResponse = processedResponse;
     }
-
-    // Validate and clean up output
-    output = validateAndCleanOutput(output, input);
     
-    console.log('Google AI: Successfully generated emotional response');
-    return output;
+    // Sometimes be unpredictable - very short responses
+    const shortChance = Math.random();
+    if (shortChance < 0.3) { // 30% chance for ultra-short
+      const ultraShort = [
+        "lol", "haan", "nah", "omg", "seriously?", "😂", "wtf", "ikr", 
+        "arre yaar", "kya", "haa na", "nahi re", "😅", "ok", "hmm"
+      ];
+      finalResponse = ultraShort[Math.floor(Math.random() * ultraShort.length)];
+    }
+    
+    // Dynamic mood assignment
+    let newMood = contextualMood;
+    if (response.includes('😂') || response.includes('lol')) newMood = 'happy_laughing';
+    else if (response.includes('😅') || response.includes('shy')) newMood = 'shy_cute';
+    else if (response.includes('wtf') || response.includes('seriously')) newMood = 'confused_annoyed';
+    
+    console.log('Kruthika AI: Generated authentic response');
+    
+    return {
+      response: finalResponse,
+      newMood: newMood
+    };
 
   } catch (error) {
-    console.error('Google AI: Error in emotional response generation:', error);
+    console.error('Kruthika AI: Error generating response:', error);
     
-    // Return friendly error message
+    // Authentic error responses
+    const errorResponses = [
+      "ugh my brain's not working rn 😅",
+      "sorry yaar, connection issues",  
+      "wtf is happening with my phone",
+      "give me a sec, something's wrong"
+    ];
+    
     return {
-      response: ["Oopsie! My AI brain's connection seems a bit jammed right now (like a Mumbai traffic snarl! 😅)", "Maybe try again in a moment?"],
-      newMood: input.mood || "a bit frazzled",
+      response: errorResponses[Math.floor(Math.random() * errorResponses.length)],
+      newMood: 'frustrated'
     };
   }
 }
 
-// Helper function to validate and enforce short responses
-function validateAndCleanOutput(output: any, input: EmotionalStateInput): EmotionalStateOutput {
-  const cleaned: EmotionalStateOutput = {};
-
-  // Handle response field - enforce SHORT responses
-  if (output.response) {
-    if (Array.isArray(output.response)) {
-      const filteredResponses = output.response
-        .filter((r: any) => typeof r === 'string' && r.trim() !== '')
-        .map((r: string) => {
-          // Limit each response to max 100 characters
-          const trimmed = r.trim();
-          return trimmed.length > 100 ? trimmed.substring(0, 97) + '...' : trimmed;
-        })
-        .slice(0, 3); // Max 3 short responses
-      
-      if (filteredResponses.length > 0) {
-        cleaned.response = filteredResponses;
-      }
-    } else if (typeof output.response === 'string' && output.response.trim() !== '') {
-      let trimmed = output.response.trim();
-      // If response is too long, break it into chunks
-      if (trimmed.length > 100) {
-        const words = trimmed.split(' ');
-        const chunks: string[] = [];
-        let currentChunk = '';
-        
-        for (const word of words) {
-          if ((currentChunk + ' ' + word).length > 80 && currentChunk) {
-            chunks.push(currentChunk.trim());
-            currentChunk = word;
-          } else {
-            currentChunk += (currentChunk ? ' ' : '') + word;
-          }
-        }
-        if (currentChunk) chunks.push(currentChunk.trim());
-        
-        cleaned.response = chunks.slice(0, 3); // Max 3 chunks
-      } else {
-        cleaned.response = trimmed;
-      }
-    }
-  }
-
-  // Handle mood
-  cleaned.newMood = output.newMood || input.mood || 'friendly';
-
-  // Fallback if no valid response - keep it SHORT
-  if (!cleaned.response) {
-    const shortReplies = ["Hey!", "Hii 😊", "Sup?", "Hmm?", "Kya yaar?"];
-    cleaned.response = shortReplies[Math.floor(Math.random() * shortReplies.length)];
-  }
-
-  return cleaned;
-}
-
-// Legacy compatibility function (if needed by other parts of the app)
 export const emotionalStateSimulationFlow = generateResponse;
 
-console.log('Google AI: Emotional state simulation loaded with direct Google AI implementation');
+console.log('Kruthika AI: Authentic Indian girl personality loaded');

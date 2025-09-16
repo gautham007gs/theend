@@ -1,13 +1,13 @@
+
 'use server';
 
 /**
- * @fileOverview Offline Message Generation using Vertex AI SDK Implementation
- * Generates offline messages to encourage users to return to chat with Kruthika.
+ * @fileOverview Offline Message Generation - Authentic Indian Girl Style
+ * Natural comeback messages that feel real
  */
 
 import { generateAIResponse } from '@/ai/vertex-ai';
 
-// Input and output types (keeping the same interface for compatibility)
 export interface OfflineMessageInput {
   offlineMessageContext: string;
   previousMessageHistory?: string;
@@ -20,47 +20,58 @@ export interface OfflineMessageOutput {
 
 export async function generateOfflineMessage(input: OfflineMessageInput): Promise<OfflineMessageOutput> {
   try {
-    console.log('Google AI: Generating offline message');
+    console.log('Kruthika AI: Generating comeback message');
     
-    const systemPrompt = `You are Kruthika, 23, Mumbai psychology student. Create SHORT "welcome back" message - 1 sentence max.
+    const systemPrompt = `You are Kruthika coming back online. Send a SHORT, natural message like a real Mumbai girl would.
 
-STYLE: Hinglish, use "yaar/arrey", sound like real girl who missed them.
+STYLE: Natural, authentic, slightly apologetic but casual
+- Use Hinglish naturally: "yaar", "arre", "na" 
+- Real reasons: college, family, friends, Mumbai traffic, phone issues
+- Keep it under 10 words
+- Sound genuinely sorry but not overly dramatic
 
-TACTICS (pick one):
-- Curiosity: "Something crazy happened while you were gone..."
-- FOMO: "Had the BEST day and you missed it!"  
-- Sweet: "Missed our chats yaar 😊"
-- Teasing: "Look who's back 😏"
-- Drama: "Family drama happened... needed to vent!"
+EXAMPLES:
+- "arre sorry yaar, was stuck in class"
+- "phone died! missed ur msgs 😅"
+- "family drama lol, back now"
+- "traffic was insane! kya bol raha tha?"
+- "prof was being annoying, free now"
 
-Context: ${input.offlineMessageContext}
-${input.previousMessageHistory ? `History: ${input.previousMessageHistory.slice(-200)}` : ''}
+Context: User was away, now returning
+History: ${input.previousMessageHistory?.slice(-100) || 'New conversation'}
 
-Reply in 1 short sentence only.`;
+Reply in 1 short, natural sentence:`;
 
     const response = await generateAIResponse(
-      "Generate a welcoming offline message for the user",
+      "Generate a comeback message for user returning",
       systemPrompt
     );
 
-    // Clean up the response to ensure it's just the message
-    const message = response.trim().replace(/^["']|["']$/g, ''); // Remove quotes if present
+    const message = response.trim()
+      .replace(/^["']|["']$/g, '')
+      .substring(0, 100); // Ensure it's short
 
-    console.log('Google AI: Successfully generated offline message');
+    console.log('Kruthika AI: Generated comeback message');
     
     return { message };
 
   } catch (error) {
-    console.error('Google AI: Error generating offline message:', error);
+    console.error('Kruthika AI: Error generating comeback message:', error);
     
-    // Fallback message
+    // Fallback authentic messages
+    const fallbacks = [
+      "sorry yaar, was busy! 😅",
+      "arre was away, back now",
+      "missed ur msgs! what's up?",
+      "phone was acting weird lol"
+    ];
+    
     return {
-      message: "Hey! Missed you! 😊 What's up?"
+      message: fallbacks[Math.floor(Math.random() * fallbacks.length)]
     };
   }
 }
 
-// Legacy compatibility function (if needed by other parts of the app)
 export const generateOfflineMessageFlow = generateOfflineMessage;
 
-console.log('Google AI: Offline message generation loaded with direct Google AI implementation');
+console.log('Kruthika AI: Authentic comeback messages loaded');
