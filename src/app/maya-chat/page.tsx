@@ -450,34 +450,16 @@ const KruthikaChatPage: NextPage = () => {
         ));
     }, 300 + Math.random() * 200);
 
-    // Enhanced multi-cycle typing animation to simulate real person behavior
-    const simulateRealisticTyping = async () => {
-      const cycles = Math.floor(Math.random() * 3) + 2; // 2-4 typing cycles
+    // Realistic typing delay based on message length
+    const calculateTypingDelay = (text: string): number => {
+      const words = text.trim().split(' ').length;
+      const baseDelay = 300; // Start typing after 300ms
+      const typingSpeed = 40; // ms per character (realistic human speed)
+      const thinkingTime = words > 5 ? 500 : 200; // Extra thinking for longer messages
       
-      for (let cycle = 0; cycle < cycles; cycle++) {
-        // Initial delay before typing starts
-        const startDelay = cycle === 0 ? (700 + Math.random() * 800) : (200 + Math.random() * 400);
-        await new Promise(resolve => setTimeout(resolve, startDelay));
-        
-        // Show typing
-        setIsAiTyping(true);
-        
-        // Typing duration for this cycle
-        const typingDuration = 800 + Math.random() * 1200; // 0.8-2s of typing
-        await new Promise(resolve => setTimeout(resolve, typingDuration));
-        
-        // Hide typing if not the last cycle (simulate thinking/pausing)
-        if (cycle < cycles - 1) {
-          setIsAiTyping(false);
-          const pauseDuration = 300 + Math.random() * 700; // 0.3-1s pause
-          await new Promise(resolve => setTimeout(resolve, pauseDuration));
-        }
-      }
-      // Keep typing indicator on for the final response
+      return baseDelay + (text.length * typingSpeed) + thinkingTime;
     };
     
-    simulateRealisticTyping();
-
     try {
       const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
       const availableImages = currentMediaConfig.assets.filter(a => a.type === 'image').map(a => a.url);
@@ -520,9 +502,16 @@ const KruthikaChatPage: NextPage = () => {
       };
 
       const processAiTextMessage = async (responseText: string, messageIdSuffix: string = '') => {
-        const typingDuration = Math.min(Math.max(responseText.length * 60, 800), 3000);
+        // Start typing animation
+        setIsAiTyping(true);
+        
+        // Calculate realistic typing delay
+        const typingDuration = calculateTypingDelay(responseText);
         await new Promise(resolve => setTimeout(resolve, typingDuration));
 
+        // Stop typing and send message
+        setIsAiTyping(false);
+        
         const newAiMessageId = (Date.now() + Math.random()).toString() + messageIdSuffix;
         const newAiMessage: Message = {
           id: newAiMessageId,
@@ -543,8 +532,14 @@ const KruthikaChatPage: NextPage = () => {
       };
 
       const processAiMediaMessage = async (mediaType: 'image' | 'audio', url: string, caption?: string) => {
-        const typingDuration = Math.min(Math.max((caption || "").length * 60, 800), 2000); 
+        // Start typing animation
+        setIsAiTyping(true);
+        
+        const typingDuration = calculateTypingDelay(caption || "Sending...");
         await new Promise(resolve => setTimeout(resolve, typingDuration));
+        
+        // Stop typing and send media
+        setIsAiTyping(false);
         
         const newAiMediaMessageId = (Date.now() + Math.random()).toString() + `_${mediaType}`;
         const newAiMediaMessage: Message = {
@@ -562,8 +557,6 @@ const KruthikaChatPage: NextPage = () => {
         await logAiMessageToSupabase(caption || `[Sent ${mediaType}]`, newAiMediaMessageId, mediaType === 'image', mediaType === 'audio');
       };
       
-      setIsAiTyping(true); 
-
       if (aiResult.proactiveImageUrl && aiResult.mediaCaption) {
         await processAiMediaMessage('image', aiResult.proactiveImageUrl, aiResult.mediaCaption);
       } else if (aiResult.proactiveAudioUrl && aiResult.mediaCaption) {
@@ -573,11 +566,10 @@ const KruthikaChatPage: NextPage = () => {
           for (let i = 0; i < aiResult.response.length; i++) {
             const part = aiResult.response[i];
             if (part.trim() === '') continue;
-            if (i > 0) setIsAiTyping(true); 
             await processAiTextMessage(part, `_part${i}`);
-            setIsAiTyping(false); 
             if (i < aiResult.response.length - 1) {
-              const interMessageDelay = 500 + Math.random() * 500;
+              // Brief pause between messages like a real person
+              const interMessageDelay = 800 + Math.random() * 700;
               await new Promise(resolve => setTimeout(resolve, interMessageDelay));
             }
           }
@@ -586,6 +578,7 @@ const KruthikaChatPage: NextPage = () => {
         }
       }
       
+      // Ensure typing is always stopped
       setIsAiTyping(false); 
       if (aiResult.newMood) setAiMood(aiResult.newMood);
 

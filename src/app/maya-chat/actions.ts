@@ -63,13 +63,13 @@ export async function sendMessage(message: string, currentMood?: string, chatHis
       }
     }
 
-    // Build enhanced input for emotional AI system with memory
+    // Build optimized input for AI system - reduced context for token efficiency
     const input: EmotionalStateInput = {
-      userMessage: message,
+      userMessage: message.length > 200 ? message.substring(0, 200) + '...' : message, // Limit input length
       timeOfDay,
       mood: dynamicMood,
-      recentInteractions: chatHistory?.slice(-5) || [], // Last 5 interactions for context
-      availableImages: availableImages,
+      recentInteractions: chatHistory?.slice(-2) || [], // Only last 2 interactions for context
+      availableImages: [], // Remove images from regular responses to save tokens
       availableAudio: []
     };
     
