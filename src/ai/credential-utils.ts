@@ -30,8 +30,14 @@ export function parseGoogleCredentials(): any | null {
     // Fix escaped quotes
     cleanedCredentials = cleanedCredentials.replace(/\\"/g, '"');
     
-    // Fix escaped newlines in private key
-    cleanedCredentials = cleanedCredentials.replace(/\\n/g, '\n');
+    // Check if the JSON needs formatting (has literal newlines that need escaping)
+    if (needsJsonFormatting(cleanedCredentials)) {
+      console.log('Credential Utils: Formatting unescaped JSON...');
+      cleanedCredentials = formatUnescapedJson(cleanedCredentials);
+    } else {
+      // Fix escaped newlines in private key for already formatted JSON
+      cleanedCredentials = cleanedCredentials.replace(/\\n/g, '\n');
+    }
     
     // Parse the JSON
     const credentials = JSON.parse(cleanedCredentials);
@@ -59,6 +65,43 @@ export function parseGoogleCredentials(): any | null {
   }
 }
 
+// Check if JSON needs formatting (contains unescaped newlines)
+function needsJsonFormatting(jsonString: string): boolean {
+  try {
+    // Try to parse as-is first
+    JSON.parse(jsonString);
+    return false; // Already valid JSON
+  } catch {
+    // Check if it contains literal newlines that need escaping
+    return jsonString.includes('\n') && !jsonString.includes('\\n');
+  }
+}
+
+// Format JSON with unescaped newlines and control characters
+function formatUnescapedJson(jsonString: string): string {
+  try {
+    // First, try to fix common JSON formatting issues
+    let fixed = jsonString
+      // Escape literal newlines
+      .replace(/\n/g, '\\n')
+      // Escape literal carriage returns
+      .replace(/\r/g, '\\r')
+      // Escape literal tabs
+      .replace(/\t/g, '\\t')
+      // Fix any double escaping that might occur
+      .replace(/\\\\n/g, '\\n')
+      .replace(/\\\\r/g, '\\r')
+      .replace(/\\\\t/g, '\\t');
+    
+    // Test if the fixed JSON is valid
+    JSON.parse(fixed);
+    return fixed;
+  } catch (error) {
+    console.error('Credential Utils: Failed to format JSON:', error);
+    throw error;
+  }
+}
+
 // Alternative parsing method for edge cases
 function tryAlternativeParsing(): any | null {
   try {
@@ -68,14 +111,22 @@ function tryAlternativeParsing(): any | null {
     // Method 1: Base64 decode if it looks like base64
     if (isBase64(credentialsJson)) {
       const decoded = Buffer.from(credentialsJson, 'base64').toString('utf-8');
+      if (needsJsonFormatting(decoded)) {
+        return JSON.parse(formatUnescapedJson(decoded));
+      }
       return JSON.parse(decoded);
     }
     
-    // Method 2: Try parsing with manual newline replacement
-    const manualFixed = credentialsJson
-      .replace(/\\n/g, '\n')
-      .replace(/\\\"/g, '"')
-      .replace(/^["']|["']$/g, ''); // Remove wrapping quotes
+    // Method 2: Try formatting unescaped JSON
+    let manualFixed = credentialsJson.replace(/^["']|["']$/g, ''); // Remove wrapping quotes
+    
+    if (needsJsonFormatting(manualFixed)) {
+      manualFixed = formatUnescapedJson(manualFixed);
+    } else {
+      manualFixed = manualFixed
+        .replace(/\\n/g, '\n')
+        .replace(/\\\"/g, '"');
+    }
     
     return JSON.parse(manualFixed);
     
