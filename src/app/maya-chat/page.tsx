@@ -190,6 +190,8 @@ const detectGoodbyeMessage = (message: string): boolean => {
 };
 
 const shouldAIBePaused = (): boolean => {
+  if (typeof window === 'undefined') return false; // Server-side check
+  
   const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
   if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
     return true;
@@ -209,6 +211,8 @@ const shouldAIBePaused = (): boolean => {
 };
 
 const shouldIgnoreMessage = (): boolean => {
+  if (typeof window === 'undefined') return false; // Server-side check
+  
   // 15% chance to ignore any message (simulate being busy)
   if (Math.random() < 0.15) {
     // Ignore for 5-30 minutes
@@ -222,7 +226,9 @@ const shouldIgnoreMessage = (): boolean => {
 };
 
 const setAIGoodbyeState = () => {
-  localStorage.setItem(AI_LAST_GOODBYE_TIME_KEY, Date.now().toString());
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(AI_LAST_GOODBYE_TIME_KEY, Date.now().toString());
+  }
 };
 
 // Psychological user profiling functions
