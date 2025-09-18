@@ -161,6 +161,19 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
 };
 
 
+// Utility function to get time of day
+const getTimeOfDay = (): 'morning' | 'afternoon' | 'evening' | 'night' => {
+  const now = new Date();
+  const istDateString = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+  const istDate = new Date(istDateString);
+  const hour = istDate.getHours();
+  
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 17) return 'afternoon';
+  if (hour >= 17 && hour < 21) return 'evening';
+  return 'night';
+};
+
 // Psychological user profiling functions
 const updateUserPsychologyProfile = (userMessage: string) => {
   try {
@@ -431,13 +444,7 @@ const KruthikaChatPage: NextPage = () => {
     return { hour: istDate.getHours(), minutes: istDate.getMinutes() };
   };
 
-  const getTimeOfDay = (): EmotionalStateInput['timeOfDay'] => {
-    const { hour } = getISTTimeParts();
-    if (hour >= 5 && hour < 12) return 'morning';
-    if (hour >= 12 && hour < 17) return 'afternoon';
-    if (hour >= 17 && hour < 21) return 'evening';
-    return 'night';
-  };
+  
 
   const maybeTriggerAdOnMessageCount = useCallback(() => {
     if (isLoadingAdSettings || !adSettings || !adSettings.adsEnabledGlobally) return;
