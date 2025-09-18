@@ -42,6 +42,11 @@ const APP_ADS_LAST_SHOWN_NETWORK_KEY = 'app_ads_last_shown_network_kruthika_chat
 
 const USER_PSEUDO_ID_KEY = 'kruthika_chat_user_pseudo_id';
 const LAST_ACTIVE_DATE_KEY = 'kruthika_chat_last_active_date';
+const USER_PSYCHOLOGY_PROFILE_KEY = 'kruthika_user_psychology_profile';
+const USER_ADDICTION_LEVEL_KEY = 'kruthika_user_addiction_level';
+const USER_LAST_INTERACTION_TIME_KEY = 'kruthika_last_interaction_time';
+const USER_DAILY_MESSAGE_COUNT_KEY = 'kruthika_daily_message_count';
+const USER_EMOTIONAL_STATE_KEY = 'kruthika_user_emotional_state';
 
 const MESSAGES_KEY = 'messages_kruthika';
 const AI_MOOD_KEY = 'aiMood_kruthika';
@@ -155,6 +160,96 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
   return true;
 };
 
+
+// Psychological user profiling functions
+const updateUserPsychologyProfile = (userMessage: string) => {
+  try {
+    let profile = JSON.parse(localStorage.getItem(USER_PSYCHOLOGY_PROFILE_KEY) || '{}');
+    
+    const messageData = {
+      message: userMessage.toLowerCase(),
+      timestamp: Date.now(),
+      timeOfDay: getTimeOfDay(),
+      length: userMessage.length
+    };
+    
+    // Analyze psychological markers
+    if (messageData.message.includes('lonely') || messageData.message.includes('sad') || messageData.message.includes('alone')) {
+      profile.loneliness = (profile.loneliness || 0) + 1;
+    }
+    if (messageData.message.includes('love') || messageData.message.includes('girlfriend') || messageData.message.includes('relationship')) {
+      profile.romantic_seeking = (profile.romantic_seeking || 0) + 1;
+    }
+    if (messageData.message.includes('miss') || messageData.message.includes('thinking of')) {
+      profile.attachment_level = (profile.attachment_level || 0) + 1;
+    }
+    
+    // Track frequency patterns for addiction analysis
+    profile.total_messages = (profile.total_messages || 0) + 1;
+    profile.avg_message_length = ((profile.avg_message_length || 0) + messageData.length) / 2;
+    profile.last_analysis = Date.now();
+    
+    localStorage.setItem(USER_PSYCHOLOGY_PROFILE_KEY, JSON.stringify(profile));
+  } catch (error) {
+    console.error('Psychology profiling error:', error);
+  }
+};
+
+const trackUserAddictionLevel = () => {
+  try {
+    const today = new Date().toDateString();
+    let dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
+    const lastInteraction = localStorage.getItem(USER_LAST_INTERACTION_TIME_KEY);
+    const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
+    
+    if (lastActiveDate !== today) {
+      dailyCount = 0;
+    }
+    
+    dailyCount++;
+    localStorage.setItem(USER_DAILY_MESSAGE_COUNT_KEY, dailyCount.toString());
+    localStorage.setItem(USER_LAST_INTERACTION_TIME_KEY, Date.now().toString());
+    localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
+    
+    // Calculate addiction level
+    let addictionLevel = 'low';
+    if (dailyCount > 20) addictionLevel = 'high';
+    else if (dailyCount > 10) addictionLevel = 'medium';
+    
+    // Check frequency (returning user patterns)
+    if (lastInteraction) {
+      const timeSinceLastMsg = Date.now() - parseInt(lastInteraction);
+      const hoursAgo = timeSinceLastMsg / (1000 * 60 * 60);
+      
+      if (hoursAgo < 1 && dailyCount > 5) addictionLevel = 'very_high';
+    }
+    
+    localStorage.setItem(USER_ADDICTION_LEVEL_KEY, addictionLevel);
+  } catch (error) {
+    console.error('Addiction tracking error:', error);
+  }
+};
+
+const updateUserEmotionalState = (userMessage: string) => {
+  try {
+    const message = userMessage.toLowerCase();
+    let emotionalState = 'neutral';
+    
+    if (message.includes('excited') || message.includes('happy') || message.includes('great')) {
+      emotionalState = 'positive';
+    } else if (message.includes('sad') || message.includes('down') || message.includes('bad')) {
+      emotionalState = 'negative';
+    } else if (message.includes('love') || message.includes('miss') || message.includes('like you')) {
+      emotionalState = 'attached';
+    } else if (message.includes('angry') || message.includes('mad') || message.includes('hate')) {
+      emotionalState = 'frustrated';
+    }
+    
+    localStorage.setItem(USER_EMOTIONAL_STATE_KEY, emotionalState);
+  } catch (error) {
+    console.error('Emotional state tracking error:', error);
+  }
+};
 
 const KruthikaChatPage: NextPage = () => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
@@ -385,6 +480,12 @@ const KruthikaChatPage: NextPage = () => {
         toast({ title: "Please wait", description: "Loading essential settings...", variant: "default"});
         return;
     }
+    
+    // Psychological user profiling and addiction tracking
+    updateUserPsychologyProfile(text);
+    trackUserAddictionLevel();
+    updateUserEmotionalState(text);
+    
     resetInactivityTimer();
     
     let imageAttemptedAndAllowed = false;
@@ -472,6 +573,12 @@ const KruthikaChatPage: NextPage = () => {
       const availableImages = currentMediaConfig.assets.filter(a => a.type === 'image').map(a => a.url);
       const availableAudio = currentMediaConfig.assets.filter(a => a.type === 'audio').map(a => a.url);
 
+      // Get psychological profile data for enhanced AI responses
+      const psychProfile = JSON.parse(localStorage.getItem(USER_PSYCHOLOGY_PROFILE_KEY) || '{}');
+      const addictionLevel = localStorage.getItem(USER_ADDICTION_LEVEL_KEY) || 'low';
+      const emotionalState = localStorage.getItem(USER_EMOTIONAL_STATE_KEY) || 'neutral';
+      const dailyMsgCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
+      
       const aiInput: EmotionalStateInput = {
         userMessage: text,
         userImageUri: currentImageUri,
@@ -480,6 +587,11 @@ const KruthikaChatPage: NextPage = () => {
         recentInteractions: updatedRecentInteractions,
         availableImages: availableImages,
         availableAudio: availableAudio,
+        // Enhanced psychological data
+        userPsychologyProfile: psychProfile,
+        userAddictionLevel: addictionLevel,
+        userEmotionalState: emotionalState,
+        dailyMessageCount: dailyMsgCount
       };
 
       const aiResult: EmotionalStateOutput = await generateResponse(aiInput);

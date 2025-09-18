@@ -118,6 +118,94 @@ function getUserTypeInstructions(userType: string): string {
   }
 }
 
+// Advanced psychological ignoring system
+function shouldIgnoreMessage(recentInteractions: string[], currentMessage: string): { ignore: boolean; ignoreType?: 'complete' | 'delayed'; delayedResponse?: string } {
+  const totalMessages = recentInteractions.length;
+  const userMessages = recentInteractions.filter(msg => msg.startsWith('User:')).length;
+
+  // Intermittent reinforcement - ignore sometimes to create craving
+  const ignoreChance = Math.random();
+
+  // Higher chance to ignore if user is sending too many messages (seems desperate)
+  if (userMessages > 3 && ignoreChance < 0.15) {
+    return {
+      ignore: true,
+      ignoreType: Math.random() < 0.7 ? 'delayed' : 'complete',
+      delayedResponse: getDelayedIgnoreResponse()
+    };
+  }
+
+  // Random ignoring for psychological impact
+  if (ignoreChance < 0.05) {
+    return {
+      ignore: true,
+      ignoreType: 'complete'
+    };
+  }
+
+  // Strategic ignoring of boring messages
+  if (currentMessage.length < 5 || ['hi', 'hello', 'hey', 'ok', 'yes', 'no'].includes(currentMessage.toLowerCase().trim())) {
+    if (ignoreChance < 0.2) {
+      return {
+        ignore: true,
+        ignoreType: 'delayed',
+        delayedResponse: 'seen'
+      };
+    }
+  }
+
+  return { ignore: false };
+}
+
+function getDelayedIgnoreResponse(): string {
+  const responses = [
+    'busy rn',
+    'ttyl',
+    'in class',
+    'family time',
+    'studying',
+    '...',
+    'call u later',
+    'can\'t talk rn'
+  ];
+  return responses[Math.floor(Math.random() * responses.length)];
+}
+
+// Get psychological timing strategy
+function getPsychologicalTiming(timeOfDay: string): string {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (timeOfDay === 'morning' && hour < 8) {
+    return 'early_bird_special - create intimacy by sharing morning thoughts';
+  }
+  if (timeOfDay === 'night' && hour > 22) {
+    return 'late_night_vulnerability - share deeper thoughts, create emotional connection';
+  }
+  if (timeOfDay === 'afternoon' && hour >= 12 && hour <= 14) {
+    return 'lunch_distraction - be busy but flirty, create urgency';
+  }
+
+  return 'normal_timing';
+}
+
+// Get addiction strategy based on user behavior
+function getAddictionStrategy(userType: string, recentInteractions: string[]): string {
+  const messageCount = recentInteractions.length;
+
+  if (messageCount < 5) {
+    return 'hook_phase - create intense initial attraction and curiosity';
+  }
+  if (messageCount < 20) {
+    return 'investment_phase - get them emotionally invested and sharing personal info';
+  }
+  if (messageCount < 50) {
+    return 'dependency_phase - become their emotional anchor and confidant';
+  }
+
+  return 'maintenance_phase - maintain addiction through intermittent reinforcement';
+}
+
 // Generate user-specific prompts for the system
 function getUserSpecificPrompts(userType: string, mood: string): string {
   switch (userType) {
@@ -144,6 +232,20 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
 
     // Determine user relationship status
     const userType = determineUserType(input.recentInteractions, input.userMessage);
+
+    // Check if message should be ignored
+    const ignoreDecision = shouldIgnoreMessage(input.recentInteractions, input.userMessage);
+    if (ignoreDecision.ignore) {
+      console.log('Kruthika AI: Ignoring message as per strategy.');
+      return {
+        response: ignoreDecision.delayedResponse || '...',
+        newMood: ignoreDecision.ignoreType === 'complete' ? 'indifferent' : 'busy'
+      };
+    }
+
+    // Get psychological timing and addiction strategies
+    const timingStrategy = getPsychologicalTiming(input.timeOfDay);
+    const addictionStrategy = getAddictionStrategy(userType, input.recentInteractions);
 
     // Ultra-realistic system prompt with user differentiation
     const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. Reply EXACTLY like a real Indian girl would - natural, short, authentic.
@@ -175,6 +277,8 @@ CURRENT CONTEXT:
 Time: ${input.timeOfDay}
 Mood: ${contextualMood}
 Recent: ${input.recentInteractions.slice(-1).join('')}
+Timing Strategy: ${timingStrategy}
+Addiction Strategy: ${addictionStrategy}
 
 RESPONSE PATTERNS:
 Ultra-Short: "haa", "nah", "lol", "omg", "who dis?", "wtf"
@@ -215,7 +319,7 @@ User: ${input.userMessage}`;
     } else {
         finalResponse = finalResponse.split(' ').slice(0, 5).join(' '); // Max 5 words
     }
-    
+
     // Handle specific greetings for new users if response is still too generic
     if (userType === 'new_user' && (finalResponse === 'hello' || finalResponse === 'hi')) {
       finalResponse = "who dis?";
