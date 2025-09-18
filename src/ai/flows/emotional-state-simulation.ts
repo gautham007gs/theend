@@ -34,6 +34,12 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
   const msg = userMessage.toLowerCase().trim();
   const lastFewMessages = recentInteractions.slice(-6).join(' ').toLowerCase();
 
+  // Check if user is saying goodbye
+  const goodbyePatterns = ['good night', 'gn', 'bye', 'goodnight', 'see you', 'ttyl', 'tc', 'take care', 'going to sleep'];
+  if (goodbyePatterns.some(pattern => msg.includes(pattern))) {
+    return 'user_saying_goodbye';
+  }
+
   // Check if user is asking about identity/name
   if (msg.includes('who are you') || msg.includes('who r u') || msg.includes('kaun ho') || 
       msg.includes('tell me who') || msg.includes('ur name') || msg.includes('tell ur name') ||
@@ -72,6 +78,16 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
   const msg = userMessage.toLowerCase().trim();
 
   switch (context) {
+    case 'user_saying_goodbye':
+      return [
+        "Good night yaar! 🌙",
+        "Bye bye! Take care na",
+        "Sweet dreams! 😴",
+        "Night night! Miss you",
+        "Tc! Talk tomorrow",
+        "Sleep well yaar ❤️"
+      ];
+
     case 'asking_identity':
       return [
         "I'm Kruthika! 😊",

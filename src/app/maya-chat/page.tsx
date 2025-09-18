@@ -51,6 +51,9 @@ const USER_EMOTIONAL_STATE_KEY = 'kruthika_user_emotional_state';
 const MESSAGES_KEY = 'messages_kruthika';
 const AI_MOOD_KEY = 'aiMood_kruthika';
 const RECENT_INTERACTIONS_KEY = 'recentInteractions_kruthika';
+const AI_PAUSED_KEY = 'kruthika_ai_paused';
+const AI_LAST_GOODBYE_TIME_KEY = 'kruthika_last_goodbye_time';
+const AI_IGNORE_UNTIL_KEY = 'kruthika_ignore_until';
 
 const USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA = 'user_image_upload_count_kruthika_v1';
 const USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA = 'user_image_upload_last_date_kruthika_v1';
@@ -172,6 +175,54 @@ const getTimeOfDay = (): 'morning' | 'afternoon' | 'evening' | 'night' => {
   if (hour >= 12 && hour < 17) return 'afternoon';
   if (hour >= 17 && hour < 21) return 'evening';
   return 'night';
+};
+
+// AI Pause and Ignore System
+const detectGoodbyeMessage = (message: string): boolean => {
+  const msg = message.toLowerCase().trim();
+  const goodbyePatterns = [
+    'good night', 'gn', 'bye bye', 'bye', 'goodnight', 'good nite',
+    'see you', 'talk later', 'ttyl', 'sleep now', 'going to sleep',
+    'sone ja raha', 'sone ja rahi', 'good bye', 'goodbye', 'tc', 'take care'
+  ];
+  
+  return goodbyePatterns.some(pattern => msg.includes(pattern));
+};
+
+const shouldAIBePaused = (): boolean => {
+  const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
+  if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
+    return true;
+  }
+  
+  const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
+  if (lastGoodbyeTime) {
+    const timeSinceGoodbye = Date.now() - parseInt(lastGoodbyeTime);
+    // Stay offline for 2-6 hours after saying goodbye
+    const offlineHours = 2 + Math.random() * 4;
+    if (timeSinceGoodbye < (offlineHours * 60 * 60 * 1000)) {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
+const shouldIgnoreMessage = (): boolean => {
+  // 15% chance to ignore any message (simulate being busy)
+  if (Math.random() < 0.15) {
+    // Ignore for 5-30 minutes
+    const ignoreMinutes = 5 + Math.random() * 25;
+    const ignoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
+    localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
+    return true;
+  }
+  
+  return false;
+};
+
+const setAIGoodbyeState = () => {
+  localStorage.setItem(AI_LAST_GOODBYE_TIME_KEY, Date.now().toString());
 };
 
 // Psychological user profiling functions
@@ -488,6 +539,37 @@ const KruthikaChatPage: NextPage = () => {
         return;
     }
     
+    // Check if AI should be paused or ignoring messages
+    if (shouldAIBePaused()) {
+      console.log('Kruthika AI: Currently paused/offline, not responding');
+      // Still save user message but don't respond
+      const newUserMessage: Message = {
+        id: Date.now().toString(),
+        text,
+        sender: 'user',
+        timestamp: new Date(),
+        status: 'delivered', // Show as delivered but not read
+        userImageUrl: currentImageUri,
+      };
+      setMessages(prev => [...prev, newUserMessage]);
+      return;
+    }
+    
+    // Check if should ignore this message (simulate being busy)
+    if (shouldIgnoreMessage()) {
+      console.log('Kruthika AI: Ignoring message, simulating busy state');
+      const newUserMessage: Message = {
+        id: Date.now().toString(),
+        text,
+        sender: 'user',
+        timestamp: new Date(),
+        status: 'sent', // Keep as sent (not even delivered)
+        userImageUrl: currentImageUri,
+      };
+      setMessages(prev => [...prev, newUserMessage]);
+      return;
+    }
+    
     // Psychological user profiling and addiction tracking
     updateUserPsychologyProfile(text);
     trackUserAddictionLevel();
@@ -558,22 +640,25 @@ const KruthikaChatPage: NextPage = () => {
         ));
     }, 300 + Math.random() * 200);
 
-    // Realistic typing delay - more human-like patterns
+    // Realistic typing delay - slower, more human-like patterns
     const calculateTypingDelay = (text: string): number => {
       const words = text.trim().split(' ').length;
-      const baseDelay = 200;
+      const baseDelay = 800; // Increased base delay
       
-      // Ultra-fast for breadcrumb responses
-      if (text.length <= 3) return baseDelay + 150; // "ok", "hi", "lol"
-      if (text.length <= 8) return baseDelay + 300; // "hey there", "yaar"
-      if (text.length <= 20) return baseDelay + 600; // Normal short responses
-      if (text.length <= 40) return baseDelay + 1000; // Medium responses
+      // Even breadcrumbs take time
+      if (text.length <= 3) return baseDelay + 400; // "ok", "hi", "lol"
+      if (text.length <= 8) return baseDelay + 800; // "hey there", "yaar"
+      if (text.length <= 20) return baseDelay + 1200; // Normal short responses
+      if (text.length <= 40) return baseDelay + 2000; // Medium responses
       
-      // Longer responses need more thinking time
-      const typingSpeed = words > 8 ? 40 : 30;
-      const thinkingTime = words > 6 ? 500 : 100;
+      // Much slower typing for longer messages
+      const typingSpeed = words > 8 ? 80 : 60; // Slower typing speed
+      const thinkingTime = words > 6 ? 1000 : 300; // More thinking time
       
-      return baseDelay + (text.length * typingSpeed) + thinkingTime + (Math.random() * 200);
+      // Add random pauses (like real people do when thinking)
+      const randomPauses = Math.random() * 800;
+      
+      return baseDelay + (text.length * typingSpeed) + thinkingTime + randomPauses;
     };
     
     try {
@@ -708,6 +793,19 @@ const KruthikaChatPage: NextPage = () => {
       // Ensure typing is always stopped
       setIsAiTyping(false); 
       if (aiResult.newMood) setAiMood(aiResult.newMood);
+      
+      // Check if AI just said goodbye and should go offline
+      let aiResponseText = '';
+      if (typeof aiResult.response === 'string') {
+        aiResponseText = aiResult.response;
+      } else if (Array.isArray(aiResult.response)) {
+        aiResponseText = aiResult.response.join(' ');
+      }
+      
+      if (detectGoodbyeMessage(aiResponseText)) {
+        console.log('Kruthika AI: Goodbye detected, setting offline state');
+        setAIGoodbyeState();
+      }
 
       if (imageAttemptedAndAllowed && currentImageUri) { 
           const todayStr = new Date().toDateString();
@@ -812,6 +910,29 @@ const KruthikaChatPage: NextPage = () => {
 
   const onlineStatus = useMemo(() => {
     if (isAiTyping) return "typing...";
+    
+    // Check if AI is paused/offline first
+    if (shouldAIBePaused()) {
+      const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
+      const ignoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
+      
+      if (lastGoodbyeTime) {
+        const goodbyeDate = new Date(parseInt(lastGoodbyeTime));
+        if (goodbyeDate.toDateString() === new Date().toDateString()) {
+          return "sleeping 😴";
+        } else {
+          return `last seen ${goodbyeDate.toLocaleDateString([], { month: 'short', day: 'numeric' })}`;
+        }
+      }
+      
+      if (ignoreUntil) {
+        const remainingMin = Math.ceil((parseInt(ignoreUntil) - Date.now()) / 60000);
+        if (remainingMin > 0) {
+          return `busy, back in ${remainingMin}m`;
+        }
+      }
+    }
+    
     const getISTTimePartsLocal = (): { hour: number; minutes: number } => {
       const now = new Date();
       const istDateString = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
