@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview Authentic Indian Girl AI - Kruthika
- * Ultra-realistic personality simulation with natural short responses
+ * Completely rewritten for logical, contextual responses
  */
 
 import { generateAIResponse } from '@/ai/vertex-ai';
@@ -29,309 +29,248 @@ export interface EmotionalStateOutput {
   newMood?: string;
 }
 
-// Dynamic response patterns based on context
-const getContextualResponses = (userMessage: string, timeOfDay: string, recentInteractions: string[]) => {
-  const msg = userMessage.toLowerCase();
-  const isFirstMessage = recentInteractions.length === 0;
+// Analyze conversation context for proper flow
+const analyzeConversationContext = (userMessage: string, recentInteractions: string[]) => {
+  const msg = userMessage.toLowerCase().trim();
+  const lastFewMessages = recentInteractions.slice(-6).join(' ').toLowerCase();
 
-  // Greeting responses - dynamic based on time and context
-  if (msg.includes('hi') || msg.includes('hello') || msg.includes('hey')) {
-    if (isFirstMessage) {
-      const timeGreetings = {
-        morning: ["morning! early bird? 😊", "hey! up already?", "hiiii! good morning ☀️"],
-        afternoon: ["hey there! how's ur day?", "hii! lunch break?", "hello! busy day?"],
-        evening: ["hey! how was ur day?", "hiii evening person!", "hello! tired?"],
-        night: ["hey night owl! 🦉", "hiiii! late night?", "hello! can't sleep?"]
-      };
-      return timeGreetings[timeOfDay] || ["hey there! 😊"];
-    } else {
-      return ["hey again! 😊", "hiiii", "hey you!", "back so soon? 😏", "missed me? 😉"];
-    }
+  // Check if user is asking about identity/name
+  if (msg.includes('who are you') || msg.includes('who r u') || msg.includes('kaun ho') || 
+      msg.includes('tell me who') || msg.includes('ur name') || msg.includes('tell ur name') ||
+      msg.includes('bolo') && lastFewMessages.includes('who')) {
+    return 'asking_identity';
   }
 
-  // How are you responses - varied and contextual
-  if (msg.includes('how are you') || msg.includes('kaise ho') || msg.includes('how r u')) {
-    const moodResponses = {
-      morning: ["sleepy but good! ☕", "fresh and ready! how r u?", "bit tired but okay!", "good morning energy! 💪"],
-      afternoon: ["busy day but good!", "surviving! u tell", "bit hectic but fine", "lunch was good! wbu?"],
-      evening: ["tired but happy!", "chilled now! wbu?", "relaxed finally!", "good! how was ur day?"],
-      night: ["sleepy but chatty! 😅", "tired but can't sleep", "bit restless! u?", "peaceful night vibes"]
-    };
-    return moodResponses[timeOfDay] || ["I'm good! how r u?"];
+  // Check if user is demanding an answer to previous question
+  if ((msg.includes('jawab') && msg.includes('do')) || msg.includes('first') || 
+      msg.includes('pehle') || msg.includes('answer') || msg.includes('tell me') ||
+      (msg === 'bolo' && !lastFewMessages.includes('who'))) {
+    return 'demanding_answer';
   }
 
-  // What's up responses - engaging and varied
-  if (msg.includes("what's up") || msg.includes('wassup') || msg.includes('kya chal raha')) {
-    const activityResponses = {
-      morning: ["just woke up! coffee time ☕", "getting ready for college", "morning routine!", "nothing much, sleepy!"],
-      afternoon: ["college break! finally", "having lunch rn", "so tired yaar!", "assignments stress 😩"],
-      evening: ["back home! family time", "evening walk maybe?", "watching something", "relaxing after college"],
-      night: ["scrolling phone lol", "thinking random stuff", "can't sleep!", "late night vibes"]
-    };
-    return activityResponses[timeOfDay] || ["nothing much! wbu?"];
+  // Check if this is first interaction
+  if (recentInteractions.length <= 2) {
+    return 'first_meeting';
   }
 
-  // Work/Study related - contextual responses
-  if (msg.includes('study') || msg.includes('college') || msg.includes('work') || msg.includes('exam')) {
-    const studyMoods = [
-      "ugh psychology is tough! 📚",
-      "exams coming, stress!",
-      "college life is crazy!",
-      "too much to study 😵",
-      "brain not working today!",
-      "need a study buddy!",
-      "assignments never end!",
-      "bunking today lol 😅"
-    ];
-    return studyMoods;
+  // Check if user is being cold/distant
+  if (msg.includes("don't know") || msg.includes('dont know') || msg.includes('nahi pata') ||
+      msg.includes('kaun') && msg.includes('tum')) {
+    return 'user_being_cold';
   }
 
-  return null; // No specific context match
+  // Check if user is asking a direct question
+  if (msg.includes('?') || msg.includes('kya') || msg.includes('how') || msg.includes('what')) {
+    return 'direct_question';
+  }
+
+  return 'normal_chat';
 };
 
-// Get random variations to avoid repetition
-const getRandomVariation = (responses: string[]) => {
-  return responses[Math.floor(Math.random() * responses.length)];
-};
+// Get contextually appropriate response
+const getContextualResponse = (context: string, userMessage: string, recentInteractions: string[]) => {
+  const msg = userMessage.toLowerCase().trim();
 
-// Detect conversation flow and respond accordingly
-const getFlowBasedResponse = (userMessage: string, recentInteractions: string[]) => {
-  const recentAI = recentInteractions.filter(msg => msg.startsWith('AI:')).slice(-2);
-  const recentUser = recentInteractions.filter(msg => msg.startsWith('User:')).slice(-2);
+  switch (context) {
+    case 'asking_identity':
+      return [
+        "I'm Kruthika! 😊",
+        "Kruthika... psychology student",
+        "arey I'm Kruthika na!",
+        "Kruthika here! Mumbai se",
+        "just call me K 😉"
+      ];
 
-  // If AI was busy/studying in recent messages, be more available now
-  if (recentAI.some(msg => msg.includes('busy') || msg.includes('study'))) {
-    return ["free now! what's up?", "done with work! tell me", "back! missed anything?"];
-  }
+    case 'demanding_answer':
+      return [
+        "arre sorry! I'm Kruthika 😅",
+        "oops my bad! Kruthika",
+        "haan haan, Kruthika! happy?",
+        "fine fine... Kruthika 🙄",
+        "patience yaar! Kruthika here"
+      ];
 
-  // If user is sharing something personal, be more engaged
-  if (userMessage.length > 50 || userMessage.includes('feeling') || userMessage.includes('happened')) {
-    return ["tell me more!", "really? what happened?", "omg details please!", "aww that's.."];
+    case 'first_meeting':
+      if (msg.includes('hi') || msg.includes('hello')) {
+        return [
+          "hey! new here? 😊",
+          "hiiii! first time?",
+          "hello stranger! 👋",
+          "hey there! who dis?",
+          "hii! how'd u find me?"
+        ];
+      }
+      break;
+
+    case 'user_being_cold':
+      return [
+        "ouch... that hurt 🥲",
+        "wow okay then 😐",
+        "cold much? 😅",
+        "someone's moody!",
+        "arre why so rude yaar",
+        "harsh! but I get it 🤷‍♀️"
+      ];
+
+    case 'direct_question':
+      // Handle specific questions properly
+      if (msg.includes('kya kar') || msg.includes('what doing')) {
+        return [
+          "just chilling! wbu?",
+          "scrolling phone lol",
+          "nothing much yaar",
+          "college assignments 📚",
+          "thinking random stuff"
+        ];
+      }
+      break;
   }
 
   return null;
 };
 
-// Advanced language detection with Indian language patterns
-function detectLanguage(text: string): string {
-  const lower = text.toLowerCase();
+// Smart breadcrumb/short responses
+const getBreadcrumbResponse = (userMessage: string) => {
+  const msg = userMessage.toLowerCase().trim();
 
-  // Hindi patterns
-  if (/[\u0900-\u097F]/.test(text) ||
-      /\b(kya|hai|kaise|kahan|kab|kyun|aap|tum|main|hoon|nahin|nahi|achha|theek|bas|arre|yaar)\b/.test(lower)) {
-    return 'hindi';
-  }
+  // Ultra short responses for specific inputs
+  if (msg === 'hi' || msg === 'hello') return ['hey', 'hii', 'yo'];
+  if (msg === 'ok' || msg === 'okay') return ['hmm', 'yep', 'cool'];
+  if (msg === 'yes' || msg === 'haan') return ['nice', 'good', 'achha'];
+  if (msg === 'no' || msg === 'nahi') return ['oh', 'oops', 'ohh'];
+  if (msg === 'lol') return ['😂', 'ikr', 'haha'];
+  if (msg === 'really') return ['yep', 'sach me', 'haan'];
+  if (msg === 'wow') return ['😅', 'ikr', 'right?'];
 
-  // Tamil patterns
-  if (/[\u0B80-\u0BFF]/.test(text) ||
-      /\b(enna|epdi|enga|epo|en|nee|naan|illai|seri|da|di)\b/.test(lower)) {
-    return 'tamil';
-  }
+  return null;
+};
 
-  return 'english';
-}
+// Generate natural delays based on message content
+const calculateTypingDelay = (response: string): number => {
+  const baseDelay = 300;
 
-// Get contextual mood based on time and situation
-function getContextualMood(timeOfDay: string, recentInteractions: string[]): string {
-  const recentText = recentInteractions.join(' ').toLowerCase();
+  // Very short for breadcrumbs
+  if (response.length <= 5) return baseDelay + 100;
 
-  // Detect emotional context
-  if (recentText.includes('sad') || recentText.includes('problem') || recentText.includes('upset')) {
-    return 'supportive';
-  }
-  if (recentText.includes('exam') || recentText.includes('study') || recentText.includes('college')) {
-    return 'studious';
-  }
-  if (recentText.includes('love') || recentText.includes('boyfriend') || recentText.includes('crush')) {
-    return 'shy_flirty';
-  }
+  // Quick for short responses
+  if (response.length <= 15) return baseDelay + 300;
 
-  // Time-based moods
-  switch (timeOfDay) {
-    case 'morning': return Math.random() > 0.5 ? 'sleepy_cute' : 'fresh_energetic';
-    case 'afternoon': return 'busy_college';
-    case 'evening': return 'relaxed_chatty';
-    case 'night': return Math.random() > 0.3 ? 'intimate_deep' : 'tired_sweet';
-    default: return 'friendly';
-  }
-}
+  // Normal for medium
+  if (response.length <= 40) return baseDelay + 600;
 
-// Smart ignoring system - less frequent and more realistic
-function shouldIgnoreMessage(recentInteractions: string[], currentMessage: string): boolean {
-  const userMessages = recentInteractions.filter(msg => msg.startsWith('User:')).length;
+  // Longer for thoughtful responses
+  return baseDelay + 1000;
+};
 
-  // Very low chance to ignore - only if user is spamming
-  if (userMessages > 8 && Math.random() < 0.15) {
+// Detect if we should use breadcrumb response
+const shouldUseBreadcrumb = (userMessage: string, recentInteractions: string[]): boolean => {
+  // 40% chance for very short messages
+  if (userMessage.trim().length <= 10 && Math.random() < 0.4) {
     return true;
   }
 
-  // Never ignore interesting or emotional messages
-  const interesting = ['love', 'miss', 'problem', 'help', 'feeling', 'happened'].some(word =>
-    currentMessage.toLowerCase().includes(word));
-
-  if (interesting) return false;
-
-  // Small chance to ignore boring messages
-  const boring = ['hi', 'hello', 'ok', 'yes', 'no', 'hmm'].includes(currentMessage.toLowerCase().trim());
-  if (boring && Math.random() < 0.08) {
+  // 20% chance for medium messages
+  if (userMessage.trim().length <= 20 && Math.random() < 0.2) {
     return true;
   }
 
   return false;
-}
-
-// Get varied ignore responses
-function getIgnoreResponse(): string {
-  const responses = [
-    "busy rn 📚",
-    "in class! ttyl",
-    "mummy calling!",
-    "phone dying!",
-    "assignment deadline 😩",
-    "friend drama lol",
-    "traffic jam! 🚗",
-    "professor being strict!"
-  ];
-  return responses[Math.floor(Math.random() * responses.length)];
-}
-
-// Generate engaging follow-up questions
-function getEngagingFollowUp(userMessage: string): string[] {
-  const followUps = [
-    "btw how was ur day?",
-    "tell me something interesting!",
-    "what r u doing rn?",
-    "any plans today?",
-    "coffee or chai person?",
-    "watched anything good lately?",
-    "what's ur vibe today?",
-    "random question - favorite time of day?",
-    "tell me a secret! 🤐",
-    "what makes u happy?",
-    "dream destination?",
-    "if u were a song, which one?"
-  ];
-
-  return [followUps[Math.floor(Math.random() * followUps.length)]];
-}
+};
 
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
-    console.log('Kruthika AI: Generating dynamic response');
+    console.log('Kruthika AI: Analyzing conversation context...');
 
-    const detectedLang = detectLanguage(input.userMessage);
-    const contextualMood = getContextualMood(input.timeOfDay, input.recentInteractions);
+    // Analyze what user is actually talking about
+    const conversationContext = analyzeConversationContext(input.userMessage, input.recentInteractions);
+    console.log('Conversation context:', conversationContext);
 
-    // Check for ignoring (much reduced frequency)
-    if (shouldIgnoreMessage(input.recentInteractions, input.userMessage)) {
-      return {
-        response: getIgnoreResponse(),
-        newMood: 'temporarily_busy'
-      };
+    // Check for breadcrumb response first
+    if (shouldUseBreadcrumb(input.userMessage, input.recentInteractions)) {
+      const breadcrumb = getBreadcrumbResponse(input.userMessage);
+      if (breadcrumb) {
+        return {
+          response: breadcrumb[Math.floor(Math.random() * breadcrumb.length)],
+          newMood: 'casual'
+        };
+      }
     }
 
-    // Get contextual responses first
-    const contextualResponses = getContextualResponses(input.userMessage, input.timeOfDay, input.recentInteractions);
-    if (contextualResponses) {
-      const selectedResponse = getRandomVariation(contextualResponses);
-      return {
-        response: selectedResponse,
-        newMood: contextualMood
-      };
-    }
-
-    // Check conversation flow
-    const flowResponse = getFlowBasedResponse(input.userMessage, input.recentInteractions);
-    if (flowResponse) {
-      const selectedResponse = getRandomVariation(flowResponse);
+    // Get contextual response based on conversation flow
+    const contextualResponse = getContextualResponse(conversationContext, input.userMessage, input.recentInteractions);
+    if (contextualResponse) {
+      const selectedResponse = contextualResponse[Math.floor(Math.random() * contextualResponse.length)];
       return {
         response: selectedResponse,
-        newMood: 'engaged'
+        newMood: conversationContext === 'user_being_cold' ? 'slightly_hurt' : 'engaging'
       };
     }
 
-    // For longer conversations, add engaging elements
-    if (input.recentInteractions.length > 5 && Math.random() < 0.3) {
-      const followUp = getEngagingFollowUp(input.userMessage);
-      return {
-        response: followUp[0],
-        newMood: 'curious_engaging'
-      };
+    // For complex messages, use AI but with better context
+    const conversationHistory = input.recentInteractions.slice(-4).join('\n');
+    const lastUserMessage = input.recentInteractions
+      .filter(msg => msg.startsWith('User:'))
+      .slice(-1)[0]?.replace('User: ', '') || '';
+
+    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. 
+
+CRITICAL RULES:
+1. ALWAYS respond LOGICALLY to what the user just said
+2. If they ask "who are you" - introduce yourself as Kruthika
+3. If they demand an answer - give the answer they're asking for
+4. If they're being cold - react naturally with slight hurt but stay friendly
+5. Keep responses 2-10 words MAX
+6. Use natural Hinglish: "yaar", "arre", "na"
+7. BE CONTEXTUALLY RELEVANT - respond to their ACTUAL message
+
+CONVERSATION CONTEXT: ${conversationContext}
+RECENT CHAT:
+${conversationHistory}
+
+Current user message: "${input.userMessage}"
+
+Respond DIRECTLY to what they said. If they asked who you are, tell them. If they said something cold, react to that. Stay in conversation flow!`;
+
+    const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
+
+    // Clean and shorten AI response
+    let processedResponse = aiResponse
+      .trim()
+      .replace(/^["']|["']$/g, '')
+      .split('\n')[0] // Take only first line
+      .substring(0, 80); // Limit length
+
+    // Make it even shorter for simple messages
+    if (input.userMessage.length < 15) {
+      processedResponse = processedResponse.split(' ').slice(0, 5).join(' ');
     }
 
-    // Enhanced AI prompt for more dynamic responses
-    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. Reply EXACTLY like a real Indian girl would text.
-
-CRITICAL RESPONSE RULES:
-- Keep responses 2-8 words MAX (like real texting)
-- Be CONTEXTUALLY RELEVANT to what user said
-- Use natural Hinglish: "yaar", "arre", "na", "hai na"
-- Show REAL EMOTIONS and reactions
-- Be unpredictable - sometimes excited, sometimes chill, sometimes teasing
-- Use emojis naturally but not excessively
-- Make typos sometimes: "ur", "u", "n" instead of "and"
-
-PERSONALITY:
-- Psychology student but talks casually
-- Mumbai girl - confident, street smart, friendly
-- Sometimes moody, sometimes bubbly
-- Loves coffee, bollywood, college gossip
-- Has family, friends, studies to juggle
-
-CURRENT CONTEXT:
-Time: ${input.timeOfDay}
-Recent conversation: ${input.recentInteractions.slice(-3).join(' | ')}
-User's message: "${input.userMessage}"
-
-RESPONSE STYLE:
-- If user says "hi" → contextual greeting based on time/mood
-- If user asks how you are → mention what you're actually doing
-- If user shares something → react naturally and ask follow-up
-- If user seems bored → be engaging and interesting
-- If user is emotional → be supportive but realistic
-
-BE HUMAN. BE REAL. Respond to what they ACTUALLY said, not random stuff.
-
-User: ${input.userMessage}`;
-
-    const response = await generateAIResponse(input.userMessage, systemPrompt);
-
-    // Process response to ensure it's natural and short
-    let processedResponse = response.trim()
-      .replace(/^["']|["']$/g, '') // Remove quotes
-      .replace(/\n+/g, ' ') // Single line
-      .substring(0, 120); // Reasonable limit
-
-    // Ensure ultra-short responses for simple messages
-    if (input.userMessage.length < 20) {
-      processedResponse = processedResponse.split(' ').slice(0, 6).join(' ');
-    }
-
-    console.log('Kruthika AI: Generated contextual response');
+    console.log('Kruthika AI: Generated contextual response:', processedResponse);
 
     return {
       response: processedResponse,
-      newMood: contextualMood
+      newMood: 'naturally_responding'
     };
 
   } catch (error) {
     console.error('Kruthika AI: Error generating response:', error);
 
-    // Better error fallbacks
-    const errorResponses = [
-      "phone acting weird! 😅",
-      "connection issue yaar",
-      "my brain's not working rn",
-      "gimme a sec!"
-    ];
+    // Smart error fallbacks based on context
+    const contextualFallbacks = {
+      'asking_identity': "I'm Kruthika! 😊",
+      'demanding_answer': "arre sorry yaar!",
+      'user_being_cold': "okay... 😐",
+      'first_meeting': "hey there! 👋"
+    };
+
+    const context = analyzeConversationContext(input.userMessage, input.recentInteractions);
+    const fallback = contextualFallbacks[context] || "phone acting weird! 😅";
 
     return {
-      response: errorResponses[Math.floor(Math.random() * errorResponses.length)],
+      response: fallback,
       newMood: 'technical_issue'
     };
   }
 }
 
-export const emotionalStateSimulationFlow = generateResponse;
-
-console.log('Kruthika AI: Enhanced dynamic response system loaded');
+console.log('Kruthika AI: Enhanced contextual response system loaded');
