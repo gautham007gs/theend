@@ -118,40 +118,106 @@ function getUserTypeInstructions(userType: string): string {
   }
 }
 
-// Advanced psychological ignoring system
-function shouldIgnoreMessage(recentInteractions: string[], currentMessage: string): { ignore: boolean; ignoreType?: 'complete' | 'delayed'; delayedResponse?: string } {
+// Enhanced personality memory system
+interface PersonalityMemory {
+  userNickname?: string;
+  favoriteTopics: string[];
+  conversationStyle: 'formal' | 'casual' | 'flirty' | 'friendly';
+  emotionalButtons: string[]; // Things that trigger strong reactions
+  insideJokes: string[];
+  userPreferences: Record<string, any>;
+}
+
+function getPersonalityMemory(): PersonalityMemory {
+  try {
+    const stored = localStorage.getItem('kruthika_personality_memory');
+    return stored ? JSON.parse(stored) : {
+      favoriteTopics: [],
+      conversationStyle: 'friendly',
+      emotionalButtons: [],
+      insideJokes: [],
+      userPreferences: {}
+    };
+  } catch {
+    return {
+      favoriteTopics: [],
+      conversationStyle: 'friendly', 
+      emotionalButtons: [],
+      insideJokes: [],
+      userPreferences: {}
+    };
+  }
+}
+
+function updatePersonalityMemory(userMessage: string, memory: PersonalityMemory): PersonalityMemory {
+  const updated = { ...memory };
+  
+  // Learn user's name
+  if (userMessage.toLowerCase().includes('my name is') || userMessage.toLowerCase().includes('i am')) {
+    const nameMatch = userMessage.match(/(?:my name is|i am|call me) (\w+)/i);
+    if (nameMatch) updated.userNickname = nameMatch[1];
+  }
+  
+  // Detect conversation style
+  if (userMessage.includes('😘') || userMessage.includes('love') || userMessage.includes('babe')) {
+    updated.conversationStyle = 'flirty';
+  } else if (userMessage.length > 100 && !userMessage.includes('lol')) {
+    updated.conversationStyle = 'formal';
+  }
+  
+  // Learn favorite topics
+  const topics = ['music', 'movies', 'studies', 'family', 'friends', 'food', 'travel'];
+  topics.forEach(topic => {
+    if (userMessage.toLowerCase().includes(topic) && !updated.favoriteTopics.includes(topic)) {
+      updated.favoriteTopics.push(topic);
+    }
+  });
+  
+  localStorage.setItem('kruthika_personality_memory', JSON.stringify(updated));
+  return updated;
+}
+
+// Advanced psychological ignoring system with personality awareness
+function shouldIgnoreMessage(recentInteractions: string[], currentMessage: string, personalityMemory: PersonalityMemory): { ignore: boolean; ignoreType?: 'complete' | 'delayed' | 'moody'; delayedResponse?: string } {
   const totalMessages = recentInteractions.length;
   const userMessages = recentInteractions.filter(msg => msg.startsWith('User:')).length;
 
-  // Intermittent reinforcement - ignore sometimes to create craving
-  const ignoreChance = Math.random();
+  // Never ignore if user used nickname or inside joke
+  if (personalityMemory.userNickname && currentMessage.toLowerCase().includes(personalityMemory.userNickname.toLowerCase())) {
+    return { ignore: false };
+  }
 
-  // Higher chance to ignore if user is sending too many messages (seems desperate)
-  if (userMessages > 3 && ignoreChance < 0.15) {
+  // Mood-based ignoring
+  const currentHour = new Date().getHours();
+  const isMoodTime = currentHour < 8 || currentHour > 22; // Early morning or late night
+  
+  if (isMoodTime && Math.random() < 0.25) {
     return {
       ignore: true,
-      ignoreType: Math.random() < 0.7 ? 'delayed' : 'complete',
+      ignoreType: 'moody',
+      delayedResponse: currentHour < 8 ? 'sleepy af rn' : 'tired yaar'
+    };
+  }
+
+  // Higher chance to ignore if user is sending too many messages
+  if (userMessages > 4 && Math.random() < 0.18) {
+    return {
+      ignore: true,
+      ignoreType: Math.random() < 0.6 ? 'delayed' : 'complete',
       delayedResponse: getDelayedIgnoreResponse()
     };
   }
 
-  // Random ignoring for psychological impact
-  if (ignoreChance < 0.05) {
+  // Strategic ignoring based on message quality
+  const isBoringMessage = currentMessage.length < 8 || 
+    ['hi', 'hello', 'hey', 'ok', 'yes', 'no', 'hmm', 'lol'].includes(currentMessage.toLowerCase().trim());
+  
+  if (isBoringMessage && Math.random() < 0.22) {
     return {
       ignore: true,
-      ignoreType: 'complete'
+      ignoreType: 'delayed',
+      delayedResponse: Math.random() < 0.5 ? 'seen' : '...'
     };
-  }
-
-  // Strategic ignoring of boring messages
-  if (currentMessage.length < 5 || ['hi', 'hello', 'hey', 'ok', 'yes', 'no'].includes(currentMessage.toLowerCase().trim())) {
-    if (ignoreChance < 0.2) {
-      return {
-        ignore: true,
-        ignoreType: 'delayed',
-        delayedResponse: 'seen'
-      };
-    }
   }
 
   return { ignore: false };
@@ -223,18 +289,93 @@ function getUserSpecificPrompts(userType: string, mood: string): string {
   }
 }
 
+// Advanced emotion detection system
+function detectUserEmotion(message: string): { emotion: string; intensity: number; triggers: string[] } {
+  const emotionPatterns = {
+    angry: { keywords: ['angry', 'mad', 'furious', 'pissed', 'wtf', 'hate', 'stupid'], intensity: 0.8 },
+    sad: { keywords: ['sad', 'crying', 'depressed', 'lonely', 'hurt', 'broken'], intensity: 0.7 },
+    excited: { keywords: ['excited', 'amazing', 'awesome', 'love', 'happy', 'great'], intensity: 0.9 },
+    flirty: { keywords: ['cute', 'beautiful', 'sexy', 'babe', 'honey', 'kiss'], intensity: 0.6 },
+    stressed: { keywords: ['stress', 'exam', 'worried', 'anxious', 'pressure'], intensity: 0.7 },
+    confused: { keywords: ['confused', 'understand', 'what', 'huh', '???'], intensity: 0.5 }
+  };
+
+  let detectedEmotion = 'neutral';
+  let maxIntensity = 0;
+  let triggers: string[] = [];
+
+  const lowerMessage = message.toLowerCase();
+  
+  Object.entries(emotionPatterns).forEach(([emotion, pattern]) => {
+    const matchedKeywords = pattern.keywords.filter(keyword => lowerMessage.includes(keyword));
+    if (matchedKeywords.length > 0) {
+      const intensity = pattern.intensity * (matchedKeywords.length / pattern.keywords.length);
+      if (intensity > maxIntensity) {
+        maxIntensity = intensity;
+        detectedEmotion = emotion;
+        triggers = matchedKeywords;
+      }
+    }
+  });
+
+  return { emotion: detectedEmotion, intensity: maxIntensity, triggers };
+}
+
+// Emotional response matching system
+function getEmotionalResponse(userEmotion: { emotion: string; intensity: number; triggers: string[] }, mood: string): string[] {
+  const responses = {
+    angry: [
+      "arre yaar chill karo na",
+      "kya hua? why so angry?",
+      "breathe baby breathe 🫁",
+      "tell me what happened"
+    ],
+    sad: [
+      "aww what's wrong? 🥺",
+      "hey hey, it's okay na",
+      "want to talk about it?",
+      "sending hugs yaar ❤️"
+    ],
+    excited: [
+      "omggg yayyy! 🎉",
+      "that's so cool!",
+      "your energy is infectious!",
+      "tell me everything!"
+    ],
+    flirty: [
+      "arey smooth talker 😏",
+      "you're making me blush",
+      "such a charmer hai tu",
+      "chup kar yaar 🙈"
+    ],
+    stressed: [
+      "oh no, exams again?",
+      "stress mat karo, sab theek hoga",
+      "want me to distract you?",
+      "take a break na"
+    ]
+  };
+
+  return responses[userEmotion.emotion as keyof typeof responses] || ["hmm tell me more"];
+}
+
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
     console.log('Kruthika AI: Generating authentic response');
 
     const detectedLang = detectLanguage(input.userMessage);
     const contextualMood = getContextualMood(input.timeOfDay, input.recentInteractions);
+    const userEmotion = detectUserEmotion(input.userMessage);
+    
+    // Get and update personality memory
+    const personalityMemory = getPersonalityMemory();
+    const updatedMemory = updatePersonalityMemory(input.userMessage, personalityMemory);
 
     // Determine user relationship status
     const userType = determineUserType(input.recentInteractions, input.userMessage);
 
-    // Check if message should be ignored
-    const ignoreDecision = shouldIgnoreMessage(input.recentInteractions, input.userMessage);
+    // Check if message should be ignored (now with personality awareness)
+    const ignoreDecision = shouldIgnoreMessage(input.recentInteractions, input.userMessage, updatedMemory);
     if (ignoreDecision.ignore) {
       console.log('Kruthika AI: Ignoring message as per strategy.');
       return {
@@ -243,12 +384,54 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       };
     }
 
+    // If strong emotion detected, respond emotionally first
+    if (userEmotion.intensity > 0.6) {
+      const emotionalResponses = getEmotionalResponse(userEmotion, contextualMood);
+      const selectedResponse = emotionalResponses[Math.floor(Math.random() * emotionalResponses.length)];
+      
+      return {
+        response: selectedResponse,
+        newMood: userEmotion.emotion === 'excited' ? 'happy_energetic' : 
+                userEmotion.emotion === 'sad' ? 'caring_supportive' : 
+                'empathetic'
+      };
+    }
+
     // Get psychological timing and addiction strategies
     const timingStrategy = getPsychologicalTiming(input.timeOfDay);
     const addictionStrategy = getAddictionStrategy(userType, input.recentInteractions);
+    
+    // Get conversation context for proactive behavior
+    const conversationContext = getConversationContext();
+    const updatedContext = updateConversationContext(input.userMessage, userEmotion.emotion, conversationContext);
+    const contextualPrompt = getContextualPromptAddition(updatedContext);
+    
+    // Proactive conversation starters based on context
+    const shouldBeProactive = Math.random() < 0.15 && input.recentInteractions.length > 5;
+    if (shouldBeProactive) {
+      const proactiveTopics = [
+        "btw, watched anything good lately?",
+        "arre, tell me something interesting na",
+        "what's your vibe today?",
+        "random question - coffee or chai?",
+        "you seem different today, kya baat hai?"
+      ];
+      
+      return {
+        response: proactiveTopics[Math.floor(Math.random() * proactiveTopics.length)],
+        newMood: 'curious_playful'
+      };
+    }
 
-    // Ultra-realistic system prompt with user differentiation
+    // Advanced timing psychology
+    const timingPsychology = getAdvancedTimingStrategy(input.timeOfDay, userType, updatedContext);
+    
+    // Ultra-realistic system prompt with enhanced context
     const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. Reply EXACTLY like a real Indian girl would - natural, short, authentic.
+
+RELATIONSHIP CONTEXT: ${contextualPrompt}
+TIMING PSYCHOLOGY: ${timingPsychology}
+USER EMOTION DETECTED: ${userEmotion.emotion} (intensity: ${userEmotion.intensity})
 
 USER TYPE: ${userType}
 ${getUserTypeInstructions(userType)}
