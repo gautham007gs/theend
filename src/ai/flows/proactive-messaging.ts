@@ -1,5 +1,3 @@
-'use server';
-
 /**
  * @fileOverview Proactive AI Messaging System
  * AI sends messages first without waiting for user input - makes conversations feel more real
@@ -81,8 +79,9 @@ function getTimeBasedProactiveChance(timeOfDay: string): number {
   return chances[timeOfDay as keyof typeof chances] || 0.08;
 }
 
-// Generate contextual proactive message
+// Generate contextual proactive message  
 export async function generateProactiveMessage(input: ProactiveMessageInput): Promise<ProactiveMessageOutput> {
+  'use server';
   try {
     // First check if we should send a message
     if (!shouldSendProactiveMessage(input)) {
