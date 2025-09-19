@@ -14,6 +14,7 @@ import { getConversationContext } from '@/ai/flows/conversation-memory';
 import { generateOfflineMessage, type OfflineMessageInput } from '@/ai/flows/offline-message-generation';
 import { generateProactiveMessage } from '@/ai/flows/proactive-messaging-actions';
 import { type ProactiveMessageInput } from '@/ai/flows/proactive-messaging';
+import { sendMessage } from './actions';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -956,7 +957,21 @@ const KruthikaChatPage: NextPage = () => {
         currentIgnoreUntil: currentIgnoreTime
       };
 
-      const aiResult: EmotionalStateOutput = await generateResponse(aiInput);
+      const serverResult = await sendMessage(text, aiMood, updatedRecentInteractions);
+      
+      if (!serverResult.success) {
+        throw new Error(serverResult.error || 'Failed to get AI response');
+      }
+      
+      // Convert server result to expected format
+      const aiResult: EmotionalStateOutput = {
+        response: serverResult.response || '',
+        newMood: serverResult.newMood || aiMood,
+        proactiveImageUrl: serverResult.proactiveImageUrl,
+        proactiveAudioUrl: serverResult.proactiveAudioUrl,
+        mediaCaption: serverResult.mediaCaption,
+        newIgnoreUntil: serverResult.wasIgnored ? Date.now() + (10 * 60 * 1000) : undefined // 10 min ignore if ignored
+      };
 
       // Handle ignore/busy persistence from server response
       if (aiResult.newIgnoreUntil) {
