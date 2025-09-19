@@ -322,21 +322,21 @@ const shouldAIBeBusyServerSafe = (
   if (userType) {
     const { dailyMessageCount, relationshipLevel, totalDaysActive } = userType;
     
-    // New user: NEVER be busy in first few interactions to build engagement
-    if (dailyMessageCount <= 3 && relationshipLevel < 0.2 && totalDaysActive <= 1) {
+    // New user: NEVER be busy in first 15 interactions to build engagement
+    if (dailyMessageCount <= 15 && relationshipLevel < 0.5 && totalDaysActive <= 3) {
       console.log('Kruthika AI: New user detected - staying available!');
       return { shouldIgnore: false };
     }
     
-    if (dailyMessageCount <= 8 && relationshipLevel < 0.4 && totalDaysActive <= 3) {
+    if (dailyMessageCount <= 25 && relationshipLevel < 0.6 && totalDaysActive <= 7) {
       userCategory = 'new';
     }
     // Old/addicted user: can be busy more often
-    else if (dailyMessageCount > 25 && relationshipLevel > 0.8 && totalDaysActive > 15) {
+    else if (dailyMessageCount > 50 && relationshipLevel > 0.8 && totalDaysActive > 20) {
       userCategory = 'old';
     }
     // Engaged user: balanced approach
-    else if (dailyMessageCount > 12 && relationshipLevel > 0.6) {
+    else if (dailyMessageCount > 30 && relationshipLevel > 0.7) {
       userCategory = 'engaged';
     }
   }
@@ -348,56 +348,56 @@ const shouldAIBeBusyServerSafe = (
   if (istHour >= 20 || istHour <= 0) {
     console.log('Kruthika AI: Peak chat time - staying available!');
     if (userCategory === 'new') return { shouldIgnore: false }; // Never busy for new users
-    if (Math.random() > 0.95) { // Only 5% chance to be busy during peak hours
+    if (Math.random() > 0.98) { // Only 2% chance to be busy during peak hours
       const reason = getDynamicBusyReason(istHour, userCategory);
       return { 
         shouldIgnore: true, 
-        newIgnoreUntil: Date.now() + (10 + Math.random() * 20) * 60 * 1000, // 10-30 min
+        newIgnoreUntil: Date.now() + (5 + Math.random() * 10) * 60 * 1000, // 5-15 min only
         busyReason: reason
       };
     }
     return { shouldIgnore: false };
   }
   
-  // Base busy chance varies by user type and time
-  let baseBusyChance = 0.08;
+  // Base busy chance varies by user type and time - MUCH REDUCED
+  let baseBusyChance = 0.02; // Reduced from 0.08 to 0.02
   
   switch (userCategory) {
     case 'new':
-      baseBusyChance = 0.01; // Almost never busy for new users
+      baseBusyChance = 0.003; // Almost never busy for new users (0.3%)
       break;
     case 'engaged':
-      baseBusyChance = 0.05; // Low chance for engaged users
+      baseBusyChance = 0.01; // Very low chance for engaged users (1%)
       break;
     case 'old':
-      baseBusyChance = 0.15; // Higher chance for addicted users
+      baseBusyChance = 0.04; // Still reasonable for old users (4%)
       break;
   }
 
-  // Adjust based on time psychology
+  // Adjust based on time psychology - REDUCED MULTIPLIERS
   let timeMultiplier = 1.0;
   if (istHour >= 9 && istHour <= 17) {
-    timeMultiplier = 2.5; // More likely busy during work/college hours
+    timeMultiplier = 1.5; // Reduced from 2.5 to 1.5
   } else if (istHour >= 1 && istHour <= 6) {
-    timeMultiplier = 4.0; // Much more likely busy during sleep hours
+    timeMultiplier = 2.0; // Reduced from 4.0 to 2.0
   } else if (istHour >= 17 && istHour <= 20) {
-    timeMultiplier = 1.2; // Slightly busy during evening prep time
+    timeMultiplier = 1.1; // Reduced from 1.2 to 1.1
   }
 
   const finalChance = baseBusyChance * timeMultiplier;
   
   if (Math.random() < finalChance) {
-    // Get dynamic reason and realistic duration
+    // Get dynamic reason and realistic duration - SHORTER DURATIONS
     const reason = getDynamicBusyReason(istHour, userCategory);
     let ignoreMinutes;
-    const userMultiplier = userCategory === 'new' ? 0.3 : (userCategory === 'old' ? 1.8 : 1.0);
+    const userMultiplier = userCategory === 'new' ? 0.2 : (userCategory === 'old' ? 1.2 : 0.8);
     
     if (istHour >= 9 && istHour <= 17) {
-      ignoreMinutes = (8 + Math.random() * 22) * userMultiplier; // 8-30 min during day
+      ignoreMinutes = (3 + Math.random() * 7) * userMultiplier; // 3-10 min during day
     } else if (istHour >= 1 && istHour <= 6) {
-      ignoreMinutes = (90 + Math.random() * 150) * userMultiplier; // 1.5-4 hours sleep
+      ignoreMinutes = (30 + Math.random() * 60) * userMultiplier; // 30-90 min sleep
     } else {
-      ignoreMinutes = (5 + Math.random() * 15) * userMultiplier; // 5-20 min other times
+      ignoreMinutes = (2 + Math.random() * 8) * userMultiplier; // 2-10 min other times
     }
 
     const newIgnoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);

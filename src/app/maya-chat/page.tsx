@@ -225,10 +225,10 @@ const shouldIgnoreMessage = (): boolean => {
     return true; // Already ignoring
   }
   
-  // 12% chance to start ignoring (reduced for better UX)
-  if (Math.random() < 0.12) {
-    // Ignore for 3-15 minutes (shorter, more realistic)
-    const ignoreMinutes = 3 + Math.random() * 12;
+  // Much reduced ignore chance - only 2% for better UX
+  if (Math.random() < 0.02) {
+    // Shorter ignore periods (1-5 minutes)
+    const ignoreMinutes = 1 + Math.random() * 4;
     const ignoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
     localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
     return true;
