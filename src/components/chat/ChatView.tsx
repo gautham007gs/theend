@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
-import type { Message } from '@/types';
+import type { Message, MessageReaction } from '@/types';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 
@@ -11,9 +11,11 @@ interface ChatViewProps {
   isAiTyping: boolean;
   onTriggerAd?: () => void; // New prop for handling ad clicks from bubbles
   onQuickReply?: (replyText: string, originalMessage: Message) => void;
+  onLikeMessage?: (messageId: string) => void;
+  onReactToMessage?: (messageId: string, reaction: MessageReaction) => void;
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd, onQuickReply }) => {
+const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -34,6 +36,8 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
             aiName={aiName} 
             onTriggerAd={onTriggerAd} // Pass down the callback
             onQuickReply={onQuickReply} // Pass down quick reply callback
+            onLikeMessage={onLikeMessage} // Pass down like callback
+            onReactToMessage={onReactToMessage} // Pass down reaction callback
         />
       ))}
       {isAiTyping && <TypingIndicator avatarUrl={aiAvatarUrl} />}

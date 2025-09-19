@@ -1,5 +1,6 @@
 
 export type MessageStatus = 'sent' | 'delivered' | 'read';
+export type MessageReaction = 'heart' | 'thumbs_up' | 'laugh' | 'angry' | 'sad' | 'wow';
 
 export interface Message {
   id: string;
@@ -10,6 +11,16 @@ export interface Message {
   aiImageUrl?: string;
   userImageUrl?: string;
   audioUrl?: string;
+  reaction?: MessageReaction;
+  isLiked?: boolean;
+  deliveredAt?: Date;
+  readAt?: Date;
+}
+
+export interface EmotionalStateOutput {
+  response: string;
+  newMood: string;
+  newIgnoreUntil?: number; // For client to update localStorage
 }
 
 export interface AIProfile {

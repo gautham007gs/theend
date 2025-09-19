@@ -22,6 +22,7 @@ export interface EmotionalStateInput {
   missedMessages?: Array<{id: string, text: string, timestamp: number}>;
   hasBeenOffline?: boolean;
   isQuickReply?: boolean; // New field to identify quick replies
+  currentIgnoreUntil?: number | null; // Server-safe ignore state for persistence
 }
 
 export interface EmotionalStateOutput {
@@ -30,6 +31,7 @@ export interface EmotionalStateOutput {
   proactiveImageUrl?: string;
   proactiveAudioUrl?: string;
   newMood?: string;
+  newIgnoreUntil?: number; // For client to update localStorage with ignore timing
 }
 
 // Analyze conversation context for proper flow
@@ -259,55 +261,60 @@ const shouldUseBreadcrumb = (userMessage: string, recentInteractions: string[]):
   return false;
 };
 
-// Simulate AI being busy or ignoring messages
-const AI_IGNORE_UNTIL_KEY = 'kruthika_ai_ignore_until';
-const shouldAIBeBusy = (): boolean => {
-  // Only trigger ignore if not already ignoring
-  const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
-  if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
-    return true; // Already ignoring
+// Pure server-safe function to determine if AI should be busy
+// Client will pass current ignore state to avoid server-side localStorage access
+const shouldAIBeBusyServerSafe = (currentIgnoreUntil: number | null): { shouldIgnore: boolean; newIgnoreUntil?: number } => {
+  // If already ignoring and time hasn't expired
+  if (currentIgnoreUntil && Date.now() < currentIgnoreUntil) {
+    return { shouldIgnore: true };
   }
 
   // More realistic busy patterns - higher chance during college hours
   const now = new Date();
-  const hour = now.getHours();
+  // Use IST timezone for consistency
+  const istHour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', hour12: false }));
   let busyChance = 0.08; // Base 8% chance
 
-  // Higher chance during typical college/work hours
-  if (hour >= 9 && hour <= 17) {
+  // Higher chance during typical college/work hours in IST
+  if (istHour >= 9 && istHour <= 17) {
     busyChance = 0.15; // 15% during day
-  } else if (hour >= 22 || hour <= 6) {
+  } else if (istHour >= 22 || istHour <= 6) {
     busyChance = 0.25; // 25% late night/early morning
   }
 
   if (Math.random() < busyChance) {
-    // Realistic busy durations based on time
+    // Realistic busy durations based on IST time
     let ignoreMinutes;
-    if (hour >= 9 && hour <= 17) {
+    if (istHour >= 9 && istHour <= 17) {
       ignoreMinutes = 5 + Math.random() * 25; // 5-30 min during day (classes/work)
-    } else if (hour >= 22 || hour <= 6) {
+    } else if (istHour >= 22 || istHour <= 6) {
       ignoreMinutes = 60 + Math.random() * 180; // 1-4 hours at night (sleeping)
     } else {
       ignoreMinutes = 3 + Math.random() * 12; // 3-15 min other times
     }
 
-    const ignoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
-    localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
-    return true;
+    const newIgnoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
+    return { shouldIgnore: true, newIgnoreUntil };
   }
-  return false;
+  
+  return { shouldIgnore: false };
 };
 
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
     console.log('Kruthika AI: Analyzing conversation context...');
 
-    // Check if AI should be busy/ignore
-    if (shouldAIBeBusy()) {
+    // Check if AI should be busy/ignore using server-safe function
+    // Client should pass current ignore state to avoid localStorage access
+    const currentIgnoreUntil = (input as any).currentIgnoreUntil || null;
+    const busyResult = shouldAIBeBusyServerSafe(currentIgnoreUntil);
+    
+    if (busyResult.shouldIgnore) {
       console.log('Kruthika AI: Busy, ignoring message.');
       return {
         response: getMissedMessageResponse([{ id: 'fake', text: 'Busy', timestamp: Date.now() }])[0],
-        newMood: 'busy'
+        newMood: 'busy',
+        newIgnoreUntil: busyResult.newIgnoreUntil // Pass back to client for localStorage update
       };
     }
 

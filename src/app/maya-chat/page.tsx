@@ -7,7 +7,7 @@ import Image from 'next/image';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatView from '@/components/chat/ChatView';
 import ChatInput from '@/components/chat/ChatInput';
-import type { Message, AIProfile, MessageStatus, AdSettings, AIMediaAssetsConfig } from '@/types';
+import type { Message, AIProfile, MessageStatus, AdSettings, AIMediaAssetsConfig, MessageReaction } from '@/types';
 import { defaultAIProfile, defaultAdSettings, defaultAIMediaAssetsConfig, DEFAULT_ADSTERRA_DIRECT_LINK, DEFAULT_MONETAG_DIRECT_LINK } from '@/config/ai'; 
 import { generateResponse, type EmotionalStateInput, type EmotionalStateOutput } from '@/ai/flows/emotional-state-simulation';
 import { generateOfflineMessage, type OfflineMessageInput } from '@/ai/flows/offline-message-generation';
@@ -704,11 +704,47 @@ const KruthikaChatPage: NextPage = () => {
     const updatedRecentInteractions = [...recentInteractions, interactionMessage].slice(-10);
     setRecentInteractions(updatedRecentInteractions);
 
+    // More realistic message status progression with IST timing
+    const deliveredDelay = (() => {
+      // Use IST timezone consistently
+      const istHour = parseInt(new Date().toLocaleString('en-US', { 
+        timeZone: 'Asia/Kolkata', 
+        hour: '2-digit', 
+        hour12: false 
+      }));
+      const baseDelay = 500; // Slower than before
+      
+      // Faster during active hours (9 AM - 11 PM IST)
+      if (istHour >= 9 && istHour <= 23) {
+        return baseDelay + Math.random() * 800; // 0.5-1.3s
+      }
+      // Slower during night/early morning (simulate sleeping)
+      return baseDelay + Math.random() * 4000 + 2000; // 2.5-6.5s
+    })();
+
+    // Schedule delivery status update with timestamp
     setTimeout(() => {
         setMessages(prev => prev.map(msg =>
-          msg.id === newUserMessage.id ? { ...msg, status: 'delivered' as MessageStatus } : msg
+          msg.id === newUserMessage.id ? { 
+            ...msg, 
+            status: 'delivered' as MessageStatus,
+            deliveredAt: new Date()
+          } : msg
         ));
-    }, 300 + Math.random() * 200);
+    }, deliveredDelay);
+
+    // Schedule read status update when AI responds (realistic delay)
+    const scheduleReadReceipt = (messageId: string, delay: number = 2000) => {
+      setTimeout(() => {
+        setMessages(prev => prev.map(msg =>
+          msg.id === messageId ? { 
+            ...msg, 
+            status: 'read' as MessageStatus,
+            readAt: new Date()
+          } : msg
+        ));
+      }, delay);
+    };
 
     // Realistic typing delay - slower, more human-like patterns
     const calculateTypingDelay = (text: string): number => {
@@ -742,6 +778,10 @@ const KruthikaChatPage: NextPage = () => {
       const emotionalState = localStorage.getItem(USER_EMOTIONAL_STATE_KEY) || 'neutral';
       const dailyMsgCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
       
+      // Get current ignore state for server-safe AI function
+      const currentIgnoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
+      const currentIgnoreTime = currentIgnoreUntil ? parseInt(currentIgnoreUntil) : null;
+
       const aiInput: EmotionalStateInput = {
         userMessage: text,
         userImageUri: currentImageUri,
@@ -758,10 +798,17 @@ const KruthikaChatPage: NextPage = () => {
         // Add missed message context
         missedMessages: shouldRespondToMissedMessages ? missedMessages : undefined,
         hasBeenOffline: missedMessages.length > 0,
-        isQuickReply: isQuickReply
+        isQuickReply: isQuickReply,
+        // Server-safe ignore state
+        currentIgnoreUntil: currentIgnoreTime
       };
 
       const aiResult: EmotionalStateOutput = await generateResponse(aiInput);
+
+      // Handle ignore/busy persistence from server response
+      if (aiResult.newIgnoreUntil) {
+        localStorage.setItem(AI_IGNORE_UNTIL_KEY, aiResult.newIgnoreUntil.toString());
+      }
 
       if (aiResult.proactiveImageUrl || aiResult.proactiveAudioUrl) {
         if (adSettings && adSettings.adsEnabledGlobally) {
@@ -806,12 +853,11 @@ const KruthikaChatPage: NextPage = () => {
           timestamp: new Date(),
           status: 'read',
         };
-        setMessages(prev => {
-          const userMessageRead = prev.map(msg =>
-            msg.id === newUserMessage.id && msg.status !== 'read' ? { ...msg, status: 'read' as MessageStatus } : msg
-          );
-          return [...userMessageRead, newAiMessage];
-        });
+        setMessages(prev => [...prev, newAiMessage]);
+        
+        // Schedule realistic read receipt after AI starts typing (not immediate)
+        const readReceiptDelay = Math.random() * 3000 + 1000; // 1-4 seconds delay
+        scheduleReadReceipt(newUserMessage.id, readReceiptDelay);
         if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
         setRecentInteractions(prevInteractions => [...prevInteractions, `AI: ${responseText}`].slice(-10));
         await logAiMessageToSupabase(responseText, newAiMessageId, false, false);
@@ -1082,6 +1128,32 @@ const KruthikaChatPage: NextPage = () => {
     });
   };
 
+  const handleLikeMessage = (messageId: string) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? { ...msg, isLiked: !msg.isLiked } : msg
+    ));
+    
+    // Add subtle feedback
+    toast({
+      title: "❤️ Liked",
+      description: "You liked this message",
+      duration: 1000,
+    });
+  };
+
+  const handleReactToMessage = (messageId: string, reaction: MessageReaction) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? { ...msg, reaction } : msg
+    ));
+    
+    // Add subtle feedback
+    toast({
+      title: "🎉 Reaction Added", 
+      description: `Reacted with ${reaction}`,
+      duration: 1000,
+    });
+  };
+
   const displayAIProfile = globalAIProfile || defaultAIProfile;
 
   if (isLoadingAIProfile || !globalAIProfile || isLoadingAdSettings || isLoadingMediaAssets || isLoadingChatState ) {
@@ -1105,6 +1177,8 @@ const KruthikaChatPage: NextPage = () => {
         isAiTyping={isAiTyping} 
         onTriggerAd={handleBubbleAdTrigger}
         onQuickReply={handleQuickReply}
+        onLikeMessage={handleLikeMessage}
+        onReactToMessage={handleReactToMessage}
       />
 
       {showInterstitialAd && (

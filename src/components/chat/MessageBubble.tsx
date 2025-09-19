@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Check, CheckCheck, Reply, Heart, ThumbsUp, Smile } from 'lucide-react';
-import type { Message, MessageStatus } from '@/types';
+import type { Message, MessageStatus, MessageReaction } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,9 +14,11 @@ interface MessageBubbleProps {
   aiName: string;
   onTriggerAd?: () => void;
   onQuickReply?: (replyText: string, originalMessage: Message) => void;
+  onLikeMessage?: (messageId: string) => void;
+  onReactToMessage?: (messageId: string, reaction: MessageReaction) => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage }) => {
   const isUser = message.sender === 'user';
   const timestamp = new Date(message.timestamp);
   
@@ -29,6 +31,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const bubbleRef = useRef<HTMLDivElement>(null);
   const swipeThreshold = 80; // Minimum swipe distance to trigger
   const maxSwipeDistance = 120; // Maximum swipe distance
+
+  // Double tap to like state
+  const [showHeartAnimation, setShowHeartAnimation] = useState(false);
+  const lastTapRef = useRef<number>(0);
+  const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const DOUBLE_TAP_DELAY = 300;
 
   // Quick reply options based on message content and sender
   const getQuickReplies = () => {
@@ -70,14 +78,20 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     const deltaX = touchX - touchStartX.current;
     const deltaY = touchY - touchStartY.current;
     
-    // Only consider horizontal swipes (ignore vertical scrolling)
-    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+    // More strict threshold for horizontal swipes (WhatsApp-like)
+    if (Math.abs(deltaY) > 30 || Math.abs(deltaX) < 15) return;
     
-    // Swipe right to reply
-    if (deltaX > 10) {
+    // Swipe right to reply with enhanced feedback
+    if (deltaX > 15) {
       setIsDragging(true);
-      const clampedOffset = Math.min(deltaX, maxSwipeDistance);
+      // Smooth resistance curve like WhatsApp
+      const clampedOffset = Math.min(deltaX * 0.8, maxSwipeDistance);
       setSwipeOffset(clampedOffset);
+      
+      // Haptic feedback at threshold points
+      if (deltaX > swipeThreshold && !showQuickReplies) {
+        if (navigator.vibrate) navigator.vibrate(10); // Subtle feedback
+      }
       
       // Prevent scrolling while swiping
       e.preventDefault();
@@ -89,10 +103,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     
     if (swipeOffset > swipeThreshold && !showQuickReplies) {
       setShowQuickReplies(true);
-      // Add haptic feedback if available
-      if (navigator.vibrate) navigator.vibrate(50);
+      // Stronger haptic feedback for action completion
+      if (navigator.vibrate) navigator.vibrate([30, 10, 30]);
     }
     
+    // Smooth animation back to position
     setSwipeOffset(0);
     setIsDragging(false);
   };
@@ -102,6 +117,40 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       onQuickReply(replyText, message);
     }
     setShowQuickReplies(false);
+  };
+
+  // Double-tap to like handler
+  const handleDoubleTap = () => {
+    if (!isUser && onLikeMessage) {
+      onLikeMessage(message.id);
+      setShowHeartAnimation(true);
+      // Add haptic feedback
+      if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+      
+      // Hide heart animation after 2 seconds
+      setTimeout(() => setShowHeartAnimation(false), 2000);
+    }
+  };
+
+  const handleTap = () => {
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapRef.current;
+    
+    if (timeSinceLastTap < DOUBLE_TAP_DELAY) {
+      // This is a double tap
+      if (tapTimeoutRef.current) {
+        clearTimeout(tapTimeoutRef.current);
+        tapTimeoutRef.current = null;
+      }
+      handleDoubleTap();
+    } else {
+      // This might be a single tap, wait to see if there's another
+      lastTapRef.current = now;
+      tapTimeoutRef.current = setTimeout(() => {
+        tapTimeoutRef.current = null;
+        // Handle single tap if needed (currently no action)
+      }, DOUBLE_TAP_DELAY);
+    }
   };
 
   // Close quick replies when clicking outside
@@ -118,14 +167,43 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     }
   }, [showQuickReplies]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (tapTimeoutRef.current) {
+        clearTimeout(tapTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
   };
 
   const renderTicks = (status: MessageStatus) => {
     if (!isUser) return null;
-    if (status === 'read') return <CheckCheck className="h-4 w-4 text-blue-500 ml-1" />;
-    if (status === 'delivered') return <CheckCheck className="h-4 w-4 text-muted-foreground ml-1" />;
+    
+    // Use readAt timestamp if available, otherwise fall back to timestamp
+    const readTime = message.readAt || timestamp;
+    const deliveryTime = message.deliveredAt || timestamp;
+    const now = new Date();
+    
+    if (status === 'read') {
+      const timeSinceRead = now.getTime() - readTime.getTime();
+      
+      // More realistic timing - show online indicator based on when actually read
+      let tickClass = 'text-blue-500'; // Default read (blue)
+      if (timeSinceRead < 30 * 1000) {
+        tickClass = 'text-green-500'; // Very recent read (green - she's online)
+      } else if (timeSinceRead < 2 * 60 * 1000) {
+        tickClass = 'text-blue-400'; // Recent read
+      }
+      
+      return <CheckCheck className={`h-4 w-4 ${tickClass} ml-1`} />;
+    }
+    if (status === 'delivered') {
+      return <CheckCheck className="h-4 w-4 text-muted-foreground ml-1" />;
+    }
     return <Check className="h-4 w-4 text-muted-foreground ml-1" />;
   };
 
@@ -213,19 +291,27 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         )}
-        {/* Reply icon that appears during swipe */}
-        {!isUser && swipeOffset > 20 && (
+        {/* Enhanced WhatsApp-like reply icon that appears during swipe */}
+        {!isUser && swipeOffset > 15 && (
           <div 
-            className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 text-muted-foreground z-10"
-            style={{ opacity: Math.min(swipeOffset / swipeThreshold, 1) }}
+            className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-100"
+            style={{ 
+              opacity: Math.min(swipeOffset / swipeThreshold, 1),
+              transform: `translateY(-50%) scale(${Math.min(0.8 + (swipeOffset / swipeThreshold) * 0.4, 1.2)})`,
+            }}
           >
-            <Reply className="h-5 w-5" />
+            <div className={cn(
+              "flex items-center justify-center w-8 h-8 rounded-full transition-colors duration-200",
+              swipeOffset > swipeThreshold ? "bg-blue-500/20 text-blue-600" : "bg-muted/30 text-muted-foreground"
+            )}>
+              <Reply className="h-4 w-4" />
+            </div>
           </div>
         )}
         
         <div
           className={cn(
-            'px-3 py-2 shadow-md break-words transition-transform duration-100',
+            'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
             isUser
               ? 'bg-chat-bg-user text-chat-text-user rounded-lg rounded-br-sm'
               : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
@@ -237,6 +323,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onClick={handleTap}
         >
           {isValidImageSrc && imageToShowUrl && (
             <Image
@@ -264,31 +351,51 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               {formatTime(timestamp)}
             </span>
             {renderTicks(message.status)}
+            {message.isLiked && (
+              <Heart className="h-3 w-3 text-red-500 ml-1 fill-current" />
+            )}
           </div>
+          
+          {/* Heart animation overlay for double-tap */}
+          {showHeartAnimation && !isUser && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <Heart 
+                className="h-8 w-8 text-red-500 fill-current animate-ping" 
+                style={{
+                  animationDuration: '0.5s',
+                  animationIterationCount: '4'
+                }}
+              />
+            </div>
+          )}
         </div>
         
-        {/* Quick Reply Options */}
+        {/* Enhanced Quick Reply Options with WhatsApp-like styling */}
         {showQuickReplies && !isUser && (
-          <div className="absolute top-full left-0 mt-2 flex flex-wrap gap-2 bg-background/95 backdrop-blur-sm rounded-lg p-2 shadow-lg border z-20 max-w-[280px]">
+          <div className="absolute top-full left-0 mt-2 flex flex-wrap gap-2 bg-background/98 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-border/50 z-20 max-w-[300px] animate-in slide-in-from-left-2 fade-in-0 duration-200">
+            <div className="flex items-center gap-1 mb-2 w-full">
+              <Reply className="h-3 w-3 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground font-medium">Quick Reply</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs px-1 py-1 h-auto min-h-[20px] rounded-full text-muted-foreground hover:text-foreground ml-auto"
+                onClick={() => setShowQuickReplies(false)}
+              >
+                ✕
+              </Button>
+            </div>
             {getQuickReplies().slice(0, 6).map((reply, index) => (
               <Button
                 key={index}
                 variant="outline"
                 size="sm"
-                className="text-xs px-2 py-1 h-auto min-h-[28px] rounded-full bg-card hover:bg-accent transition-colors"
+                className="text-xs px-3 py-2 h-auto min-h-[32px] rounded-full bg-card hover:bg-accent hover:scale-105 transition-all duration-200 border-border/30"
                 onClick={() => handleQuickReplySelect(reply)}
               >
                 {reply}
               </Button>
             ))}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs px-2 py-1 h-auto min-h-[28px] rounded-full text-muted-foreground hover:text-foreground"
-              onClick={() => setShowQuickReplies(false)}
-            >
-              ✕
-            </Button>
           </div>
         )}
       </div>
