@@ -9,7 +9,7 @@ import ChatView from '@/components/chat/ChatView';
 import ChatInput from '@/components/chat/ChatInput';
 import type { Message, AIProfile, MessageStatus, AdSettings, AIMediaAssetsConfig, MessageReaction } from '@/types';
 import { defaultAIProfile, defaultAdSettings, defaultAIMediaAssetsConfig, DEFAULT_ADSTERRA_DIRECT_LINK, DEFAULT_MONETAG_DIRECT_LINK } from '@/config/ai'; 
-import { generateResponse, type EmotionalStateInput, type EmotionalStateOutput } from '@/ai/flows/emotional-state-simulation';
+import type { EmotionalStateInput, EmotionalStateOutput } from '@/ai/flows/emotional-state-simulation';
 import { getConversationContext } from '@/ai/flows/conversation-memory';
 import { generateOfflineMessage, type OfflineMessageInput } from '@/ai/flows/offline-message-generation';
 import { generateProactiveMessage } from '@/ai/flows/proactive-messaging-actions';
