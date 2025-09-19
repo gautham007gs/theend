@@ -261,39 +261,82 @@ const shouldUseBreadcrumb = (userMessage: string, recentInteractions: string[]):
   return false;
 };
 
-// Pure server-safe function to determine if AI should be busy
-// Client will pass current ignore state to avoid server-side localStorage access
-const shouldAIBeBusyServerSafe = (currentIgnoreUntil: number | null): { shouldIgnore: boolean; newIgnoreUntil?: number } => {
+// Enhanced user-type aware function to determine if AI should be busy
+// Client will pass current ignore state and user data to avoid server-side localStorage access
+const shouldAIBeBusyServerSafe = (
+  currentIgnoreUntil: number | null, 
+  userType?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number }
+): { shouldIgnore: boolean; newIgnoreUntil?: number } => {
   // If already ignoring and time hasn't expired
   if (currentIgnoreUntil && Date.now() < currentIgnoreUntil) {
     return { shouldIgnore: true };
+  }
+
+  // Determine user type based on engagement
+  let userCategory = 'returning'; // default
+  if (userType) {
+    const { dailyMessageCount, relationshipLevel, totalDaysActive } = userType;
+    
+    // New user: low message count, low relationship, few active days
+    if (dailyMessageCount <= 5 && relationshipLevel < 0.3 && totalDaysActive <= 2) {
+      userCategory = 'new';
+    }
+    // Old/addicted user: high message count, high relationship, many active days
+    else if (dailyMessageCount > 20 && relationshipLevel > 0.7 && totalDaysActive > 10) {
+      userCategory = 'old';
+    }
+    // Medium engagement user
+    else if (dailyMessageCount > 10 && relationshipLevel > 0.5) {
+      userCategory = 'engaged';
+    }
   }
 
   // More realistic busy patterns - higher chance during college hours
   const now = new Date();
   // Use IST timezone for consistency
   const istHour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', hour12: false }));
-  let busyChance = 0.08; // Base 8% chance
+  
+  // Base busy chance varies by user type
+  let baseBusyChance = 0.08; // Default 8% chance
+  
+  switch (userCategory) {
+    case 'new':
+      baseBusyChance = 0.02; // Only 2% chance for new users - keep them engaged!
+      break;
+    case 'engaged':
+      baseBusyChance = 0.06; // 6% chance for engaged users
+      break;
+    case 'old':
+      baseBusyChance = 0.12; // 12% chance for old users - they're already hooked
+      break;
+    default:
+      baseBusyChance = 0.08; // 8% for returning users
+  }
 
+  let busyChance = baseBusyChance;
+  
   // Higher chance during typical college/work hours in IST
   if (istHour >= 9 && istHour <= 17) {
-    busyChance = 0.15; // 15% during day
+    busyChance *= (userCategory === 'new' ? 1.5 : 2.0); // Still lower for new users
   } else if (istHour >= 22 || istHour <= 6) {
-    busyChance = 0.25; // 25% late night/early morning
+    busyChance *= (userCategory === 'new' ? 2.0 : 3.0); // Sleep time
   }
 
   if (Math.random() < busyChance) {
-    // Realistic busy durations based on IST time
+    // Realistic busy durations based on IST time and user type
     let ignoreMinutes;
+    const userMultiplier = userCategory === 'new' ? 0.5 : (userCategory === 'old' ? 1.5 : 1.0);
+    
     if (istHour >= 9 && istHour <= 17) {
-      ignoreMinutes = 5 + Math.random() * 25; // 5-30 min during day (classes/work)
+      ignoreMinutes = (5 + Math.random() * 25) * userMultiplier; // 5-30 min during day (classes/work)
     } else if (istHour >= 22 || istHour <= 6) {
-      ignoreMinutes = 60 + Math.random() * 180; // 1-4 hours at night (sleeping)
+      ignoreMinutes = (60 + Math.random() * 180) * userMultiplier; // 1-4 hours at night (sleeping)
     } else {
-      ignoreMinutes = 3 + Math.random() * 12; // 3-15 min other times
+      ignoreMinutes = (3 + Math.random() * 12) * userMultiplier; // 3-15 min other times
     }
 
     const newIgnoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
+    console.log(`Kruthika AI: Going busy for ${ignoreMinutes.toFixed(1)} mins (user type: ${userCategory})`);
     return { shouldIgnore: true, newIgnoreUntil };
   }
   
@@ -304,10 +347,11 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
   try {
     console.log('Kruthika AI: Analyzing conversation context...');
 
-    // Check if AI should be busy/ignore using server-safe function
-    // Client should pass current ignore state to avoid localStorage access
+    // Check if AI should be busy/ignore using server-safe function with user type awareness
+    // Client should pass current ignore state and user data to avoid localStorage access
     const currentIgnoreUntil = (input as any).currentIgnoreUntil || null;
-    const busyResult = shouldAIBeBusyServerSafe(currentIgnoreUntil);
+    const userTypeData = (input as any).userTypeData || null;
+    const busyResult = shouldAIBeBusyServerSafe(currentIgnoreUntil, userTypeData);
     
     if (busyResult.shouldIgnore) {
       console.log('Kruthika AI: Busy, ignoring message.');
@@ -372,16 +416,31 @@ Respond DIRECTLY to what they said. If they asked who you are, tell them. If the
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
-    // Clean and shorten AI response
+    // Clean AI response but allow longer messages
     let processedResponse = aiResponse
       .trim()
       .replace(/^["']|["']$/g, '')
-      .split('\n')[0] // Take only first line
-      .substring(0, 80); // Limit length
+      .split('\n')[0]; // Take only first line
+    
+    // Smart truncation: only truncate if extremely long
+    if (processedResponse.length > 200) {
+      // Try to break at a sentence boundary
+      const sentences = processedResponse.split(/[.!?]/);
+      if (sentences.length > 1 && sentences[0].length <= 150) {
+        processedResponse = sentences[0] + (sentences[0].match(/[.!?]$/) ? '' : '.');
+      } else {
+        // Find last complete word before 150 chars
+        const truncated = processedResponse.substring(0, 150);
+        const lastSpace = truncated.lastIndexOf(' ');
+        processedResponse = lastSpace > 100 ? truncated.substring(0, lastSpace) + '...' : truncated + '...';
+      }
+    }
 
-    // Make it even shorter for simple messages
-    if (input.userMessage.length < 15) {
-      processedResponse = processedResponse.split(' ').slice(0, 5).join(' ');
+    // Make it shorter for very simple messages
+    if (input.userMessage.length < 10) {
+      processedResponse = processedResponse.split(' ').slice(0, 8).join(' ');
+    } else if (input.userMessage.length < 15) {
+      processedResponse = processedResponse.split(' ').slice(0, 12).join(' ');
     }
 
     console.log('Kruthika AI: Generated contextual response:', processedResponse);

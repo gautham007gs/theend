@@ -309,6 +309,38 @@ const updateUserPsychologyProfile = (userMessage: string) => {
   }
 };
 
+// Get user type data for intelligent AI behavior
+const getUserTypeData = () => {
+  try {
+    const today = new Date().toDateString();
+    const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
+    const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY) || today;
+    
+    // Get relationship level from conversation context
+    const conversationContext = getConversationContext();
+    const relationshipLevel = conversationContext?.relationshipLevel || 0;
+    
+    // Calculate total days active (rough estimate)
+    const firstActiveDate = localStorage.getItem('kruthika_first_active_date') || today;
+    const daysDiff = Math.floor((new Date(today).getTime() - new Date(firstActiveDate).getTime()) / (1000 * 60 * 60 * 24));
+    const totalDaysActive = Math.max(1, daysDiff + 1);
+    
+    // Store first active date if not exists
+    if (!localStorage.getItem('kruthika_first_active_date')) {
+      localStorage.setItem('kruthika_first_active_date', today);
+    }
+    
+    return {
+      dailyMessageCount: dailyCount,
+      relationshipLevel: relationshipLevel,
+      totalDaysActive: totalDaysActive
+    };
+  } catch (error) {
+    console.warn('Error getting user type data:', error);
+    return { dailyMessageCount: 1, relationshipLevel: 0.1, totalDaysActive: 1 };
+  }
+};
+
 const trackUserAddictionLevel = () => {
   try {
     const today = new Date().toDateString();
@@ -785,6 +817,9 @@ const KruthikaChatPage: NextPage = () => {
     trackUserAddictionLevel();
     updateUserEmotionalState(text);
     
+    // Gather user type data for intelligent AI behavior
+    const userTypeData = getUserTypeData();
+    
     resetInactivityTimer();
     
     let imageAttemptedAndAllowed = false;
@@ -913,6 +948,8 @@ const KruthikaChatPage: NextPage = () => {
         // Add missed message context
         missedMessages: shouldRespondToMissedMessages ? missedMessages : undefined,
         hasBeenOffline: missedMessages.length > 0,
+        // User type data for intelligent AI behavior
+        userTypeData: userTypeData,
         isQuickReply: isQuickReply,
         // Server-safe ignore state
         currentIgnoreUntil: currentIgnoreTime

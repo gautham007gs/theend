@@ -25,7 +25,7 @@ export interface ProactiveMessageOutput {
 }
 
 // Determines if AI should send a proactive message based on various factors
-export function shouldSendProactiveMessage(input: ProactiveMessageInput): boolean {
+export function shouldSendProactiveMessage(input: ProactiveMessageInput & { userTypeData?: any }): boolean {
   const now = Date.now();
   const lastMessageTime = input.lastMessageTime || 0;
   const timeSinceLastMessage = now - lastMessageTime;
@@ -36,34 +36,64 @@ export function shouldSendProactiveMessage(input: ProactiveMessageInput): boolea
   // Don't send if AI was the last sender (avoid spam)
   if (input.wasAILastSender) return false;
 
+  // Determine user type and adjust behavior accordingly
+  let userCategory = 'returning';
+  let userTypeMultiplier = 1.0;
+  
+  if (input.userTypeData) {
+    const { dailyMessageCount, relationshipLevel, totalDaysActive } = input.userTypeData;
+    
+    // New user: encourage engagement with more proactive messages
+    if (dailyMessageCount <= 5 && relationshipLevel < 0.3 && totalDaysActive <= 2) {
+      userCategory = 'new';
+      userTypeMultiplier = 1.8; // 80% more proactive messages for new users
+    }
+    // Old/addicted user: can be less proactive, they'll initiate
+    else if (dailyMessageCount > 20 && relationshipLevel > 0.7 && totalDaysActive > 10) {
+      userCategory = 'old';
+      userTypeMultiplier = 0.7; // 30% fewer proactive messages
+    }
+    // Engaged user: balanced approach
+    else if (dailyMessageCount > 10 && relationshipLevel > 0.5) {
+      userCategory = 'engaged';
+      userTypeMultiplier = 1.2; // 20% more proactive messages
+    }
+  }
+
   // Time-based probabilities (more likely at certain times)
   const timeBasedChance = getTimeBasedProactiveChance(input.timeOfDay);
 
-  // Increase chance based on relationship level
+  // Increase chance based on relationship level (but adjusted for user type)
   const relationshipMultiplier = 1 + ((input.relationshipLevel || 0) * 0.8);
 
-  // Decrease chance if too many messages today
-  const messageFrequencyPenalty = Math.max(0, 1 - ((input.totalMessagesToday || 0) / 50));
+  // Decrease chance if too many messages today (more lenient for new users)
+  const messageLimit = userCategory === 'new' ? 30 : (userCategory === 'old' ? 40 : 50);
+  const messageFrequencyPenalty = Math.max(0, 1 - ((input.totalMessagesToday || 0) / messageLimit));
 
-  // Calculate final probability
-  let finalChance = timeBasedChance * relationshipMultiplier * messageFrequencyPenalty;
+  // Calculate final probability with user type awareness
+  let finalChance = timeBasedChance * relationshipMultiplier * messageFrequencyPenalty * userTypeMultiplier;
 
-  // Special scenarios that increase chance
+  // Special scenarios that increase chance (adjusted by user type)
   if (timeSinceLastMessage > 3600000) { // 1 hour
-    finalChance *= 1.5; // More likely after long silence
+    const silenceMultiplier = userCategory === 'new' ? 2.0 : 1.5; // More aggressive for new users
+    finalChance *= silenceMultiplier;
   }
 
   if (timeSinceLastMessage > 86400000) { // 24 hours
-    finalChance *= 2.0; // Even more likely after a day
+    const dayMultiplier = userCategory === 'new' ? 3.0 : 2.0; // Much more aggressive for new users
+    finalChance *= dayMultiplier;
   }
 
   if (input.timeOfDay === 'morning' && timeSinceLastMessage > 28800000) { // 8 hours, morning greetings
-    finalChance *= 1.8;
+    const morningMultiplier = userCategory === 'new' ? 2.2 : 1.8;
+    finalChance *= morningMultiplier;
   }
 
-  // Cap the maximum chance
-  finalChance = Math.min(finalChance, 0.4); // Max 40% chance
+  // Cap the maximum chance (higher for new users)
+  const maxChance = userCategory === 'new' ? 0.6 : (userCategory === 'old' ? 0.3 : 0.4);
+  finalChance = Math.min(finalChance, maxChance);
 
+  console.log(`Proactive messaging: User type: ${userCategory}, Final chance: ${(finalChance * 100).toFixed(1)}%`);
   return Math.random() < finalChance;
 }
 
