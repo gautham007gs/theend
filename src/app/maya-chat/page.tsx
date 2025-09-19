@@ -577,7 +577,7 @@ const KruthikaChatPage: NextPage = () => {
   }, [messages, resetInactivityTimer]);
 
 
-  const handleSendMessage = async (text: string, imageUriFromInput?: string) => {
+  const handleSendMessage = async (text: string, imageUriFromInput?: string, isQuickReply: boolean = false) => {
     let currentImageUri = imageUriFromInput; 
     const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
 
@@ -757,7 +757,8 @@ const KruthikaChatPage: NextPage = () => {
         dailyMessageCount: dailyMsgCount,
         // Add missed message context
         missedMessages: shouldRespondToMissedMessages ? missedMessages : undefined,
-        hasBeenOffline: missedMessages.length > 0
+        hasBeenOffline: missedMessages.length > 0,
+        isQuickReply: isQuickReply
       };
 
       const aiResult: EmotionalStateOutput = await generateResponse(aiInput);
@@ -1069,6 +1070,18 @@ const KruthikaChatPage: NextPage = () => {
     }
   };
 
+  const handleQuickReply = (replyText: string, originalMessage: Message) => {
+    // Send the quick reply as a message with isQuickReply flag
+    handleSendMessage(replyText, undefined, true);
+    
+    // Add visual feedback
+    toast({
+      title: "Quick Reply Sent",
+      description: `Replied "${replyText}" to ${originalMessage.text.substring(0, 30)}...`,
+      duration: 2000,
+    });
+  };
+
   const displayAIProfile = globalAIProfile || defaultAIProfile;
 
   if (isLoadingAIProfile || !globalAIProfile || isLoadingAdSettings || isLoadingMediaAssets || isLoadingChatState ) {
@@ -1091,6 +1104,7 @@ const KruthikaChatPage: NextPage = () => {
         aiName={displayAIProfile.name}
         isAiTyping={isAiTyping} 
         onTriggerAd={handleBubbleAdTrigger}
+        onQuickReply={handleQuickReply}
       />
 
       {showInterstitialAd && (

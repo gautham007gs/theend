@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Check, CheckCheck } from 'lucide-react';
+import { Check, CheckCheck, Reply, Heart, ThumbsUp, Smile } from 'lucide-react';
 import type { Message, MessageStatus } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,11 +13,110 @@ interface MessageBubbleProps {
   aiAvatarUrl: string;
   aiName: string;
   onTriggerAd?: () => void;
+  onQuickReply?: (replyText: string, originalMessage: Message) => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply }) => {
   const isUser = message.sender === 'user';
   const timestamp = new Date(message.timestamp);
+  
+  // Swipe gesture state
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [showQuickReplies, setShowQuickReplies] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const bubbleRef = useRef<HTMLDivElement>(null);
+  const swipeThreshold = 80; // Minimum swipe distance to trigger
+  const maxSwipeDistance = 120; // Maximum swipe distance
+
+  // Quick reply options based on message content and sender
+  const getQuickReplies = () => {
+    if (isUser) return []; // No quick replies for user's own messages
+    
+    const msgLower = message.text.toLowerCase();
+    
+    // Context-aware quick replies
+    if (msgLower.includes('good morning') || msgLower.includes('good night')) {
+      return ['❤️', '😘', 'Good night! 🌙'];
+    }
+    if (msgLower.includes('how are you') || msgLower.includes('kaise ho')) {
+      return ['👍', 'Great!', 'Good yaar'];
+    }
+    if (msgLower.includes('?')) {
+      return ['👍', '👎', 'Maybe'];
+    }
+    if (msgLower.includes('love') || msgLower.includes('miss')) {
+      return ['❤️', 'Miss you too', '😘'];
+    }
+    
+    // Default quick replies
+    return ['👍', '😂', 'Ok', 'Really?', '❤️', 'Cool'];
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isUser) return; // Only allow swiping on AI messages
+    
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setIsDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isUser) return;
+    
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const deltaX = touchX - touchStartX.current;
+    const deltaY = touchY - touchStartY.current;
+    
+    // Only consider horizontal swipes (ignore vertical scrolling)
+    if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+    
+    // Swipe right to reply
+    if (deltaX > 10) {
+      setIsDragging(true);
+      const clampedOffset = Math.min(deltaX, maxSwipeDistance);
+      setSwipeOffset(clampedOffset);
+      
+      // Prevent scrolling while swiping
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isUser) return;
+    
+    if (swipeOffset > swipeThreshold && !showQuickReplies) {
+      setShowQuickReplies(true);
+      // Add haptic feedback if available
+      if (navigator.vibrate) navigator.vibrate(50);
+    }
+    
+    setSwipeOffset(0);
+    setIsDragging(false);
+  };
+
+  const handleQuickReplySelect = (replyText: string) => {
+    if (onQuickReply) {
+      onQuickReply(replyText, message);
+    }
+    setShowQuickReplies(false);
+  };
+
+  // Close quick replies when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (bubbleRef.current && !bubbleRef.current.contains(event.target as Node)) {
+        setShowQuickReplies(false);
+      }
+    };
+
+    if (showQuickReplies) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showQuickReplies]);
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -96,8 +195,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
 
   return (
-    <div className={cn('flex w-full', isUser ? 'justify-end' : 'justify-start')}>
-      <div className="flex items-end max-w-[75%] sm:max-w-[65%]">
+    <div className={cn('flex w-full relative', isUser ? 'justify-end' : 'justify-start')}>
+      <div className="flex items-end max-w-[75%] sm:max-w-[65%] relative"
+           ref={bubbleRef}>
         {!isUser && (
           <Avatar 
             className="h-8 w-8 mr-2 self-end shrink-0"
@@ -113,13 +213,30 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         )}
+        {/* Reply icon that appears during swipe */}
+        {!isUser && swipeOffset > 20 && (
+          <div 
+            className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 text-muted-foreground z-10"
+            style={{ opacity: Math.min(swipeOffset / swipeThreshold, 1) }}
+          >
+            <Reply className="h-5 w-5" />
+          </div>
+        )}
+        
         <div
           className={cn(
-            'px-3 py-2 shadow-md break-words',
+            'px-3 py-2 shadow-md break-words transition-transform duration-100',
             isUser
               ? 'bg-chat-bg-user text-chat-text-user rounded-lg rounded-br-sm'
               : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
           )}
+          style={{ 
+            transform: !isUser ? `translateX(${swipeOffset}px)` : 'none',
+            transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           {isValidImageSrc && imageToShowUrl && (
             <Image
@@ -149,6 +266,31 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             {renderTicks(message.status)}
           </div>
         </div>
+        
+        {/* Quick Reply Options */}
+        {showQuickReplies && !isUser && (
+          <div className="absolute top-full left-0 mt-2 flex flex-wrap gap-2 bg-background/95 backdrop-blur-sm rounded-lg p-2 shadow-lg border z-20 max-w-[280px]">
+            {getQuickReplies().slice(0, 6).map((reply, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="text-xs px-2 py-1 h-auto min-h-[28px] rounded-full bg-card hover:bg-accent transition-colors"
+                onClick={() => handleQuickReplySelect(reply)}
+              >
+                {reply}
+              </Button>
+            ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs px-2 py-1 h-auto min-h-[28px] rounded-full text-muted-foreground hover:text-foreground"
+              onClick={() => setShowQuickReplies(false)}
+            >
+              ✕
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

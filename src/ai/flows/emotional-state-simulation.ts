@@ -21,6 +21,7 @@ export interface EmotionalStateInput {
   dailyMessageCount?: number;
   missedMessages?: Array<{id: string, text: string, timestamp: number}>;
   hasBeenOffline?: boolean;
+  isQuickReply?: boolean; // New field to identify quick replies
 }
 
 export interface EmotionalStateOutput {
@@ -173,9 +174,24 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
   return null;
 };
 
-// Smart breadcrumb/short responses
+// Smart breadcrumb/short responses including quick reply responses
 const getBreadcrumbResponse = (userMessage: string) => {
   const msg = userMessage.toLowerCase().trim();
+
+  // Quick reply emoji responses
+  if (msg === '👍') return ['thanks yaar!', '😊', 'glad you like it'];
+  if (msg === '👎') return ['oh no', 'sorry yaar', '🥲'];
+  if (msg === '❤️') return ['aww ❤️', 'love you too', '😘'];
+  if (msg === '😂') return ['haha ikr', '😂😂', 'so funny na'];
+  if (msg === '😘') return ['😘😘', 'miss you', '❤️'];
+  if (msg === '🌙' || msg === '😴') return ['good night!', 'sweet dreams', '🌙'];
+
+  // Quick reply text responses
+  if (msg === 'miss you too') return ['aww ❤️', 'virtual hug', 'so sweet'];
+  if (msg === 'love you too') return ['❤️❤️', 'my heart', 'forever'];
+  if (msg === 'good night') return ['night night', 'sweet dreams yaar', '🌙'];
+  if (msg === 'same') return ['exactly!', 'ikr', 'totally'];
+  if (msg === 'true' || msg === 'right') return ['exactly yaar', 'you get it', '💯'];
 
   // Ultra short responses for specific inputs
   if (msg === 'hi' || msg === 'hello') return ['hey', 'hii', 'yo'];
@@ -185,6 +201,8 @@ const getBreadcrumbResponse = (userMessage: string) => {
   if (msg === 'lol') return ['😂', 'ikr', 'haha'];
   if (msg === 'really') return ['yep', 'sach me', 'haan'];
   if (msg === 'wow') return ['😅', 'ikr', 'right?'];
+  if (msg === 'cool' || msg === 'nice') return ['😊', 'right?', 'ikr'];
+  if (msg === 'great' || msg === 'good') return ['yay!', '😊', 'awesome'];
 
   return null;
 };
@@ -206,8 +224,28 @@ const calculateTypingDelay = (response: string): number => {
   return baseDelay + 1000;
 };
 
+// Detect if this is likely a quick reply
+const isQuickReply = (userMessage: string): boolean => {
+  const msg = userMessage.trim();
+  
+  // Common quick reply patterns
+  const quickReplyPatterns = [
+    /^(👍|👎|❤️|😂|😘|🌙|💤|😴)$/,  // Single emoji
+    /^(ok|okay|cool|nice|wow|really|great|good|bad|yes|no|maybe|sure|nope)$/i, // Single words
+    /^(good night|gn|tc|miss you too|love you too|same|exactly|true|right)$/i, // Common phrases
+  ];
+  
+  return quickReplyPatterns.some(pattern => pattern.test(msg)) || 
+         (msg.length <= 10 && /^[👍👎❤️😂😘🌙💤😴🔥💯✨🎉👋😊😍🥰😘💕]+$/.test(msg));
+};
+
 // Detect if we should use breadcrumb response
 const shouldUseBreadcrumb = (userMessage: string, recentInteractions: string[]): boolean => {
+  // Always use breadcrumb for quick replies
+  if (isQuickReply(userMessage)) {
+    return true;
+  }
+
   // 40% chance for very short messages
   if (userMessage.trim().length <= 10 && Math.random() < 0.4) {
     return true;

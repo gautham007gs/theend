@@ -10,9 +10,10 @@ interface ChatViewProps {
   aiName: string;
   isAiTyping: boolean;
   onTriggerAd?: () => void; // New prop for handling ad clicks from bubbles
+  onQuickReply?: (replyText: string, originalMessage: Message) => void;
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd }) => {
+const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd, onQuickReply }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -32,6 +33,7 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
             aiAvatarUrl={aiAvatarUrl} 
             aiName={aiName} 
             onTriggerAd={onTriggerAd} // Pass down the callback
+            onQuickReply={onQuickReply} // Pass down quick reply callback
         />
       ))}
       {isAiTyping && <TypingIndicator avatarUrl={aiAvatarUrl} />}
