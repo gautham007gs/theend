@@ -1,5 +1,5 @@
 
-'use server';
+'use client';
 
 interface ConversationContext {
   topics: Array<{
