@@ -11,6 +11,7 @@ import type { Message, AIProfile, MessageStatus, AdSettings, AIMediaAssetsConfig
 import { defaultAIProfile, defaultAdSettings, defaultAIMediaAssetsConfig, DEFAULT_ADSTERRA_DIRECT_LINK, DEFAULT_MONETAG_DIRECT_LINK } from '@/config/ai'; 
 import { generateResponse, type EmotionalStateInput, type EmotionalStateOutput } from '@/ai/flows/emotional-state-simulation';
 import { generateOfflineMessage, type OfflineMessageInput } from '@/ai/flows/offline-message-generation';
+import { generateProactiveMessage, type ProactiveMessageInput } from '@/ai/flows/proactive-messaging';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -384,6 +385,8 @@ const KruthikaChatPage: NextPage = () => {
   
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const interstitialAdTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const proactiveMessageTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [lastUserMessageTime, setLastUserMessageTime] = useState<number>(Date.now());
   const userSentMediaThisTurnRef = useRef(false);
 
   const triggerBriefInterstitialMessage = (message: string, duration: number = REWARD_AD_INTERSTITIAL_DURATION_MS) => {
@@ -573,9 +576,137 @@ const KruthikaChatPage: NextPage = () => {
     return () => {
       if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
       if (interstitialAdTimerRef.current) clearTimeout(interstitialAdTimerRef.current);
+      if (proactiveMessageTimerRef.current) clearTimeout(proactiveMessageTimerRef.current);
     };
   }, [messages, resetInactivityTimer]);
 
+  // Set up proactive messaging timer
+  useEffect(() => {
+    const scheduleProactiveCheck = () => {
+      // Clear existing timer
+      if (proactiveMessageTimerRef.current) {
+        clearTimeout(proactiveMessageTimerRef.current);
+      }
+      
+      // Schedule next proactive message check
+      // Check every 2-5 minutes for proactive messaging opportunities
+      const checkInterval = 120000 + Math.random() * 180000; // 2-5 minutes
+      
+      proactiveMessageTimerRef.current = setTimeout(() => {
+        sendProactiveMessage();
+        scheduleProactiveCheck(); // Schedule next check
+      }, checkInterval);
+    };
+
+    // Start the proactive messaging system
+    scheduleProactiveCheck();
+
+    // Cleanup on unmount
+    return () => {
+      if (proactiveMessageTimerRef.current) {
+        clearTimeout(proactiveMessageTimerRef.current);
+      }
+    };
+  }, [lastUserMessageTime, messages.length]); // Restart timer when user sends message or messages change
+
+  // Proactive messaging function
+  const sendProactiveMessage = async () => {
+    if (isAiTyping) return; // Don't interrupt if AI is already typing
+    if (shouldAIBePaused()) return; // Don't send if AI is supposed to be offline
+    
+    const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
+    const psychProfile = JSON.parse(localStorage.getItem(USER_PSYCHOLOGY_PROFILE_KEY) || '{}');
+    const dailyMsgCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
+    
+    // Check if AI was the last sender
+    const lastMessage = messages[messages.length - 1];
+    const wasAILastSender = lastMessage?.sender === 'ai';
+    
+    const proactiveInput: ProactiveMessageInput = {
+      lastMessageTime: lastUserMessageTime,
+      timeOfDay: getTimeOfDay(),
+      conversationHistory: recentInteractions.slice(-10),
+      userPsychologyProfile: psychProfile,
+      relationshipLevel: (psychProfile.relationshipLevel || 0),
+      totalMessagesToday: dailyMsgCount,
+      hasUnreadMessages: false,
+      wasAILastSender: wasAILastSender
+    };
+    
+    try {
+      const proactiveResult = await generateProactiveMessage(proactiveInput);
+      
+      if (proactiveResult.shouldSendMessage && proactiveResult.message) {
+        console.log('Kruthika AI: Sending proactive message:', proactiveResult.message);
+        
+        // Add realistic delay before sending
+        const delay = proactiveResult.delayBeforeSending || 2000;
+        
+        setTimeout(async () => {
+          // Double-check AI isn't busy now
+          if (isAiTyping || shouldAIBePaused()) return;
+          
+          // Start typing animation
+          setIsAiTyping(true);
+          
+          // Calculate realistic typing delay for the message
+          const typingDuration = calculateTypingDelay(proactiveResult.message!);
+          await new Promise(resolve => setTimeout(resolve, typingDuration));
+          
+          // Stop typing and send message
+          setIsAiTyping(false);
+          
+          const proactiveMessageId = (Date.now() + Math.random()).toString() + '_proactive';
+          const proactiveMessage: Message = {
+            id: proactiveMessageId,
+            text: proactiveResult.message!,
+            sender: 'ai',
+            timestamp: new Date(),
+            status: 'read',
+          };
+          
+          setMessages(prev => [...prev, proactiveMessage]);
+          setRecentInteractions(prevInteractions => 
+            [...prevInteractions, `AI: ${proactiveResult.message}`].slice(-10)
+          );
+          
+          // Log to Supabase if available
+          if (supabase) {
+            try {
+              await supabase
+                .from('messages_log')
+                .insert([{
+                  message_id: proactiveMessageId,
+                  sender_type: 'ai_proactive',
+                  chat_id: 'kruthika_chat',
+                  text_content: proactiveResult.message!.substring(0, 500),
+                  has_image: false,
+                }]);
+            } catch (e) {
+              console.error('Failed to log proactive message:', e);
+            }
+          }
+          
+          console.log('Kruthika AI: Proactive message sent successfully');
+        }, delay);
+      }
+    } catch (error) {
+      console.error('Kruthika AI: Error in proactive messaging:', error);
+    }
+  };
+
+  // Shared function for calculating realistic typing delays
+  const calculateTypingDelay = (text: string): number => {
+    const words = text.trim().split(' ').length;
+    const baseDelay = 800; // Increased base delay
+    const wordsPerMinute = 25; // Slower, more realistic typing speed for AI
+    const msPerWord = (60 / wordsPerMinute) * 1000;
+    
+    // Add natural variation
+    const variation = Math.random() * 500 - 250; // ±250ms variation
+    
+    return Math.max(baseDelay + (words * msPerWord) + variation, 500);
+  };
 
   const handleSendMessage = async (text: string, imageUriFromInput?: string, isQuickReply: boolean = false) => {
     let currentImageUri = imageUriFromInput; 
@@ -684,6 +815,9 @@ const KruthikaChatPage: NextPage = () => {
 
     setMessages(prev => [...prev, newUserMessage]);
     if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
+    
+    // Update last user message time for proactive messaging
+    setLastUserMessageTime(Date.now());
 
     if (supabase) {
         try {
@@ -746,26 +880,6 @@ const KruthikaChatPage: NextPage = () => {
       }, delay);
     };
 
-    // Realistic typing delay - slower, more human-like patterns
-    const calculateTypingDelay = (text: string): number => {
-      const words = text.trim().split(' ').length;
-      const baseDelay = 800; // Increased base delay
-      
-      // Even breadcrumbs take time
-      if (text.length <= 3) return baseDelay + 400; // "ok", "hi", "lol"
-      if (text.length <= 8) return baseDelay + 800; // "hey there", "yaar"
-      if (text.length <= 20) return baseDelay + 1200; // Normal short responses
-      if (text.length <= 40) return baseDelay + 2000; // Medium responses
-      
-      // Much slower typing for longer messages
-      const typingSpeed = words > 8 ? 80 : 60; // Slower typing speed
-      const thinkingTime = words > 6 ? 1000 : 300; // More thinking time
-      
-      // Add random pauses (like real people do when thinking)
-      const randomPauses = Math.random() * 800;
-      
-      return baseDelay + (text.length * typingSpeed) + thinkingTime + randomPauses;
-    };
     
     try {
       const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
