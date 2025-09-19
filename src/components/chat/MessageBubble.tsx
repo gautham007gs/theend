@@ -16,9 +16,12 @@ interface MessageBubbleProps {
   onQuickReply?: (replyText: string, originalMessage: Message) => void;
   onLikeMessage?: (messageId: string) => void;
   onReactToMessage?: (messageId: string, reaction: MessageReaction) => void;
+  currentlySwipingMessageId?: string | null;
+  onSwipeStart?: (messageId: string) => void;
+  onSwipeEnd?: () => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd }) => {
   const isUser = message.sender === 'user';
   const timestamp = new Date(message.timestamp);
   
@@ -65,6 +68,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isUser) return; // Only allow swiping on AI messages
     
+    // Prevent starting swipe if another message is already being swiped
+    if (currentlySwipingMessageId && currentlySwipingMessageId !== message.id) {
+      return;
+    }
+    
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
     setIsDragging(false);
@@ -72,6 +80,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (isUser) return;
+    
+    // Prevent moving if another message is being swiped
+    if (currentlySwipingMessageId && currentlySwipingMessageId !== message.id) {
+      return;
+    }
     
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
@@ -83,9 +96,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     
     // Swipe right to reply with enhanced feedback
     if (deltaX > 15) {
+      // Notify parent that this message is being swiped
+      if (!isDragging && onSwipeStart) {
+        onSwipeStart(message.id);
+      }
+      
       setIsDragging(true);
-      // Smooth resistance curve like WhatsApp
-      const clampedOffset = Math.min(deltaX * 0.8, maxSwipeDistance);
+      // Smooth resistance curve like WhatsApp with better easing
+      const progress = Math.min(deltaX / maxSwipeDistance, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 2); // Easing out quad
+      const clampedOffset = easedProgress * maxSwipeDistance;
       setSwipeOffset(clampedOffset);
       
       // Haptic feedback at threshold points
@@ -105,6 +125,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       setShowQuickReplies(true);
       // Stronger haptic feedback for action completion
       if (navigator.vibrate) navigator.vibrate([30, 10, 30]);
+    } else {
+      // If swipe didn't trigger, notify parent to clear swiping state
+      if (onSwipeEnd) {
+        onSwipeEnd();
+      }
     }
     
     // Smooth animation back to position
@@ -117,6 +142,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       onQuickReply(replyText, message);
     }
     setShowQuickReplies(false);
+    
+    // Notify parent that swiping is done
+    if (onSwipeEnd) {
+      onSwipeEnd();
+    }
   };
 
   // Double-tap to like handler
