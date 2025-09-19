@@ -11,7 +11,8 @@ import type { Message, AIProfile, MessageStatus, AdSettings, AIMediaAssetsConfig
 import { defaultAIProfile, defaultAdSettings, defaultAIMediaAssetsConfig, DEFAULT_ADSTERRA_DIRECT_LINK, DEFAULT_MONETAG_DIRECT_LINK } from '@/config/ai'; 
 import { generateResponse, type EmotionalStateInput, type EmotionalStateOutput } from '@/ai/flows/emotional-state-simulation';
 import { generateOfflineMessage, type OfflineMessageInput } from '@/ai/flows/offline-message-generation';
-import { generateProactiveMessage, type ProactiveMessageInput } from '@/ai/flows/proactive-messaging';
+import { generateProactiveMessage } from '@/ai/flows/proactive-messaging-actions';
+import { type ProactiveMessageInput } from '@/ai/flows/proactive-messaging';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
