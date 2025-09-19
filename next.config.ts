@@ -43,7 +43,6 @@ const nextConfig: NextConfig = {
       allowedOrigins: [
         "*.replit.dev",
         "*.replit.app", 
-        "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
@@ -52,9 +51,8 @@ const nextConfig: NextConfig = {
   },
   // Move allowedDevOrigins to root level
   allowedDevOrigins: [
-    "9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
-    "https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev",
-    "*.replit.dev"
+    "*.replit.dev",
+    "*.replit.app"
   ],
   images: {
     remotePatterns: [
@@ -123,7 +121,7 @@ const nextConfig: NextConfig = {
           ...securityHeaders,
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'https://9eca41bd-4162-4c0f-af3e-67dd4986f518-00-1bsf6390jldem.janeway.replit.dev',
+            value: '*',
           },
           {
             key: 'Access-Control-Allow-Methods',
