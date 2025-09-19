@@ -43,14 +43,14 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
   }
 
   // Check if user is asking about identity/name
-  if (msg.includes('who are you') || msg.includes('who r u') || msg.includes('kaun ho') || 
+  if (msg.includes('who are you') || msg.includes('who r u') || msg.includes('kaun ho') ||
       msg.includes('tell me who') || msg.includes('ur name') || msg.includes('tell ur name') ||
       msg.includes('bolo') && lastFewMessages.includes('who')) {
     return 'asking_identity';
   }
 
   // Check if user is demanding an answer to previous question
-  if ((msg.includes('jawab') && msg.includes('do')) || msg.includes('first') || 
+  if ((msg.includes('jawab') && msg.includes('do')) || msg.includes('first') ||
       msg.includes('pehle') || msg.includes('answer') || msg.includes('tell me') ||
       (msg === 'bolo' && !lastFewMessages.includes('who'))) {
     return 'demanding_answer';
@@ -78,7 +78,7 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
 // Generate response for missed messages
 const getMissedMessageResponse = (missedMessages: Array<{id: string, text: string, timestamp: number}>) => {
   const missedCount = missedMessages.length;
-  
+
   if (missedCount === 1) {
     return [
       "sorry yaar, was busy! 😅",
@@ -221,9 +221,57 @@ const shouldUseBreadcrumb = (userMessage: string, recentInteractions: string[]):
   return false;
 };
 
+// Simulate AI being busy or ignoring messages
+const AI_IGNORE_UNTIL_KEY = 'kruthika_ai_ignore_until';
+const shouldAIBeBusy = (): boolean => {
+  // Only trigger ignore if not already ignoring
+  const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
+  if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
+    return true; // Already ignoring
+  }
+
+  // More realistic busy patterns - higher chance during college hours
+  const now = new Date();
+  const hour = now.getHours();
+  let busyChance = 0.08; // Base 8% chance
+
+  // Higher chance during typical college/work hours
+  if (hour >= 9 && hour <= 17) {
+    busyChance = 0.15; // 15% during day
+  } else if (hour >= 22 || hour <= 6) {
+    busyChance = 0.25; // 25% late night/early morning
+  }
+
+  if (Math.random() < busyChance) {
+    // Realistic busy durations based on time
+    let ignoreMinutes;
+    if (hour >= 9 && hour <= 17) {
+      ignoreMinutes = 5 + Math.random() * 25; // 5-30 min during day (classes/work)
+    } else if (hour >= 22 || hour <= 6) {
+      ignoreMinutes = 60 + Math.random() * 180; // 1-4 hours at night (sleeping)
+    } else {
+      ignoreMinutes = 3 + Math.random() * 12; // 3-15 min other times
+    }
+
+    const ignoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
+    localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
+    return true;
+  }
+  return false;
+};
+
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
     console.log('Kruthika AI: Analyzing conversation context...');
+
+    // Check if AI should be busy/ignore
+    if (shouldAIBeBusy()) {
+      console.log('Kruthika AI: Busy, ignoring message.');
+      return {
+        response: getMissedMessageResponse([{ id: 'fake', text: 'Busy', timestamp: Date.now() }])[0],
+        newMood: 'busy'
+      };
+    }
 
     // Analyze what user is actually talking about
     const conversationContext = analyzeConversationContext(input.userMessage, input.recentInteractions);
@@ -246,7 +294,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       const selectedResponse = contextualResponse[Math.floor(Math.random() * contextualResponse.length)];
       return {
         response: selectedResponse,
-        newMood: input.missedMessages && input.missedMessages.length > 0 ? 'apologetic' : 
+        newMood: input.missedMessages && input.missedMessages.length > 0 ? 'apologetic' :
                 (conversationContext === 'user_being_cold' ? 'slightly_hurt' : 'engaging')
       };
     }
@@ -257,7 +305,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       .filter(msg => msg.startsWith('User:'))
       .slice(-1)[0]?.replace('User: ', '') || '';
 
-    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. 
+    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai.
 
 CRITICAL RULES:
 1. ALWAYS respond LOGICALLY to what the user just said

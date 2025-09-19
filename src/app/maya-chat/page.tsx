@@ -606,16 +606,34 @@ const KruthikaChatPage: NextPage = () => {
       // Add to missed messages for later response
       addToMissedMessages(text, newUserMessage.id);
       
-      // Set appropriate message status
-      if (shouldStartIgnoring) {
-        // Message is sent but AI will ignore it (single tick)
-        newUserMessage.status = 'sent';
-      } else {
-        // AI is offline, message delivered but not read (double tick)
+      // Set appropriate message status based on ignore type
+      const ignoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
+      const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
+      
+      if (lastGoodbyeTime) {
+        // AI said goodbye, so message shows as delivered but not read
         newUserMessage.status = 'delivered';
+      } else if (ignoreUntil && shouldStartIgnoring) {
+        // AI just got busy, message shows as sent (single tick)
+        newUserMessage.status = 'sent';
+      } else if (ignoreUntil) {
+        // AI is already busy, message shows as delivered (double tick but unread)
+        newUserMessage.status = 'delivered';
+      } else {
+        newUserMessage.status = 'sent';
       }
       
       setMessages(prev => [...prev, newUserMessage]);
+      
+      // Simulate delayed delivery for busy state
+      if (shouldStartIgnoring && !lastGoodbyeTime) {
+        setTimeout(() => {
+          setMessages(prev => prev.map(msg =>
+            msg.id === newUserMessage.id ? { ...msg, status: 'delivered' as MessageStatus } : msg
+          ));
+        }, 2000 + Math.random() * 3000); // 2-5 second delay
+      }
+      
       return;
     }
     
