@@ -189,6 +189,8 @@ const detectGoodbyeMessage = (message: string): boolean => {
   return goodbyePatterns.some(pattern => msg.includes(pattern));
 };
 
+const MISSED_MESSAGES_KEY = 'kruthika_missed_messages';
+
 const shouldAIBePaused = (): boolean => {
   if (typeof window === 'undefined') return false; // Server-side check
   
@@ -213,16 +215,56 @@ const shouldAIBePaused = (): boolean => {
 const shouldIgnoreMessage = (): boolean => {
   if (typeof window === 'undefined') return false; // Server-side check
   
-  // 15% chance to ignore any message (simulate being busy)
-  if (Math.random() < 0.15) {
-    // Ignore for 5-30 minutes
-    const ignoreMinutes = 5 + Math.random() * 25;
+  // Only trigger ignore if not already ignoring
+  const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
+  if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
+    return true; // Already ignoring
+  }
+  
+  // 12% chance to start ignoring (reduced for better UX)
+  if (Math.random() < 0.12) {
+    // Ignore for 3-15 minutes (shorter, more realistic)
+    const ignoreMinutes = 3 + Math.random() * 12;
     const ignoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
     localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
     return true;
   }
   
   return false;
+};
+
+const addToMissedMessages = (message: string, messageId: string) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const existingMissed = JSON.parse(localStorage.getItem(MISSED_MESSAGES_KEY) || '[]');
+    existingMissed.push({
+      id: messageId,
+      text: message,
+      timestamp: Date.now()
+    });
+    // Keep only last 5 missed messages
+    const recentMissed = existingMissed.slice(-5);
+    localStorage.setItem(MISSED_MESSAGES_KEY, JSON.stringify(recentMissed));
+  } catch (error) {
+    console.error('Error adding missed message:', error);
+  }
+};
+
+const getMissedMessages = () => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    return JSON.parse(localStorage.getItem(MISSED_MESSAGES_KEY) || '[]');
+  } catch (error) {
+    console.error('Error getting missed messages:', error);
+    return [];
+  }
+};
+
+const clearMissedMessages = () => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(MISSED_MESSAGES_KEY);
 };
 
 const setAIGoodbyeState = () => {
@@ -545,35 +587,47 @@ const KruthikaChatPage: NextPage = () => {
         return;
     }
     
+    const newUserMessage: Message = {
+      id: Date.now().toString(),
+      text,
+      sender: 'user',
+      timestamp: new Date(),
+      status: 'sent',
+      userImageUrl: currentImageUri,
+    };
+
     // Check if AI should be paused or ignoring messages
-    if (shouldAIBePaused()) {
-      console.log('Kruthika AI: Currently paused/offline, not responding');
-      // Still save user message but don't respond
-      const newUserMessage: Message = {
-        id: Date.now().toString(),
-        text,
-        sender: 'user',
-        timestamp: new Date(),
-        status: 'delivered', // Show as delivered but not read
-        userImageUrl: currentImageUri,
-      };
+    const isCurrentlyPaused = shouldAIBePaused();
+    const shouldStartIgnoring = !isCurrentlyPaused && shouldIgnoreMessage();
+    
+    if (isCurrentlyPaused || shouldStartIgnoring) {
+      console.log('Kruthika AI: Currently paused/offline or starting to ignore, not responding');
+      
+      // Add to missed messages for later response
+      addToMissedMessages(text, newUserMessage.id);
+      
+      // Set appropriate message status
+      if (shouldStartIgnoring) {
+        // Message is sent but AI will ignore it (single tick)
+        newUserMessage.status = 'sent';
+      } else {
+        // AI is offline, message delivered but not read (double tick)
+        newUserMessage.status = 'delivered';
+      }
+      
       setMessages(prev => [...prev, newUserMessage]);
       return;
     }
     
-    // Check if should ignore this message (simulate being busy)
-    if (shouldIgnoreMessage()) {
-      console.log('Kruthika AI: Ignoring message, simulating busy state');
-      const newUserMessage: Message = {
-        id: Date.now().toString(),
-        text,
-        sender: 'user',
-        timestamp: new Date(),
-        status: 'sent', // Keep as sent (not even delivered)
-        userImageUrl: currentImageUri,
-      };
-      setMessages(prev => [...prev, newUserMessage]);
-      return;
+    // Handle missed messages if AI is coming back online
+    const missedMessages = getMissedMessages();
+    let shouldRespondToMissedMessages = false;
+    
+    if (missedMessages.length > 0) {
+      // 60% chance to acknowledge missed messages
+      if (Math.random() < 0.6) {
+        shouldRespondToMissedMessages = true;
+      }
     }
     
     // Psychological user profiling and addiction tracking
@@ -610,14 +664,6 @@ const KruthikaChatPage: NextPage = () => {
     userSentMediaThisTurnRef.current = !!currentImageUri;
 
 
-    const newUserMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      sender: 'user',
-      timestamp: new Date(),
-      status: 'sent',
-      userImageUrl: currentImageUri,
-    };
     setMessages(prev => [...prev, newUserMessage]);
     if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
 
@@ -690,7 +736,10 @@ const KruthikaChatPage: NextPage = () => {
         userPsychologyProfile: psychProfile,
         userAddictionLevel: addictionLevel,
         userEmotionalState: emotionalState,
-        dailyMessageCount: dailyMsgCount
+        dailyMessageCount: dailyMsgCount,
+        // Add missed message context
+        missedMessages: shouldRespondToMissedMessages ? missedMessages : undefined,
+        hasBeenOffline: missedMessages.length > 0
       };
 
       const aiResult: EmotionalStateOutput = await generateResponse(aiInput);
@@ -799,6 +848,11 @@ const KruthikaChatPage: NextPage = () => {
       // Ensure typing is always stopped
       setIsAiTyping(false); 
       if (aiResult.newMood) setAiMood(aiResult.newMood);
+      
+      // Clear missed messages if AI responded to them
+      if (shouldRespondToMissedMessages) {
+        clearMissedMessages();
+      }
       
       // Check if AI just said goodbye and should go offline
       let aiResponseText = '';

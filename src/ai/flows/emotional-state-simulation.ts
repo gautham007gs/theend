@@ -19,6 +19,8 @@ export interface EmotionalStateInput {
   userAddictionLevel?: string;
   userEmotionalState?: string;
   dailyMessageCount?: number;
+  missedMessages?: Array<{id: string, text: string, timestamp: number}>;
+  hasBeenOffline?: boolean;
 }
 
 export interface EmotionalStateOutput {
@@ -73,9 +75,35 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
   return 'normal_chat';
 };
 
+// Generate response for missed messages
+const getMissedMessageResponse = (missedMessages: Array<{id: string, text: string, timestamp: number}>) => {
+  const missedCount = missedMessages.length;
+  
+  if (missedCount === 1) {
+    return [
+      "sorry yaar, was busy! 😅",
+      "arre missed ur msg, what's up?",
+      "phone was on silent sorry!",
+      "was stuck somewhere, back now"
+    ];
+  } else {
+    return [
+      `missed ${missedCount} msgs! was so busy 😓`,
+      "sorry yaar, crazy day! catch up?",
+      "arre so many msgs! tell me everything",
+      "was away, what did I miss?"
+    ];
+  }
+};
+
 // Get contextually appropriate response
-const getContextualResponse = (context: string, userMessage: string, recentInteractions: string[]) => {
+const getContextualResponse = (context: string, userMessage: string, recentInteractions: string[], missedMessages?: Array<{id: string, text: string, timestamp: number}>) => {
   const msg = userMessage.toLowerCase().trim();
+
+  // Handle missed messages first if they exist
+  if (missedMessages && missedMessages.length > 0) {
+    return getMissedMessageResponse(missedMessages);
+  }
 
   switch (context) {
     case 'user_saying_goodbye':
@@ -213,12 +241,13 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     }
 
     // Get contextual response based on conversation flow
-    const contextualResponse = getContextualResponse(conversationContext, input.userMessage, input.recentInteractions);
+    const contextualResponse = getContextualResponse(conversationContext, input.userMessage, input.recentInteractions, input.missedMessages);
     if (contextualResponse) {
       const selectedResponse = contextualResponse[Math.floor(Math.random() * contextualResponse.length)];
       return {
         response: selectedResponse,
-        newMood: conversationContext === 'user_being_cold' ? 'slightly_hurt' : 'engaging'
+        newMood: input.missedMessages && input.missedMessages.length > 0 ? 'apologetic' : 
+                (conversationContext === 'user_being_cold' ? 'slightly_hurt' : 'engaging')
       };
     }
 
@@ -240,6 +269,7 @@ CRITICAL RULES:
 7. BE CONTEXTUALLY RELEVANT - respond to their ACTUAL message
 
 CONVERSATION CONTEXT: ${conversationContext}
+${input.hasBeenOffline ? 'NOTE: You were offline/busy and missed some messages. Be slightly apologetic.' : ''}
 RECENT CHAT:
 ${conversationHistory}
 
