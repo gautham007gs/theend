@@ -3,13 +3,6 @@
 
 import type { NextPage } from 'next';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Chat with Kruthika - Your AI Girlfriend | Kruthika.fun',
-  description: 'Start chatting with Kruthika, your AI girlfriend and virtual companion. Experience realistic conversations, emotional connection, and 24/7 companionship at Kruthika.fun.',
-  keywords: 'chat with AI girlfriend, Kruthika chat, AI girlfriend conversation, virtual girlfriend chat, AI companion chat, talk to AI girlfriend',
-};
 import Image from 'next/image';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatView from '@/components/chat/ChatView';
