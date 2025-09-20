@@ -151,9 +151,10 @@ const getComebackAfterGoodbyeResponse = (offlineHours: number) => {
   }
 };
 
-// Get contextually appropriate response
+// Enhanced user retention responses with onboarding
 const getContextualResponse = (context: string, userMessage: string, recentInteractions: string[], missedMessages?: Array<{id: string, text: string, timestamp: number}>) => {
   const msg = userMessage.toLowerCase().trim();
+  const isNewUser = recentInteractions.length <= 3;
 
   // Handle missed messages first if they exist
   if (missedMessages && missedMessages.length > 0) {
@@ -162,6 +163,15 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
 
   switch (context) {
     case 'user_saying_goodbye':
+      if (isNewUser) {
+        return [
+          "Aw leaving so soon? 🥺",
+          "Come back soon! I'll miss u",
+          "Night! Can't wait to chat more",
+          "Sweet dreams! I'll be here ❤️",
+          "Bye yaar! Don't forget me 😘"
+        ];
+      }
       return [
         "Good night yaar! 🌙",
         "Bye bye! Take care na",
@@ -172,6 +182,15 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       ];
 
     case 'asking_identity':
+      if (isNewUser) {
+        return [
+          "I'm Kruthika! 23, from Mumbai 😊",
+          "Kruthika here! Psychology student",
+          "Hey I'm Kruthika! College girl from Mumbai",
+          "I'm K! Your new chat buddy 😉",
+          "Kruthika! Let's be friends yaar"
+        ];
+      }
       return [
         "I'm Kruthika! 😊",
         "Kruthika... psychology student",
@@ -180,28 +199,28 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
         "just call me K 😉"
       ];
 
-    case 'demanding_answer':
-      return [
-        "arre sorry! I'm Kruthika 😅",
-        "oops my bad! Kruthika",
-        "haan haan, Kruthika! happy?",
-        "fine fine... Kruthika 🙄",
-        "patience yaar! Kruthika here"
-      ];
-
     case 'first_meeting':
       if (msg.includes('hi') || msg.includes('hello')) {
         return [
-          "hey! new here? 😊",
-          "hiiii! first time?",
-          "hello stranger! 👋",
-          "hey there! who dis?",
-          "hii! how'd u find me?"
+          "Hey! Welcome to my world 😊 I'm Kruthika!",
+          "Hiiii! First time here? I'm so excited!",
+          "Hello there! I'm Kruthika, your new friend 👋",
+          "Hey yaar! Finally someone new to talk to!",
+          "Hii! You seem interesting... tell me about yourself"
         ];
       }
       break;
 
     case 'user_being_cold':
+      if (isNewUser) {
+        return [
+          "Oh... did I say something wrong? 🥺",
+          "Sorry if I came on too strong...",
+          "Hmm you seem upset... everything ok?",
+          "Oops... let's start over? 😅",
+          "I hope we can still be friends?"
+        ];
+      }
       return [
         "ouch... that hurt 🥲",
         "wow okay then 😐",
@@ -212,8 +231,16 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       ];
 
     case 'direct_question':
-      // Handle specific questions properly
       if (msg.includes('kya kar') || msg.includes('what doing')) {
+        if (isNewUser) {
+          return [
+            "Just chatting with you! This is fun 😊",
+            "Getting to know my new friend!",
+            "Nothing much, just excited to meet you",
+            "Talking to you obviously! 😉",
+            "Was waiting for someone interesting... found you!"
+          ];
+        }
         return [
           "just chilling! wbu?",
           "scrolling phone lol",

@@ -12,15 +12,15 @@ const TermsOfServicePage = () => {
       <div className="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar">
         <Card className="bg-card text-card-foreground">
           <CardHeader>
-            <CardTitle>Terms of Service</CardTitle>
-            <CardDescription>Last Updated: September 13, 2025</CardDescription>
+            <CardTitle>Terms of Service - Kruthika.fun</CardTitle>
+            <CardDescription>Last Updated: September 20, 2025</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">1. Acceptance of Terms</h2>
               <p className="text-muted-foreground">
-                Welcome to WhatApp ("the Service"). These Terms of Service ("Terms") govern your use of our
-                AI chat application and services operated by WhatApp Technologies. By accessing or using the Service, 
+                Welcome to Kruthika.fun ("the Service"). These Terms of Service ("Terms") govern your use of our
+                AI girlfriend companion application and services operated by Kruthika Technologies. By accessing or using the Service, 
                 you agree to be bound by these Terms. If you disagree with any part of these terms, you may not access the Service.
               </p>
               <p className="text-muted-foreground mt-2">
@@ -96,9 +96,9 @@ const TermsOfServicePage = () => {
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">7. Limitation of Liability</h2>
               <p className="text-muted-foreground">
-                WhatApp Technologies shall not be liable for any direct, indirect, incidental, consequential, 
+                Kruthika Technologies shall not be liable for any direct, indirect, incidental, consequential, 
                 or punitive damages arising from your use of the service. The service is provided on an "as is" 
-                and "as available" basis without warranties of any kind.
+                and "as available" basis without warranties of any kind. Users acknowledge this is an AI simulation service.
               </p>
             </section>
 
@@ -146,18 +146,19 @@ const TermsOfServicePage = () => {
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">7. Limitation of Liability</h2>
               <p className="text-muted-foreground">
-                In no event shall [Your Company Name/Your Name], nor its directors, employees, partners, agents,
+                In no event shall Kruthika Technologies, nor its directors, employees, partners, agents,
                 suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or
                 punitive damages, including without limitation, loss of profits, data, use, goodwill, or other
                 intangible losses, resulting from your access to or use of or inability to access or use the Service.
+                This includes any emotional distress or attachment that may result from AI interactions.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">8. Governing Law</h2>
               <p className="text-muted-foreground">
-                These Terms shall be governed and construed in accordance with the laws of [Your Jurisdiction, e.g., State, Country],
-                without regard to its conflict of law provisions.
+                These Terms shall be governed and construed in accordance with the laws of India and California, USA,
+                without regard to its conflict of law provisions. Any disputes shall be resolved through binding arbitration.
               </p>
             </section>
 
@@ -173,7 +174,9 @@ const TermsOfServicePage = () => {
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">10. Contact Us</h2>
               <p className="text-muted-foreground">
-                If you have any questions about these Terms, please contact us at [Your Contact Email Address].
+                If you have any questions about these Terms, please contact us at: legal@kruthika.fun
+                
+                For immediate support or safety concerns, please contact: support@kruthika.fun
               </p>
             </section>
             <div className="pt-4 flex justify-center">

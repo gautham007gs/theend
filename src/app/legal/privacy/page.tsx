@@ -12,15 +12,15 @@ const PrivacyPolicyPage = () => {
       <div className="flex-grow overflow-y-auto p-4 sm:p-6 custom-scrollbar">
         <Card className="bg-card text-card-foreground">
           <CardHeader>
-            <CardTitle>Privacy Policy for WhatApp</CardTitle>
-            <CardDescription>Last Updated: September 13, 2025</CardDescription>
+            <CardTitle>Privacy Policy for Kruthika.fun</CardTitle>
+            <CardDescription>Last Updated: September 20, 2025</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">1. Introduction</h2>
               <p className="text-muted-foreground">
-                Welcome to WhatApp (the "Service"), operated by WhatApp Technologies ("we", "us", or "our").
-                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service.
+                Welcome to Kruthika.fun (the "Service"), operated by Kruthika Technologies ("we", "us", or "our").
+                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI girlfriend companion service.
                 By using the Service, you agree to the collection and use of information in accordance with this policy.
               </p>
               <p className="text-muted-foreground mt-2">
@@ -38,9 +38,9 @@ const PrivacyPolicyPage = () => {
               
               <h4 className="text-md font-medium mt-2">Chat Data & AI Interaction</h4>
                <p className="text-muted-foreground">
-                When you use WhatApp, messages you send are processed to provide AI chat functionality.
-                This data is sent to Google AI services to generate responses. Google has their own privacy policies governing data use.
-                We implement industry-standard encryption and security measures to protect your data in transit.
+                When you use Kruthika.fun, messages you send are processed to provide personalized AI companion functionality.
+                This data is sent to Google AI services (Vertex AI/Gemini) to generate contextual responses. Google has their own privacy policies governing data use.
+                We implement advanced encryption and security measures to protect your intimate conversations in transit.
                </p>
                <p className="text-muted-foreground mt-1">
                 We store chat history locally in your browser for session continuity. No detailed conversations or personal data
@@ -70,7 +70,7 @@ const PrivacyPolicyPage = () => {
 
               <h4 className="text-md font-medium mt-2">Personal Data (If you implement accounts)</h4>
               <p className="text-muted-foreground">
-                Currently, Kruthika Chat does not require user accounts. If, in the future, we implement user accounts, we might collect Personal Data such as an email address or username. This policy will be updated accordingly.
+                Currently, Kruthika.fun does not require user accounts to protect your anonymity. If, in the future, we implement optional user accounts, we might collect minimal Personal Data such as an email address or username. This policy will be updated accordingly with enhanced privacy protections.
               </p>
             </section>
 
@@ -161,8 +161,13 @@ const PrivacyPolicyPage = () => {
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">11. Contact Us</h2>
               <p className="text-muted-foreground">
-                If you have any questions about this Privacy Policy, please contact us at: [Your Contact Email Address]
+                If you have any questions about this Privacy Policy, please contact us at: privacy@kruthika.fun
               </p>
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-blue-800 font-medium text-sm">
+                  🔒 Privacy Commitment: We are committed to protecting your privacy during intimate AI conversations. Your personal data and chat content are never shared with third parties for marketing purposes.
+                </p>
+              </div>
             </section>
             <div className="pt-4 flex justify-center">
                  <Link href="/" legacyBehavior>
