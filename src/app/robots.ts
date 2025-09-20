@@ -8,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://kruthika-chat.replit.app/sitemap.xml',
+    sitemap: 'https://kruthika.fun/sitemap.xml',
   }
 }

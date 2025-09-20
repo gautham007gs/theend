@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -20,7 +19,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
   unreadCount,
 }) => {
   const displayLastMessage = lastMessage || `Click to chat with ${profile.name}!`;
-  
+
   let avatarUrlToUse = profile.avatarUrl;
   if (!avatarUrlToUse || typeof avatarUrlToUse !== 'string' || avatarUrlToUse.trim() === '' || (!avatarUrlToUse.startsWith('http') && !avatarUrlToUse.startsWith('data:'))) {
     avatarUrlToUse = defaultAIProfile.avatarUrl;
@@ -84,7 +83,7 @@ const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile(); 
   const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  
+
   useEffect(() => {
     const lastInteraction = localStorage.getItem('messages_kruthika');
     if (lastInteraction) {
@@ -108,7 +107,7 @@ const ChatListPage: React.FC = () => {
   }, [lastMessageTime]); 
 
   const effectiveAIProfile = globalAIProfile || defaultAIProfile;
-  
+
   // if (globalAIProfile) {
     // console.log("[ChatListPage] Using AIProfile from context:", JSON.stringify(globalAIProfile, null, 2));
   // } else if (!isLoadingAIProfile) { 
@@ -126,7 +125,7 @@ const ChatListPage: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header */}
@@ -147,7 +146,7 @@ const ChatListPage: React.FC = () => {
               >
                 <MoreVertical size={20} className="text-white" />
               </button>
-              
+
               {showDropdown && (
                 <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                   <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
@@ -162,6 +161,12 @@ const ChatListPage: React.FC = () => {
                     <Settings size={16} />
                     Settings
                   </button>
+                  <Link href="/blog" legacyBehavior>
+                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                      <Zap size={16} />
+                      Blog
+                    </button>
+                  </Link>
                   <div className="px-4 py-2 text-xs text-gray-400 text-center border-t border-gray-100 mt-1">
                     <span>Enhanced conversations</span>
                   </div>
@@ -170,7 +175,7 @@ const ChatListPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Navigation Tabs */}
         <div className="flex bg-green-500">
           <div className="flex-1">
@@ -198,7 +203,7 @@ const ChatListPage: React.FC = () => {
             unreadCount={1}
           />
         </div>
-        
+
         {/* Welcome Section */}
         <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm">
           <div className="mb-6">
@@ -209,7 +214,7 @@ const ChatListPage: React.FC = () => {
               Smart conversations
             </p>
           </div>
-          
+
           {/* Action Buttons */}
           <div className="flex flex-col space-y-3 w-full max-w-sm">
             <Link href="/maya-chat">
@@ -218,7 +223,7 @@ const ChatListPage: React.FC = () => {
                 <span>Start Chatting</span>
               </button>
             </Link>
-            
+
             <div className="flex space-x-3">
               <Link href="/status" className="flex-1">
                 <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
@@ -231,12 +236,12 @@ const ChatListPage: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
         </div>
-        
+
         <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md mt-2 mb-1" />
       </div>
-      
+
       {/* Floating Action Button */}
       <Link
         href="/maya-chat"

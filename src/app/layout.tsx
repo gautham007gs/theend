@@ -15,9 +15,42 @@ import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Kruthika Chat - Your AI Companion',
-  description: 'Chat with Kruthika, your friendly and engaging AI companion. Experience a unique AI chat with Kruthika, sometimes referred to as an AI girlfriend experience for companionship.',
-  keywords: 'Kruthika, Kruthika Chat, AI Chat, AI girlfriend, virtual companion, chat bot, AI companion, conversational AI',
+  title: 'Kruthika.fun - AI Girlfriend Chat | Virtual Companion Online',
+  description: 'Meet Kruthika, your AI girlfriend and virtual companion at Kruthika.fun. Experience realistic AI chat conversations, emotional connection, and 24/7 companionship. Free AI girlfriend simulator with authentic Indian personality.',
+  keywords: 'Kruthika.fun, AI girlfriend, virtual girlfriend, AI companion, AI chat, virtual companion, AI boyfriend alternative, online girlfriend, chatbot girlfriend, AI relationship simulator, virtual dating, AI girlfriend free, Indian AI girlfriend, Mumbai girl AI, college girl AI, emotional AI, AI girlfriend chat, virtual relationship, AI dating simulator, companion AI, girlfriend simulator, AI chat app, virtual girlfriend online',
+  authors: [{ name: 'Kruthika.fun Team' }],
+  creator: 'Kruthika.fun',
+  publisher: 'Kruthika.fun',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'Kruthika.fun - AI Girlfriend Chat | Virtual Companion',
+    description: 'Meet Kruthika, your AI girlfriend and virtual companion. Experience realistic conversations and emotional connection with your personal AI girlfriend.',
+    url: 'https://kruthika.fun',
+    siteName: 'Kruthika.fun',
+    images: [
+      {
+        url: 'https://kruthika.fun/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Kruthika.fun - AI Girlfriend Chat',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Kruthika.fun - AI Girlfriend Chat | Virtual Companion',
+    description: 'Meet Kruthika, your AI girlfriend and virtual companion. Experience realistic conversations and emotional connection.',
+    images: ['https://kruthika.fun/og-image.png'],
+    creator: '@kruthikafun',
+  },
+  alternates: {
+    canonical: 'https://kruthika.fun',
+  },
+  other: {
+    'google-site-verification': 'your-google-verification-code',
+  },
 };
 
 export default function RootLayout({

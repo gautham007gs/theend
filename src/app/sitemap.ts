@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://kruthika-chat.replit.app'
+  const baseUrl = 'https://kruthika.fun'
   
   return [
     {
@@ -18,10 +18,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/status`,
+      url: `${baseUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/status`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
     },
     {
       url: `${baseUrl}/legal/privacy`,
