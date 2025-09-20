@@ -163,7 +163,7 @@ function getKruthikaInterestInTopic(topic: string): number {
     'books': 0.6
   };
   
-  return interests[topic] || (0.3 + Math.random() * 0.4);
+  return interests[topic as keyof typeof interests] || (0.3 + Math.random() * 0.4);
 }
 
 function extractTopics(message: string): string[] {

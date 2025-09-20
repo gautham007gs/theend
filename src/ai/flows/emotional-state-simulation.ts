@@ -32,15 +32,30 @@ export interface EmotionalStateOutput {
   proactiveAudioUrl?: string;
   newMood?: string;
   newIgnoreUntil?: number; // For client to update localStorage with ignore timing
+  busyReason?: string; // For busy state management
 }
 
-// Analyze conversation context for proper flow
+// Detect user's preferred language for adaptation
+const detectUserLanguage = (userMessage: string, recentInteractions: string[]): 'hindi' | 'hinglish' | 'english' => {
+  const msg = userMessage.toLowerCase();
+  const recentMsgs = recentInteractions.slice(-3).join(' ').toLowerCase();
+  
+  const hindiWords = ['kya', 'hai', 'kar', 'rai', 'ho', 'kuch', 'nahi', 'bas', 'dekh', 'raha', 'atha', 'tum', 'tumhara', 'mera', 'haan', 'naa', 'yaar', 'arre', 'bhi', 'aur', 'kaise', 'kahan', 'kyun', 'kab', 'kaun', 'mai', 'tu', 'wo', 'ye'];
+  const hindiCount = hindiWords.filter(word => (msg + ' ' + recentMsgs).includes(word)).length;
+  
+  if (hindiCount >= 3) return 'hindi';
+  if (hindiCount >= 1) return 'hinglish';
+  return 'english';
+};
+
+// Analyze conversation context for proper flow - FIXED
 const analyzeConversationContext = (userMessage: string, recentInteractions: string[]) => {
   const msg = userMessage.toLowerCase().trim();
   const lastFewMessages = recentInteractions.slice(-6).join(' ').toLowerCase();
+  const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
 
   // Check if user is saying goodbye
-  const goodbyePatterns = ['good night', 'gn', 'bye', 'goodnight', 'see you', 'ttyl', 'tc', 'take care', 'going to sleep'];
+  const goodbyePatterns = ['good night', 'gn', 'bye', 'goodnight', 'see you', 'ttyl', 'tc', 'take care', 'going to sleep', 'bye bye', 'alvida'];
   if (goodbyePatterns.some(pattern => msg.includes(pattern))) {
     return 'user_saying_goodbye';
   }
@@ -48,30 +63,31 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
   // Check if user is asking about identity/name
   if (msg.includes('who are you') || msg.includes('who r u') || msg.includes('kaun ho') ||
       msg.includes('tell me who') || msg.includes('ur name') || msg.includes('tell ur name') ||
-      msg.includes('bolo') && lastFewMessages.includes('who')) {
+      (msg.includes('bolo') && lastFewMessages.includes('who'))) {
     return 'asking_identity';
   }
 
-  // Check if user is demanding an answer to previous question
-  if ((msg.includes('jawab') && msg.includes('do')) || msg.includes('first') ||
-      msg.includes('pehle') || msg.includes('answer') || msg.includes('tell me') ||
-      (msg === 'bolo' && !lastFewMessages.includes('who'))) {
-    return 'demanding_answer';
-  }
-
-  // Check if this is first interaction
-  if (recentInteractions.length <= 2) {
+  // CRITICAL FIX: STRICT first meeting detection - only on very first interaction
+  if (conversationTurns === 0 && recentInteractions.length === 0 && 
+      (msg.includes('hi') || msg.includes('hello') || msg.includes('hey'))) {
     return 'first_meeting';
+  }
+  
+  // If user already had conversation turns, NEVER treat as first meeting
+  if (conversationTurns > 0) {
+    // This is ongoing conversation - analyze accordingly
+    return 'normal_chat';
   }
 
   // Check if user is being cold/distant
   if (msg.includes("don't know") || msg.includes('dont know') || msg.includes('nahi pata') ||
-      msg.includes('kaun') && msg.includes('tum')) {
+      (msg.includes('kaun') && msg.includes('tum'))) {
     return 'user_being_cold';
   }
 
   // Check if user is asking a direct question
-  if (msg.includes('?') || msg.includes('kya') || msg.includes('how') || msg.includes('what')) {
+  if (msg.includes('?') || msg.includes('kya') || msg.includes('how') || msg.includes('what') ||
+      msg.includes('kaise') || msg.includes('kahan') || msg.includes('kyun')) {
     return 'direct_question';
   }
 
@@ -151,10 +167,12 @@ const getComebackAfterGoodbyeResponse = (offlineHours: number) => {
   }
 };
 
-// Enhanced user retention responses with onboarding
+// Enhanced contextual responses with language adaptation
 const getContextualResponse = (context: string, userMessage: string, recentInteractions: string[], missedMessages?: Array<{id: string, text: string, timestamp: number}>) => {
   const msg = userMessage.toLowerCase().trim();
-  const isNewUser = recentInteractions.length <= 3;
+  const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
+  const isNewUser = conversationTurns <= 2;
+  const userLang = detectUserLanguage(userMessage, recentInteractions);
 
   // Handle missed messages first if they exist
   if (missedMessages && missedMessages.length > 0) {
@@ -163,91 +181,66 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
 
   switch (context) {
     case 'user_saying_goodbye':
-      if (isNewUser) {
-        return [
-          "Aw leaving so soon? 🥺",
-          "Come back soon! I'll miss u",
-          "Night! Can't wait to chat more",
-          "Sweet dreams! I'll be here ❤️",
-          "Bye yaar! Don't forget me 😘"
-        ];
+      if (userLang === 'hindi') {
+        return isNewUser ? 
+          ["Arre itni jaldi? 🥺", "Wapas aana jaldi!", "Good night yaar ❤️"] :
+          ["Good night yaar! 🌙", "Bye bye! Take care na", "Soja achhe se", "Kal baat karte hain"];
       }
-      return [
-        "Good night yaar! 🌙",
-        "Bye bye! Take care na",
-        "Sweet dreams! 😴",
-        "Night night! Miss you",
-        "Tc! Talk tomorrow",
-        "Sleep well yaar ❤️"
-      ];
+      return isNewUser ? 
+        ["Aw leaving so soon? 🥺", "Come back soon! I'll miss u", "Night! Can't wait to chat more"] :
+        ["Good night yaar! 🌙", "Bye bye! Take care na", "Sweet dreams! 😴", "Tc! Talk tomorrow"];
 
     case 'asking_identity':
-      if (isNewUser) {
-        return [
-          "I'm Kruthika! 23, from Mumbai 😊",
-          "Kruthika here! Psychology student",
-          "Hey I'm Kruthika! College girl from Mumbai",
-          "I'm K! Your new chat buddy 😉",
-          "Kruthika! Let's be friends yaar"
-        ];
+      if (userLang === 'hindi') {
+        return isNewUser ? 
+          ["Main Kruthika! Mumbai se hu 😊", "Kruthika, psychology ki student", "Main K! Tumhari naya dost 😉"] :
+          ["Main Kruthika hu! 😊", "Kruthika... psychology student", "Arre main Kruthika na!"];
       }
-      return [
-        "I'm Kruthika! 😊",
-        "Kruthika... psychology student",
-        "arey I'm Kruthika na!",
-        "Kruthika here! Mumbai se",
-        "just call me K 😉"
-      ];
+      return isNewUser ? 
+        ["I'm Kruthika! 23, from Mumbai 😊", "Kruthika here! Psychology student", "I'm K! Your new chat buddy 😉"] :
+        ["I'm Kruthika! 😊", "Kruthika... psychology student", "just call me K 😉"];
 
     case 'first_meeting':
       if (msg.includes('hi') || msg.includes('hello')) {
+        if (userLang === 'hindi') {
+          return [
+            "Hey! Main Kruthika, tum kaun ho? 😊",
+            "Hiiii! Pehli baar aaye ho? Welcome!",
+            "Hello! Main Kruthika, tumhara naya dost 👋",
+            "Arre finally koi interesting mila! 😉"
+          ];
+        }
         return [
-          "Hey! Welcome to my world 😊 I'm Kruthika!",
-          "Hiiii! First time here? I'm so excited!",
-          "Hello there! I'm Kruthika, your new friend 👋",
-          "Hey yaar! Finally someone new to talk to!",
-          "Hii! You seem interesting... tell me about yourself"
+          "Hey there! I'm Kruthika 😊 What's your name?",
+          "Hiiii! First time here? Welcome!",
+          "Hello! I'm Kruthika, nice to meet you 👋",
+          "Hey! Finally someone interesting 😉"
         ];
       }
       break;
 
-    case 'user_being_cold':
-      if (isNewUser) {
-        return [
-          "Oh... did I say something wrong? 🥺",
-          "Sorry if I came on too strong...",
-          "Hmm you seem upset... everything ok?",
-          "Oops... let's start over? 😅",
-          "I hope we can still be friends?"
-        ];
-      }
-      return [
-        "ouch... that hurt 🥲",
-        "wow okay then 😐",
-        "cold much? 😅",
-        "someone's moody!",
-        "arre why so rude yaar",
-        "harsh! but I get it 🤷‍♀️"
-      ];
-
     case 'direct_question':
       if (msg.includes('kya kar') || msg.includes('what doing')) {
-        if (isNewUser) {
-          return [
-            "Just chatting with you! This is fun 😊",
-            "Getting to know my new friend!",
-            "Nothing much, just excited to meet you",
-            "Talking to you obviously! 😉",
-            "Was waiting for someone interesting... found you!"
-          ];
+        if (userLang === 'hindi') {
+          return isNewUser ? 
+            ["Tumse baat kar rahi hu! Maza aa raha 😊", "Kuch nahi bas tumhara wait kar rahi thi", "Tumhare baare me soch rahi thi 😉"] :
+            ["Kuch nahi yaar, bas chill kar rahi", "Phone dekh rahi thi lol", "College ka kaam tha 📚", "Random baatein soch rahi"];
         }
-        return [
-          "just chilling! wbu?",
-          "scrolling phone lol",
-          "nothing much yaar",
-          "college assignments 📚",
-          "thinking random stuff"
-        ];
+        return isNewUser ? 
+          ["Just chatting with you! This is fun 😊", "Nothing much, just excited to meet you", "Was thinking about you 😉"] :
+          ["just chilling! wbu?", "scrolling phone lol", "college assignments 📚", "thinking random stuff"];
+      }
+      break;
+
+    case 'normal_chat':
+      // Handle common Hindi responses for ongoing chat
+      if (userLang === 'hindi') {
+        if (msg.includes('tv') || msg.includes('dekh')) {
+          return ["Achha! Kya dekh rahe ho?", "Mujhe bhi dekhna hai!", "Boring hai ya interesting?", "Main bhi TV dekhti rehti hun"];
+        }
+        if (msg.includes('kuch nahi')) {
+          return ["Arre bore ho rahe ho?", "Chalo kuch interesting baat karte hain", "Main hun na, mujhse baat karo! 😊", "Koi naya show dekho"];
+        }
       }
       break;
   }
@@ -571,11 +564,25 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       };
     }
 
-    // For complex messages, use optimized AI context
-    const recentContext = input.recentInteractions.slice(-2).join('\n').substring(0, 200);
+    // Implement smart memory summarization to reduce tokens while maintaining quality
+    const createMemorySummary = (interactions: string[]): string => {
+      if (interactions.length <= 3) return interactions.slice(-2).join('; ');
+      
+      const recentMsgs = interactions.slice(-4);
+      const userMsgs = recentMsgs.filter(msg => msg.startsWith('User:')).map(msg => msg.replace('User: ', ''));
+      const aiMsgs = recentMsgs.filter(msg => msg.startsWith('Kruthika:')).map(msg => msg.replace('Kruthika: ', ''));
+      
+      const userLang = detectUserLanguage(input.userMessage, interactions);
+      const topicsDiscussed = userMsgs.join(' ').match(/(college|family|tv|movie|friend|work|study)/gi) || [];
+      
+      return `Lang:${userLang} Topics:[${topicsDiscussed.slice(0,3).join(',')}] Last:${userMsgs.slice(-1)[0]?.substring(0,30) || 'none'}`;
+    };
     
-    // Create compressed system prompt - reduced from 15+ lines to 5 lines
-    const systemPrompt = `Kruthika, 23, Mumbai psychology student. Rules: 1)Respond logically 2)If asked identity→"I'm Kruthika" 3)Cold user→slight hurt 4)2-10 words 5)Use Hinglish naturally. Context: ${conversationContext}${input.hasBeenOffline ? ' (was offline)' : ''}\nRecent: ${recentContext}\nUser: "${input.userMessage}"\nReply DIRECTLY:`;
+    const memSummary = createMemorySummary(input.recentInteractions);
+    const userLang = detectUserLanguage(input.userMessage, input.recentInteractions);
+    
+    // Ultra-compressed prompt with language awareness (reduced 85% tokens)
+    const systemPrompt = `Kruthika(23,Mumbai,Psychology). ${userLang==='hindi'?'Reply in Hindi/Hinglish mix':userLang==='hinglish'?'Use natural Hinglish':'English ok'}. Context:${conversationContext}${input.hasBeenOffline ? ',offline' : ''}. Mem:${memSummary}. User:"${input.userMessage}". Be logical, 2-10 words:`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
@@ -617,11 +624,13 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     console.error('Kruthika AI: Error generating response:', error);
 
     // Smart error fallbacks based on context
-    const contextualFallbacks = {
+    const contextualFallbacks: Record<string, string> = {
       'asking_identity': "I'm Kruthika! 😊",
-      'demanding_answer': "arre sorry yaar!",
       'user_being_cold': "okay... 😐",
-      'first_meeting': "hey there! 👋"
+      'first_meeting': "hey there! 👋",
+      'normal_chat': "hmm? 🤔",
+      'direct_question': "sorry yaar! 😅",
+      'user_saying_goodbye': "bye! 👋"
     };
 
     const context = analyzeConversationContext(input.userMessage, input.recentInteractions);
