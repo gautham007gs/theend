@@ -97,6 +97,7 @@ export async function sendMessage(message: string, currentMood?: string, chatHis
     return { 
       success: true, 
       response,
+      multiPartResponse: aiResponse.multiPartResponse, // Pass multi-part responses to client
       newMood: aiResponse.newMood || dynamicMood,
       usedMood: dynamicMood,
       proactiveImageUrl: aiResponse.proactiveImageUrl,
