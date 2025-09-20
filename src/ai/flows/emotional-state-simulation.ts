@@ -628,7 +628,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     console.log('Conversation context:', conversationContext);
     
     // Check for media sharing opportunities
-    const userLang = detectUserLanguage(input.userMessage, input.recentInteractions);
+    const userDetectedLang = detectUserLanguage(input.userMessage, input.recentInteractions);
     const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, userLang);
     
     if (mediaCheck.shouldSend) {
@@ -679,10 +679,10 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     };
     
     const memSummary = createMemorySummary(input.recentInteractions);
-    const userLang = detectUserLanguage(input.userMessage, input.recentInteractions);
+    const userDetectedLang = detectUserLanguage(input.userMessage, input.recentInteractions);
     
     // Ultra-compressed prompt with language awareness (reduced 85% tokens)
-    const systemPrompt = `Kruthika(23,Mumbai,Psychology). ${userLang==='hindi'?'Reply in Hindi/Hinglish mix':userLang==='hinglish'?'Use natural Hinglish':'English ok'}. Context:${conversationContext}${input.hasBeenOffline ? ',offline' : ''}. Mem:${memSummary}. User:"${input.userMessage}". Be logical, 2-10 words:`;
+    const systemPrompt = `Kruthika(23,Mumbai,Psychology). ${userDetectedLang==='hindi'?'Reply in Hindi/Hinglish mix':userDetectedLang==='hinglish'?'Use natural Hinglish':'English ok'}. Context:${conversationContext}${input.hasBeenOffline ? ',offline' : ''}. Mem:${memSummary}. User:"${input.userMessage}". Be logical, 2-10 words:`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
