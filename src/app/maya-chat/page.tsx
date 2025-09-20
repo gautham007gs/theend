@@ -512,12 +512,12 @@ const KruthikaChatPage: NextPage = () => {
               .insert({ user_pseudo_id: userPseudoId, activity_date: today, chat_id: 'kruthika_chat' });
 
             if (error && error.code !== '23505') {
-              console.error('Error logging daily activity to Supabase:', error.message);
+              console.warn('Daily activity logging skipped - Supabase table may not exist:', error.message);
             } else if (!error) {
               localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
             }
           } catch (e: any) {
-            console.error('Supabase daily activity logging failed:', e?.message || String(e));
+            console.warn('Daily activity logging skipped - Supabase connection issue:', e?.message || String(e));
           }
         })();
       }
