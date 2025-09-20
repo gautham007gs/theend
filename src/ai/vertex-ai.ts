@@ -1,5 +1,16 @@
 import { VertexAI } from '@google-cloud/vertexai';
 import { parseGoogleCredentials } from './credential-utils';
+import { 
+  getCachedResponse, 
+  cacheResponse, 
+  selectOptimalModel, 
+  getOptimizedGenerationConfig, 
+  analyzeTaskComplexity,
+  buildOptimizedPrompt,
+  optimizeConversationContext,
+  estimateTokenSavings,
+  clearExpiredCache
+} from './token-optimization';
 
 // -----------------------------------------------------------------------------
 // Vertex AI Implementation - Complete Replacement
@@ -61,18 +72,41 @@ export const VERTEX_MODELS = {
   GEMINI_2_FLASH: 'gemini-2.0-flash-001'
 };
 
-// Main chat function using Vertex AI
+// Main chat function using Vertex AI with token optimization
 export async function generateAIResponse(
   userMessage: string,
   systemPrompt?: string,
-  model: string = VERTEX_MODELS.GEMINI_2_FLASH
+  model?: string,
+  context?: string[]
 ): Promise<string> {
   
-  console.log('Vertex AI: Starting generateAIResponse...');
+  console.log('Vertex AI: Starting optimized generateAIResponse...');
   console.log('User message length:', userMessage.length);
   console.log('System prompt provided:', !!systemPrompt);
-  console.log('Model:', model);
   
+  // Clear expired cache entries periodically
+  if (Math.random() < 0.1) { // 10% chance to clean cache
+    clearExpiredCache();
+  }
+
+  // Check cache first for significant cost savings
+  const contextHash = context ? context.join('|').substring(0, 100) : '';
+  const cachedResponse = getCachedResponse(userMessage, systemPrompt, contextHash);
+  if (cachedResponse) {
+    console.log('Token Optimization: Returned cached response, 100% token savings!');
+    return cachedResponse;
+  }
+
+  // Analyze task complexity for smart model selection
+  const complexity = analyzeTaskComplexity(userMessage, !!context);
+  const optimizedModel = model || selectOptimalModel(complexity === 'simple' ? 'simple' : 'conversation');
+  console.log(`Token Optimization: Selected ${optimizedModel} for ${complexity} task`);
+
+  // Optimize generation config based on expected response length
+  const messageType = userMessage.length < 20 ? 'short' : userMessage.length > 100 ? 'detailed' : 'normal';
+  const generationConfig = getOptimizedGenerationConfig(messageType);
+  console.log(`Token Optimization: Using ${messageType} config, max tokens: ${generationConfig.maxOutputTokens}`);
+
   if (!vertexAI) {
     console.error('Vertex AI: Not initialized - checking environment...');
     const projectId = process.env.VERTEX_AI_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT_ID;
@@ -83,25 +117,32 @@ export async function generateAIResponse(
   }
 
   try {
-    console.log(`Vertex AI: Generating response using model ${model}`);
-    
-    // Get the generative model
+    // Get the generative model with optimized config
     const generativeModel = vertexAI.getGenerativeModel({
-      model: model,
-      generationConfig: {
-        maxOutputTokens: 2048,
-        temperature: 0.7,
-        topP: 0.9,
-        topK: 40
-      }
+      model: optimizedModel,
+      generationConfig
     });
     
-    // Combine system prompt with user message if provided
-    const prompt = systemPrompt 
-      ? `${systemPrompt}\n\nUser: ${userMessage}`
-      : userMessage;
+    // Optimize context if provided
+    const optimizedContext = context ? optimizeConversationContext(context, 600) : '';
     
-    console.log('Vertex AI: Sending request to model...');
+    // Build optimized prompt with minimal token usage
+    let prompt: string;
+    if (systemPrompt && optimizedContext) {
+      prompt = `${systemPrompt}\n\nContext: ${optimizedContext}\n\nUser: ${userMessage}`;
+    } else if (systemPrompt) {
+      prompt = `${systemPrompt}\n\nUser: ${userMessage}`;
+    } else {
+      prompt = userMessage;
+    }
+
+    // Log token optimization stats
+    const originalLength = (systemPrompt || '').length + userMessage.length + (context?.join('') || '').length;
+    const optimizedLength = prompt.length;
+    const savings = estimateTokenSavings(originalLength, optimizedLength, false);
+    console.log(`Token Optimization: Input tokens optimized by ${originalLength - optimizedLength} chars (${savings.costSavingsPercent}% cost reduction)`);
+    
+    console.log('Vertex AI: Sending optimized request to model...');
     const result = await generativeModel.generateContent(prompt);
     console.log('Vertex AI: Received response from model');
     
@@ -112,8 +153,11 @@ export async function generateAIResponse(
       console.error('Vertex AI: Empty response - full response object:', JSON.stringify(response, null, 2));
       throw new Error('Empty response from Vertex AI');
     }
+
+    // Cache the response for future use
+    cacheResponse(userMessage, text, systemPrompt, contextHash);
     
-    console.log('Vertex AI: Successfully generated response, length:', text.length);
+    console.log(`Vertex AI: Successfully generated optimized response, length: ${text.length}`);
     return text;
     
   } catch (error) {
