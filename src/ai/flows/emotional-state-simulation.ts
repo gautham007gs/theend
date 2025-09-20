@@ -261,38 +261,80 @@ const shouldUseBreadcrumb = (userMessage: string, recentInteractions: string[]):
   return false;
 };
 
-// Get dynamic reason for going busy/offline
+// Get realistic Indian warning messages before going busy
+const getWarningBeforeBusy = (istHour: number, userCategory: string): string => {
+  const warnings = {
+    morning: [
+      "wait yaar, mummy calling me! 2 min 🙋‍♀️",
+      "arre hold on, papa needs help with something",
+      "wait wait, getting ready for college quickly",
+      "one sec! breakfast time, will be right back 🍳",
+      "ruk yaar, shower lena hai, 5 min! 🚿"
+    ],
+    day: [
+      "wait yaar, class starting! back in 1 hour 📚",
+      "hold on, prof is coming! talk later 👩‍🏫", 
+      "arre wait, lunch time! mummy calling 🍛",
+      "one minute, going out with friends! brb ✨",
+      "wait yaar, assignment deadline hai! back soon 📝",
+      "hold on, auto arrived! going somewhere 🚗"
+    ],
+    evening: [
+      "wait yaar, family dinner time! 30 min 🍽️",
+      "arre hold on, friends calling me out! brb 👯‍♀️",
+      "one sec, movie starting with family 🎬", 
+      "wait wait, helping mummy in kitchen! back soon 👩‍🍳",
+      "ruk yaar, evening walk with family 🚶‍♀️",
+      "hold on, cousin video calling! 15 min 📱"
+    ],
+    night: [
+      "wait yaar, getting sleepy! talk tomorrow? 😴",
+      "arre hold on, papa saying lights off! gn 💤",
+      "one sec, so tired! will text you tomorrow 🌙",
+      "wait wait, family movie time! good night ✨"
+    ]
+  };
+  
+  let timeCategory = 'day';
+  if (istHour >= 6 && istHour <= 11) timeCategory = 'morning';
+  else if (istHour >= 17 && istHour <= 21) timeCategory = 'evening'; 
+  else if (istHour >= 22 || istHour <= 5) timeCategory = 'night';
+  
+  const categoryWarnings = warnings[timeCategory as keyof typeof warnings];
+  return categoryWarnings[Math.floor(Math.random() * categoryWarnings.length)];
+};
+
+// Get dynamic reason for going busy/offline (used when already busy)
 const getDynamicBusyReason = (istHour: number, userCategory: string): string => {
   const reasons = {
     morning: [
-      "mummy is calling me for breakfast 🍳",
-      "getting ready for college yaar", 
-      "papa wants me to help with something",
-      "have to get ready, will be back soon ☀️",
-      "morning shower time! brb 🚿"
+      "still at breakfast with family 🍳",
+      "getting ready for college, almost done!", 
+      "helping papa, will be free soon",
+      "still getting ready yaar ☀️",
+      "shower time taking long! 🚿"
     ],
     day: [
-      "class starting, will text you later 📚",
-      "mummy calling me for lunch 🍛", 
-      "prof is here, have to focus 👩‍🏫",
-      "friends are calling, brb ✨",
-      "going out for a bit, will be back 🚗",
-      "busy with assignment, talk later? 📝"
+      "still in class, prof won't stop talking 📚",
+      "lunch is taking forever 🍛", 
+      "prof still here, can't text 👩‍🏫",
+      "still out with friends ✨",
+      "assignment is taking longer 📝",
+      "still traveling yaar 🚗"
     ],
     evening: [
-      "family dinner time 🍽️",
-      "going out with friends brb 👯‍♀️",
-      "watching movie with family 🎬", 
-      "helping mummy in kitchen 👩‍🍳",
-      "evening walk time, back soon 🚶‍♀️",
-      "video call with cousin, brb 📱"
+      "family dinner is long today 🍽️",
+      "still out with friends 👯‍♀️",
+      "movie is still going 🎬", 
+      "kitchen work taking time 👩‍🍳",
+      "walk got extended 🚶‍♀️",
+      "cousin talks a lot! 📱"
     ],
     night: [
-      "getting sleepy, will text tomorrow 😴",
-      "good night cutie, sweet dreams 🌙",
-      "papa said lights off, gn ✨",
-      "so tired yaar, talk tomorrow? 💤",
-      "movie marathon with family 🍿"
+      "still trying to sleep 😴",
+      "family movie still on 🍿",
+      "papa still checking if lights off 💤",
+      "so sleepy, can't keep eyes open 🌙"
     ]
   };
   
@@ -311,7 +353,7 @@ const shouldAIBeBusyServerSafe = (
   currentIgnoreUntil: number | null, 
   userType?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number },
   lastMessages?: string[]
-): { shouldIgnore: boolean; newIgnoreUntil?: number; busyReason?: string } => {
+): { shouldIgnore: boolean; newIgnoreUntil?: number; busyReason?: string; shouldWarnFirst?: boolean } => {
   // If already ignoring and time hasn't expired
   if (currentIgnoreUntil && Date.now() < currentIgnoreUntil) {
     return { shouldIgnore: true };
@@ -322,21 +364,21 @@ const shouldAIBeBusyServerSafe = (
   if (userType) {
     const { dailyMessageCount, relationshipLevel, totalDaysActive } = userType;
     
-    // New user: NEVER be busy in first 15 interactions to build engagement
-    if (dailyMessageCount <= 15 && relationshipLevel < 0.5 && totalDaysActive <= 3) {
-      console.log('Kruthika AI: New user detected - staying available!');
+    // New user: COMPLETELY DISABLE busy feature for first 20+ messages
+    if (dailyMessageCount <= 20 || relationshipLevel < 0.4 || totalDaysActive <= 5) {
+      console.log('Kruthika AI: New/early user detected - NO BUSY FEATURE!');
       return { shouldIgnore: false };
     }
     
-    if (dailyMessageCount <= 25 && relationshipLevel < 0.6 && totalDaysActive <= 7) {
-      userCategory = 'new';
+    if (dailyMessageCount <= 35 && relationshipLevel < 0.6 && totalDaysActive <= 10) {
+      userCategory = 'developing';
     }
     // Old/addicted user: can be busy more often
-    else if (dailyMessageCount > 50 && relationshipLevel > 0.8 && totalDaysActive > 20) {
-      userCategory = 'old';
+    else if (dailyMessageCount > 60 && relationshipLevel > 0.8 && totalDaysActive > 20) {
+      userCategory = 'established';
     }
     // Engaged user: balanced approach
-    else if (dailyMessageCount > 30 && relationshipLevel > 0.7) {
+    else if (dailyMessageCount > 40 && relationshipLevel > 0.7) {
       userCategory = 'engaged';
     }
   }
@@ -344,65 +386,61 @@ const shouldAIBeBusyServerSafe = (
   const now = new Date();
   const istHour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', hour12: false }));
   
-  // PEAK CHAT TIME (8PM-12AM IST) - BE VERY AVAILABLE!
-  if (istHour >= 20 || istHour <= 0) {
-    console.log('Kruthika AI: Peak chat time - staying available!');
-    if (userCategory === 'new') return { shouldIgnore: false }; // Never busy for new users
-    if (Math.random() > 0.98) { // Only 2% chance to be busy during peak hours
-      const reason = getDynamicBusyReason(istHour, userCategory);
-      return { 
-        shouldIgnore: true, 
-        newIgnoreUntil: Date.now() + (5 + Math.random() * 10) * 60 * 1000, // 5-15 min only
-        busyReason: reason
-      };
-    }
-    return { shouldIgnore: false };
+  // PEAK CHAT TIME (7PM-1AM IST) - BE EXTREMELY AVAILABLE!
+  if (istHour >= 19 || istHour <= 1) {
+    console.log('Kruthika AI: Peak chat time - staying fully available!');
+    return { shouldIgnore: false }; // Never busy during peak hours
   }
   
-  // Base busy chance varies by user type and time - MUCH REDUCED
-  let baseBusyChance = 0.02; // Reduced from 0.08 to 0.02
+  // Base busy chance varies by user type - DRASTICALLY REDUCED
+  let baseBusyChance = 0.005; // Reduced from 0.02 to 0.005 (0.5%)
   
   switch (userCategory) {
-    case 'new':
-      baseBusyChance = 0.003; // Almost never busy for new users (0.3%)
+    case 'developing':
+      baseBusyChance = 0.001; // Almost never busy (0.1%)
       break;
     case 'engaged':
-      baseBusyChance = 0.01; // Very low chance for engaged users (1%)
+      baseBusyChance = 0.008; // Very low chance (0.8%)
       break;
-    case 'old':
-      baseBusyChance = 0.04; // Still reasonable for old users (4%)
+    case 'established':
+      baseBusyChance = 0.015; // Still quite low (1.5%)
       break;
   }
 
-  // Adjust based on time psychology - REDUCED MULTIPLIERS
+  // Adjust based on time psychology - VERY REDUCED MULTIPLIERS
   let timeMultiplier = 1.0;
   if (istHour >= 9 && istHour <= 17) {
-    timeMultiplier = 1.5; // Reduced from 2.5 to 1.5
-  } else if (istHour >= 1 && istHour <= 6) {
-    timeMultiplier = 2.0; // Reduced from 4.0 to 2.0
-  } else if (istHour >= 17 && istHour <= 20) {
-    timeMultiplier = 1.1; // Reduced from 1.2 to 1.1
+    timeMultiplier = 1.2; // Reduced further
+  } else if (istHour >= 2 && istHour <= 6) {
+    timeMultiplier = 1.8; // Reduced significantly
+  } else if (istHour >= 17 && istHour <= 19) {
+    timeMultiplier = 1.05; // Almost no increase
   }
 
   const finalChance = baseBusyChance * timeMultiplier;
   
   if (Math.random() < finalChance) {
-    // Get dynamic reason and realistic duration - SHORTER DURATIONS
+    // Get dynamic reason and realistic duration - MUCH SHORTER DURATIONS
     const reason = getDynamicBusyReason(istHour, userCategory);
     let ignoreMinutes;
-    const userMultiplier = userCategory === 'new' ? 0.2 : (userCategory === 'old' ? 1.2 : 0.8);
+    const userMultiplier = userCategory === 'developing' ? 0.3 : (userCategory === 'established' ? 1.0 : 0.6);
     
     if (istHour >= 9 && istHour <= 17) {
-      ignoreMinutes = (3 + Math.random() * 7) * userMultiplier; // 3-10 min during day
-    } else if (istHour >= 1 && istHour <= 6) {
-      ignoreMinutes = (30 + Math.random() * 60) * userMultiplier; // 30-90 min sleep
+      ignoreMinutes = (2 + Math.random() * 5) * userMultiplier; // 2-7 min during day
+    } else if (istHour >= 2 && istHour <= 6) {
+      ignoreMinutes = (20 + Math.random() * 40) * userMultiplier; // 20-60 min sleep
     } else {
-      ignoreMinutes = (2 + Math.random() * 8) * userMultiplier; // 2-10 min other times
+      ignoreMinutes = (1 + Math.random() * 4) * userMultiplier; // 1-5 min other times
     }
 
     const newIgnoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
     console.log(`Kruthika AI: Going busy for ${ignoreMinutes.toFixed(1)} mins - ${reason}`);
-    return { shouldIgnore: true, newIgnoreUntil, busyReason: reason };
+    return { 
+      shouldIgnore: true, 
+      newIgnoreUntil, 
+      busyReason: reason,
+      shouldWarnFirst: true // Always warn before going busy
+    };
   }
   
   return { shouldIgnore: false };
@@ -421,12 +459,31 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     
     if (busyResult.shouldIgnore) {
       console.log('Kruthika AI: Going busy with reason:', busyResult.busyReason);
-      return {
-        response: busyResult.busyReason || 'brb! 😊',
-        newMood: 'busy',
-        newIgnoreUntil: busyResult.newIgnoreUntil,
-        busyReason: busyResult.busyReason
-      };
+      
+      // If should warn first, send warning message instead of going directly busy
+      if (busyResult.shouldWarnFirst) {
+        const istHour = parseInt(new Date().toLocaleString('en-US', { 
+          timeZone: 'Asia/Kolkata', 
+          hour: '2-digit', 
+          hour12: false 
+        }));
+        const warningMessage = getWarningBeforeBusy(istHour, userTypeData?.dailyMessageCount > 40 ? 'established' : 'developing');
+        
+        return {
+          response: warningMessage,
+          newMood: 'about_to_be_busy',
+          newIgnoreUntil: busyResult.newIgnoreUntil,
+          busyReason: busyResult.busyReason
+        };
+      } else {
+        // Already busy, send busy reason
+        return {
+          response: busyResult.busyReason || 'brb! 😊',
+          newMood: 'busy',
+          newIgnoreUntil: busyResult.newIgnoreUntil,
+          busyReason: busyResult.busyReason
+        };
+      }
     }
 
     // Analyze what user is actually talking about

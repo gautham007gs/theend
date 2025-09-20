@@ -225,10 +225,17 @@ const shouldIgnoreMessage = (): boolean => {
     return true; // Already ignoring
   }
   
-  // Much reduced ignore chance - only 2% for better UX
-  if (Math.random() < 0.02) {
-    // Shorter ignore periods (1-5 minutes)
-    const ignoreMinutes = 1 + Math.random() * 4;
+  // Check if user is new - NO IGNORE for new users
+  const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
+  if (dailyCount <= 20) {
+    console.log('Kruthika AI: New user - NO IGNORE FEATURE!');
+    return false;
+  }
+  
+  // DRASTICALLY reduced ignore chance - only 0.3% for much better UX
+  if (Math.random() < 0.003) {
+    // Much shorter ignore periods (30 seconds to 2 minutes only)
+    const ignoreMinutes = 0.5 + Math.random() * 1.5;
     const ignoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
     localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
     return true;
@@ -1204,6 +1211,10 @@ const KruthikaChatPage: NextPage = () => {
   const onlineStatus = useMemo(() => {
     if (isAiTyping) return "typing...";
     
+    // Check daily message count - new users see different status
+    const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
+    const isNewUser = dailyCount <= 20;
+    
     // Check if AI is paused/offline first
     if (shouldAIBePaused()) {
       const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
@@ -1218,11 +1229,26 @@ const KruthikaChatPage: NextPage = () => {
         }
       }
       
-      if (ignoreUntil) {
+      if (ignoreUntil && !isNewUser) {
         const remainingMin = Math.ceil((parseInt(ignoreUntil) - Date.now()) / 60000);
         if (remainingMin > 0) {
           return `busy, back in ${remainingMin}m`;
         }
+      }
+    }
+    
+    // New users always see "online" during active hours
+    if (isNewUser) {
+      const getISTTimePartsLocal = (): { hour: number; minutes: number } => {
+        const now = new Date();
+        const istDateString = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+        const istDate = new Date(istDateString);
+        return { hour: istDate.getHours(), minutes: istDate.getMinutes() };
+      };
+      const { hour: currentISTHour } = getISTTimePartsLocal();
+      
+      if (currentISTHour >= 6 && currentISTHour <= 23) {
+        return "online 💚"; // Always online for new users during day
       }
     }
     
