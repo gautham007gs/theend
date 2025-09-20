@@ -78,26 +78,42 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
   return 'normal_chat';
 };
 
-// Generate response for missed messages
+// Generate response for missed messages with more personal context
 const getMissedMessageResponse = (missedMessages: Array<{id: string, text: string, timestamp: number}>) => {
   const missedCount = missedMessages.length;
+  const currentActivity = getCurrentActivity();
 
   if (missedCount === 1) {
     return [
-      "sorry yaar, was busy! 😅",
-      "arre missed ur msg, what's up?",
-      "phone was on silent sorry!",
-      "was stuck somewhere, back now"
+      `sorry yaar, was ${currentActivity}! 😅`,
+      "arre missed ur msg! phone was in bag",
+      `back now! was ${currentActivity}`,
+      "sorry, didn't see notification! what's up?"
     ];
   } else {
     return [
-      `missed ${missedCount} msgs! was so busy 😓`,
-      "sorry yaar, crazy day! catch up?",
-      "arre so many msgs! tell me everything",
-      "was away, what did I miss?"
+      `omg ${missedCount} msgs! was ${currentActivity} 😓`,
+      `sorry yaar! busy with ${currentActivity}`,
+      "arre so many msgs! was completely offline",
+      `${currentActivity} took forever! tell me everything`
     ];
   }
 };
+
+// Helper function for current activity (imported from realistic-behaviors)
+function getCurrentActivity(): string {
+  const now = new Date();
+  const istHour = parseInt(now.toLocaleString('en-US', { 
+    timeZone: 'Asia/Kolkata', 
+    hour: '2-digit', 
+    hour12: false 
+  }));
+  
+  if (istHour >= 8 && istHour <= 16) return "in college";
+  if (istHour >= 17 && istHour <= 19) return "traveling";
+  if (istHour >= 20 && istHour <= 21) return "with family";
+  return "busy";
+}
 
 // Generate comeback response after goodbye offline period
 const getComebackAfterGoodbyeResponse = (offlineHours: number) => {

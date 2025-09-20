@@ -1274,6 +1274,33 @@ const KruthikaChatPage: NextPage = () => {
     const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
     const isNewUser = dailyCount <= 20;
     
+    // Add realistic activity status
+    const getCurrentActivityStatus = (): string => {
+      const now = new Date();
+      const istHour = parseInt(now.toLocaleString('en-US', { 
+        timeZone: 'Asia/Kolkata', 
+        hour: '2-digit', 
+        hour12: false 
+      }));
+      const dayOfWeek = now.getDay();
+      
+      // Weekend activities
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        if (istHour >= 10 && istHour <= 12) return "getting ready to go out 💄";
+        if (istHour >= 13 && istHour <= 16) return "shopping at linking road 🛍️";
+        if (istHour >= 17 && istHour <= 19) return "having chai with friends ☕";
+      }
+      
+      // Weekday college schedule
+      if (istHour >= 8 && istHour <= 10) return "in mumbai local 🚂";
+      if (istHour >= 11 && istHour <= 13) return "psychology lecture 📚";
+      if (istHour >= 14 && istHour <= 16) return "college canteen with friends 🍛";
+      if (istHour >= 17 && istHour <= 19) return "traveling back home 🚌";
+      if (istHour >= 20 && istHour <= 21) return "family dinner time 🍽️";
+      
+      return "";
+    };
+    
     // Check if AI is paused/offline first
     if (shouldAIBePaused()) {
       const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
