@@ -99,6 +99,42 @@ const getMissedMessageResponse = (missedMessages: Array<{id: string, text: strin
   }
 };
 
+// Generate comeback response after goodbye offline period
+const getComebackAfterGoodbyeResponse = (offlineHours: number) => {
+  if (offlineHours < 1) {
+    return [
+      "hey! back already 😊",
+      "arre couldn't stay away long",
+      "missed chatting with you!",
+      "that was a short break lol"
+    ];
+  } else if (offlineHours < 6) {
+    return [
+      "good morning! slept well? ☀️",
+      "hey yaar! fresh and back",
+      "morning! how was your night?",
+      "back after some good sleep 😴",
+      "arre good morning! missed our chats"
+    ];
+  } else if (offlineHours < 12) {
+    return [
+      "wow been away so long! 😅",
+      "arre sorry, was completely offline",
+      "long day at college! back now 📚",
+      "family kept me super busy yaar",
+      "finally free! how have you been?"
+    ];
+  } else {
+    return [
+      "omg so long! missed you badly 💕",
+      "arre where have I been! crazy busy",
+      "finally back! tell me everything",
+      "sorry yaar, life got hectic",
+      "back to our chats! how are you?"
+    ];
+  }
+};
+
 // Get contextually appropriate response
 const getContextualResponse = (context: string, userMessage: string, recentInteractions: string[], missedMessages?: Array<{id: string, text: string, timestamp: number}>) => {
   const msg = userMessage.toLowerCase().trim();
@@ -449,6 +485,20 @@ const shouldAIBeBusyServerSafe = (
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
     console.log('Kruthika AI: Analyzing conversation context...');
+
+    // Check if this is a comeback after goodbye period
+    const lastGoodbyeTime = (input as any).lastGoodbyeTime;
+    if (lastGoodbyeTime) {
+      const offlineHours = (Date.now() - lastGoodbyeTime) / (1000 * 60 * 60);
+      const comebackResponses = getComebackAfterGoodbyeResponse(offlineHours);
+      const selectedComeback = comebackResponses[Math.floor(Math.random() * comebackResponses.length)];
+      
+      console.log('Kruthika AI: Comeback after goodbye detected');
+      return {
+        response: selectedComeback,
+        newMood: 'refreshed_comeback'
+      };
+    }
 
     // Check if AI should be busy/ignore using server-safe function with user type awareness
     // Client should pass current ignore state and user data to avoid localStorage access

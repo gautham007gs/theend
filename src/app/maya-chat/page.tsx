@@ -187,7 +187,15 @@ const detectGoodbyeMessage = (message: string): boolean => {
   const goodbyePatterns = [
     'good night', 'gn', 'bye bye', 'bye', 'goodnight', 'good nite',
     'see you', 'talk later', 'ttyl', 'sleep now', 'going to sleep',
-    'sone ja raha', 'sone ja rahi', 'good bye', 'goodbye', 'tc', 'take care'
+    'sone ja raha', 'sone ja rahi', 'good bye', 'goodbye', 'tc', 'take care',
+    // Enhanced final goodbye patterns
+    'final bye', 'bye for now', 'bye take care', 'talk to you later',
+    'see you later', 'see you soon', 'going now', 'leaving now',
+    'chat later', 'will talk later', 'going offline', 'logging off',
+    // Hindi/Hinglish patterns
+    'alvida', 'milte hai', 'baad me baat', 'ja raha hu', 'ja rahi hu',
+    'sleep time', 'bed time', 'need to go', 'have to go',
+    'parents calling', 'family time', 'dinner time'
   ];
   
   return goodbyePatterns.some(pattern => msg.includes(pattern));
@@ -206,10 +214,31 @@ const shouldAIBePaused = (): boolean => {
   const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
   if (lastGoodbyeTime) {
     const timeSinceGoodbye = Date.now() - parseInt(lastGoodbyeTime);
-    // Stay offline for 2-6 hours after saying goodbye
-    const offlineHours = 2 + Math.random() * 4;
-    if (timeSinceGoodbye < (offlineHours * 60 * 60 * 1000)) {
+    const currentHour = new Date().getHours();
+    
+    // Enhanced offline periods based on time of goodbye
+    let offlineMinutes = 30; // Default 30 minutes
+    
+    // Longer offline if goodbye was at night (sleep time)
+    const goodbyeHour = new Date(parseInt(lastGoodbyeTime)).getHours();
+    if (goodbyeHour >= 22 || goodbyeHour <= 6) {
+      // Sleep goodbye - stay offline for 6-9 hours
+      offlineMinutes = 360 + Math.random() * 180; // 6-9 hours
+    } else if (goodbyeHour >= 8 && goodbyeHour <= 17) {
+      // Day time goodbye (college/work) - 2-4 hours
+      offlineMinutes = 120 + Math.random() * 120; // 2-4 hours
+    } else {
+      // Evening goodbye - 30 minutes to 2 hours
+      offlineMinutes = 30 + Math.random() * 90; // 30min-2hours
+    }
+    
+    if (timeSinceGoodbye < (offlineMinutes * 60 * 1000)) {
       return true;
+    }
+    
+    // Clear goodbye state if time has passed
+    if (timeSinceGoodbye >= (offlineMinutes * 60 * 1000)) {
+      localStorage.removeItem(AI_LAST_GOODBYE_TIME_KEY);
     }
   }
   
@@ -940,6 +969,16 @@ const KruthikaChatPage: NextPage = () => {
       // Get current ignore state for server-safe AI function
       const currentIgnoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
       const currentIgnoreTime = currentIgnoreUntil ? parseInt(currentIgnoreUntil) : null;
+      
+      // Check if this is a comeback after goodbye
+      const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
+      const isComeback = lastGoodbyeTime && !shouldAIBePaused();
+      
+      // Clear goodbye state if coming back
+      if (isComeback) {
+        localStorage.removeItem(AI_LAST_GOODBYE_TIME_KEY);
+        clearMissedMessages(); // Clear missed messages on comeback
+      }
 
       const aiInput: EmotionalStateInput = {
         userMessage: text,
@@ -961,7 +1000,9 @@ const KruthikaChatPage: NextPage = () => {
         userTypeData: userTypeData,
         isQuickReply: isQuickReply,
         // Server-safe ignore state
-        currentIgnoreUntil: currentIgnoreTime
+        currentIgnoreUntil: currentIgnoreTime,
+        // Goodbye comeback data
+        lastGoodbyeTime: isComeback ? parseInt(lastGoodbyeTime) : undefined
       };
 
       const serverResult = await sendMessage(text, aiMood, updatedRecentInteractions);
@@ -1105,6 +1146,24 @@ const KruthikaChatPage: NextPage = () => {
       if (detectGoodbyeMessage(aiResponseText)) {
         console.log('Kruthika AI: Goodbye detected, setting offline state');
         setAIGoodbyeState();
+        
+        // Clear any pending proactive messages
+        if (proactiveMessageTimerRef.current) {
+          clearTimeout(proactiveMessageTimerRef.current);
+        }
+      }
+      
+      // Also check if USER said goodbye to AI
+      if (detectGoodbyeMessage(text)) {
+        console.log('Kruthika AI: User said goodbye, AI should acknowledge and go offline soon');
+        // AI will naturally respond to goodbye, then go offline after this message
+        setTimeout(() => {
+          console.log('Kruthika AI: Going offline after user goodbye');
+          setAIGoodbyeState();
+          if (proactiveMessageTimerRef.current) {
+            clearTimeout(proactiveMessageTimerRef.current);
+          }
+        }, 5000); // Give 5 seconds for AI response, then go offline
       }
 
       if (imageAttemptedAndAllowed && currentImageUri) { 
@@ -1222,10 +1281,27 @@ const KruthikaChatPage: NextPage = () => {
       
       if (lastGoodbyeTime) {
         const goodbyeDate = new Date(parseInt(lastGoodbyeTime));
-        if (goodbyeDate.toDateString() === new Date().toDateString()) {
-          return "sleeping 😴";
+        const timeSinceGoodbye = Date.now() - parseInt(lastGoodbyeTime);
+        const goodbyeHour = goodbyeDate.getHours();
+        
+        // Enhanced goodbye status messages
+        if (goodbyeHour >= 22 || goodbyeHour <= 6) {
+          // Night goodbye
+          if (timeSinceGoodbye < 4 * 60 * 60 * 1000) { // Less than 4 hours
+            return "sleeping 😴💤";
+          } else {
+            return "probably waking up soon 🌅";
+          }
+        } else if (goodbyeHour >= 8 && goodbyeHour <= 17) {
+          // Day goodbye (college/work)
+          return "at college 📚";
         } else {
-          return `last seen ${goodbyeDate.toLocaleDateString([], { month: 'short', day: 'numeric' })}`;
+          // Evening goodbye
+          if (timeSinceGoodbye < 60 * 60 * 1000) { // Less than 1 hour
+            return "busy with family 👨‍👩‍👧";
+          } else {
+            return "should be back soon 🔄";
+          }
         }
       }
       
