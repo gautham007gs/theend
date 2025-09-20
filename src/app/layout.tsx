@@ -91,21 +91,17 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: `{
+            __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebApplication", 
-              "name": "Kruthika AI - Your Mumbai AI Girlfriend",
-              "description": "Chat with Kruthika, an authentic AI girlfriend from Mumbai. Experience realistic conversations with a psychology student who understands Indian culture.",
-              "url": "https://kruthika-ai.replit.app",
-              "applicationCategory": "SocialApplication",
-              "operatingSystem": "Web",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
-              }
-            }`
+              "@type": "WebApplication",
+              "name": "Kruthika AI - Your AI Girlfriend",
+              "description": "Chat with Kruthika, an authentic Indian AI girlfriend. Experience natural conversations with psychological depth.",
+              "url": "https://kruthika-ai.com",
+              "applicationCategory": "SocialNetworkingApplication",
+              "operatingSystem": "Web Browser"
+            })
           }}
+          suppressHydrationWarning
         />
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#25D366" />

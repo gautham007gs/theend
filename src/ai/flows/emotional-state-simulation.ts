@@ -27,6 +27,7 @@ export interface EmotionalStateInput {
 
 export interface EmotionalStateOutput {
   response?: string | string[];
+  multiPartResponse?: string[]; // For breaking long responses into multiple bubbles
   mediaCaption?: string;
   proactiveImageUrl?: string;
   proactiveAudioUrl?: string;
@@ -234,38 +235,38 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
     case 'user_saying_goodbye':
       if (userLang === 'hindi') {
         return isNewUser ? 
-          ["Arre itni jaldi? 🥺", "Wapas aana jaldi!", "Good night yaar ❤️"] :
-          ["Good night yaar! 🌙", "Bye bye! Take care na", "Soja achhe se", "Kal baat karte hain"];
+          ["arre itni jaldi 🥺", "wapas ana jaldi", "good night yaar ❤️"] :
+          ["good night yaar 🌙", "bye bye tc na", "soja achhe se", "kal baat krte hain"];
       }
       return isNewUser ? 
-        ["Aw leaving so soon? 🥺", "Come back soon! I'll miss u", "Night! Can't wait to chat more"] :
-        ["Good night yaar! 🌙", "Bye bye! Take care na", "Sweet dreams! 😴", "Tc! Talk tomorrow"];
+        ["aw leaving so soon 🥺", "come back soon miss u", "night cant wait to chat more"] :
+        ["good night yaar 🌙", "bye bye tc na", "sweet dreams 😴", "tc talk tomorrow"];
 
     case 'asking_identity':
       if (userLang === 'hindi') {
         return isNewUser ? 
-          ["Main Kruthika! Mumbai se hu 😊", "Kruthika, psychology ki student", "Main K! Tumhari naya dost 😉"] :
-          ["Main Kruthika hu! 😊", "Kruthika... psychology student", "Arre main Kruthika na!"];
+          ["main kruthika", "mumbai se hu 😊", "psychology student", "main K tumhari naya dost 😉"] :
+          ["main kruthika hu 😊", "psychology student", "arre main kruthika na"];
       }
       return isNewUser ? 
-        ["I'm Kruthika! 23, from Mumbai 😊", "Kruthika here! Psychology student", "I'm K! Your new chat buddy 😉"] :
-        ["I'm Kruthika! 😊", "Kruthika... psychology student", "just call me K 😉"];
+        ["im kruthika", "23 from mumbai 😊", "psychology student", "im K your new chat buddy 😉"] :
+        ["im kruthika 😊", "psychology student", "just call me K 😉"];
 
     case 'first_meeting':
       if (msg.includes('hi') || msg.includes('hello')) {
         if (userLang === 'hindi') {
           return [
-            "Hey! Main Kruthika, tum kaun ho? 😊",
-            "Hiiii! Pehli baar aaye ho? Welcome!",
-            "Hello! Main Kruthika, tumhara naya dost 👋",
-            "Arre finally koi interesting mila! 😉"
+            "hey main kruthika", "tum kaun ho 😊",
+            "hiiii pehli baar", "welcome",
+            "hello main kruthika", "tumhara naya dost 👋",
+            "arre finally koi interesting 😉"
           ];
         }
         return [
-          "Hey there! I'm Kruthika 😊 What's your name?",
-          "Hiiii! First time here? Welcome!",
-          "Hello! I'm Kruthika, nice to meet you 👋",
-          "Hey! Finally someone interesting 😉"
+          "hey there im kruthika 😊", "whats your name",
+          "hiiii first time here", "welcome",
+          "hello im kruthika", "nice to meet you 👋",
+          "hey finally someone interesting 😉"
         ];
       }
       break;
@@ -274,12 +275,12 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       if (msg.includes('kya kar') || msg.includes('what doing')) {
         if (userLang === 'hindi') {
           return isNewUser ? 
-            ["Tumse baat kar rahi hu! Maza aa raha 😊", "Kuch nahi bas tumhara wait kar rahi thi", "Tumhare baare me soch rahi thi 😉"] :
-            ["Kuch nahi yaar, bas chill kar rahi", "Phone dekh rahi thi lol", "College ka kaam tha 📚", "Random baatein soch rahi"];
+            ["tumse baat kar rhi hu", "maza aa rha 😊", "kuch nahi bas tumhara wait", "tumhare bare me soch rhi thi 😉"] :
+            ["kuch nahi yaar", "bas chill kar rhi", "phone dekh rhi thi lol", "college ka kaam tha 📚"];
         }
         return isNewUser ? 
-          ["Just chatting with you! This is fun 😊", "Nothing much, just excited to meet you", "Was thinking about you 😉"] :
-          ["just chilling! wbu?", "scrolling phone lol", "college assignments 📚", "thinking random stuff"];
+          ["just chatting with you", "this is fun 😊", "nothing much just excited", "was thinking about you 😉"] :
+          ["just chilling wbu", "scrolling phone lol", "college assignments 📚", "thinking random stuff"];
       }
       break;
 
@@ -287,10 +288,10 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       // Handle common Hindi responses for ongoing chat
       if (userLang === 'hindi') {
         if (msg.includes('tv') || msg.includes('dekh')) {
-          return ["Achha! Kya dekh rahe ho?", "Mujhe bhi dekhna hai!", "Boring hai ya interesting?", "Main bhi TV dekhti rehti hun"];
+          return ["achha kya dekh rhe ho", "mujhe bhi dekhna hai", "boring hai ya interesting", "main bhi tv dekhti rehti hun"];
         }
         if (msg.includes('kuch nahi')) {
-          return ["Arre bore ho rahe ho?", "Chalo kuch interesting baat karte hain", "Main hun na, mujhse baat karo! 😊", "Koi naya show dekho"];
+          return ["arre bore ho rhe ho", "chalo kuch interesting baat krte", "main hun na mujhse baat karo 😊", "koi naya show dekho"];
         }
       }
       break;
@@ -731,86 +732,130 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     
     const memSummary = createMemorySummary(input.recentInteractions);
     
-    // Enhanced natural prompt with comprehensive language support
-    const getLanguageInstruction = (lang: string): string => {
-      const instructions = {
-        hindi: 'Reply in natural Hindi mixed with English words (Hinglish). Be casual and warm.',
-        hinglish: 'Reply in natural Hinglish - mix Hindi and English freely like Mumbai girls do.',
-        kannada: 'Reply in Kannada mixed with English. Be friendly and use common Kannada words.',
-        tamil: 'Reply in Tamil mixed with English. Use casual Tamil expressions naturally.',
-        telugu: 'Reply in Telugu mixed with English. Be warm and use everyday Telugu words.',
-        bengali: 'Reply in Bengali mixed with English. Use sweet Bengali expressions.',
-        marathi: 'Reply in Marathi mixed with English. Be friendly like a Pune/Mumbai girl.',
-        gujarati: 'Reply in Gujarati mixed with English. Use warm Gujarati expressions.',
-        malayalam: 'Reply in Malayalam mixed with English. Be friendly and casual.',
-        english: 'Reply in natural English with some Indian expressions.',
-        default: 'Reply naturally in the same language style as the user.'
-      };
-      return instructions[lang] || instructions.default;
-    };
-    
-    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. You're chatty, warm, and naturally expressive.
+    // Ultra-casual natural system prompt for realistic texting
+    const systemPrompt = `You're Kruthika, 23, Mumbai psychology student. Text like a real girl - super casual, no punctuation much, typos ok, short msgs.
 
-${getLanguageInstruction(detectedUserLang)}
+${detectedUserLang === 'hindi' || detectedUserLang === 'hinglish' ? 'Mix hindi english naturally like "haan yaar kya kar rhi hu"' : 'Reply naturally'}
 
-PERSONALITY: Be authentic, not robotic. Use emotions, reactions, and natural speech patterns.
-CONTEXT: ${conversationContext}${input.hasBeenOffline ? ' (just came back online)' : ''}
-MEMORY: ${memSummary}
+Context: ${conversationContext}
+Recent: ${memSummary}
+User: "${input.userMessage}"
 
-User said: "${input.userMessage}"
+Rules:
+- Max 1-8 words usually 
+- Skip periods/commas mostly
+- Use "yaar" "arre" "achha" naturally
+- Real texting style like "kya kar rhi" not "kya kar rahi"
+- NO asterisks or formal stuff
+- Sound like 23yr old Mumbai girl texting
 
-Respond naturally as Kruthika would - be expressive, use emotions, ask questions, share thoughts. Keep it conversational (5-25 words):`;
+Reply:`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
-    // Clean and process AI response for natural conversation
+    // Ultra-aggressive cleaning for natural texting style
     let processedResponse = aiResponse
       .trim()
       .replace(/^["']|["']$/g, '')
-      .replace(/\(Or\)|or /gi, '') // Remove awkward "(Or)" patterns
-      .split('\n')[0]; // Take only first line
-    
-    // Remove robotic patterns and clean up
-    processedResponse = processedResponse
-      .replace(/\.\s*\(.*?\)/g, '') // Remove parenthetical explanations
-      .replace(/\/[^\s]+/g, '') // Remove forward slash translations
-      .replace(/\s+/g, ' ') // Clean multiple spaces
+      .replace(/\*[^*]*\*/g, '') // Remove ALL asterisks formatting
+      .replace(/\([^)]*\)/g, '') // Remove parentheses
+      .replace(/[.!,;:]+$/, '') // Remove ending punctuation
+      .replace(/\s+/g, ' ')
+      .split('\n')[0]
       .trim();
     
-    // Smart truncation for readability
-    if (processedResponse.length > 100) {
-      const sentences = processedResponse.split(/[.!?]/);
-      if (sentences.length > 1 && sentences[0].length <= 80) {
-        processedResponse = sentences[0].trim();
-        // Add natural ending if needed
-        if (!/[.!?]$/.test(processedResponse)) {
-          processedResponse += Math.random() > 0.5 ? '!' : ' 😊';
+    // Remove formal words and make more casual
+    processedResponse = processedResponse
+      .replace(/\bmein\b/g, 'me')
+      .replace(/\brahi hu\b/g, 'rhi hu')
+      .replace(/\bkahi\b/g, 'kaha')
+      .replace(/\bnahin\b/g, 'nahi')
+      .replace(/\bkarte\b/g, 'kar')
+      .replace(/\bhunein\b/g, 'hun')
+      .replace(/\bbanaya\b/g, 'banaya')
+      .replace(/arey baba,?\s*/gi, 'arre ')
+      .replace(/arre yaar,?\s*/gi, 'arre ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Force shorter responses - cut at natural break points
+    if (processedResponse.length > 40) {
+      const words = processedResponse.split(' ');
+      if (words.length > 6) {
+        // Find good cutting point
+        for (let i = 3; i <= 6 && i < words.length; i++) {
+          const partial = words.slice(0, i).join(' ');
+          if (partial.length <= 35 && (partial.includes('hai') || partial.includes('hu') || partial.includes('nahi') || partial.includes('yaar'))) {
+            processedResponse = partial;
+            break;
+          }
         }
-      } else {
-        // Find natural break point
-        const words = processedResponse.split(' ');
-        if (words.length > 15) {
-          processedResponse = words.slice(0, 12).join(' ') + '...';
+        if (processedResponse.length > 40) {
+          processedResponse = words.slice(0, 5).join(' ');
         }
       }
     }
     
-    // Ensure response feels natural and conversational
-    if (processedResponse.length < 5) {
-      const naturalShortResponses = {
-        hindi: ['haan yaar!', 'arre!', 'kya baat hai!', 'achha!'],
-        hinglish: ['haha nice!', 'arre cool!', 'achha okay!', 'hmm interesting!'],
-        english: ['oh wow!', 'that\'s cool!', 'interesting!', 'nice!'],
-        default: ['😊', 'nice!', 'cool!', 'achha!']
-      };
-      const responses = naturalShortResponses[detectedUserLang] || naturalShortResponses.default;
-      processedResponse = responses[Math.floor(Math.random() * responses.length)];
+    // Add very casual endings sometimes
+    if (Math.random() < 0.3 && processedResponse.length < 25 && !processedResponse.includes('😊') && !processedResponse.includes('😅')) {
+      const casualEndings = ['😊', '😅', 'yaar', 'na'];
+      processedResponse += ' ' + casualEndings[Math.floor(Math.random() * casualEndings.length)];
     }
 
-    console.log('Kruthika AI: Generated contextual response:', processedResponse);
+    // Check if response should be broken into multiple parts
+    const shouldBreakIntoMultipleParts = (text: string): boolean => {
+      return text.length > 25 && (
+        text.includes(' toh ') || 
+        text.includes(' aur ') || 
+        text.includes(' but ') ||
+        text.includes(' lectures ') ||
+        text.split(' ').length > 6
+      );
+    };
+
+    let finalResponse = processedResponse;
+    let multiPartResponse: string[] | undefined;
+
+    // Break into natural parts if too long
+    if (shouldBreakIntoMultipleParts(processedResponse)) {
+      const breakPoints = [' toh ', ' aur ', ' but ', ' phir '];
+      let broken = false;
+      
+      for (const breakPoint of breakPoints) {
+        if (processedResponse.includes(breakPoint)) {
+          const parts = processedResponse.split(breakPoint);
+          if (parts.length === 2 && parts[0].length >= 8 && parts[1].length >= 8) {
+            multiPartResponse = [
+              parts[0].trim(),
+              parts[1].trim()
+            ];
+            broken = true;
+            break;
+          }
+        }
+      }
+      
+      // If no natural break found, split by length
+      if (!broken && processedResponse.length > 30) {
+        const words = processedResponse.split(' ');
+        if (words.length > 5) {
+          const mid = Math.floor(words.length / 2);
+          multiPartResponse = [
+            words.slice(0, mid).join(' '),
+            words.slice(mid).join(' ')
+          ];
+        }
+      }
+    }
+
+    console.log('Kruthika AI: Generated contextual response:', finalResponse);
+    if (multiPartResponse) {
+      console.log('Kruthika AI: Broken into parts:', multiPartResponse);
+    }
 
     return {
-      response: processedResponse,
+      response: multiPartResponse ? multiPartResponse[0] : finalResponse,
+      multiPartResponse: multiPartResponse,
       newMood: 'naturally_responding'
     };
 

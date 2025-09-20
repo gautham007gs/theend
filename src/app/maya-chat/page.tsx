@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { NextPage } from 'next';
@@ -8,7 +7,7 @@ import ChatHeader from '@/components/chat/ChatHeader';
 import ChatView from '@/components/chat/ChatView';
 import ChatInput from '@/components/chat/ChatInput';
 import type { Message, AIProfile, MessageStatus, AdSettings, AIMediaAssetsConfig, MessageReaction } from '@/types';
-import { defaultAIProfile, defaultAdSettings, defaultAIMediaAssetsConfig, DEFAULT_ADSTERRA_DIRECT_LINK, DEFAULT_MONETAG_DIRECT_LINK } from '@/config/ai'; 
+import { defaultAIProfile, defaultAdSettings, defaultAIMediaAssetsConfig, DEFAULT_ADSTERRA_DIRECT_LINK, DEFAULT_MONETAG_DIRECT_LINK } from '@/config/ai';
 import type { EmotionalStateInput, EmotionalStateOutput } from '@/ai/flows/emotional-state-simulation';
 import { getConversationContext } from '@/ai/flows/conversation-memory';
 import { generateOfflineMessage, type OfflineMessageInput } from '@/ai/flows/offline-message-generation';
@@ -25,13 +24,13 @@ import { supabase } from '@/lib/supabaseClient';
 import { format, isToday } from 'date-fns';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { useAIProfile } from '@/contexts/AIProfileContext';
-import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext'; 
+import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext';
 
 const AI_DISCLAIMER_SHOWN_KEY = 'ai_disclaimer_shown_kruthika_chat_v2';
 const AI_DISCLAIMER_DURATION = 2000;
 
 // These constants will now be effectively overridden by AdSettings from context
-// const MAX_ADS_PER_DAY = 6; 
+// const MAX_ADS_PER_DAY = 6;
 // const MAX_ADS_PER_SESSION = 3;
 const MESSAGES_PER_AD_TRIGGER = 10; // Kept as a fixed trigger point
 const INACTIVITY_AD_TIMEOUT_MS = 60000; // 1 minute
@@ -77,7 +76,7 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
   if (lastShownDate !== todayStr) {
     currentDailyCount = 0;
     localStorage.setItem(APP_ADS_LAST_SHOWN_DATE_KEY, todayStr);
-    currentSessionCount = 0; 
+    currentSessionCount = 0;
     sessionStorage.setItem(APP_ADS_SESSION_COUNT_KEY, '0');
   }
   localStorage.setItem(APP_ADS_DAILY_COUNT_KEY, currentDailyCount.toString());
@@ -96,9 +95,9 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
 
   const adsterraDirectEnabled = activeAdSettings.adsterraDirectLinkEnabled;
   const monetagDirectEnabled = activeAdSettings.monetagDirectLinkEnabled;
-  
-  const adsterraLink = activeAdSettings.adsterraDirectLink; 
-  const monetagLink = activeAdSettings.monetagDirectLink;  
+
+  const adsterraLink = activeAdSettings.adsterraDirectLink;
+  const monetagLink = activeAdSettings.monetagDirectLink;
 
   if (!adsterraDirectEnabled && !monetagDirectEnabled) {
     console.warn("Ad display: No direct link networks enabled in settings.");
@@ -112,13 +111,13 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
   } else if (monetagDirectEnabled) {
     networkToTry = 'monetag';
   }
-  
+
   if (networkToTry === 'adsterra') {
     adLinkToShow = adsterraLink;
   } else if (networkToTry === 'monetag') {
     adLinkToShow = monetagLink;
   }
-  
+
   const isValidLink = (link: string | null | undefined): boolean => !!link && (link.startsWith('http://') || link.startsWith('https://')) && link !== DEFAULT_ADSTERRA_DIRECT_LINK && link !== DEFAULT_MONETAG_DIRECT_LINK && !link.toLowerCase().includes("placeholder");
 
   if (!isValidLink(adLinkToShow)) {
@@ -137,10 +136,10 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
     }
     if (!isValidLink(adLinkToShow)) {
       console.warn(`Ad display: Fallback link for (${networkToTry}) is also invalid or default placeholder. No ad shown. Link: "${adLinkToShow}"`);
-      return false; 
+      return false;
     }
   }
-  
+
   try {
     const anchor = document.createElement('a');
     anchor.href = adLinkToShow!;
@@ -174,7 +173,7 @@ const getTimeOfDay = (): 'morning' | 'afternoon' | 'evening' | 'night' => {
   const istDateString = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
   const istDate = new Date(istDateString);
   const hour = istDate.getHours();
-  
+
   if (hour >= 5 && hour < 12) return 'morning';
   if (hour >= 12 && hour < 17) return 'afternoon';
   if (hour >= 17 && hour < 21) return 'evening';
@@ -197,7 +196,7 @@ const detectGoodbyeMessage = (message: string): boolean => {
     'sleep time', 'bed time', 'need to go', 'have to go',
     'parents calling', 'family time', 'dinner time'
   ];
-  
+
   return goodbyePatterns.some(pattern => msg.includes(pattern));
 };
 
@@ -205,20 +204,20 @@ const MISSED_MESSAGES_KEY = 'kruthika_missed_messages';
 
 const shouldAIBePaused = (): boolean => {
   if (typeof window === 'undefined') return false; // Server-side check
-  
+
   const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
   if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
     return true;
   }
-  
+
   const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
   if (lastGoodbyeTime) {
     const timeSinceGoodbye = Date.now() - parseInt(lastGoodbyeTime);
     const currentHour = new Date().getHours();
-    
+
     // Enhanced offline periods based on time of goodbye
     let offlineMinutes = 30; // Default 30 minutes
-    
+
     // Longer offline if goodbye was at night (sleep time)
     const goodbyeHour = new Date(parseInt(lastGoodbyeTime)).getHours();
     if (goodbyeHour >= 22 || goodbyeHour <= 6) {
@@ -231,36 +230,36 @@ const shouldAIBePaused = (): boolean => {
       // Evening goodbye - 30 minutes to 2 hours
       offlineMinutes = 30 + Math.random() * 90; // 30min-2hours
     }
-    
+
     if (timeSinceGoodbye < (offlineMinutes * 60 * 1000)) {
       return true;
     }
-    
+
     // Clear goodbye state if time has passed
     if (timeSinceGoodbye >= (offlineMinutes * 60 * 1000)) {
       localStorage.removeItem(AI_LAST_GOODBYE_TIME_KEY);
     }
   }
-  
+
   return false;
 };
 
 const shouldIgnoreMessage = (): boolean => {
   if (typeof window === 'undefined') return false; // Server-side check
-  
+
   // Only trigger ignore if not already ignoring
   const pausedUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
   if (pausedUntil && Date.now() < parseInt(pausedUntil)) {
     return true; // Already ignoring
   }
-  
+
   // Check if user is new - NO IGNORE for new users
   const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
   if (dailyCount <= 20) {
     console.log('Kruthika AI: New user - NO IGNORE FEATURE!');
     return false;
   }
-  
+
   // DRASTICALLY reduced ignore chance - only 0.3% for much better UX
   if (Math.random() < 0.003) {
     // Much shorter ignore periods (30 seconds to 2 minutes only)
@@ -269,13 +268,13 @@ const shouldIgnoreMessage = (): boolean => {
     localStorage.setItem(AI_IGNORE_UNTIL_KEY, ignoreUntil.toString());
     return true;
   }
-  
+
   return false;
 };
 
 const addToMissedMessages = (message: string, messageId: string) => {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const existingMissed = JSON.parse(localStorage.getItem(MISSED_MESSAGES_KEY) || '[]');
     existingMissed.push({
@@ -293,7 +292,7 @@ const addToMissedMessages = (message: string, messageId: string) => {
 
 const getMissedMessages = () => {
   if (typeof window === 'undefined') return [];
-  
+
   try {
     return JSON.parse(localStorage.getItem(MISSED_MESSAGES_KEY) || '[]');
   } catch (error) {
@@ -317,14 +316,14 @@ const setAIGoodbyeState = () => {
 const updateUserPsychologyProfile = (userMessage: string) => {
   try {
     let profile = JSON.parse(localStorage.getItem(USER_PSYCHOLOGY_PROFILE_KEY) || '{}');
-    
+
     const messageData = {
       message: userMessage.toLowerCase(),
       timestamp: Date.now(),
       timeOfDay: getTimeOfDay(),
       length: userMessage.length
     };
-    
+
     // Analyze psychological markers
     if (messageData.message.includes('lonely') || messageData.message.includes('sad') || messageData.message.includes('alone')) {
       profile.loneliness = (profile.loneliness || 0) + 1;
@@ -335,12 +334,12 @@ const updateUserPsychologyProfile = (userMessage: string) => {
     if (messageData.message.includes('miss') || messageData.message.includes('thinking of')) {
       profile.attachment_level = (profile.attachment_level || 0) + 1;
     }
-    
+
     // Track frequency patterns for addiction analysis
     profile.total_messages = (profile.total_messages || 0) + 1;
     profile.avg_message_length = ((profile.avg_message_length || 0) + messageData.length) / 2;
     profile.last_analysis = Date.now();
-    
+
     localStorage.setItem(USER_PSYCHOLOGY_PROFILE_KEY, JSON.stringify(profile));
   } catch (error) {
     console.error('Psychology profiling error:', error);
@@ -353,21 +352,21 @@ const getUserTypeData = () => {
     const today = new Date().toDateString();
     const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
     const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY) || today;
-    
+
     // Get relationship level from conversation context
     const conversationContext = getConversationContext();
     const relationshipLevel = conversationContext?.relationshipLevel || 0;
-    
+
     // Calculate total days active (rough estimate)
     const firstActiveDate = localStorage.getItem('kruthika_first_active_date') || today;
     const daysDiff = Math.floor((new Date(today).getTime() - new Date(firstActiveDate).getTime()) / (1000 * 60 * 60 * 24));
     const totalDaysActive = Math.max(1, daysDiff + 1);
-    
+
     // Store first active date if not exists
     if (!localStorage.getItem('kruthika_first_active_date')) {
       localStorage.setItem('kruthika_first_active_date', today);
     }
-    
+
     return {
       dailyMessageCount: dailyCount,
       relationshipLevel: relationshipLevel,
@@ -385,29 +384,29 @@ const trackUserAddictionLevel = () => {
     let dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
     const lastInteraction = localStorage.getItem(USER_LAST_INTERACTION_TIME_KEY);
     const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
-    
+
     if (lastActiveDate !== today) {
       dailyCount = 0;
     }
-    
+
     dailyCount++;
     localStorage.setItem(USER_DAILY_MESSAGE_COUNT_KEY, dailyCount.toString());
     localStorage.setItem(USER_LAST_INTERACTION_TIME_KEY, Date.now().toString());
     localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
-    
+
     // Calculate addiction level
     let addictionLevel = 'low';
     if (dailyCount > 20) addictionLevel = 'high';
     else if (dailyCount > 10) addictionLevel = 'medium';
-    
+
     // Check frequency (returning user patterns)
     if (lastInteraction) {
       const timeSinceLastMsg = Date.now() - parseInt(lastInteraction);
       const hoursAgo = timeSinceLastMsg / (1000 * 60 * 60);
-      
+
       if (hoursAgo < 1 && dailyCount > 5) addictionLevel = 'very_high';
     }
-    
+
     localStorage.setItem(USER_ADDICTION_LEVEL_KEY, addictionLevel);
   } catch (error) {
     console.error('Addiction tracking error:', error);
@@ -418,7 +417,7 @@ const updateUserEmotionalState = (userMessage: string) => {
   try {
     const message = userMessage.toLowerCase();
     let emotionalState = 'neutral';
-    
+
     if (message.includes('excited') || message.includes('happy') || message.includes('great')) {
       emotionalState = 'positive';
     } else if (message.includes('sad') || message.includes('down') || message.includes('bad')) {
@@ -428,7 +427,7 @@ const updateUserEmotionalState = (userMessage: string) => {
     } else if (message.includes('angry') || message.includes('mad') || message.includes('hate')) {
       emotionalState = 'frustrated';
     }
-    
+
     localStorage.setItem(USER_EMOTIONAL_STATE_KEY, emotionalState);
   } catch (error) {
     console.error('Emotional state tracking error:', error);
@@ -438,7 +437,7 @@ const updateUserEmotionalState = (userMessage: string) => {
 const KruthikaChatPage: NextPage = () => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
-  const { mediaAssetsConfig, isLoadingMediaAssets } = useAIMediaAssets(); 
+  const { mediaAssetsConfig, isLoadingMediaAssets } = useAIMediaAssets();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [aiMood, setAiMood] = useState<string>("neutral");
@@ -453,7 +452,7 @@ const KruthikaChatPage: NextPage = () => {
   const [messageCountSinceLastAd, setMessageCountSinceLastAd] = useState(0);
   const [showInterstitialAd, setShowInterstitialAd] = useState(false);
   const [interstitialAdMessage, setInterstitialAdMessage] = useState("Loading content...");
-  
+
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   const interstitialAdTimerRef = useRef<NodeJS.Timeout | null>(null);
   const proactiveMessageTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -470,10 +469,10 @@ const KruthikaChatPage: NextPage = () => {
   };
 
   const tryShowAdAndMaybeInterstitial = useCallback((interstitialMsg?: string): boolean => {
-    if (isLoadingAdSettings || !adSettings) { 
+    if (isLoadingAdSettings || !adSettings) {
       return false;
     }
-    const adShown = tryShowRotatedAd(adSettings); 
+    const adShown = tryShowRotatedAd(adSettings);
     if (adShown && interstitialMsg) {
         triggerBriefInterstitialMessage(interstitialMsg, REWARD_AD_INTERSTITIAL_DURATION_MS);
     }
@@ -511,8 +510,8 @@ const KruthikaChatPage: NextPage = () => {
             const { error } = await supabase
               .from('daily_activity_log')
               .insert({ user_pseudo_id: userPseudoId, activity_date: today, chat_id: 'kruthika_chat' });
-            
-            if (error && error.code !== '23505') { 
+
+            if (error && error.code !== '23505') {
               console.error('Error logging daily activity to Supabase:', error.message);
             } else if (!error) {
               localStorage.setItem(LAST_ACTIVE_DATE_KEY, today);
@@ -586,11 +585,11 @@ const KruthikaChatPage: NextPage = () => {
   }, [toast, globalAIProfile]);
 
   useEffect(() => {
-    if (!isLoadingAIProfile && globalAIProfile) { 
+    if (!isLoadingAIProfile && globalAIProfile) {
         loadInitialChatState();
     } else if (!isLoadingAIProfile && !globalAIProfile) {
         console.warn("[KruthikaChatPage] AI Profile context loaded, but profile is null. Using defaults for chat init.");
-        loadInitialChatState(); 
+        loadInitialChatState();
     }
   }, [isLoadingAIProfile, globalAIProfile, loadInitialChatState]);
 
@@ -617,14 +616,14 @@ const KruthikaChatPage: NextPage = () => {
     return { hour: istDate.getHours(), minutes: istDate.getMinutes() };
   };
 
-  
+
 
   const maybeTriggerAdOnMessageCount = useCallback(() => {
     if (isLoadingAdSettings || !adSettings || !adSettings.adsEnabledGlobally) return;
     setMessageCountSinceLastAd(prev => {
       const newCount = prev + 1;
       if (newCount >= MESSAGES_PER_AD_TRIGGER) {
-        tryShowAdAndMaybeInterstitial("Thanks for chatting!"); 
+        tryShowAdAndMaybeInterstitial("Thanks for chatting!");
         return 0;
       }
       return newCount;
@@ -658,11 +657,11 @@ const KruthikaChatPage: NextPage = () => {
       if (proactiveMessageTimerRef.current) {
         clearTimeout(proactiveMessageTimerRef.current);
       }
-      
+
       // Schedule next proactive message check
       // Check every 2-5 minutes for proactive messaging opportunities
       const checkInterval = 120000 + Math.random() * 180000; // 2-5 minutes
-      
+
       proactiveMessageTimerRef.current = setTimeout(() => {
         sendProactiveMessage();
         scheduleProactiveCheck(); // Schedule next check
@@ -684,15 +683,15 @@ const KruthikaChatPage: NextPage = () => {
   const sendProactiveMessage = async () => {
     if (isAiTyping) return; // Don't interrupt if AI is already typing
     if (shouldAIBePaused()) return; // Don't send if AI is supposed to be offline
-    
+
     const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
     const psychProfile = JSON.parse(localStorage.getItem(USER_PSYCHOLOGY_PROFILE_KEY) || '{}');
     const dailyMsgCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
-    
+
     // Check if AI was the last sender
     const lastMessage = messages[messages.length - 1];
     const wasAILastSender = lastMessage?.sender === 'ai';
-    
+
     const proactiveInput: ProactiveMessageInput = {
       lastMessageTime: lastUserMessageTime,
       timeOfDay: getTimeOfDay(),
@@ -703,30 +702,30 @@ const KruthikaChatPage: NextPage = () => {
       hasUnreadMessages: false,
       wasAILastSender: wasAILastSender
     };
-    
+
     try {
       const proactiveResult = await generateProactiveMessage(proactiveInput);
-      
+
       if (proactiveResult.shouldSendMessage && proactiveResult.message) {
         console.log('Kruthika AI: Sending proactive message:', proactiveResult.message);
-        
+
         // Add realistic delay before sending
         const delay = proactiveResult.delayBeforeSending || 2000;
-        
+
         setTimeout(async () => {
           // Double-check AI isn't busy now
           if (isAiTyping || shouldAIBePaused()) return;
-          
+
           // Start typing animation
           setIsAiTyping(true);
-          
+
           // Calculate realistic typing delay for the message
           const typingDuration = calculateTypingDelay(proactiveResult.message!);
           await new Promise(resolve => setTimeout(resolve, typingDuration));
-          
+
           // Stop typing and send message
           setIsAiTyping(false);
-          
+
           const proactiveMessageId = (Date.now() + Math.random()).toString() + '_proactive';
           const proactiveMessage: Message = {
             id: proactiveMessageId,
@@ -735,12 +734,12 @@ const KruthikaChatPage: NextPage = () => {
             timestamp: new Date(),
             status: 'read',
           };
-          
+
           setMessages(prev => [...prev, proactiveMessage]);
-          setRecentInteractions(prevInteractions => 
+          setRecentInteractions(prevInteractions =>
             [...prevInteractions, `AI: ${proactiveResult.message}`].slice(-10)
           );
-          
+
           // Log to Supabase if available
           if (supabase) {
             try {
@@ -757,7 +756,7 @@ const KruthikaChatPage: NextPage = () => {
               console.error('Failed to log proactive message:', e);
             }
           }
-          
+
           console.log('Kruthika AI: Proactive message sent successfully');
         }, delay);
       }
@@ -772,23 +771,23 @@ const KruthikaChatPage: NextPage = () => {
     const baseDelay = 800; // Increased base delay
     const wordsPerMinute = 25; // Slower, more realistic typing speed for AI
     const msPerWord = (60 / wordsPerMinute) * 1000;
-    
+
     // Add natural variation
     const variation = Math.random() * 500 - 250; // ±250ms variation
-    
+
     return Math.max(baseDelay + (words * msPerWord) + variation, 500);
   };
 
   const handleSendMessage = async (text: string, imageUriFromInput?: string, isQuickReply: boolean = false) => {
-    let currentImageUri = imageUriFromInput; 
+    let currentImageUri = imageUriFromInput;
     const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
 
     if (!text.trim() && !currentImageUri) return;
-    if (isLoadingAdSettings || isLoadingAIProfile || isLoadingMediaAssets) { 
+    if (isLoadingAdSettings || isLoadingAIProfile || isLoadingMediaAssets) {
         toast({ title: "Please wait", description: "Loading essential settings...", variant: "default"});
         return;
     }
-    
+
     const newUserMessage: Message = {
       id: Date.now().toString(),
       text,
@@ -801,17 +800,17 @@ const KruthikaChatPage: NextPage = () => {
     // Check if AI should be paused or ignoring messages
     const isCurrentlyPaused = shouldAIBePaused();
     const shouldStartIgnoring = !isCurrentlyPaused && shouldIgnoreMessage();
-    
+
     if (isCurrentlyPaused || shouldStartIgnoring) {
       console.log('Kruthika AI: Currently paused/offline or starting to ignore, not responding');
-      
+
       // Add to missed messages for later response
       addToMissedMessages(text, newUserMessage.id);
-      
+
       // Set appropriate message status based on ignore type
       const ignoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
       const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
-      
+
       if (lastGoodbyeTime) {
         // AI said goodbye, so message shows as delivered but not read
         newUserMessage.status = 'delivered';
@@ -824,9 +823,9 @@ const KruthikaChatPage: NextPage = () => {
       } else {
         newUserMessage.status = 'sent';
       }
-      
+
       setMessages(prev => [...prev, newUserMessage]);
-      
+
       // Simulate delayed delivery for busy state
       if (shouldStartIgnoring && !lastGoodbyeTime) {
         setTimeout(() => {
@@ -835,31 +834,31 @@ const KruthikaChatPage: NextPage = () => {
           ));
         }, 2000 + Math.random() * 3000); // 2-5 second delay
       }
-      
+
       return;
     }
-    
+
     // Handle missed messages if AI is coming back online
     const missedMessages = getMissedMessages();
     let shouldRespondToMissedMessages = false;
-    
+
     if (missedMessages.length > 0) {
       // 60% chance to acknowledge missed messages
       if (Math.random() < 0.6) {
         shouldRespondToMissedMessages = true;
       }
     }
-    
+
     // Psychological user profiling and addiction tracking
     updateUserPsychologyProfile(text);
     trackUserAddictionLevel();
     updateUserEmotionalState(text);
-    
+
     // Gather user type data for intelligent AI behavior
     const userTypeData = getUserTypeData();
-    
+
     resetInactivityTimer();
-    
+
     let imageAttemptedAndAllowed = false;
 
     if (currentImageUri) {
@@ -878,10 +877,10 @@ const KruthikaChatPage: NextPage = () => {
                 variant: "destructive",
                 duration: 5000,
             });
-            currentImageUri = undefined; 
-            if (!text.trim()) return; 
+            currentImageUri = undefined;
+            if (!text.trim()) return;
         } else {
-            imageAttemptedAndAllowed = true; 
+            imageAttemptedAndAllowed = true;
         }
     }
     userSentMediaThisTurnRef.current = !!currentImageUri;
@@ -889,7 +888,7 @@ const KruthikaChatPage: NextPage = () => {
 
     setMessages(prev => [...prev, newUserMessage]);
     if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
-    
+
     // Update last user message time for proactive messaging
     setLastUserMessageTime(Date.now());
 
@@ -915,13 +914,13 @@ const KruthikaChatPage: NextPage = () => {
     // More realistic message status progression with IST timing
     const deliveredDelay = (() => {
       // Use IST timezone consistently
-      const istHour = parseInt(new Date().toLocaleString('en-US', { 
-        timeZone: 'Asia/Kolkata', 
-        hour: '2-digit', 
-        hour12: false 
+      const istHour = parseInt(new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        hour12: false
       }));
       const baseDelay = 500; // Slower than before
-      
+
       // Faster during active hours (9 AM - 11 PM IST)
       if (istHour >= 9 && istHour <= 23) {
         return baseDelay + Math.random() * 800; // 0.5-1.3s
@@ -933,8 +932,8 @@ const KruthikaChatPage: NextPage = () => {
     // Schedule delivery status update with timestamp
     setTimeout(() => {
         setMessages(prev => prev.map(msg =>
-          msg.id === newUserMessage.id ? { 
-            ...msg, 
+          msg.id === newUserMessage.id ? {
+            ...msg,
             status: 'delivered' as MessageStatus,
             deliveredAt: new Date()
           } : msg
@@ -945,8 +944,8 @@ const KruthikaChatPage: NextPage = () => {
     const scheduleReadReceipt = (messageId: string, delay: number = 2000) => {
       setTimeout(() => {
         setMessages(prev => prev.map(msg =>
-          msg.id === messageId ? { 
-            ...msg, 
+          msg.id === messageId ? {
+            ...msg,
             status: 'read' as MessageStatus,
             readAt: new Date()
           } : msg
@@ -954,7 +953,7 @@ const KruthikaChatPage: NextPage = () => {
       }, delay);
     };
 
-    
+
     try {
       const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
       const availableImages = currentMediaConfig.assets.filter(a => a.type === 'image').map(a => a.url);
@@ -965,15 +964,15 @@ const KruthikaChatPage: NextPage = () => {
       const addictionLevel = localStorage.getItem(USER_ADDICTION_LEVEL_KEY) || 'low';
       const emotionalState = localStorage.getItem(USER_EMOTIONAL_STATE_KEY) || 'neutral';
       const dailyMsgCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
-      
+
       // Get current ignore state for server-safe AI function
       const currentIgnoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
       const currentIgnoreTime = currentIgnoreUntil ? parseInt(currentIgnoreUntil) : null;
-      
+
       // Check if this is a comeback after goodbye
       const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
       const isComeback = lastGoodbyeTime && !shouldAIBePaused();
-      
+
       // Clear goodbye state if coming back
       if (isComeback) {
         localStorage.removeItem(AI_LAST_GOODBYE_TIME_KEY);
@@ -1006,19 +1005,20 @@ const KruthikaChatPage: NextPage = () => {
       };
 
       const serverResult = await sendMessage(text, aiMood, updatedRecentInteractions);
-      
+
       if (!serverResult.success) {
         throw new Error(serverResult.error || 'Failed to get AI response');
       }
-      
+
       // Convert server result to expected format
       const aiResult: EmotionalStateOutput = {
-        response: serverResult.response || '',
+        response: serverResult.response,
         newMood: serverResult.newMood || aiMood,
         proactiveImageUrl: serverResult.proactiveImageUrl,
         proactiveAudioUrl: serverResult.proactiveAudioUrl,
         mediaCaption: serverResult.mediaCaption,
-        newIgnoreUntil: serverResult.wasIgnored ? Date.now() + (10 * 60 * 1000) : undefined // 10 min ignore if ignored
+        newIgnoreUntil: serverResult.wasIgnored ? Date.now() + (10 * 60 * 1000) : undefined, // 10 min ignore if ignored
+        multiPartResponse: serverResult.multiPartResponse, // For multi-part messages
       };
 
       // Handle ignore/busy persistence from server response
@@ -1030,7 +1030,7 @@ const KruthikaChatPage: NextPage = () => {
         if (adSettings && adSettings.adsEnabledGlobally) {
             tryShowAdAndMaybeInterstitial(`Loading ${currentEffectiveAIProfile.name}'s share...`);
         }
-        await new Promise(resolve => setTimeout(resolve, 200)); 
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
 
       const logAiMessageToSupabase = async (aiText: string, aiMsgId: string, hasImage: boolean = false, hasAudio: boolean = false) => {
@@ -1043,24 +1043,24 @@ const KruthikaChatPage: NextPage = () => {
                 sender_type: 'ai',
                 chat_id: 'kruthika_chat',
                 text_content: aiText.substring(0, 500),
-                has_image: hasImage || hasAudio, 
+                has_image: hasImage || hasAudio,
               }]);
             if (aiLogError) console.error('Supabase error logging AI message:', aiLogError.message);
           } catch (e: any) { console.error('Supabase AI message logging failed (catch block):', e?.message || String(e)); }
         }
       };
 
-      const processAiTextMessage = async (responseText: string, messageIdSuffix: string = '') => {
+      const processAiTextMessage = async (responseText: string, messageIdSuffix: string = '', isMultiPart: boolean = false) => {
         // Start typing animation
         setIsAiTyping(true);
-        
+
         // Calculate realistic typing delay
         const typingDuration = calculateTypingDelay(responseText);
         await new Promise(resolve => setTimeout(resolve, typingDuration));
 
         // Stop typing and send message
         setIsAiTyping(false);
-        
+
         const newAiMessageId = (Date.now() + Math.random()).toString() + messageIdSuffix;
         const newAiMessage: Message = {
           id: newAiMessageId,
@@ -1070,7 +1070,7 @@ const KruthikaChatPage: NextPage = () => {
           status: 'read',
         };
         setMessages(prev => [...prev, newAiMessage]);
-        
+
         // Schedule realistic read receipt after AI starts typing (not immediate)
         const readReceiptDelay = Math.random() * 3000 + 1000; // 1-4 seconds delay
         scheduleReadReceipt(newUserMessage.id, readReceiptDelay);
@@ -1082,13 +1082,13 @@ const KruthikaChatPage: NextPage = () => {
       const processAiMediaMessage = async (mediaType: 'image' | 'audio', url: string, caption?: string) => {
         // Start typing animation
         setIsAiTyping(true);
-        
+
         const typingDuration = calculateTypingDelay(caption || "Sending...");
         await new Promise(resolve => setTimeout(resolve, typingDuration));
-        
+
         // Stop typing and send media
         setIsAiTyping(false);
-        
+
         const newAiMediaMessageId = (Date.now() + Math.random()).toString() + `_${mediaType}`;
         const newAiMediaMessage: Message = {
             id: newAiMediaMessageId,
@@ -1104,55 +1104,57 @@ const KruthikaChatPage: NextPage = () => {
         setRecentInteractions(prevInteractions => [...prevInteractions, `AI: ${caption || ""}[Sent a ${mediaType}] ${url}`].slice(-10));
         await logAiMessageToSupabase(caption || `[Sent ${mediaType}]`, newAiMediaMessageId, mediaType === 'image', mediaType === 'audio');
       };
-      
+
       if (aiResult.proactiveImageUrl && aiResult.mediaCaption) {
         await processAiMediaMessage('image', aiResult.proactiveImageUrl, aiResult.mediaCaption);
       } else if (aiResult.proactiveAudioUrl && aiResult.mediaCaption) {
         await processAiMediaMessage('audio', aiResult.proactiveAudioUrl, aiResult.mediaCaption);
-      } else if (aiResult.response) {
-        if (Array.isArray(aiResult.response)) {
-          for (let i = 0; i < aiResult.response.length; i++) {
-            const part = aiResult.response[i];
-            if (part.trim() === '') continue;
-            await processAiTextMessage(part, `_part${i}`);
-            if (i < aiResult.response.length - 1) {
-              // Brief pause between messages like a real person
-              const interMessageDelay = 800 + Math.random() * 700;
-              await new Promise(resolve => setTimeout(resolve, interMessageDelay));
-            }
+      } else if (aiResult.multiPartResponse && aiResult.multiPartResponse.length > 1) {
+        // Handle multi-part responses
+        for (let i = 0; i < aiResult.multiPartResponse.length; i++) {
+          const part = aiResult.multiPartResponse[i];
+          if (part.trim() === '') continue;
+          await processAiTextMessage(part, `_part${i}`, true);
+          if (i < aiResult.multiPartResponse.length - 1) {
+            // Brief pause between messages like a real person
+            const interMessageDelay = 800 + Math.random() * 700;
+            await new Promise(resolve => setTimeout(resolve, interMessageDelay));
           }
-        } else if (aiResult.response.trim() !== '') { 
-          await processAiTextMessage(aiResult.response);
         }
+      } else if (aiResult.response && aiResult.response.trim() !== '') {
+          await processAiTextMessage(aiResult.response);
       }
-      
+
+
       // Ensure typing is always stopped
-      setIsAiTyping(false); 
+      setIsAiTyping(false);
       if (aiResult.newMood) setAiMood(aiResult.newMood);
-      
+
       // Clear missed messages if AI responded to them
       if (shouldRespondToMissedMessages) {
         clearMissedMessages();
       }
-      
+
       // Check if AI just said goodbye and should go offline
       let aiResponseText = '';
       if (typeof aiResult.response === 'string') {
         aiResponseText = aiResult.response;
       } else if (Array.isArray(aiResult.response)) {
         aiResponseText = aiResult.response.join(' ');
+      } else if (Array.isArray(aiResult.multiPartResponse)) {
+        aiResponseText = aiResult.multiPartResponse.join(' ');
       }
-      
+
       if (detectGoodbyeMessage(aiResponseText)) {
         console.log('Kruthika AI: Goodbye detected, setting offline state');
         setAIGoodbyeState();
-        
+
         // Clear any pending proactive messages
         if (proactiveMessageTimerRef.current) {
           clearTimeout(proactiveMessageTimerRef.current);
         }
       }
-      
+
       // Also check if USER said goodbye to AI
       if (detectGoodbyeMessage(text)) {
         console.log('Kruthika AI: User said goodbye, AI should acknowledge and go offline soon');
@@ -1166,13 +1168,13 @@ const KruthikaChatPage: NextPage = () => {
         }, 5000); // Give 5 seconds for AI response, then go offline
       }
 
-      if (imageAttemptedAndAllowed && currentImageUri) { 
+      if (imageAttemptedAndAllowed && currentImageUri) {
           const todayStr = new Date().toDateString();
           let currentUploadCount = parseInt(localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || '0', 10);
           const lastUploadDate = localStorage.getItem(USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA);
 
           if (lastUploadDate !== todayStr) {
-              currentUploadCount = 0; 
+              currentUploadCount = 0;
           }
           currentUploadCount++;
           localStorage.setItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA, currentUploadCount.toString());
@@ -1180,9 +1182,9 @@ const KruthikaChatPage: NextPage = () => {
       }
 
 
-      if (userSentMediaThisTurnRef.current) { 
+      if (userSentMediaThisTurnRef.current) {
         if (adSettings && adSettings.adsEnabledGlobally && Math.random() < USER_MEDIA_INTERSTITIAL_CHANCE) {
-            tryShowAdAndMaybeInterstitial("Just a moment..."); 
+            tryShowAdAndMaybeInterstitial("Just a moment...");
         }
         userSentMediaThisTurnRef.current = false;
       }
@@ -1224,9 +1226,9 @@ const KruthikaChatPage: NextPage = () => {
     const timeSinceLastInteraction = now - lastInteractionTime;
     let timeoutId: NodeJS.Timeout | undefined = undefined;
 
-    if (messages.some(m => m.sender === 'user') && lastMessage && lastMessage.sender === 'user' && timeSinceLastInteraction > 2 * 60 * 60 * 1000 && Math.random() < 0.3) { 
+    if (messages.some(m => m.sender === 'user') && lastMessage && lastMessage.sender === 'user' && timeSinceLastInteraction > 2 * 60 * 60 * 1000 && Math.random() < 0.3) {
       const { hour: currentISTHour } = getISTTimeParts();
-      if (!(currentISTHour >= 5 && currentISTHour < 12)) return; 
+      if (!(currentISTHour >= 5 && currentISTHour < 12)) return;
 
       const generateAndAddOfflineMessage = async () => {
         setIsAiTyping(true);
@@ -1248,12 +1250,12 @@ const KruthikaChatPage: NextPage = () => {
             status: 'read',
           };
           setMessages(prev => [...prev, offlineMessage]);
-          if(adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount(); 
+          if(adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
           setRecentInteractions(prev => [...prev, `AI: ${offlineResult.message}`].slice(-10));
           if (supabase) {
             try {
                 const { error: offlineLogError } = await supabase.from('messages_log').insert([{
-                    message_id: newOfflineMsgId, sender_type: 'ai', chat_id: 'kruthika_chat_offline_ping', 
+                    message_id: newOfflineMsgId, sender_type: 'ai', chat_id: 'kruthika_chat_offline_ping',
                     text_content: offlineResult.message.substring(0, 500), has_image: false,
                 }]);
                 if (offlineLogError) console.error('Supabase error logging offline AI message:', offlineLogError.message);
@@ -1269,48 +1271,48 @@ const KruthikaChatPage: NextPage = () => {
 
   const onlineStatus = useMemo(() => {
     if (isAiTyping) return "typing...";
-    
+
     // Check daily message count - new users see different status
     const dailyCount = parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || '0');
     const isNewUser = dailyCount <= 20;
-    
+
     // Add realistic activity status
     const getCurrentActivityStatus = (): string => {
       const now = new Date();
-      const istHour = parseInt(now.toLocaleString('en-US', { 
-        timeZone: 'Asia/Kolkata', 
-        hour: '2-digit', 
-        hour12: false 
+      const istHour = parseInt(now.toLocaleString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour: '2-digit',
+        hour12: false
       }));
       const dayOfWeek = now.getDay();
-      
+
       // Weekend activities
       if (dayOfWeek === 0 || dayOfWeek === 6) {
         if (istHour >= 10 && istHour <= 12) return "getting ready to go out 💄";
         if (istHour >= 13 && istHour <= 16) return "shopping at linking road 🛍️";
         if (istHour >= 17 && istHour <= 19) return "having chai with friends ☕";
       }
-      
+
       // Weekday college schedule
       if (istHour >= 8 && istHour <= 10) return "in mumbai local 🚂";
       if (istHour >= 11 && istHour <= 13) return "psychology lecture 📚";
       if (istHour >= 14 && istHour <= 16) return "college canteen with friends 🍛";
       if (istHour >= 17 && istHour <= 19) return "traveling back home 🚌";
       if (istHour >= 20 && istHour <= 21) return "family dinner time 🍽️";
-      
+
       return "";
     };
-    
+
     // Check if AI is paused/offline first
     if (shouldAIBePaused()) {
       const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
       const ignoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
-      
+
       if (lastGoodbyeTime) {
         const goodbyeDate = new Date(parseInt(lastGoodbyeTime));
         const timeSinceGoodbye = Date.now() - parseInt(lastGoodbyeTime);
         const goodbyeHour = goodbyeDate.getHours();
-        
+
         // Enhanced goodbye status messages
         if (goodbyeHour >= 22 || goodbyeHour <= 6) {
           // Night goodbye
@@ -1331,7 +1333,7 @@ const KruthikaChatPage: NextPage = () => {
           }
         }
       }
-      
+
       if (ignoreUntil && !isNewUser) {
         const remainingMin = Math.ceil((parseInt(ignoreUntil) - Date.now()) / 60000);
         if (remainingMin > 0) {
@@ -1339,7 +1341,7 @@ const KruthikaChatPage: NextPage = () => {
         }
       }
     }
-    
+
     // New users always see "online" during active hours
     if (isNewUser) {
       const getISTTimePartsLocal = (): { hour: number; minutes: number } => {
@@ -1349,12 +1351,12 @@ const KruthikaChatPage: NextPage = () => {
         return { hour: istDate.getHours(), minutes: istDate.getMinutes() };
       };
       const { hour: currentISTHour } = getISTTimePartsLocal();
-      
+
       if (currentISTHour >= 6 && currentISTHour <= 23) {
         return "online 💚"; // Always online for new users during day
       }
     }
-    
+
     const getISTTimePartsLocal = (): { hour: number; minutes: number } => {
       const now = new Date();
       const istDateString = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
@@ -1362,7 +1364,7 @@ const KruthikaChatPage: NextPage = () => {
       return { hour: istDate.getHours(), minutes: istDate.getMinutes() };
     };
     const { hour: currentISTHour } = getISTTimePartsLocal();
-    const isKruthikaActiveHours = currentISTHour >= 5 && currentISTHour < 12; 
+    const isKruthikaActiveHours = currentISTHour >= 5 && currentISTHour < 12;
     const lastAiMessage = messages.slice().reverse().find(msg => msg.sender === 'ai');
 
     if (isKruthikaActiveHours) {
@@ -1371,8 +1373,8 @@ const KruthikaChatPage: NextPage = () => {
             const lastSeenTime = new Date(lastAiMessage.timestamp);
             const diffMs = now.getTime() - lastSeenTime.getTime();
             const diffMins = Math.round(diffMs / 60000);
-            if (diffMins < 3) return "online"; 
-        } else return "online"; 
+            if (diffMins < 3) return "online";
+        } else return "online";
     }
     if (lastAiMessage) {
       const now = new Date();
@@ -1393,9 +1395,9 @@ const KruthikaChatPage: NextPage = () => {
       }
     }
     if (isKruthikaActiveHours) return "online";
-    if (currentISTHour >= 12 && currentISTHour < 17) return `probably busy, back in morning`; 
-    if (currentISTHour >= 17 && currentISTHour < 21) return `winding down, back tomorrow`; 
-    return `sleeping, back at 5 AM IST`; 
+    if (currentISTHour >= 12 && currentISTHour < 17) return `probably busy, back in morning`;
+    if (currentISTHour >= 17 && currentISTHour < 21) return `winding down, back tomorrow`;
+    return `sleeping, back at 5 AM IST`;
   }, [messages, isAiTyping]);
 
   const handleOpenAvatarZoom = () => {
@@ -1416,7 +1418,7 @@ const KruthikaChatPage: NextPage = () => {
   const handleQuickReply = (replyText: string, originalMessage: Message) => {
     // Send the quick reply as a message with isQuickReply flag
     handleSendMessage(replyText, undefined, true);
-    
+
     // Add visual feedback
     toast({
       title: "Quick Reply Sent",
@@ -1426,10 +1428,10 @@ const KruthikaChatPage: NextPage = () => {
   };
 
   const handleLikeMessage = (messageId: string) => {
-    setMessages(prev => prev.map(msg => 
+    setMessages(prev => prev.map(msg =>
       msg.id === messageId ? { ...msg, isLiked: !msg.isLiked } : msg
     ));
-    
+
     // Add subtle feedback
     toast({
       title: "❤️ Liked",
@@ -1439,13 +1441,13 @@ const KruthikaChatPage: NextPage = () => {
   };
 
   const handleReactToMessage = (messageId: string, reaction: MessageReaction) => {
-    setMessages(prev => prev.map(msg => 
+    setMessages(prev => prev.map(msg =>
       msg.id === messageId ? { ...msg, reaction } : msg
     ));
-    
+
     // Add subtle feedback
     toast({
-      title: "🎉 Reaction Added", 
+      title: "🎉 Reaction Added",
       description: `Reacted with ${reaction}`,
       duration: 1000,
     });
@@ -1456,7 +1458,7 @@ const KruthikaChatPage: NextPage = () => {
   if (isLoadingAIProfile || !globalAIProfile || isLoadingAdSettings || isLoadingMediaAssets || isLoadingChatState ) {
     return <div className="flex justify-center items-center h-screen bg-chat-bg-default text-foreground">Loading Kruthika's Chat...</div>;
   }
-  
+
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto bg-chat-bg-default shadow-2xl">
       <ChatHeader
@@ -1464,14 +1466,14 @@ const KruthikaChatPage: NextPage = () => {
         aiAvatarUrl={displayAIProfile.avatarUrl}
         onlineStatus={onlineStatus}
         onAvatarClick={handleOpenAvatarZoom}
-        onCallClick={handleCallVideoClick} 
+        onCallClick={handleCallVideoClick}
         onVideoClick={handleCallVideoClick}
       />
-      <ChatView 
-        messages={messages} 
-        aiAvatarUrl={displayAIProfile.avatarUrl} 
+      <ChatView
+        messages={messages}
+        aiAvatarUrl={displayAIProfile.avatarUrl}
         aiName={displayAIProfile.name}
-        isAiTyping={isAiTyping} 
+        isAiTyping={isAiTyping}
         onTriggerAd={handleBubbleAdTrigger}
         onQuickReply={handleQuickReply}
         onLikeMessage={handleLikeMessage}
@@ -1489,9 +1491,9 @@ const KruthikaChatPage: NextPage = () => {
           duration={REWARD_AD_INTERSTITIAL_DURATION_MS}
         />
       )}
-      
+
       <BannerAdDisplay adType="standard" placementKey="chatViewBottomStandard" className="mx-auto w-full max-w-md" />
-      
+
       <div className="my-1 mx-auto w-full max-w-md">
         <BannerAdDisplay adType="native" placementKey="chatViewBottomNative" />
       </div>
@@ -1500,7 +1502,7 @@ const KruthikaChatPage: NextPage = () => {
       <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
 
        <Dialog open={showZoomedAvatarDialog} onOpenChange={setShowZoomedAvatarDialog}>
-          <DialogContent 
+          <DialogContent
             className="fixed left-[50%] top-[50%] z-50 grid w-[90vw] max-w-xs translate-x-[-50%] translate-y-[-50%] border bg-neutral-900 p-0 shadow-lg duration-200 sm:rounded-lg flex flex-col overflow-hidden aspect-square max-h-[90vw] sm:max-h-[70vh]"
           >
               <DialogHeader className="flex flex-row items-center space-x-2 p-3 bg-neutral-800/80 backdrop-blur-sm sticky top-0 z-10">
@@ -1511,16 +1513,16 @@ const KruthikaChatPage: NextPage = () => {
                 </DialogClose>
                 <DialogTitle className="text-lg font-semibold text-white">{displayAIProfile.name}</DialogTitle>
               </DialogHeader>
-              
+
               <div className="relative flex-1 w-full bg-black flex items-center justify-center overflow-hidden">
                 {zoomedAvatarUrl && (
-                  <Image 
-                    key={`zoomed-${zoomedAvatarUrl}`} 
-                    src={zoomedAvatarUrl} 
-                    alt={`${displayAIProfile.name}'s zoomed avatar`} 
+                  <Image
+                    key={`zoomed-${zoomedAvatarUrl}`}
+                    src={zoomedAvatarUrl}
+                    alt={`${displayAIProfile.name}'s zoomed avatar`}
                     fill
                     style={{ objectFit: 'contain' }}
-                    className="rounded-sm" 
+                    className="rounded-sm"
                     data-ai-hint="profile woman large"
                     priority={true}
                     unoptimized // For original quality as requested for status, applying here too
