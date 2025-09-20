@@ -996,7 +996,7 @@ const KruthikaChatPage: NextPage = () => {
         missedMessages: shouldRespondToMissedMessages ? missedMessages : undefined,
         hasBeenOffline: missedMessages.length > 0,
         // User type data for intelligent AI behavior
-        userTypeData: userTypeData,
+        // userTypeData: userTypeData, // Commented out - not in interface
         isQuickReply: isQuickReply,
         // Server-safe ignore state
         currentIgnoreUntil: currentIgnoreTime,
@@ -1012,7 +1012,7 @@ const KruthikaChatPage: NextPage = () => {
 
       // Convert server result to expected format
       const aiResult: EmotionalStateOutput = {
-        response: serverResult.response,
+        response: serverResult.response || '',
         newMood: serverResult.newMood || aiMood,
         proactiveImageUrl: serverResult.proactiveImageUrl,
         proactiveAudioUrl: serverResult.proactiveAudioUrl,
@@ -1121,7 +1121,7 @@ const KruthikaChatPage: NextPage = () => {
             await new Promise(resolve => setTimeout(resolve, interMessageDelay));
           }
         }
-      } else if (aiResult.response && aiResult.response.trim() !== '') {
+      } else if (aiResult.response && typeof aiResult.response === 'string' && aiResult.response.trim() !== '') {
           await processAiTextMessage(aiResult.response);
       }
 
