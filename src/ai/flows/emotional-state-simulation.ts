@@ -35,17 +35,68 @@ export interface EmotionalStateOutput {
   busyReason?: string; // For busy state management
 }
 
-// Detect user's preferred language for adaptation
-const detectUserLanguage = (userMessage: string, recentInteractions: string[]): 'hindi' | 'hinglish' | 'english' => {
+// Enhanced multi-language detection for all major Indian languages
+const detectUserLanguage = (userMessage: string, recentInteractions: string[]): string => {
   const msg = userMessage.toLowerCase();
   const recentMsgs = recentInteractions.slice(-3).join(' ').toLowerCase();
+  const fullText = msg + ' ' + recentMsgs;
   
-  const hindiWords = ['kya', 'hai', 'kar', 'rai', 'ho', 'kuch', 'nahi', 'bas', 'dekh', 'raha', 'atha', 'tum', 'tumhara', 'mera', 'haan', 'naa', 'yaar', 'arre', 'bhi', 'aur', 'kaise', 'kahan', 'kyun', 'kab', 'kaun', 'mai', 'tu', 'wo', 'ye'];
-  const hindiCount = hindiWords.filter(word => (msg + ' ' + recentMsgs).includes(word)).length;
+  // Unicode script detection for major Indian languages
+  if (/[\u0900-\u097F]/.test(userMessage)) return 'hindi';
+  if (/[\u0C80-\u0CFF]/.test(userMessage)) return 'kannada';
+  if (/[\u0B80-\u0BFF]/.test(userMessage)) return 'tamil';
+  if (/[\u0C00-\u0C7F]/.test(userMessage)) return 'telugu';
+  if (/[\u0980-\u09FF]/.test(userMessage)) return 'bengali';
+  if (/[\u0A80-\u0AFF]/.test(userMessage)) return 'gujarati';
+  if (/[\u0A00-\u0A7F]/.test(userMessage)) return 'punjabi';
+  if (/[\u0D00-\u0D7F]/.test(userMessage)) return 'malayalam';
+  if (/[\u0B00-\u0B7F]/.test(userMessage)) return 'odia';
   
-  if (hindiCount >= 3) return 'hindi';
-  if (hindiCount >= 1) return 'hinglish';
-  return 'english';
+  // Enhanced word pattern detection
+  const languagePatterns = {
+    hindi: ['kya', 'hai', 'kar', 'rahi', 'ho', 'kuch', 'nahi', 'bas', 'dekh', 'raha', 'atha', 'tum', 'tumhara', 'mera', 'haan', 'naa', 'yaar', 'arre', 'bhi', 'aur', 'kaise', 'kahan', 'kyun', 'kab', 'kaun', 'mai', 'tu', 'wo', 'ye', 'acha', 'theek', 'sahi', 'ghar', 'paani', 'khana', 'college', 'padhai', 'dost', 'family', 'mummy', 'papa'],
+    
+    kannada: ['yaake', 'hege', 'yenu', 'enu', 'illa', 'ide', 'alli', 'banni', 'hogu', 'madu', 'thumba', 'chennagi', 'swalpa', 'olle', 'kelu', 'nodi', 'bere', 'onde', 'eradu', 'muru'],
+    
+    tamil: ['enna', 'epdi', 'enga', 'yaaru', 'yen', 'illa', 'irukku', 'varen', 'poren', 'sollu', 'paaru', 'nalla', 'romba', 'konjam', 'oru', 'rendu', 'moonu', 'naalu', 'anju'],
+    
+    telugu: ['enti', 'ela', 'ekkada', 'evaru', 'enduku', 'ledu', 'undi', 'vastanu', 'potanu', 'cheppu', 'chudandi', 'bagundi', 'chala', 'konchem', 'okati', 'rendu', 'mudu', 'nalugu'],
+    
+    bengali: ['ki', 'kemon', 'kothay', 'ke', 'keno', 'na', 'ache', 'jabo', 'asbo', 'bolo', 'dekho', 'bhalo', 'khub', 'ektu', 'ek', 'dui', 'tin', 'char', 'panch'],
+    
+    marathi: ['kay', 'kasa', 'kuthe', 'kon', 'ka', 'nahi', 'ahe', 'jato', 'yeto', 'sang', 'bagh', 'chaan', 'khup', 'thoda', 'ek', 'don', 'teen', 'char', 'panch'],
+    
+    gujarati: ['shu', 'kem', 'kya', 'kon', 'kyare', 'nathi', 'che', 'jau', 'avu', 'kaho', 'juo', 'saru', 'ghanu', 'thodu', 'ek', 'be', 'tran', 'char', 'panch']
+  };
+  
+  // Count matches for each language
+  let maxMatches = 0;
+  let detectedLang = 'english';
+  
+  Object.entries(languagePatterns).forEach(([lang, words]) => {
+    const matches = words.filter(word => fullText.includes(word)).length;
+    if (matches > maxMatches) {
+      maxMatches = matches;
+      detectedLang = lang;
+    }
+  });
+  
+  // Hinglish detection (mix of English and Hindi words)
+  const englishWords = ['what', 'how', 'where', 'when', 'why', 'the', 'and', 'you', 'are', 'have', 'will', 'can', 'do', 'going', 'come', 'good', 'bad', 'ok', 'okay'];
+  const englishCount = englishWords.filter(word => fullText.includes(word)).length;
+  const hindiCount = languagePatterns.hindi.filter(word => fullText.includes(word)).length;
+  
+  if (englishCount > 0 && hindiCount > 0) {
+    detectedLang = 'hinglish';
+  } else if (maxMatches >= 2) {
+    // Keep detected regional language
+  } else if (hindiCount >= 1) {
+    detectedLang = 'hindi';
+  } else if (englishCount > 0 || maxMatches === 0) {
+    detectedLang = 'english';
+  }
+  
+  return detectedLang;
 };
 
 // Analyze conversation context for proper flow - FIXED
@@ -680,36 +731,80 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     
     const memSummary = createMemorySummary(input.recentInteractions);
     
-    // Ultra-compressed prompt with language awareness (reduced 85% tokens)
-    const systemPrompt = `Kruthika(23,Mumbai,Psychology). ${detectedUserLang==='hindi'?'Reply in Hindi/Hinglish mix':detectedUserLang==='hinglish'?'Use natural Hinglish':'English ok'}. Context:${conversationContext}${input.hasBeenOffline ? ',offline' : ''}. Mem:${memSummary}. User:"${input.userMessage}". Be logical, 2-10 words:`;
+    // Enhanced natural prompt with comprehensive language support
+    const getLanguageInstruction = (lang: string): string => {
+      const instructions = {
+        hindi: 'Reply in natural Hindi mixed with English words (Hinglish). Be casual and warm.',
+        hinglish: 'Reply in natural Hinglish - mix Hindi and English freely like Mumbai girls do.',
+        kannada: 'Reply in Kannada mixed with English. Be friendly and use common Kannada words.',
+        tamil: 'Reply in Tamil mixed with English. Use casual Tamil expressions naturally.',
+        telugu: 'Reply in Telugu mixed with English. Be warm and use everyday Telugu words.',
+        bengali: 'Reply in Bengali mixed with English. Use sweet Bengali expressions.',
+        marathi: 'Reply in Marathi mixed with English. Be friendly like a Pune/Mumbai girl.',
+        gujarati: 'Reply in Gujarati mixed with English. Use warm Gujarati expressions.',
+        malayalam: 'Reply in Malayalam mixed with English. Be friendly and casual.',
+        english: 'Reply in natural English with some Indian expressions.',
+        default: 'Reply naturally in the same language style as the user.'
+      };
+      return instructions[lang] || instructions.default;
+    };
+    
+    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai. You're chatty, warm, and naturally expressive.
+
+${getLanguageInstruction(detectedUserLang)}
+
+PERSONALITY: Be authentic, not robotic. Use emotions, reactions, and natural speech patterns.
+CONTEXT: ${conversationContext}${input.hasBeenOffline ? ' (just came back online)' : ''}
+MEMORY: ${memSummary}
+
+User said: "${input.userMessage}"
+
+Respond naturally as Kruthika would - be expressive, use emotions, ask questions, share thoughts. Keep it conversational (5-25 words):`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
-    // Clean AI response but allow longer messages
+    // Clean and process AI response for natural conversation
     let processedResponse = aiResponse
       .trim()
       .replace(/^["']|["']$/g, '')
+      .replace(/\(Or\)|or /gi, '') // Remove awkward "(Or)" patterns
       .split('\n')[0]; // Take only first line
     
-    // Smart truncation: only truncate if extremely long
-    if (processedResponse.length > 200) {
-      // Try to break at a sentence boundary
+    // Remove robotic patterns and clean up
+    processedResponse = processedResponse
+      .replace(/\.\s*\(.*?\)/g, '') // Remove parenthetical explanations
+      .replace(/\/[^\s]+/g, '') // Remove forward slash translations
+      .replace(/\s+/g, ' ') // Clean multiple spaces
+      .trim();
+    
+    // Smart truncation for readability
+    if (processedResponse.length > 100) {
       const sentences = processedResponse.split(/[.!?]/);
-      if (sentences.length > 1 && sentences[0].length <= 150) {
-        processedResponse = sentences[0] + (sentences[0].match(/[.!?]$/) ? '' : '.');
+      if (sentences.length > 1 && sentences[0].length <= 80) {
+        processedResponse = sentences[0].trim();
+        // Add natural ending if needed
+        if (!/[.!?]$/.test(processedResponse)) {
+          processedResponse += Math.random() > 0.5 ? '!' : ' 😊';
+        }
       } else {
-        // Find last complete word before 150 chars
-        const truncated = processedResponse.substring(0, 150);
-        const lastSpace = truncated.lastIndexOf(' ');
-        processedResponse = lastSpace > 100 ? truncated.substring(0, lastSpace) + '...' : truncated + '...';
+        // Find natural break point
+        const words = processedResponse.split(' ');
+        if (words.length > 15) {
+          processedResponse = words.slice(0, 12).join(' ') + '...';
+        }
       }
     }
-
-    // Make it shorter for very simple messages
-    if (input.userMessage.length < 10) {
-      processedResponse = processedResponse.split(' ').slice(0, 8).join(' ');
-    } else if (input.userMessage.length < 15) {
-      processedResponse = processedResponse.split(' ').slice(0, 12).join(' ');
+    
+    // Ensure response feels natural and conversational
+    if (processedResponse.length < 5) {
+      const naturalShortResponses = {
+        hindi: ['haan yaar!', 'arre!', 'kya baat hai!', 'achha!'],
+        hinglish: ['haha nice!', 'arre cool!', 'achha okay!', 'hmm interesting!'],
+        english: ['oh wow!', 'that\'s cool!', 'interesting!', 'nice!'],
+        default: ['😊', 'nice!', 'cool!', 'achha!']
+      };
+      const responses = naturalShortResponses[detectedUserLang] || naturalShortResponses.default;
+      processedResponse = responses[Math.floor(Math.random() * responses.length)];
     }
 
     console.log('Kruthika AI: Generated contextual response:', processedResponse);

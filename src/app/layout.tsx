@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google'; // Using Inter as a clean, readable font
 import './globals.css';
@@ -91,7 +90,22 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{
+            __html: `{
+              "@context": "https://schema.org",
+              "@type": "WebApplication", 
+              "name": "Kruthika AI - Your Mumbai AI Girlfriend",
+              "description": "Chat with Kruthika, an authentic AI girlfriend from Mumbai. Experience realistic conversations with a psychology student who understands Indian culture.",
+              "url": "https://kruthika-ai.replit.app",
+              "applicationCategory": "SocialApplication",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              }
+            }`
+          }}
         />
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#25D366" />
