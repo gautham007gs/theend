@@ -484,6 +484,91 @@ const shouldAIBeBusyServerSafe = (
   return { shouldIgnore: false };
 };
 
+// Smart media sharing logic with psychological timing
+const shouldShareMedia = (userMessage: string, recentInteractions: string[], userLang: string): {
+  shouldSend: boolean;
+  mediaType?: 'selfie' | 'cute' | 'study' | 'casual';
+  followUp?: string;
+} => {
+  const msg = userMessage.toLowerCase();
+  const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
+  
+  // Never send media to brand new users (first 3 messages)
+  if (conversationTurns <= 3) return { shouldSend: false };
+  
+  // High chance for direct requests
+  if (msg.includes('pic') || msg.includes('photo') || msg.includes('selfie') || 
+      msg.includes('image') || msg.includes('dikha') || msg.includes('face')) {
+    
+    // Sometimes go busy/ignore instead of sending pics (realistic boundary)
+    if (Math.random() < 0.3) {
+      return { shouldSend: false }; // Will trigger ignore feature
+    }
+    
+    const followUps = userLang === 'hindi' ? 
+      ['Mai buri dikhti hu na? 🥺', 'Kaise lagi mai?', 'Pasand aayi? 😊', 'Ugly toh nahi lagti na?'] :
+      ['Do I look bad? 🥺', 'How do I look?', 'You like it? 😊', 'Not ugly right?'];
+    
+    return {
+      shouldSend: true,
+      mediaType: 'selfie',
+      followUp: followUps[Math.floor(Math.random() * followUps.length)]
+    };
+  }
+  
+  // Contextual sharing (when conversation gets deeper)
+  if (conversationTurns > 8) {
+    // 15% chance to randomly share during good conversations
+    if (Math.random() < 0.15) {
+      if (msg.includes('study') || msg.includes('college') || msg.includes('padh')) {
+        return {
+          shouldSend: true,
+          mediaType: 'study',
+          followUp: userLang === 'hindi' ? 'Bore ho rahi hu study karte karte 😴' : 'Getting so bored studying 😴'
+        };
+      }
+      
+      const casualFollowUps = userLang === 'hindi' ? 
+        ['Aaj kya kar rahe ho?', 'Batao kya chal raha hai', 'Missing you 💕'] :
+        ['What are you doing today?', 'Tell me what\'s happening', 'Missing you 💕'];
+        
+      return {
+        shouldSend: true,
+        mediaType: 'casual',
+        followUp: casualFollowUps[Math.floor(Math.random() * casualFollowUps.length)]
+      };
+    }
+  }
+  
+  return { shouldSend: false };
+};
+
+// Pre-saved media files (to avoid using tokens for generation)
+const getMediaFile = (type: 'selfie' | 'cute' | 'study' | 'casual'): string => {
+  const mediaFiles = {
+    selfie: [
+      'https://i.postimg.cc/kruthika-selfie1.jpg',
+      'https://i.postimg.cc/kruthika-selfie2.jpg',
+      'https://i.postimg.cc/kruthika-mirror.jpg'
+    ],
+    cute: [
+      'https://i.postimg.cc/kruthika-cute1.jpg',
+      'https://i.postimg.cc/kruthika-smile.jpg'
+    ],
+    study: [
+      'https://i.postimg.cc/kruthika-study1.jpg',
+      'https://i.postimg.cc/kruthika-books.jpg'
+    ],
+    casual: [
+      'https://i.postimg.cc/kruthika-casual1.jpg',
+      'https://i.postimg.cc/kruthika-coffee.jpg'
+    ]
+  };
+  
+  const files = mediaFiles[type];
+  return files[Math.floor(Math.random() * files.length)];
+};
+
 export async function generateResponse(input: EmotionalStateInput): Promise<EmotionalStateOutput> {
   try {
     console.log('Kruthika AI: Analyzing conversation context...');
@@ -541,6 +626,21 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     // Analyze what user is actually talking about
     const conversationContext = analyzeConversationContext(input.userMessage, input.recentInteractions);
     console.log('Conversation context:', conversationContext);
+    
+    // Check for media sharing opportunities
+    const userLang = detectUserLanguage(input.userMessage, input.recentInteractions);
+    const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, userLang);
+    
+    if (mediaCheck.shouldSend) {
+      console.log('Kruthika AI: Sending media with follow-up message');
+      return {
+        shouldSendMedia: true,
+        mediaType: mediaCheck.mediaType,
+        proactiveImageUrl: getMediaFile(mediaCheck.mediaType!),
+        followUpMessage: mediaCheck.followUp,
+        newMood: 'sharing_moment'
+      };
+    }
 
     // Check for breadcrumb response first
     if (shouldUseBreadcrumb(input.userMessage, input.recentInteractions)) {
