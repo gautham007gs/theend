@@ -628,8 +628,8 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     console.log('Conversation context:', conversationContext);
     
     // Check for media sharing opportunities
-    const userDetectedLang = detectUserLanguage(input.userMessage, input.recentInteractions);
-    const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, userLang);
+    const detectedUserLang = detectUserLanguage(input.userMessage, input.recentInteractions);
+    const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, detectedUserLang);
     
     if (mediaCheck.shouldSend) {
       console.log('Kruthika AI: Sending media with follow-up message');
@@ -672,17 +672,16 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       const userMsgs = recentMsgs.filter(msg => msg.startsWith('User:')).map(msg => msg.replace('User: ', ''));
       const aiMsgs = recentMsgs.filter(msg => msg.startsWith('Kruthika:')).map(msg => msg.replace('Kruthika: ', ''));
       
-      const userLang = detectUserLanguage(input.userMessage, interactions);
+      const langForSummary = detectUserLanguage(input.userMessage, interactions);
       const topicsDiscussed = userMsgs.join(' ').match(/(college|family|tv|movie|friend|work|study)/gi) || [];
       
-      return `Lang:${userLang} Topics:[${topicsDiscussed.slice(0,3).join(',')}] Last:${userMsgs.slice(-1)[0]?.substring(0,30) || 'none'}`;
+      return `Lang:${langForSummary} Topics:[${topicsDiscussed.slice(0,3).join(',')}] Last:${userMsgs.slice(-1)[0]?.substring(0,30) || 'none'}`;
     };
     
     const memSummary = createMemorySummary(input.recentInteractions);
-    const userDetectedLang = detectUserLanguage(input.userMessage, input.recentInteractions);
     
     // Ultra-compressed prompt with language awareness (reduced 85% tokens)
-    const systemPrompt = `Kruthika(23,Mumbai,Psychology). ${userDetectedLang==='hindi'?'Reply in Hindi/Hinglish mix':userDetectedLang==='hinglish'?'Use natural Hinglish':'English ok'}. Context:${conversationContext}${input.hasBeenOffline ? ',offline' : ''}. Mem:${memSummary}. User:"${input.userMessage}". Be logical, 2-10 words:`;
+    const systemPrompt = `Kruthika(23,Mumbai,Psychology). ${detectedUserLang==='hindi'?'Reply in Hindi/Hinglish mix':detectedUserLang==='hinglish'?'Use natural Hinglish':'English ok'}. Context:${conversationContext}${input.hasBeenOffline ? ',offline' : ''}. Mem:${memSummary}. User:"${input.userMessage}". Be logical, 2-10 words:`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
