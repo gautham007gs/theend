@@ -4,13 +4,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, Tag } from 'lucide-react';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'AI Girlfriend Blog - Tips, Guides & Stories | Kruthika.fun',
-  description: 'Read the latest articles about AI girlfriends, virtual relationships, and digital companionship. Expert insights on AI girlfriend technology, benefits, and the future of virtual love.',
-  keywords: 'AI girlfriend blog, virtual relationship tips, AI companion guides, digital dating advice, AI girlfriend technology, virtual love stories, AI relationship blog',
-};
 
 const blogPosts = [
   {
