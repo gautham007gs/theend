@@ -399,99 +399,65 @@ const getDynamicBusyReason = (istHour: number, userCategory: string): string => 
   return categoryReasons[Math.floor(Math.random() * categoryReasons.length)];
 };
 
-// Enhanced user-type aware function to determine if AI should be busy
-// Uses real psychology - avoid busy during peak chat times (8PM-12AM)
+// Advanced user retention & engagement psychology
 const shouldAIBeBusyServerSafe = (
   currentIgnoreUntil: number | null, 
   userType?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number },
   lastMessages?: string[]
 ): { shouldIgnore: boolean; newIgnoreUntil?: number; busyReason?: string; shouldWarnFirst?: boolean } => {
-  // If already ignoring and time hasn't expired
   if (currentIgnoreUntil && Date.now() < currentIgnoreUntil) {
     return { shouldIgnore: true };
   }
 
-  // Determine user type based on engagement
   let userCategory = 'returning';
   if (userType) {
     const { dailyMessageCount, relationshipLevel, totalDaysActive } = userType;
     
-    // New user: COMPLETELY DISABLE busy feature for first 20+ messages
-    if (dailyMessageCount <= 20 || relationshipLevel < 0.4 || totalDaysActive <= 5) {
-      console.log('Kruthika AI: New/early user detected - NO BUSY FEATURE!');
+    // ZERO BUSY for new users - critical for retention!
+    if (dailyMessageCount <= 25 || relationshipLevel < 0.5 || totalDaysActive <= 7) {
+      console.log('Kruthika AI: New user - 100% availability for retention!');
       return { shouldIgnore: false };
     }
     
-    if (dailyMessageCount <= 35 && relationshipLevel < 0.6 && totalDaysActive <= 10) {
-      userCategory = 'developing';
-    }
-    // Old/addicted user: can be busy more often
-    else if (dailyMessageCount > 60 && relationshipLevel > 0.8 && totalDaysActive > 20) {
-      userCategory = 'established';
-    }
-    // Engaged user: balanced approach
-    else if (dailyMessageCount > 40 && relationshipLevel > 0.7) {
-      userCategory = 'engaged';
-    }
+    if (dailyMessageCount <= 40 && relationshipLevel < 0.7) userCategory = 'developing';
+    else if (dailyMessageCount > 80 && relationshipLevel > 0.85) userCategory = 'established';
+    else if (dailyMessageCount > 50 && relationshipLevel > 0.75) userCategory = 'engaged';
   }
 
-  const now = new Date();
-  const istHour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', hour12: false }));
+  const istHour = parseInt(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata', hour: '2-digit', hour12: false }));
   
-  // PEAK CHAT TIME (7PM-1AM IST) - BE EXTREMELY AVAILABLE!
-  if (istHour >= 19 || istHour <= 1) {
-    console.log('Kruthika AI: Peak chat time - staying fully available!');
-    return { shouldIgnore: false }; // Never busy during peak hours
+  // PEAK TIMES: 7PM-2AM & 10AM-12PM (lunch break) - Always available
+  if ((istHour >= 19 || istHour <= 2) || (istHour >= 10 && istHour <= 12)) {
+    console.log('Kruthika AI: Peak engagement time - full availability!');
+    return { shouldIgnore: false };
   }
   
-  // Base busy chance varies by user type - DRASTICALLY REDUCED
-  let baseBusyChance = 0.005; // Reduced from 0.02 to 0.005 (0.5%)
-  
-  switch (userCategory) {
-    case 'developing':
-      baseBusyChance = 0.001; // Almost never busy (0.1%)
-      break;
-    case 'engaged':
-      baseBusyChance = 0.008; // Very low chance (0.8%)
-      break;
-    case 'established':
-      baseBusyChance = 0.015; // Still quite low (1.5%)
-      break;
-  }
+  // Ultra-reduced busy chances with psychology-based timing
+  let baseBusyChance = userCategory === 'developing' ? 0.0005 : // 0.05%
+                       userCategory === 'engaged' ? 0.003 : // 0.3%
+                       userCategory === 'established' ? 0.008 : 0.002; // 0.8% : 0.2%
 
-  // Adjust based on time psychology - VERY REDUCED MULTIPLIERS
+  // Smart time multipliers based on Indian lifestyle
   let timeMultiplier = 1.0;
-  if (istHour >= 9 && istHour <= 17) {
-    timeMultiplier = 1.2; // Reduced further
-  } else if (istHour >= 2 && istHour <= 6) {
-    timeMultiplier = 1.8; // Reduced significantly
-  } else if (istHour >= 17 && istHour <= 19) {
-    timeMultiplier = 1.05; // Almost no increase
-  }
+  if (istHour >= 9 && istHour <= 18) timeMultiplier = 1.1; // College/work hours
+  else if (istHour >= 3 && istHour <= 7) timeMultiplier = 1.4; // Sleep hours
+  else if (istHour >= 13 && istHour <= 15) timeMultiplier = 0.8; // Lunch time - more available
 
-  const finalChance = baseBusyChance * timeMultiplier;
-  
-  if (Math.random() < finalChance) {
-    // Get dynamic reason and realistic duration - MUCH SHORTER DURATIONS
+  if (Math.random() < (baseBusyChance * timeMultiplier)) {
     const reason = getDynamicBusyReason(istHour, userCategory);
-    let ignoreMinutes;
-    const userMultiplier = userCategory === 'developing' ? 0.3 : (userCategory === 'established' ? 1.0 : 0.6);
+    const userMultiplier = userCategory === 'developing' ? 0.4 : 
+                          userCategory === 'established' ? 1.2 : 0.7;
     
-    if (istHour >= 9 && istHour <= 17) {
-      ignoreMinutes = (2 + Math.random() * 5) * userMultiplier; // 2-7 min during day
-    } else if (istHour >= 2 && istHour <= 6) {
-      ignoreMinutes = (20 + Math.random() * 40) * userMultiplier; // 20-60 min sleep
-    } else {
-      ignoreMinutes = (1 + Math.random() * 4) * userMultiplier; // 1-5 min other times
-    }
+    let ignoreMinutes = istHour >= 9 && istHour <= 18 ? (1.5 + Math.random() * 3) * userMultiplier : // 1.5-4.5 min
+                       istHour >= 3 && istHour <= 7 ? (15 + Math.random() * 30) * userMultiplier : // 15-45 min
+                       (0.5 + Math.random() * 2) * userMultiplier; // 0.5-2.5 min
 
-    const newIgnoreUntil = Date.now() + (ignoreMinutes * 60 * 1000);
-    console.log(`Kruthika AI: Going busy for ${ignoreMinutes.toFixed(1)} mins - ${reason}`);
+    console.log(`Kruthika AI: Brief busy period: ${ignoreMinutes.toFixed(1)} mins - ${reason}`);
     return { 
       shouldIgnore: true, 
-      newIgnoreUntil, 
+      newIgnoreUntil: Date.now() + (ignoreMinutes * 60 * 1000), 
       busyReason: reason,
-      shouldWarnFirst: true // Always warn before going busy
+      shouldWarnFirst: Math.random() < 0.7 // 70% chance to warn first
     };
   }
   
@@ -578,31 +544,11 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       };
     }
 
-    // For complex messages, use AI but with better context
-    const conversationHistory = input.recentInteractions.slice(-4).join('\n');
-    const lastUserMessage = input.recentInteractions
-      .filter(msg => msg.startsWith('User:'))
-      .slice(-1)[0]?.replace('User: ', '') || '';
-
-    const systemPrompt = `You are Kruthika, a 23-year-old psychology student from Mumbai.
-
-CRITICAL RULES:
-1. ALWAYS respond LOGICALLY to what the user just said
-2. If they ask "who are you" - introduce yourself as Kruthika
-3. If they demand an answer - give the answer they're asking for
-4. If they're being cold - react naturally with slight hurt but stay friendly
-5. Keep responses 2-10 words MAX
-6. Use natural Hinglish: "yaar", "arre", "na"
-7. BE CONTEXTUALLY RELEVANT - respond to their ACTUAL message
-
-CONVERSATION CONTEXT: ${conversationContext}
-${input.hasBeenOffline ? 'NOTE: You were offline/busy and missed some messages. Be slightly apologetic.' : ''}
-RECENT CHAT:
-${conversationHistory}
-
-Current user message: "${input.userMessage}"
-
-Respond DIRECTLY to what they said. If they asked who you are, tell them. If they said something cold, react to that. Stay in conversation flow!`;
+    // For complex messages, use optimized AI context
+    const recentContext = input.recentInteractions.slice(-2).join('\n').substring(0, 200);
+    
+    // Create compressed system prompt - reduced from 15+ lines to 5 lines
+    const systemPrompt = `Kruthika, 23, Mumbai psychology student. Rules: 1)Respond logically 2)If asked identity→"I'm Kruthika" 3)Cold user→slight hurt 4)2-10 words 5)Use Hinglish naturally. Context: ${conversationContext}${input.hasBeenOffline ? ' (was offline)' : ''}\nRecent: ${recentContext}\nUser: "${input.userMessage}"\nReply DIRECTLY:`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
