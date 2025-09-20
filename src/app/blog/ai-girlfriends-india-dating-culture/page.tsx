@@ -19,8 +19,8 @@ const jsonLd = {
     '@type': 'Organization',
     name: 'Kruthika.fun'
   },
-  datePublished: '2024-01-12',
-  dateModified: '2024-01-12',
+  datePublished: '2025-01-22',
+  dateModified: '2025-01-22',
   mainEntityOfPage: 'https://kruthika.fun/blog/ai-girlfriends-india-dating-culture',
   image: 'https://kruthika.fun/og-image.png'
 };
@@ -52,7 +52,7 @@ export default function AIGirlfriendsIndiaDatingCulture() {
             <div className="flex items-center gap-6 text-muted-foreground mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <span>January 12, 2024</span>
+                <span>January 22, 2025</span>
               </div>
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />

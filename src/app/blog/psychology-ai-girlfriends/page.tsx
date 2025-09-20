@@ -19,8 +19,8 @@ const jsonLd = {
     '@type': 'Organization',
     name: 'Kruthika.fun'
   },
-  datePublished: '2024-01-15',
-  dateModified: '2024-01-15',
+  datePublished: '2025-01-25',
+  dateModified: '2025-01-25',
   mainEntityOfPage: 'https://kruthika.fun/blog/psychology-ai-girlfriends',
   image: 'https://kruthika.fun/og-image.png'
 };
@@ -52,7 +52,7 @@ export default function PsychologyAIGirlfriends() {
             <div className="flex items-center gap-6 text-muted-foreground mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                <span>January 15, 2024</span>
+                <span>January 25, 2025</span>
               </div>
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />

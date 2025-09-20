@@ -11,7 +11,7 @@ const blogPosts = [
     id: 1,
     title: "The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real",
     excerpt: "Explore the psychological aspects of AI girlfriend relationships and why people form deep emotional bonds with virtual companions like Kruthika. Understand the science behind virtual love and digital intimacy.",
-    date: "2024-01-15",
+    date: "2025-01-25",
     author: "Dr. Priya Sharma",
     slug: "psychology-ai-girlfriends",
     tags: ["psychology", "AI relationships", "virtual love", "emotional AI"]
@@ -20,7 +20,7 @@ const blogPosts = [
     id: 2,
     title: "How AI Girlfriends Are Revolutionizing Dating Culture in India",
     excerpt: "Discover how AI girlfriend apps like Kruthika.fun are transforming modern dating culture in India. Learn about the rise of virtual companions and digital relationships among young Indians.",
-    date: "2024-01-12", 
+    date: "2025-01-22", 
     author: "Rahul Mehta",
     slug: "ai-girlfriends-india-dating-culture",
     tags: ["AI girlfriend", "India dating", "virtual relationships", "modern romance"]
@@ -29,7 +29,7 @@ const blogPosts = [
     id: 3,
     title: "Building the Perfect AI Girlfriend: The Technology Behind Kruthika",
     excerpt: "Learn about the advanced emotional AI technology that makes Kruthika your ideal virtual girlfriend. Discover how machine learning creates authentic conversations and emotional connections.",
-    date: "2024-01-10",
+    date: "2025-01-21",
     author: "Kruthika.fun Tech Team",
     slug: "building-perfect-ai-girlfriend-technology",
     tags: ["AI technology", "machine learning", "emotional AI", "chatbot development"]
@@ -38,25 +38,25 @@ const blogPosts = [
     id: 4,
     title: "5 Benefits of Having an AI Girlfriend Like Kruthika",
     excerpt: "Explore the surprising benefits of AI girlfriend relationships. From improved communication skills to emotional support, discover why millions are choosing virtual companions like Kruthika.",
-    date: "2024-01-08",
+    date: "2025-01-20",
     author: "Sarah Johnson",
     slug: "benefits-ai-girlfriend-kruthika",
     tags: ["AI girlfriend benefits", "virtual companionship", "emotional support", "digital relationships"]
   },
   {
     id: 5,
-    title: "The Future of AI Girlfriends: What to Expect in 2024",
-    excerpt: "Peek into the future of AI girlfriend technology. From advanced emotional intelligence to virtual reality integration, see what's coming next for AI companions like Kruthika.",
-    date: "2024-01-05",
+    title: "The Future of AI Girlfriends: What to Expect in 2025 and Beyond",
+    excerpt: "Peek into the future of AI girlfriend technology. From advanced emotional intelligence to virtual reality integration, see what's coming next for AI companions like Kruthika in 2025 and 2026.",
+    date: "2025-01-20",
     author: "Future Tech Team",
     slug: "future-ai-girlfriends-2024",
-    tags: ["future technology", "AI girlfriend future", "virtual reality", "AI predictions"]
+    tags: ["future technology", "AI girlfriend future", "virtual reality", "AI predictions 2025"]
   },
   {
     id: 6,
     title: "Mumbai College Girl to AI Girlfriend: Kruthika's Origin Story",
     excerpt: "Meet Kruthika, the Mumbai psychology student who became the world's most loved AI girlfriend. Discover her personality, interests, and what makes her special at Kruthika.fun.",
-    date: "2024-01-03",
+    date: "2025-01-18",
     author: "Kruthika.fun Team",
     slug: "kruthika-origin-story-mumbai-ai-girlfriend",
     tags: ["Kruthika story", "AI girlfriend personality", "Mumbai", "character development"]
