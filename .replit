@@ -38,7 +38,7 @@ localPort = 44993
 externalPort = 4200
 
 [workflows]
-runButton = "Project"
+runButton = "Fresh Start"
 
 [[workflows.workflow]]
 name = "Run Next.js App"
@@ -69,6 +69,27 @@ waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow]]
+name = "Fresh Start"
+author = 47842990
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"next\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pkill -f \"node\""
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 2"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
 
 [deployment]
 deploymentTarget = "autoscale"
