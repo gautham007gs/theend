@@ -34,7 +34,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Performance optimizations for high traffic
+  // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
   compress: true,
@@ -43,9 +43,21 @@ const nextConfig: NextConfig = {
   reactStrictMode: false, // Disable strict mode to prevent double rendering
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
+    emotion: false, // Disable emotion for better performance
   },
-  // Enable static optimization
+  // Enable static optimization and ISR
   output: 'standalone',
+  
+  // Performance optimizations for large scale
+  onDemandEntries: {
+    maxInactiveAge: 60 * 1000, // Keep pages in memory for 60 seconds
+    pagesBufferLength: 5, // Number of pages to buffer
+  },
+  
+  // HTTP/2 Push optimizations
+  httpAgentOptions: {
+    keepAlive: true,
+  },
   modularizeImports: {
     'lucide-react': {
       transform: 'lucide-react/icons/{{kebabCase member}}',
@@ -73,11 +85,13 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    formats: ['image/webp', 'image/avif'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    formats: ['image/avif', 'image/webp'], // AVIF first for better compression
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year for better caching
     dangerouslyAllowSVG: false,
+    loader: 'default',
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: 'https',
