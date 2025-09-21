@@ -67,6 +67,8 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb'
     },
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog'],
+    optimizeCss: true,
+    gzipSize: true,
     turbo: {
       rules: {
         '*.svg': {
