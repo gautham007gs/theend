@@ -102,6 +102,12 @@ const detectUserLanguage = (userMessage: string, recentInteractions: string[]): 
 
 // Analyze conversation context for proper flow - FIXED
 const analyzeConversationContext = (userMessage: string, recentInteractions: string[]) => {
+  // Add validation to prevent undefined errors
+  if (!userMessage || typeof userMessage !== 'string') {
+    console.error('Invalid userMessage provided to analyzeConversationContext:', userMessage);
+    return 'normal_chat'; // Default fallback
+  }
+  
   const msg = userMessage.toLowerCase().trim();
   const lastFewMessages = recentInteractions.slice(-6).join(' ').toLowerCase();
   const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
