@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google'; // Using Inter as a clean, readable font
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { PerformanceMonitor } from "@/components/PerformanceMonitor"; // Import PerformanceMonitor
 // import { Providers } from './providers'; // No longer using the generic Providers component
 import InstagramBrowserPrompt from '@/components/InstagramBrowserPrompt';
 import GlobalAdScripts from '@/components/GlobalAdScripts';
@@ -118,6 +119,7 @@ export default function RootLayout({
                   {children}
                   <SocialBarAdDisplay /> {/* Add SocialBarAdDisplay here */}
                   <Toaster />
+                  <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>

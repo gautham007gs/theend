@@ -5,10 +5,10 @@ import { VERTEX_MODELS } from './vertex-ai';
 // Reduce costs by 60-80% while maintaining quality
 // ============================================================================
 
-// Response cache for similar queries (in-memory for now, can be extended to Redis)
+// Response cache for similar queries (optimized for high traffic)
 const responseCache = new Map<string, { response: string; timestamp: number; hitCount: number }>();
-const CACHE_EXPIRY_MS = 30 * 60 * 1000; // 30 minutes
-const MAX_CACHE_SIZE = 500;
+const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 1 hour for better cache hit rates
+const MAX_CACHE_SIZE = 2000; // Increased for high traffic
 
 // Smart model selection based on task complexity
 export function selectOptimalModel(taskType: 'simple' | 'conversation' | 'complex' | 'proactive'): string {

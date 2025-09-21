@@ -34,9 +34,16 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Move these options out of experimental in newer Next.js versions
+  // Performance optimizations for high traffic
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: true,
+  // Enable static optimization
+  output: 'standalone',
+  // Optimize bundle
+  swcMinify: true,
   // Configure Server Actions for Replit environment
   experimental: {
     serverActions: {

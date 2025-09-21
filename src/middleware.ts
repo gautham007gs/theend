@@ -2,6 +2,46 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Rate limiting for high traffic protection
+const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS_PER_WINDOW = 60; // 60 requests per minute per IP
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const userRate = rateLimitMap.get(ip);
+  
+  if (!userRate) {
+    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    return false;
+  }
+  
+  // Reset if window has passed
+  if (now - userRate.lastReset > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    return false;
+  }
+  
+  // Check if limit exceeded
+  if (userRate.count >= MAX_REQUESTS_PER_WINDOW) {
+    return true;
+  }
+  
+  // Increment count
+  userRate.count++;
+  return false;
+}
+
+// Clean up old entries periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, data] of rateLimitMap.entries()) {
+    if (now - data.lastReset > RATE_LIMIT_WINDOW * 2) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, RATE_LIMIT_WINDOW);
+
 function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
   if (userAgent) {
     // Common patterns for Instagram's in-app browser user agent string
@@ -13,6 +53,17 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 export function middleware(request: NextRequest) {
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
+  
+  // Apply rate limiting to API routes and chat actions
+  if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
+    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
+  }
   
   // For Server Actions and API routes, fix headers and continue
   if (pathname.startsWith('/api/') || request.method === 'POST') {
