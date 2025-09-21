@@ -9,7 +9,6 @@ import GlobalAdScripts from '@/components/GlobalAdScripts';
 import SocialBarAdDisplay from '@/components/SocialBarAdDisplay'; // Import SocialBarAdDisplay
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ResourceHints from '@/components/ResourceHints';
-import LayoutOptimizer from '@/components/LayoutOptimizer';
 import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
@@ -128,7 +127,6 @@ export default function RootLayout({
                   <GlobalAdScripts />
                   <ServiceWorkerRegistration />
                   <ResourceHints />
-                  <LayoutOptimizer />
                   {children}
                   <SocialBarAdDisplay /> {/* Add SocialBarAdDisplay here */}
                   <Toaster />
