@@ -1,13 +1,24 @@
 
 import { GoogleAuth } from 'google-auth-library';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Utility to safely parse and format Google Cloud credentials
 export function parseGoogleCredentials(): any | null {
   try {
-    const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
+    let credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
+    
+    // If standard env var parsing failed, try reading from .env.local directly
+    if (!credentialsJson || credentialsJson.length < 10) {
+      console.log('Credential Utils: Standard env parsing insufficient, reading from .env.local...');
+      const envFileCredentials = readCredentialsFromEnvFile();
+      if (envFileCredentials) {
+        credentialsJson = envFileCredentials;
+      }
+    }
     
     if (!credentialsJson) {
-      console.error('Credential Utils: GOOGLE_CREDENTIALS_JSON not found in environment');
+      console.error('Credential Utils: GOOGLE_CREDENTIALS_JSON not found in environment or .env.local');
       return null;
     }
 
@@ -27,7 +38,18 @@ export function parseGoogleCredentials(): any | null {
     // Handle escaped quotes from environment variables
     cleanedCredentials = cleanedCredentials.replace(/\\"/g, '"');
     
-    // Try to parse directly first (might already be valid)
+    // Try multi-line parsing first (for .env.local format)
+    try {
+      const multiLineParsed = parseMultiLineEnvJson(cleanedCredentials);
+      if (multiLineParsed) {
+        console.log('Credential Utils: Multi-line parsing successful');
+        return multiLineParsed;
+      }
+    } catch (multiLineError) {
+      console.log('Credential Utils: Multi-line parsing failed, trying direct parse...');
+    }
+    
+    // Try to parse directly (might already be valid)
     try {
       const directParse = JSON.parse(cleanedCredentials);
       console.log('Credential Utils: Direct parsing successful');
@@ -268,4 +290,112 @@ export function formatCredentialsForEnv(credentials: any): string {
   }
 }
 
-console.log('Credential Utils: Loaded credential formatting utilities');
+// Enhanced function to read credentials directly from .env.local file
+function readCredentialsFromEnvFile(): string | null {
+  try {
+    const envFilePaths = [
+      path.join(process.cwd(), '.env.local'),
+      path.join(process.cwd(), '.env'),
+      path.join(process.cwd(), '.env.development.local')
+    ];
+    
+    for (const envFilePath of envFilePaths) {
+      if (fs.existsSync(envFilePath)) {
+        console.log(`Credential Utils: Reading from ${envFilePath}`);
+        const fileContent = fs.readFileSync(envFilePath, 'utf8');
+        
+        // Look for GOOGLE_CREDENTIALS_JSON and extract the complete JSON
+        const lines = fileContent.split('\n');
+        let isInCredentials = false;
+        let credentialsLines: string[] = [];
+        let braceCount = 0;
+        
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          
+          // Start collecting when we find GOOGLE_CREDENTIALS_JSON=
+          if (line.startsWith('GOOGLE_CREDENTIALS_JSON=')) {
+            isInCredentials = true;
+            const jsonStart = line.substring('GOOGLE_CREDENTIALS_JSON='.length);
+            credentialsLines.push(jsonStart);
+            
+            // Count braces to know when JSON ends
+            for (const char of jsonStart) {
+              if (char === '{') braceCount++;
+              if (char === '}') braceCount--;
+            }
+            
+            // If complete JSON on one line, break
+            if (braceCount === 0 && jsonStart.includes('}')) {
+              break;
+            }
+            continue;
+          }
+          
+          // Continue collecting lines if we're inside the JSON
+          if (isInCredentials) {
+            credentialsLines.push(line);
+            
+            // Count braces
+            for (const char of line) {
+              if (char === '{') braceCount++;
+              if (char === '}') braceCount--;
+            }
+            
+            // Stop when braces are balanced (JSON is complete)
+            if (braceCount === 0) {
+              break;
+            }
+          }
+        }
+        
+        if (credentialsLines.length > 0) {
+          const fullJson = credentialsLines.join('\n');
+          console.log(`Credential Utils: Extracted ${credentialsLines.length} lines of JSON`);
+          console.log('Credential Utils: Extracted JSON preview:', fullJson.substring(0, 200) + '...');
+          return fullJson;
+        }
+      }
+    }
+    
+    console.error('Credential Utils: No .env file found or GOOGLE_CREDENTIALS_JSON not found in any .env file');
+    return null;
+    
+  } catch (error) {
+    console.error('Credential Utils: Error reading from .env file:', error);
+    return null;
+  }
+}
+
+// Alternative parsing specifically for multi-line JSON from env files
+function parseMultiLineEnvJson(jsonString: string): any | null {
+  try {
+    // Clean and format the multi-line JSON
+    let cleaned = jsonString
+      .trim()
+      // Remove any quotes that wrap the entire JSON (common in some env setups)
+      .replace(/^["']/, '')
+      .replace(/["']$/, '')
+      // Normalize line endings
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      // Remove any trailing commas before closing braces
+      .replace(/,(\s*[}\]])/g, '$1')
+      // Ensure proper spacing around colons
+      .replace(/:\s*/g, ': ')
+      // Remove any extra whitespace
+      .replace(/\n\s*\n/g, '\n');
+    
+    console.log('Credential Utils: Attempting to parse multi-line JSON...');
+    const parsed = JSON.parse(cleaned);
+    
+    console.log('Credential Utils: Multi-line parsing successful');
+    return validateCredentials(parsed);
+    
+  } catch (error) {
+    console.error('Credential Utils: Multi-line parsing failed:', error);
+    return null;
+  }
+}
+
+console.log('Credential Utils: Loaded enhanced credential formatting utilities with .env.local direct reading');
