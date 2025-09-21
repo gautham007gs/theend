@@ -2,14 +2,13 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google'; // Using Inter as a clean, readable font
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import DynamicPerformanceMonitor from "@/components/DynamicPerformanceMonitor"; // Import dynamic PerformanceMonitor
+import { PerformanceMonitor } from "@/components/PerformanceMonitor"; // Import PerformanceMonitor
 // import { Providers } from './providers'; // No longer using the generic Providers component
 import InstagramBrowserPrompt from '@/components/InstagramBrowserPrompt';
 import GlobalAdScripts from '@/components/GlobalAdScripts';
 import SocialBarAdDisplay from '@/components/SocialBarAdDisplay'; // Import SocialBarAdDisplay
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ResourceHints from '@/components/ResourceHints';
-import CriticalPerformanceInit from '@/components/CriticalPerformanceInit';
 import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
@@ -124,7 +123,6 @@ export default function RootLayout({
             <AIProfileProvider>
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
-                  <CriticalPerformanceInit />
                   <InstagramBrowserPrompt />
                   <GlobalAdScripts />
                   <ServiceWorkerRegistration />
@@ -132,7 +130,7 @@ export default function RootLayout({
                   {children}
                   <SocialBarAdDisplay /> {/* Add SocialBarAdDisplay here */}
                   <Toaster />
-                  <DynamicPerformanceMonitor /> {/* Include dynamic PerformanceMonitor here */}
+                  <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>
