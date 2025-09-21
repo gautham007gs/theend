@@ -158,6 +158,10 @@ const nextConfig: NextConfig = {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
+          },
         ],
       },
     ];

@@ -11,69 +11,80 @@ export function parseGoogleCredentials(): any | null {
       return null;
     }
 
+    console.log('Credential Utils: Processing credentials JSON...');
+    console.log('Credential Utils: Raw JSON length:', credentialsJson.length);
+    console.log('Credential Utils: First 100 chars:', credentialsJson.substring(0, 100));
+    
     // Handle different credential formats
-    let cleanedCredentials = credentialsJson;
+    let cleanedCredentials = credentialsJson.trim();
     
-    // Remove any potential prefix/suffix issues
-    cleanedCredentials = cleanedCredentials.trim();
-    
-    // Handle double quotes wrapping
-    if (cleanedCredentials.startsWith('"') && cleanedCredentials.endsWith('"')) {
+    // Remove any wrapping quotes (common in environment variables)
+    if ((cleanedCredentials.startsWith('"') && cleanedCredentials.endsWith('"')) ||
+        (cleanedCredentials.startsWith("'") && cleanedCredentials.endsWith("'"))) {
       cleanedCredentials = cleanedCredentials.slice(1, -1);
     }
     
-    // Handle single quotes wrapping
-    if (cleanedCredentials.startsWith("'") && cleanedCredentials.endsWith("'")) {
-      cleanedCredentials = cleanedCredentials.slice(1, -1);
-    }
-    
-    // Fix escaped quotes
+    // Handle escaped quotes from environment variables
     cleanedCredentials = cleanedCredentials.replace(/\\"/g, '"');
     
-    // Try multiple formatting approaches
-    console.log('Credential Utils: Processing credentials JSON...');
-    
-    // First attempt: Check if it needs basic formatting
-    if (needsJsonFormatting(cleanedCredentials)) {
-      console.log('Credential Utils: Formatting unescaped JSON...');
-      cleanedCredentials = formatUnescapedJson(cleanedCredentials);
-    } else {
-      // Second attempt: Fix escaped newlines in private key
-      cleanedCredentials = cleanedCredentials.replace(/\\\\n/g, '\\n');
-    }
-    
-    // Final safety check: Try to parse and fix common issues
+    // Try to parse directly first (might already be valid)
     try {
-      JSON.parse(cleanedCredentials);
-    } catch (parseError) {
-      console.log('Credential Utils: Standard parsing failed, trying cleanup...');
-      cleanedCredentials = aggressiveJsonCleanup(cleanedCredentials);
+      const directParse = JSON.parse(cleanedCredentials);
+      console.log('Credential Utils: Direct parsing successful');
+      return validateCredentials(directParse);
+    } catch (directError) {
+      console.log('Credential Utils: Direct parsing failed, trying cleanup methods...');
     }
     
-    // Parse the JSON
-    const credentials = JSON.parse(cleanedCredentials);
+    // Method 1: Handle environment variable JSON on single line
+    cleanedCredentials = cleanedCredentials
+      .replace(/\s*\n\s*/g, '') // Remove actual newlines and surrounding whitespace
+      .replace(/\\n/g, '\n')    // Convert escaped newlines back to actual newlines where needed (like in private key)
+      .replace(/\\\//g, '/')    // Fix escaped slashes
+      .replace(/\\t/g, '\t');   // Fix escaped tabs
     
-    // Validate required fields
-    const requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
-    for (const field of requiredFields) {
-      if (!credentials[field]) {
-        console.error(`Credential Utils: Missing required field: ${field}`);
-        return null;
-      }
+    try {
+      const credentials = JSON.parse(cleanedCredentials);
+      console.log('Credential Utils: Single-line cleanup parsing successful');
+      return validateCredentials(credentials);
+    } catch (cleanupError) {
+      console.log('Credential Utils: Single-line cleanup failed, trying comprehensive cleanup...');
     }
     
-    console.log('Credential Utils: Successfully parsed and validated credentials');
-    console.log('Service account email:', credentials.client_email);
-    console.log('Project ID:', credentials.project_id);
+    // Method 2: Comprehensive cleanup for complex cases
+    const comprehensiveClean = comprehensiveJsonCleanup(credentialsJson);
+    try {
+      const credentials = JSON.parse(comprehensiveClean);
+      console.log('Credential Utils: Comprehensive cleanup parsing successful');
+      return validateCredentials(credentials);
+    } catch (comprehensiveError) {
+      console.log('Credential Utils: Comprehensive cleanup failed, trying manual reconstruction...');
+    }
     
-    return credentials;
+    // Method 3: Manual reconstruction from raw string
+    return tryManualReconstruction(credentialsJson);
     
   } catch (error) {
-    console.error('Credential Utils: Error parsing credentials:', error);
-    
-    // Try alternative parsing methods
-    return tryAlternativeParsing();
+    console.error('Credential Utils: All parsing methods failed:', error);
+    return null;
   }
+}
+
+// Validate parsed credentials
+function validateCredentials(credentials: any): any | null {
+  const requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
+  for (const field of requiredFields) {
+    if (!credentials[field]) {
+      console.error(`Credential Utils: Missing required field: ${field}`);
+      return null;
+    }
+  }
+  
+  console.log('Credential Utils: Successfully parsed and validated credentials');
+  console.log('Service account email:', credentials.client_email);
+  console.log('Project ID:', credentials.project_id);
+  
+  return credentials;
 }
 
 // Check if JSON needs formatting (contains unescaped newlines)
@@ -114,13 +125,13 @@ function formatUnescapedJson(jsonString: string): string {
   } catch (error) {
     console.error('Credential Utils: Failed to format JSON:', error);
     // Try a more aggressive approach
-    return aggressiveJsonCleanup(jsonString);
+    return comprehensiveJsonCleanup(jsonString);
   }
 }
 
-// More aggressive JSON cleanup for stubborn cases
-function aggressiveJsonCleanup(jsonString: string): string {
-  let cleaned = jsonString;
+// Comprehensive JSON cleanup for environment variable parsing
+function comprehensiveJsonCleanup(jsonString: string): string {
+  let cleaned = jsonString.trim();
   
   // Remove wrapping quotes if present
   if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
@@ -128,19 +139,75 @@ function aggressiveJsonCleanup(jsonString: string): string {
     cleaned = cleaned.slice(1, -1);
   }
   
-  // Replace all control characters and problematic whitespace
+  // Fix common environment variable issues
   cleaned = cleaned
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')  // Remove control chars
-    .replace(/\r?\n/g, '\\n')  // Convert newlines
-    .replace(/\t/g, '\\t')     // Convert tabs
-    .replace(/\r/g, '\\r')     // Convert carriage returns
-    .replace(/\\/g, '\\\\')    // Escape backslashes
-    .replace(/\\\\n/g, '\\n')  // Fix double-escaped newlines
-    .replace(/\\\\r/g, '\\r')  // Fix double-escaped returns
-    .replace(/\\\\t/g, '\\t')  // Fix double-escaped tabs
-    .replace(/\\\\\\/g, '\\\\'); // Fix triple-escaped backslashes
+    .replace(/\\\\/g, '\\')           // Fix double backslashes
+    .replace(/\\"/g, '"')            // Fix escaped quotes
+    .replace(/\\\//g, '/')           // Fix escaped slashes
+    .replace(/\\t/g, '\t')           // Fix escaped tabs
+    .replace(/\r\n/g, '\n')          // Normalize line endings
+    .replace(/\r/g, '\n')            // Convert old Mac line endings
+    .replace(/\n\s+/g, '\n')         // Remove extra whitespace after newlines
+    .replace(/\s+\n/g, '\n')         // Remove whitespace before newlines
+    .replace(/\n{2,}/g, '\n');       // Remove multiple consecutive newlines
   
   return cleaned;
+}
+
+// Try manual reconstruction when all parsing fails
+function tryManualReconstruction(rawString: string): any | null {
+  try {
+    console.log('Credential Utils: Attempting manual reconstruction...');
+    
+    // Extract key components using regex patterns
+    const patterns = {
+      type: /"type"\s*:\s*"([^"]+)"/,
+      project_id: /"project_id"\s*:\s*"([^"]+)"/,
+      private_key_id: /"private_key_id"\s*:\s*"([^"]+)"/,
+      private_key: /"private_key"\s*:\s*"(-----BEGIN PRIVATE KEY-----[^"]+-----END PRIVATE KEY-----[^"]*)"/,
+      client_email: /"client_email"\s*:\s*"([^"]+)"/,
+      client_id: /"client_id"\s*:\s*"([^"]+)"/,
+      auth_uri: /"auth_uri"\s*:\s*"([^"]+)"/,
+      token_uri: /"token_uri"\s*:\s*"([^"]+)"/,
+      auth_provider_x509_cert_url: /"auth_provider_x509_cert_url"\s*:\s*"([^"]+)"/,
+      client_x509_cert_url: /"client_x509_cert_url"\s*:\s*"([^"]+)"/,
+      universe_domain: /"universe_domain"\s*:\s*"([^"]+)"/
+    };
+    
+    const reconstructed: any = {};
+    
+    for (const [key, pattern] of Object.entries(patterns)) {
+      const match = rawString.match(pattern);
+      if (match && match[1]) {
+        reconstructed[key] = match[1];
+        
+        // Special handling for private key - ensure proper newlines
+        if (key === 'private_key') {
+          reconstructed[key] = reconstructed[key]
+            .replace(/\\n/g, '\n')
+            .replace(/\s+/g, ' ')
+            .replace(/-----BEGIN PRIVATE KEY----- /g, '-----BEGIN PRIVATE KEY-----\n')
+            .replace(/ -----END PRIVATE KEY-----/g, '\n-----END PRIVATE KEY-----')
+            .replace(/([A-Za-z0-9+/=]{64})/g, '$1\n')
+            .replace(/\n+/g, '\n')
+            .trim();
+        }
+      }
+    }
+    
+    console.log('Credential Utils: Manual reconstruction extracted fields:', Object.keys(reconstructed));
+    
+    if (Object.keys(reconstructed).length >= 4) { // At least the required fields
+      return validateCredentials(reconstructed);
+    }
+    
+    console.error('Credential Utils: Manual reconstruction failed - insufficient fields extracted');
+    return null;
+    
+  } catch (error) {
+    console.error('Credential Utils: Manual reconstruction error:', error);
+    return null;
+  }
 }
 
 // Alternative parsing method for edge cases
