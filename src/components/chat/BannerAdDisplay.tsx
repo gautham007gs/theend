@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
+import { registerAdRefresh, unregisterAdRefresh } from '@/lib/ad-refresh-system';
 
 interface BannerAdDisplayProps {
   adType: 'standard' | 'native'; // Specify banner type
@@ -16,8 +17,10 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
+  const [currentNetwork, setCurrentNetwork] = useState<'adsterra' | 'monetag' | null>(null);
   const adContainerRef = useRef<HTMLDivElement>(null);
   const scriptInjectedRef = useRef(false);
+  const adElementId = `banner-ad-${adType}-${placementKey}`;
 
   useEffect(() => {
     if (isLoadingAdSettings || !adSettings || !adSettings.adsEnabledGlobally) {
@@ -30,35 +33,70 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     let selectedAdCode = "";
     let selectedNetworkEnabled = false;
 
+    let selectedNetwork: 'adsterra' | 'monetag' | null = null;
+
     if (adType === 'standard') {
       // Prioritize Adsterra for standard banners if both enabled
       if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode && !adSettings.adsterraBannerCode.toLowerCase().includes("placeholder")) {
         selectedAdCode = adSettings.adsterraBannerCode;
         selectedNetworkEnabled = true;
+        selectedNetwork = 'adsterra';
       } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode && !adSettings.monetagBannerCode.toLowerCase().includes("placeholder")) {
         selectedAdCode = adSettings.monetagBannerCode;
         selectedNetworkEnabled = true;
+        selectedNetwork = 'monetag';
       }
     } else if (adType === 'native') {
       // Prioritize Adsterra for native banners if both enabled
       if (adSettings.adsterraNativeBannerEnabled && adSettings.adsterraNativeBannerCode && !adSettings.adsterraNativeBannerCode.toLowerCase().includes("placeholder")) {
         selectedAdCode = adSettings.adsterraNativeBannerCode;
         selectedNetworkEnabled = true;
+        selectedNetwork = 'adsterra';
       } else if (adSettings.monetagNativeBannerEnabled && adSettings.monetagNativeBannerCode && !adSettings.monetagNativeBannerCode.toLowerCase().includes("placeholder")) {
         selectedAdCode = adSettings.monetagNativeBannerCode;
         selectedNetworkEnabled = true;
+        selectedNetwork = 'monetag';
       }
     }
     
     if (selectedNetworkEnabled && selectedAdCode.trim()) {
       setAdCodeToInject(selectedAdCode);
+      setCurrentNetwork(selectedNetwork);
       setIsVisible(true);
     } else {
       setAdCodeToInject(null);
+      setCurrentNetwork(null);
       setIsVisible(false);
       scriptInjectedRef.current = false;
     }
   }, [adSettings, isLoadingAdSettings, adType]);
+
+  // Set up ad refresh system
+  useEffect(() => {
+    if (isVisible && currentNetwork && adElementId) {
+      // Register for safe ad refresh with network-specific settings
+      registerAdRefresh({
+        adElementId,
+        networkName: currentNetwork,
+        adType: adType === 'standard' ? 'banner' : 'native',
+        maxRefreshesPerHour: currentNetwork === 'adsterra' ? 6 : 8, // Conservative rates
+        respectUserActivity: true, // Only refresh when user is active
+      });
+
+      return () => {
+        unregisterAdRefresh(adElementId);
+      };
+    }
+  }, [isVisible, currentNetwork, adElementId, adType]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (adElementId) {
+        unregisterAdRefresh(adElementId);
+      }
+    };
+  }, [adElementId]);
 
   useEffect(() => {
     // Inject script only when adCodeToInject is set and container is available
@@ -92,6 +130,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
   // container is reused for *different* ad codes frequently.
   return (
     <div
+      id={adElementId}
       ref={adContainerRef}
       className={cn(
         "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden",

@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 // Performance utilities for high traffic scenarios
 export const debounce = <T extends (...args: any[]) => any>(
   func: T,

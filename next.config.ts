@@ -43,7 +43,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: false, // Disable strict mode to prevent double rendering
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
-    emotion: false, // Disable emotion for better performance
   },
   // Enable static optimization and ISR
   output: 'standalone',
