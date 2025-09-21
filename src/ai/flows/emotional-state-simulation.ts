@@ -34,6 +34,9 @@ export interface EmotionalStateOutput {
   newMood?: string;
   newIgnoreUntil?: number; // For client to update localStorage with ignore timing
   busyReason?: string; // For busy state management
+  shouldSendMedia?: boolean; // For media sending logic
+  mediaType?: string; // Type of media to send
+  followUpMessage?: string; // Follow-up message after media
 }
 
 // Enhanced multi-language detection for all major Indian languages

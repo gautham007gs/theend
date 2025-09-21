@@ -68,11 +68,17 @@ const nextConfig: NextConfig = {
       allowedOrigins: [
         "*.replit.dev",
         "*.replit.app", 
+        "*.spock.replit.dev",
         "localhost:5000",
         "0.0.0.0:5000"
       ],
       bodySizeLimit: '2mb'
     },
+    allowedDevOrigins: [
+      "*.replit.dev",
+      "*.replit.app",
+      "*.spock.replit.dev"
+    ],
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog'],
     turbo: {
       rules: {
@@ -158,6 +164,10 @@ const nextConfig: NextConfig = {
           {
             key: 'Access-Control-Allow-Origin',
             value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
           },
           {
             key: 'Access-Control-Allow-Methods',
