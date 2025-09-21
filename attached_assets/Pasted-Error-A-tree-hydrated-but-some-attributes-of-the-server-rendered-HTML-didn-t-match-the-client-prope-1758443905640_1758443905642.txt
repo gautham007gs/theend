@@ -1,0 +1,62 @@
+Error: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload assetPrefix="" globalError={[...]}>
+      <AppDevOverlay state={{nextId:1, ...}} globalError={[...]}>
+        <AppDevOverlayErrorBoundary globalError={[...]} onError={function bound dispatchSetState}>
+          <ReplaySsrOnlyErrors>
+          <DevRootHTTPAccessFallbackBoundary>
+            <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+              <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <Head>
+                    <link>
+                    <script>
+                    <script>
+                    <script>
+                    <script>
+                    <RootLayout>
+                      <html lang="en" suppressHydrationWarning={true}>
+                        <head>
+                          <script>
+                          <script
+                            dangerouslySetInnerHTML={{
++                             __html: "\n              if ('serviceWorker' in navigator) {\n                window.add..."
+-                             __html: ""
+                            }}
+-                           src="/__replco/static/devtools/injected.js"
+-                           onerror={"parent.postMessage({event:'error',payload:'script.onerror: Failed to load '+eve..."}
+                          >
+                          ...
+                        ...
+                    ...
+        ...
+
+    at createUnhandledError (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_client_43e3ffb8._.js:879:71)
+    at handleClientError (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_client_43e3ffb8._.js:1052:56)
+    at console.error (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_client_43e3ffb8._.js:1191:56)
+    at https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:9382:25
+    at runWithFiberInDEV (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:3501:74)
+    at emitPendingHydrationWarnings (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:9381:13)
+    at completeWork (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:9455:102)
+    at runWithFiberInDEV (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:3501:131)
+    at completeUnitOfWork (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10233:23)
+    at performUnitOfWork (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10170:28)
+    at workLoopConcurrentByScheduler (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10164:58)
+    at renderRootConcurrent (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10146:71)
+    at performWorkOnRoot (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:9784:176)
+    at performWorkOnRootViaSchedulerTask (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10796:9)
+    at MessagePort.performWorkUntilDeadline (https://d6fe6753-6299-45ce-8cf0-18ebb102dd8b-00-1phfsovubgyt0.kirk.replit.dev:5000/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:1952:64)
+    at script (<anonymous>)
+    at RootLayout (rsc://React/Server/file:///home/runner/workspace/.next/server/chunks/ssr/%5Broot%20of%20the%20server%5D__d24d76da._.js?1:552:272)
