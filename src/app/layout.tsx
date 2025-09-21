@@ -104,9 +104,23 @@ export default function RootLayout({
           }}
           suppressHydrationWarning
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+                });
+              }
+            `
+          }}
+        />
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#25D366" />
         <link rel="canonical" href="https://kruthika.fun" />
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {/* <Providers> Removed this generic wrapper */}

@@ -8,6 +8,17 @@ interface PerformanceMetrics {
   renderTime: number;
   memoryUsage: number;
   connectionLatency: number;
+  fps: number;
+  largestContentfulPaint: number;
+  firstInputDelay: number;
+  cumulativeLayoutShift: number;
+  timeToInteractive: number;
+}
+
+interface ResourceTiming {
+  name: string;
+  duration: number;
+  size: number;
 }
 
 export function PerformanceMonitor() {
@@ -15,7 +26,7 @@ export function PerformanceMonitor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Collect performance metrics
+    // Enhanced performance metrics collection
     const collectMetrics = () => {
       const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       const memory = (performance as any).memory;
@@ -23,26 +34,98 @@ export function PerformanceMonitor() {
       const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
       const renderTime = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
       const memoryUsage = memory ? memory.usedJSHeapSize / 1024 / 1024 : 0; // MB
+      const timeToInteractive = navigation.loadEventEnd - navigation.fetchStart;
+      
+      // Collect Web Vitals
+      let largestContentfulPaint = 0;
+      let firstInputDelay = 0;
+      let cumulativeLayoutShift = 0;
+      let fps = 0;
+      
+      // LCP
+      const lcpObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        largestContentfulPaint = lastEntry.startTime;
+      });
+      try {
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+      } catch (e) {}
+      
+      // FID
+      const fidObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach((entry: any) => {
+          firstInputDelay = entry.processingStart - entry.startTime;
+        });
+      });
+      try {
+        fidObserver.observe({ entryTypes: ['first-input'] });
+      } catch (e) {}
+      
+      // CLS
+      let clsValue = 0;
+      const clsObserver = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach((entry: any) => {
+          if (!entry.hadRecentInput) {
+            clsValue += entry.value;
+          }
+        });
+        cumulativeLayoutShift = clsValue;
+      });
+      try {
+        clsObserver.observe({ entryTypes: ['layout-shift'] });
+      } catch (e) {}
+      
+      // FPS measurement
+      let frames = 0;
+      let lastTime = performance.now();
+      const measureFPS = () => {
+        frames++;
+        const currentTime = performance.now();
+        if (currentTime >= lastTime + 1000) {
+          fps = Math.round((frames * 1000) / (currentTime - lastTime));
+          frames = 0;
+          lastTime = currentTime;
+        }
+        requestAnimationFrame(measureFPS);
+      };
+      requestAnimationFrame(measureFPS);
       
       // Measure API latency
       const startTime = Date.now();
       fetch('/api/test-vertex', { method: 'HEAD' })
         .then(() => {
           const connectionLatency = Date.now() - startTime;
-          setMetrics({
-            loadTime,
-            renderTime,
-            memoryUsage,
-            connectionLatency
-          });
+          setTimeout(() => {
+            setMetrics({
+              loadTime,
+              renderTime,
+              memoryUsage,
+              connectionLatency,
+              fps,
+              largestContentfulPaint,
+              firstInputDelay,
+              cumulativeLayoutShift,
+              timeToInteractive
+            });
+          }, 2000); // Wait for metrics to populate
         })
         .catch(() => {
-          setMetrics({
-            loadTime,
-            renderTime,
-            memoryUsage,
-            connectionLatency: -1
-          });
+          setTimeout(() => {
+            setMetrics({
+              loadTime,
+              renderTime,
+              memoryUsage,
+              connectionLatency: -1,
+              fps,
+              largestContentfulPaint,
+              firstInputDelay,
+              cumulativeLayoutShift,
+              timeToInteractive
+            });
+          }, 2000);
         });
     };
 
@@ -70,17 +153,48 @@ export function PerformanceMonitor() {
 
   if (!isVisible || !metrics) return null;
 
+  // Performance score calculation
+  const calculateScore = () => {
+    if (!metrics) return 0;
+    let score = 100;
+    
+    // Deduct points for poor metrics
+    if (metrics.largestContentfulPaint > 2500) score -= 20;
+    if (metrics.firstInputDelay > 100) score -= 15;
+    if (metrics.cumulativeLayoutShift > 0.1) score -= 15;
+    if (metrics.connectionLatency > 1000) score -= 10;
+    if (metrics.fps < 30) score -= 10;
+    if (metrics.memoryUsage > 50) score -= 10;
+    
+    return Math.max(0, score);
+  };
+
+  const score = calculateScore();
+  const scoreColor = score >= 90 ? 'text-green-400' : score >= 70 ? 'text-yellow-400' : 'text-red-400';
+
   return (
-    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-xs">
-      <div className="mb-2 font-bold">Performance Metrics</div>
-      <div>Load Time: {metrics.loadTime.toFixed(2)}ms</div>
-      <div>Render Time: {metrics.renderTime.toFixed(2)}ms</div>
-      <div>Memory: {metrics.memoryUsage.toFixed(2)}MB</div>
-      <div>
-        API Latency: {metrics.connectionLatency === -1 ? 'Failed' : `${metrics.connectionLatency}ms`}
+    <div className="fixed bottom-4 right-4 bg-black/90 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-sm backdrop-blur-sm">
+      <div className="mb-3 font-bold flex items-center justify-between">
+        Performance Monitor
+        <span className={`${scoreColor} font-bold`}>Score: {score}</span>
       </div>
-      <div className="mt-2 text-xs opacity-70">
-        Press Ctrl+Shift+P to toggle
+      
+      <div className="grid grid-cols-2 gap-2">
+        <div>Load: {metrics.loadTime.toFixed(0)}ms</div>
+        <div>TTI: {metrics.timeToInteractive.toFixed(0)}ms</div>
+        <div>LCP: {metrics.largestContentfulPaint.toFixed(0)}ms</div>
+        <div>FID: {metrics.firstInputDelay.toFixed(0)}ms</div>
+        <div>CLS: {metrics.cumulativeLayoutShift.toFixed(3)}</div>
+        <div>FPS: {metrics.fps}</div>
+        <div>Memory: {metrics.memoryUsage.toFixed(1)}MB</div>
+        <div>
+          API: {metrics.connectionLatency === -1 ? 'Failed' : `${metrics.connectionLatency}ms`}
+        </div>
+      </div>
+      
+      <div className="mt-3 text-xs opacity-70 border-t border-gray-600 pt-2">
+        <div>Web Vitals: {score >= 90 ? '🟢 Good' : score >= 70 ? '🟡 Needs Work' : '🔴 Poor'}</div>
+        <div>Press Ctrl+Shift+P to toggle</div>
       </div>
     </div>
   );

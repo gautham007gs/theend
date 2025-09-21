@@ -2,34 +2,72 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Rate limiting for high traffic protection
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+// Advanced rate limiting for high traffic protection
+const rateLimitMap = new Map<string, { count: number; lastReset: number; penalties: number }>();
+const slowClientsMap = new Map<string, number>(); // Track slow clients
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 60; // 60 requests per minute per IP
+const MAX_REQUESTS_PER_WINDOW = 100; // Increased for normal traffic
+const MAX_REQUESTS_BURST = 20; // Burst protection
+const SLOW_CLIENT_THRESHOLD = 5000; // 5 seconds for slow responses
+const PENALTY_MULTIPLIER = 0.5; // Reduce limits for repeat offenders
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const userRate = rateLimitMap.get(ip);
   
   if (!userRate) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    rateLimitMap.set(ip, { count: 1, lastReset: now, penalties: 0 });
     return false;
   }
   
   // Reset if window has passed
   if (now - userRate.lastReset > RATE_LIMIT_WINDOW) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
+    rateLimitMap.set(ip, { count: 1, lastReset: now, penalties: userRate.penalties });
     return false;
   }
   
+  // Calculate effective limit based on penalties
+  const effectiveLimit = Math.floor(MAX_REQUESTS_PER_WINDOW * (1 - (userRate.penalties * PENALTY_MULTIPLIER)));
+  
+  // Burst protection - check last 10 seconds
+  const recentWindow = 10 * 1000;
+  if (userRate.count > MAX_REQUESTS_BURST && (now - userRate.lastReset) < recentWindow) {
+    userRate.penalties++;
+    return true;
+  }
+  
   // Check if limit exceeded
-  if (userRate.count >= MAX_REQUESTS_PER_WINDOW) {
+  if (userRate.count >= effectiveLimit) {
+    userRate.penalties++;
     return true;
   }
   
   // Increment count
   userRate.count++;
   return false;
+}
+
+// Track slow clients for adaptive throttling
+function trackResponseTime(ip: string, responseTime: number): void {
+  if (responseTime > SLOW_CLIENT_THRESHOLD) {
+    const currentCount = slowClientsMap.get(ip) || 0;
+    slowClientsMap.set(ip, currentCount + 1);
+  }
+}
+
+// Clean up tracking maps
+function cleanupMaps(): void {
+  const now = Date.now();
+  // Clean rate limit map
+  for (const [ip, data] of rateLimitMap.entries()) {
+    if (now - data.lastReset > RATE_LIMIT_WINDOW * 3) {
+      rateLimitMap.delete(ip);
+    }
+  }
+  // Reset slow clients occasionally
+  if (Math.random() < 0.01) { // 1% chance per request
+    slowClientsMap.clear();
+  }
 }
 
 // Clean up old entries periodically
