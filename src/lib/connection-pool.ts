@@ -9,12 +9,13 @@ const MAX_CACHE_ENTRIES = 1000;
 
 class ConnectionPool {
   private static instance: ConnectionPool;
-  private requestQueue: Array<() => Promise<any>> = [];
+  private requestQueue: Array<{ fn: () => Promise<any>; priority: number }> = [];
   private activeConnections = 0;
-  private readonly maxConnections = 100; // Increased for higher traffic
-  private readonly queueTimeout = 3000; // Reduced timeout
+  private readonly maxConnections = 150; // Further increased for higher traffic
+  private readonly queueTimeout = 2000; // Further reduced timeout
   private batchQueue: Array<{ query: string; resolve: Function; reject: Function }> = [];
   private batchTimer: NodeJS.Timeout | null = null;
+  private readonly priorityLevels = { HIGH: 1, NORMAL: 2, LOW: 3 };
 
   static getInstance(): ConnectionPool {
     if (!ConnectionPool.instance) {
@@ -23,27 +24,38 @@ class ConnectionPool {
     return ConnectionPool.instance;
   }
 
-  async executeQuery<T>(queryFn: () => Promise<T>): Promise<T> {
+  async executeQuery<T>(queryFn: () => Promise<T>, priority: number = this.priorityLevels.NORMAL): Promise<T> {
     if (this.activeConnections >= this.maxConnections) {
-      // Queue the request
+      // Queue the request with priority
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
           reject(new Error('Query timeout: too many concurrent requests'));
         }, this.queueTimeout);
 
-        this.requestQueue.push(async () => {
-          clearTimeout(timeoutId);
-          try {
-            this.activeConnections++;
-            const result = await queryFn();
-            resolve(result);
-          } catch (error) {
-            reject(error);
-          } finally {
-            this.activeConnections--;
-            this.processQueue();
-          }
-        });
+        const queueItem = {
+          fn: async () => {
+            clearTimeout(timeoutId);
+            try {
+              this.activeConnections++;
+              const result = await queryFn();
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            } finally {
+              this.activeConnections--;
+              this.processQueue();
+            }
+          },
+          priority
+        };
+
+        // Insert based on priority
+        const insertIndex = this.requestQueue.findIndex(item => item.priority > priority);
+        if (insertIndex === -1) {
+          this.requestQueue.push(queueItem);
+        } else {
+          this.requestQueue.splice(insertIndex, 0, queueItem);
+        }
       });
     } else {
       this.activeConnections++;
@@ -59,9 +71,10 @@ class ConnectionPool {
 
   private processQueue() {
     if (this.requestQueue.length > 0 && this.activeConnections < this.maxConnections) {
-      const nextQuery = this.requestQueue.shift();
-      if (nextQuery) {
-        nextQuery();
+      // Process highest priority first
+      const nextItem = this.requestQueue.shift();
+      if (nextItem) {
+        nextItem.fn();
       }
     }
   }

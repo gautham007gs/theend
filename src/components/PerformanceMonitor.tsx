@@ -158,13 +158,30 @@ export function PerformanceMonitor() {
     if (!metrics) return 0;
     let score = 100;
     
-    // Deduct points for poor metrics
-    if (metrics.largestContentfulPaint > 2500) score -= 20;
-    if (metrics.firstInputDelay > 100) score -= 15;
-    if (metrics.cumulativeLayoutShift > 0.1) score -= 15;
-    if (metrics.connectionLatency > 1000) score -= 10;
-    if (metrics.fps < 30) score -= 10;
-    if (metrics.memoryUsage > 50) score -= 10;
+    // More precise scoring based on Core Web Vitals
+    if (metrics.largestContentfulPaint > 4000) score -= 30;
+    else if (metrics.largestContentfulPaint > 2500) score -= 20;
+    else if (metrics.largestContentfulPaint > 1500) score -= 10;
+    
+    if (metrics.firstInputDelay > 300) score -= 25;
+    else if (metrics.firstInputDelay > 100) score -= 15;
+    else if (metrics.firstInputDelay > 50) score -= 5;
+    
+    if (metrics.cumulativeLayoutShift > 0.25) score -= 20;
+    else if (metrics.cumulativeLayoutShift > 0.1) score -= 15;
+    else if (metrics.cumulativeLayoutShift > 0.05) score -= 5;
+    
+    if (metrics.connectionLatency > 2000) score -= 15;
+    else if (metrics.connectionLatency > 1000) score -= 10;
+    else if (metrics.connectionLatency > 500) score -= 5;
+    
+    if (metrics.fps < 20) score -= 15;
+    else if (metrics.fps < 30) score -= 10;
+    else if (metrics.fps < 50) score -= 5;
+    
+    if (metrics.memoryUsage > 100) score -= 15;
+    else if (metrics.memoryUsage > 50) score -= 10;
+    else if (metrics.memoryUsage > 25) score -= 5;
     
     return Math.max(0, score);
   };

@@ -7,6 +7,8 @@ import { PerformanceMonitor } from "@/components/PerformanceMonitor"; // Import 
 import InstagramBrowserPrompt from '@/components/InstagramBrowserPrompt';
 import GlobalAdScripts from '@/components/GlobalAdScripts';
 import SocialBarAdDisplay from '@/components/SocialBarAdDisplay'; // Import SocialBarAdDisplay
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import ResourceHints from '@/components/ResourceHints';
 import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
@@ -104,23 +106,16 @@ export default function RootLayout({
           }}
           suppressHydrationWarning
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(error => console.log('SW registration failed'));
-                });
-              }
-            `
-          }}
-        />
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#25D366" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <link rel="canonical" href="https://kruthika.fun" />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://placehold.co" />
+        <link rel="dns-prefetch" href="https://i.imghippo.com" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         {/* <Providers> Removed this generic wrapper */}
@@ -130,6 +125,8 @@ export default function RootLayout({
                 <AIMediaAssetsProvider>
                   <InstagramBrowserPrompt />
                   <GlobalAdScripts />
+                  <ServiceWorkerRegistration />
+                  <ResourceHints />
                   {children}
                   <SocialBarAdDisplay /> {/* Add SocialBarAdDisplay here */}
                   <Toaster />

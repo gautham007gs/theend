@@ -42,8 +42,14 @@ const nextConfig: NextConfig = {
   generateEtags: true,
   // Enable static optimization
   output: 'standalone',
-  // Optimize bundle
-  swcMinify: true,
+  // Bundle optimizations
+  optimizeFonts: true,
+  optimizeImages: true,
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{member}}',
+    },
+  },
   // Configure Server Actions for Replit environment
   experimental: {
     serverActions: {
@@ -54,7 +60,16 @@ const nextConfig: NextConfig = {
         "0.0.0.0:5000"
       ],
       bodySizeLimit: '2mb'
-    }
+    },
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog'],
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
   // Move allowedDevOrigins to root level
   allowedDevOrigins: [
