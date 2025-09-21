@@ -40,6 +40,11 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: true,
+  reactStrictMode: false, // Disable strict mode to prevent double rendering
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   // Enable static optimization
   output: 'standalone',
   // Bundle optimizations
@@ -47,7 +52,7 @@ const nextConfig: NextConfig = {
   optimizeImages: true,
   modularizeImports: {
     'lucide-react': {
-      transform: 'lucide-react/dist/esm/icons/{{member}}',
+      transform: 'lucide-react/icons/{{kebabCase member}}',
     },
   },
   // Configure Server Actions for Replit environment
