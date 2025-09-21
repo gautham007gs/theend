@@ -41,21 +41,17 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   reactStrictMode: false, // Disable strict mode to prevent double rendering
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   // Enable static optimization
   output: 'standalone',
-  // Bundle optimizations
-  optimizeFonts: true,
-  optimizeImages: true,
   modularizeImports: {
     'lucide-react': {
       transform: 'lucide-react/icons/{{kebabCase member}}',
     },
   },
-  // Configure Server Actions for Replit environment
+  // Configure for Replit environment
   experimental: {
     serverActions: {
       allowedOrigins: [
@@ -76,11 +72,6 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  // Move allowedDevOrigins to root level
-  allowedDevOrigins: [
-    "*.replit.dev",
-    "*.replit.app"
-  ],
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
