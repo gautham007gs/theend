@@ -34,7 +34,11 @@ export function PerformanceMonitor() {
       const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
       const renderTime = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
       const memoryUsage = memory ? memory.usedJSHeapSize / 1024 / 1024 : 0; // MB
-      const timeToInteractive = navigation.loadEventEnd - navigation.fetchStart;
+      // More accurate TTI calculation using domContentLoaded for faster measurement
+      const timeToInteractive = Math.min(
+        navigation.domContentLoadedEventEnd - navigation.fetchStart,
+        navigation.loadEventEnd - navigation.fetchStart
+      );
       
       // Collect Web Vitals
       let largestContentfulPaint = 0;
@@ -42,14 +46,20 @@ export function PerformanceMonitor() {
       let cumulativeLayoutShift = 0;
       let fps = 0;
       
-      // LCP
+      // LCP - Enhanced measurement
       const lcpObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
-        const lastEntry = entries[entries.length - 1];
-        largestContentfulPaint = lastEntry.startTime;
+        if (entries.length > 0) {
+          const lastEntry = entries[entries.length - 1];
+          largestContentfulPaint = lastEntry.startTime;
+        }
       });
       try {
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        // Disconnect after load to get final LCP value
+        window.addEventListener('load', () => {
+          setTimeout(() => lcpObserver.disconnect(), 2000);
+        });
       } catch (e) {}
       
       // FID
