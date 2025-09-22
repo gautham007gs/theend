@@ -18,7 +18,7 @@ import { BarChart as RechartsBarChart, CartesianGrid, XAxis, YAxis, Bar } from '
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Terminal, Database, Users, MessageSquare, LogOut, LinkIcon, Settings, ExternalLink, Palette, Info, UserCircle, Globe, ImagePlus, Music2, Trash2, PlusCircle, Edit3, Sparkles, BarChartHorizontalBig, Edit, FileText, RefreshCcw, RotateCcw, Newspaper, LayoutPanelLeft, TrendingUp, ShieldAlert } from "lucide-react"
+import { Terminal, Database, Users, MessageSquare, LogOut, Link, Settings, ExternalLink, Palette, Info, UserCircle, Globe, ImagePlus, Music2, Trash2, PlusCircle, Edit3, Sparkles, BarChartHorizontalBig, Edit, FileText, RefreshCcw, RotateCcw, Newspaper, LayoutPanelLeft, TrendingUp, ShieldAlert } from "lucide-react"
 import { supabase } from '@/lib/supabaseClient';
 import { format, subDays, eachDayOfInterval } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -793,7 +793,7 @@ const AdminProfilePage: React.FC = () => {
               {/* Monetag Settings Group */}
               <Card className="bg-secondary/10 border-border shadow-sm mt-6">
                 <CardHeader className="pb-3 pt-4">
-                    <CardTitle className="text-lg font-semibold text-primary flex items-center"><LinkIcon className="mr-2 h-5 w-5"/>Monetag Settings</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-primary flex items-center"><Link className="mr-2 h-5 w-5"/>Monetag Settings</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-5 px-4 pb-4">
                     {/* Monetag Direct Link */}
