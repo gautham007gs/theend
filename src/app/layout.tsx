@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'; // Using Inter as a clean, readable fo
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor"; // Import PerformanceMonitor
+import ErrorBoundary from "@/components/ErrorBoundary";
 // import { Providers } from './providers'; // No longer using the generic Providers component
 import InstagramBrowserPrompt from '@/components/InstagramBrowserPrompt';
 import GlobalAdScripts from '@/components/GlobalAdScripts';
@@ -118,7 +119,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        {/* <Providers> Removed this generic wrapper */}
+        <ErrorBoundary>
           <AdSettingsProvider>
             <AIProfileProvider>
               <GlobalStatusProvider>
@@ -135,7 +136,7 @@ export default function RootLayout({
               </GlobalStatusProvider>
             </AIProfileProvider>
           </AdSettingsProvider>
-        {/* </Providers> */}
+        </ErrorBoundary>
       </body>
     </html>
   );

@@ -139,7 +139,7 @@ export function PerformanceMonitor() {
     // Show/hide with keyboard shortcut (Ctrl+Shift+P)
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'P') {
-        setIsVisible(!isVisible);
+        setIsVisible(prev => !prev);
       }
     };
 

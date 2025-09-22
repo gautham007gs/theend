@@ -2,7 +2,7 @@
 // src/app/api/test-db/route.ts
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase'; // Our initialized Firestore instance
-import { collection, getDocs, limit } from 'firebase/firestore';
+import { collection, getDocs, limit, query } from 'firebase/firestore';
 
 export async function GET() {
   // This is a simple test to try and read from Firestore.
@@ -25,7 +25,8 @@ export async function GET() {
     // You would need to create this collection and add a document in your Firestore console for this to succeed.
     
     const testColRef = collection(db, '_internal_test_collection_do_not_use_for_prod'); // A dummy collection
-    const querySnapshot = await getDocs(limit(testColRef, 1));
+    const q = query(testColRef, limit(1));
+    const querySnapshot = await getDocs(q);
     
     if (!querySnapshot.empty) {
       return NextResponse.json({ 

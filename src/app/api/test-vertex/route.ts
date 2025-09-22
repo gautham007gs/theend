@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { testVertexAI, generateAIResponse } from '@/ai/vertex-ai';
 
+export async function HEAD() {
+  return new Response(null, { status: 200 });
+}
+
 export async function GET() {
   console.log('Test Vertex AI: Starting test...');
   
