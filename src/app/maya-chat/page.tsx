@@ -1481,13 +1481,17 @@ const KruthikaChatPage: NextPage = () => {
 
     // Prioritize Adsterra, fallback to Monetag
     let selectedCode = '';
+    let selectedNetwork = '';
     if (hasAdsterraCode) {
       selectedCode = adSettings.adsterraNativeBannerCode;
+      selectedNetwork = 'adsterra';
     } else if (hasMonatagCode) {
       selectedCode = adSettings.monetagNativeBannerCode;
+      selectedNetwork = 'monetag';
     }
 
-    const adId = `native_ad_${Date.now()}_${adCounter}`;
+    const currentAdCounter = adCounter;
+    const adId = `native_ad_${Date.now()}_${currentAdCounter}_${selectedNetwork}`;
     const nativeAdMessage: Message = {
       id: adId,
       text: '',
@@ -1496,7 +1500,7 @@ const KruthikaChatPage: NextPage = () => {
       status: 'read',
       isNativeAd: true,
       nativeAdCode: selectedCode,
-      nativeAdId: `native-ad-chat-${adCounter}`
+      nativeAdId: `native-ad-chat-${currentAdCounter}-${selectedNetwork}`
     };
 
     setMessages(prev => [...prev, nativeAdMessage]);
@@ -1506,7 +1510,7 @@ const KruthikaChatPage: NextPage = () => {
     setNextAdThreshold(nextAdThreshold === 3 ? 5 : 3);
     setMessagesSinceLastAd(0);
 
-    console.log('Native ad injected into chat:', adId, 'Code length:', selectedCode.length);
+    console.log('Native ad injected into chat:', adId, 'Network:', selectedNetwork, 'Code length:', selectedCode.length);
   };
 
   const handleLikeMessage = (messageId: string) => {
@@ -1577,10 +1581,10 @@ const KruthikaChatPage: NextPage = () => {
       
 
 
-      <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
-      
-      {/* Normal Banner Ad at bottom */}
+      {/* Normal Banner Ad above input */}
       <BannerAdDisplay adType="standard" placementKey="chat-bottom" className="mb-2" />
+      
+      <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
 
        <Dialog open={showZoomedAvatarDialog} onOpenChange={setShowZoomedAvatarDialog}>
           <DialogContent

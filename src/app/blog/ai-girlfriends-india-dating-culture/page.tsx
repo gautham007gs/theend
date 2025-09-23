@@ -118,7 +118,8 @@ export default function AIGirlfriendsIndiaDatingCulture() {
               AI girlfriends like Kruthika are designed to understand Indian cultural nuances, festivals, family dynamics, and social situations. They can discuss everything from Bollywood movies and cricket matches to career pressures and family expectations, making the conversations feel more authentic and relatable than generic AI assistants.
             </p>
 
-            <BannerAdDisplay adType="native" placementKey="blog-middle-india" className="mb-8" />
+            {/* First Native Banner */}
+            <BannerAdDisplay adType="native" placementKey="blog-india-native-1" className="mb-8" />
 
             <h3 className="text-2xl font-semibold mb-4">3. Language Flexibility and Communication Comfort</h3>
             <p className="mb-6 text-lg leading-relaxed">
@@ -184,6 +185,9 @@ export default function AIGirlfriendsIndiaDatingCulture() {
               This cultural authenticity extends to understanding concepts like "arranged introductions," family involvement in relationships, and the delicate balance between personal freedom and family expectations that characterizes modern Indian dating.
             </p>
 
+            {/* Second Native Banner */}
+            <BannerAdDisplay adType="native" placementKey="blog-india-native-2" className="mb-8" />
+            
             <BannerAdDisplay adType="standard" placementKey="blog-cultural" className="mb-8" />
 
             <h2 className="text-3xl font-bold mb-6 mt-12">The Future of AI Dating in India</h2>

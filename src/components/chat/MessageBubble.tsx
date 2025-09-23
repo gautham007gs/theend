@@ -282,18 +282,35 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           // Clear any existing content
           adRef.current.innerHTML = '';
           
+          // Create a unique timestamp for this ad injection
+          const timestamp = Date.now();
+          
+          // Modify the ad code to include unique identifiers if needed
+          let modifiedAdCode = message.nativeAdCode;
+          
+          // Replace any generic IDs with unique ones based on message ID
+          if (modifiedAdCode.includes('id=')) {
+            modifiedAdCode = modifiedAdCode.replace(/id="([^"]*)"/, `id="$1_${message.id}"`);
+          }
+          
           // Create a fragment and inject the ad code
-          const fragment = document.createRange().createContextualFragment(message.nativeAdCode);
+          const fragment = document.createRange().createContextualFragment(modifiedAdCode);
           adRef.current.appendChild(fragment);
           setAdInjected(true);
+          
+          console.log('Native ad rendered for message:', message.id, 'with container ID:', message.nativeAdId);
         } catch (error) {
           console.error('Error injecting native ad:', error);
-          // Fallback to innerHTML if fragment creation fails
-          adRef.current.innerHTML = message.nativeAdCode;
-          setAdInjected(true);
+          try {
+            // Fallback to innerHTML if fragment creation fails
+            adRef.current.innerHTML = message.nativeAdCode;
+            setAdInjected(true);
+          } catch (fallbackError) {
+            console.error('Fallback ad injection also failed:', fallbackError);
+          }
         }
       }
-    }, [message.nativeAdCode, adInjected]);
+    }, [message.nativeAdCode, message.id, adInjected]);
 
     return (
       <div className="native-ad-container w-full">
@@ -305,7 +322,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         <div 
           ref={adRef}
           className="native-ad-content min-h-[80px]"
-          id={message.nativeAdId}
+          id={message.nativeAdId || `native-ad-${message.id}`}
+          key={`native-ad-${message.id}-${message.timestamp.getTime()}`}
         />
       </div>
     );
