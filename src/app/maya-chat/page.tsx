@@ -1461,8 +1461,30 @@ const KruthikaChatPage: NextPage = () => {
 
   // Function to inject native ad as a chat message
   const injectNativeAdMessage = () => {
-    if (!adSettings || !adSettings.adsEnabledGlobally || !adSettings.adsterraNativeBannerEnabled || !adSettings.adsterraNativeBannerCode) {
+    if (!adSettings || !adSettings.adsEnabledGlobally) {
       return;
+    }
+
+    // Check if native banner is enabled and has valid code
+    const hasAdsterraCode = adSettings.adsterraNativeBannerEnabled && 
+                           adSettings.adsterraNativeBannerCode && 
+                           !adSettings.adsterraNativeBannerCode.toLowerCase().includes('placeholder');
+    
+    const hasMonatagCode = adSettings.monetagNativeBannerEnabled && 
+                          adSettings.monetagNativeBannerCode && 
+                          !adSettings.monetagNativeBannerCode.toLowerCase().includes('placeholder');
+
+    if (!hasAdsterraCode && !hasMonatagCode) {
+      console.log('Native ad injection skipped: No valid native banner code available');
+      return;
+    }
+
+    // Prioritize Adsterra, fallback to Monetag
+    let selectedCode = '';
+    if (hasAdsterraCode) {
+      selectedCode = adSettings.adsterraNativeBannerCode;
+    } else if (hasMonatagCode) {
+      selectedCode = adSettings.monetagNativeBannerCode;
     }
 
     const adId = `native_ad_${Date.now()}_${adCounter}`;
@@ -1473,7 +1495,7 @@ const KruthikaChatPage: NextPage = () => {
       timestamp: new Date(),
       status: 'read',
       isNativeAd: true,
-      nativeAdCode: adSettings.adsterraNativeBannerCode,
+      nativeAdCode: selectedCode,
       nativeAdId: `native-ad-chat-${adCounter}`
     };
 
@@ -1484,7 +1506,7 @@ const KruthikaChatPage: NextPage = () => {
     setNextAdThreshold(nextAdThreshold === 3 ? 5 : 3);
     setMessagesSinceLastAd(0);
 
-    console.log('Native ad injected into chat:', adId);
+    console.log('Native ad injected into chat:', adId, 'Code length:', selectedCode.length);
   };
 
   const handleLikeMessage = (messageId: string) => {
@@ -1556,6 +1578,9 @@ const KruthikaChatPage: NextPage = () => {
 
 
       <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
+      
+      {/* Normal Banner Ad at bottom */}
+      <BannerAdDisplay adType="standard" placementKey="chat-bottom" className="mb-2" />
 
        <Dialog open={showZoomedAvatarDialog} onOpenChange={setShowZoomedAvatarDialog}>
           <DialogContent

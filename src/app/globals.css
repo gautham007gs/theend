@@ -179,28 +179,36 @@ body {
 
 /* Native ad styling in chat */
 .native-ad-container {
-  min-height: 60px;
+  min-height: 80px;
+  width: 100%;
 }
 
 .native-ad-content {
   border-radius: 8px;
   overflow: hidden;
+  min-height: 60px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px;
 }
 
 .native-ad-content * {
   max-width: 100% !important;
-  border-radius: 6px;
+  box-sizing: border-box;
 }
 
 .native-ad-content img {
   border-radius: 6px;
   max-height: 200px;
+  max-width: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .native-ad-content a {
   text-decoration: none;
   color: inherit;
+  display: block;
 }
 
 .native-ad-content a:hover {
@@ -209,18 +217,35 @@ body {
 
 /* Style native ad text content */
 .native-ad-content p,
-.native-ad-content div {
+.native-ad-content div,
+.native-ad-content span {
   font-size: 0.875rem;
   line-height: 1.4;
   margin: 0.25rem 0;
+  color: inherit;
 }
 
-.native-ad-content .ad-title {
+.native-ad-content .ad-title,
+.native-ad-content h1,
+.native-ad-content h2,
+.native-ad-content h3 {
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: inherit;
 }
 
 .native-ad-content .ad-description {
   color: rgb(107 114 128);
   font-size: 0.8rem;
+}
+
+/* Ensure scripts and iframes work */
+.native-ad-content iframe {
+  max-width: 100%;
+  border: none;
+  border-radius: 6px;
+}
+
+.native-ad-content script {
+  display: none;
 }

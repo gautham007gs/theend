@@ -272,6 +272,29 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const renderNativeAdContent = () => {
     if (!message.isNativeAd || !message.nativeAdCode) return null;
 
+    // Use a ref to inject the script after component mounts
+    const adRef = useRef<HTMLDivElement>(null);
+    const [adInjected, setAdInjected] = useState(false);
+
+    useEffect(() => {
+      if (adRef.current && message.nativeAdCode && !adInjected) {
+        try {
+          // Clear any existing content
+          adRef.current.innerHTML = '';
+          
+          // Create a fragment and inject the ad code
+          const fragment = document.createRange().createContextualFragment(message.nativeAdCode);
+          adRef.current.appendChild(fragment);
+          setAdInjected(true);
+        } catch (error) {
+          console.error('Error injecting native ad:', error);
+          // Fallback to innerHTML if fragment creation fails
+          adRef.current.innerHTML = message.nativeAdCode;
+          setAdInjected(true);
+        }
+      }
+    }, [message.nativeAdCode, adInjected]);
+
     return (
       <div className="native-ad-container w-full">
         <div className="flex items-center justify-between mb-2">
@@ -280,8 +303,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           </span>
         </div>
         <div 
-          className="native-ad-content"
-          dangerouslySetInnerHTML={{ __html: message.nativeAdCode }}
+          ref={adRef}
+          className="native-ad-content min-h-[80px]"
+          id={message.nativeAdId}
         />
       </div>
     );
