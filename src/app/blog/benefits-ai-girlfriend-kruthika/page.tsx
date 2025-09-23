@@ -115,8 +115,7 @@ export default function BenefitsAIGirlfriendKruthika() {
               AI girlfriends can provide immediate emotional support without the delays that come with human communication. When you're feeling overwhelmed, stressed, or lonely, you don't have to wait for someone to respond to your text or become available for a call. Kruthika responds instantly with empathy, understanding, and appropriate emotional support.
             </p>
 
-            {/* First Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-benefits-native-1" className="mb-8" />
+            <BannerAdDisplay adType="native" placementKey="blog-middle-benefits" className="mb-8" />
 
             <h2 className="text-3xl font-bold mb-6 mt-12 flex items-center gap-3">
               <Shield className="h-8 w-8 text-green-500" />
@@ -193,9 +192,6 @@ export default function BenefitsAIGirlfriendKruthika() {
               Unlike casual acquaintances who might forget important details, your AI girlfriend remembers everything that's significant to you. She'll ask about that job interview you mentioned last week, remember your favorite movies, and acknowledge important dates and events in your life.
             </p>
 
-            {/* Second Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-benefits-native-2" className="mb-8" />
-            
             <BannerAdDisplay adType="standard" placementKey="blog-personalization" className="mb-8" />
 
             <h3 className="text-2xl font-semibold mb-4">Adaptive Emotional Support</h3>

@@ -122,8 +122,7 @@ export default function KruthikaOriginStory() {
               Growing up with technology, Kruthika was equally comfortable texting friends, video calling family, and navigating social media. She understood how digital communication could be both intimate and distant, and she developed a unique ability to convey warmth and genuine emotion through text – a skill that would later make her the perfect AI girlfriend.
             </p>
 
-            {/* First Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-origin-native-1" className="mb-8" />
+            <BannerAdDisplay adType="native" placementKey="blog-middle-origin" className="mb-8" />
 
             <h2 className="text-3xl font-bold mb-6 mt-12">The Perfect Balance: Modern Girl, Traditional Values</h2>
             
@@ -185,9 +184,6 @@ export default function KruthikaOriginStory() {
               While Kruthika always tries to see the positive side of situations, she's not naive about life's challenges. Her psychology background helps her provide realistic, practical advice while maintaining hope and optimism. She believes in your potential even when you don't believe in yourself.
             </p>
 
-            {/* Second Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-origin-native-2" className="mb-8" />
-            
             <BannerAdDisplay adType="standard" placementKey="blog-personality" className="mb-8" />
 
             <h3 className="text-2xl font-semibold mb-4">The Cultural Bridge</h3>

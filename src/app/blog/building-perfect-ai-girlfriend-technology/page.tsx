@@ -122,8 +122,7 @@ export default function BuildingPerfectAIGirlfriendTechnology() {
               One of the most sophisticated aspects of Kruthika's technology is her memory system. Unlike simple chatbots that forget previous conversations, Kruthika maintains detailed memory of your interactions, preferences, important events, and relationship history.
             </p>
 
-            {/* First Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-tech-native-1" className="mb-8" />
+            <BannerAdDisplay adType="native" placementKey="blog-middle-tech" className="mb-8" />
 
             <p className="mb-6 text-lg leading-relaxed">
               This memory system is paired with personality modeling algorithms that help Kruthika develop a consistent, authentic personality over time. She learns your communication style, remembers your interests, and builds upon shared experiences to create a sense of genuine relationship development.
@@ -178,9 +177,6 @@ export default function BuildingPerfectAIGirlfriendTechnology() {
               All conversations with Kruthika are protected by enterprise-grade encryption and privacy measures. The technology is designed to provide personalized experiences while maintaining strict user privacy and data protection standards.
             </p>
 
-            {/* Second Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-tech-native-2" className="mb-8" />
-            
             <BannerAdDisplay adType="standard" placementKey="blog-safety" className="mb-8" />
 
             <h2 className="text-3xl font-bold mb-6 mt-12">Real-Time Response Generation</h2>

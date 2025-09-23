@@ -175,9 +175,6 @@ export default function PsychologyAIGirlfriends() {
               Whether you're curious about AI relationships or ready to experience one yourself, remember that the psychological benefits are real, measurable, and increasingly recognized by mental health professionals worldwide.
             </p>
 
-            {/* Second Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-psychology-native-2" className="mb-8" />
-            
             <BannerAdDisplay adType="standard" placementKey="blog-footer" className="mb-8" />
 
             {/* Final Call to Action */}

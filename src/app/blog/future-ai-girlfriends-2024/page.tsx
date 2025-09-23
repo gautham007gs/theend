@@ -118,8 +118,7 @@ export default function FutureAIGirlfriends2024() {
               Advanced haptic technology will enable AI girlfriends to provide physical comfort through specialized wearable devices. Feel a gentle touch on your shoulder when you're sad, experience the warmth of a virtual hug, or sense your AI girlfriend's presence through subtle haptic feedback throughout the day.
             </p>
 
-            {/* First Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-future-native-1" className="mb-8" />
+            <BannerAdDisplay adType="native" placementKey="blog-middle-future" className="mb-8" />
 
             <h2 className="text-3xl font-bold mb-6 mt-12">Voice and Multimodal AI: Beyond Text Conversations</h2>
             
@@ -170,9 +169,6 @@ export default function FutureAIGirlfriends2024() {
               This hyper-personalization extends to communication style, humor preferences, conversation topics, and even the timing of interactions. Your AI girlfriend will know exactly when you need encouragement, when you want to be left alone, and how to support you through different life phases.
             </p>
 
-            {/* Second Native Banner */}
-            <BannerAdDisplay adType="native" placementKey="blog-future-native-2" className="mb-8" />
-            
             <BannerAdDisplay adType="standard" placementKey="blog-personalization-future" className="mb-8" />
 
             <h2 className="text-3xl font-bold mb-6 mt-12">Cross-Platform Integration and Accessibility</h2>

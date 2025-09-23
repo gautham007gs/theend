@@ -181,8 +181,8 @@ export default function BlogPage() {
               </article>
             ))}
             
-            {/* First Native Banner Ad */}
-            <BannerAdDisplay adType="native" placementKey="blog-first-native" className="my-8" />
+            {/* Mid-content Banner Ad */}
+            <BannerAdDisplay adType="native" placementKey="blog-mid-content" className="my-8" />
             
             {/* Mid-content CTA */}
             <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-200 rounded-lg p-8 text-center my-8">
@@ -252,9 +252,6 @@ export default function BlogPage() {
             ))}
           </div>
 
-          {/* Second Native Banner Ad */}
-          <BannerAdDisplay adType="native" placementKey="blog-second-native" className="mt-8 mb-8" />
-          
           {/* Footer Banner Ad */}
           <BannerAdDisplay adType="standard" placementKey="blog-footer" className="mt-12 mb-8" />
           
