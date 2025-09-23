@@ -5,7 +5,7 @@ export type MessageReaction = 'heart' | 'thumbs_up' | 'laugh' | 'angry' | 'sad' 
 export interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'ai';
+  sender: 'user' | 'ai' | 'ad';
   timestamp: Date;
   status: MessageStatus;
   aiImageUrl?: string;
@@ -15,6 +15,9 @@ export interface Message {
   isLiked?: boolean;
   deliveredAt?: Date;
   readAt?: Date;
+  isNativeAd?: boolean;
+  nativeAdCode?: string;
+  nativeAdId?: string;
 }
 
 export interface EmotionalStateOutput {

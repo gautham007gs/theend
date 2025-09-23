@@ -23,6 +23,7 @@ interface MessageBubbleProps {
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd }) => {
   const isUser = message.sender === 'user';
+  const isAd = message.sender === 'ad' || message.isNativeAd;
   const timestamp = new Date(message.timestamp);
   
   // Swipe gesture state
@@ -66,7 +67,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (isUser) return; // Only allow swiping on AI messages
+    if (isUser || isAd) return; // Only allow swiping on AI messages (not user or ad messages)
     
     // Prevent starting swipe if another message is already being swiped
     if (currentlySwipingMessageId && currentlySwipingMessageId !== message.id) {
@@ -268,7 +269,29 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   };
 
 
+  const renderNativeAdContent = () => {
+    if (!message.isNativeAd || !message.nativeAdCode) return null;
+
+    return (
+      <div className="native-ad-container w-full">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-muted-foreground font-medium bg-muted/30 px-2 py-1 rounded-full">
+            Sponsored
+          </span>
+        </div>
+        <div 
+          className="native-ad-content"
+          dangerouslySetInnerHTML={{ __html: message.nativeAdCode }}
+        />
+      </div>
+    );
+  };
+
   const renderMessageContent = () => {
+    if (message.isNativeAd) {
+      return renderNativeAdContent();
+    }
+
     if (message.sender === 'ai' && message.text.includes("[CLICKABLE_AD_LINK text='")) {
       const parts = [];
       let lastIndex = 0;
@@ -304,9 +327,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
   return (
     <div className={cn('flex w-full relative', isUser ? 'justify-end' : 'justify-start')}>
-      <div className="flex items-end max-w-[75%] sm:max-w-[65%] relative"
+      <div className={cn(
+        "flex items-end relative",
+        isAd ? "max-w-[85%] sm:max-w-[80%]" : "max-w-[75%] sm:max-w-[65%]"
+      )}
            ref={bubbleRef}>
-        {!isUser && (
+        {!isUser && !isAd && (
           <Avatar 
             className="h-8 w-8 mr-2 self-end shrink-0"
             key={`ai-msg-avatar-comp-${message.id}-${aiAvatarUrlToUse || 'default_avatar_comp_key_mb'}`}
@@ -320,6 +346,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             />
             <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
+        )}
+        {isAd && (
+          <div className="h-8 w-8 mr-2 self-end shrink-0 flex items-center justify-center bg-blue-500/20 text-blue-600 rounded-full text-xs font-medium">
+            Ad
+          </div>
         )}
         {/* Enhanced WhatsApp-like reply icon that appears during swipe */}
         {!isUser && swipeOffset > 15 && (
@@ -344,16 +375,18 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
             isUser
               ? 'bg-chat-bg-user text-chat-text-user rounded-lg rounded-br-sm'
+              : isAd
+              ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
               : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
           )}
           style={{ 
-            transform: !isUser ? `translateX(${swipeOffset}px)` : 'none',
+            transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
             transition: isDragging ? 'none' : 'transform 0.2s ease-out'
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          onClick={handleTap}
+          onClick={!isAd ? handleTap : undefined}
         >
           {isValidImageSrc && imageToShowUrl && (
             <Image
@@ -374,17 +407,26 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             </audio>
           )}
           {renderMessageContent()}
-          <div className="flex items-center justify-end mt-1">
-            <span className={cn('text-xs',
-              isUser ? 'text-chat-text-user/70' : 'text-muted-foreground/90'
-            )}>
-              {formatTime(timestamp)}
-            </span>
-            {renderTicks(message.status)}
-            {message.isLiked && (
-              <Heart className="h-3 w-3 text-red-500 ml-1 fill-current" />
-            )}
-          </div>
+          {!isAd && (
+            <div className="flex items-center justify-end mt-1">
+              <span className={cn('text-xs',
+                isUser ? 'text-chat-text-user/70' : 'text-muted-foreground/90'
+              )}>
+                {formatTime(timestamp)}
+              </span>
+              {renderTicks(message.status)}
+              {message.isLiked && (
+                <Heart className="h-3 w-3 text-red-500 ml-1 fill-current" />
+              )}
+            </div>
+          )}
+          {isAd && (
+            <div className="flex items-center justify-center mt-2">
+              <span className="text-xs text-muted-foreground/60">
+                Advertisement
+              </span>
+            </div>
+          )}
           
           {/* Heart animation overlay for double-tap */}
           {showHeartAnimation && !isUser && (
@@ -401,7 +443,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         </div>
         
         {/* Enhanced Quick Reply Options with WhatsApp-like styling */}
-        {showQuickReplies && !isUser && (
+        {showQuickReplies && !isUser && !isAd && (
           <div className="absolute top-full left-0 mt-2 flex flex-wrap gap-2 bg-background/98 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-border/50 z-20 max-w-[300px] animate-in slide-in-from-left-2 fade-in-0 duration-200">
             <div className="flex items-center gap-1 mb-2 w-full">
               <Reply className="h-3 w-3 text-muted-foreground" />

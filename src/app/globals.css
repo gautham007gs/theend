@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -58,17 +57,17 @@ body {
     /* Chat specific variables reflecting the new theme */
     --chat-bg-user: 98 55% 88%; /* Light green for user messages e.g. #DDF7C7 (hsl(98, 55%, 88%)) */
     --chat-text-user: 0 0% 10%; /* Dark Grey/Black text on user messages */
-    
+
     --chat-bg-ai: 0 0% 97%; /* WhatsApp AI/other person bubble: Very light grey/off-white (e.g. #F7F7F7) */
     --chat-text-ai: 0 0% 15%; /* Dark text for AI messages on light background */
-    
+
     /* This is the background for the chat message viewing area (ChatView.tsx) */
     /* It's a light beige, suitable to go under a doodle pattern if you add one. */
     --chat-bg-default: 48 33% 92%; /* Lighter beige for chat area background - e.g. #F2EDE4 */
-    
+
     --chat-header-bg: 0 0% 98%; /* Whitish background for in-chat header */
     --chat-header-text: hsl(var(--foreground)); /* Dark text on in-chat header */
-    
+
     --chat-input-bg: 0 0% 96%; /* Light grey/off-white for input area */
   }
 
@@ -111,13 +110,13 @@ body {
 
     --chat-bg-ai: 220 10% 20%; /* WhatsApp AI/other person bubble: Dark grey (e.g. #2E3033) */
     --chat-text-ai: 0 0% 90%; /* Light text for AI messages on dark background */
-    
+
     /* This is the background for the chat message viewing area in dark mode */
     --chat-bg-default: 220 13% 12%; /* Darker grey for chat area background */
-    
+
     --chat-header-bg: 220 13% 18%; /* Darker background for in-chat header in dark mode */
     --chat-header-text: hsl(var(--foreground)); /* Light text for in-chat header in dark mode */
-    
+
     --chat-input-bg: 220 13% 16%; 
   }
 }
@@ -157,4 +156,71 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--accent) / 0.9); /* Uses accent color for hover */
 }
-    
+
+/* Performance optimizations */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(155, 155, 155, 0.5);
+  border-radius: 20px;
+  border: transparent;
+}
+
+/* Native ad styling in chat */
+.native-ad-container {
+  min-height: 60px;
+}
+
+.native-ad-content {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.native-ad-content * {
+  max-width: 100% !important;
+  border-radius: 6px;
+}
+
+.native-ad-content img {
+  border-radius: 6px;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.native-ad-content a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.native-ad-content a:hover {
+  opacity: 0.8;
+}
+
+/* Style native ad text content */
+.native-ad-content p,
+.native-ad-content div {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0.25rem 0;
+}
+
+.native-ad-content .ad-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.native-ad-content .ad-description {
+  color: rgb(107 114 128);
+  font-size: 0.8rem;
+}

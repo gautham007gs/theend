@@ -449,6 +449,11 @@ const KruthikaChatPage: NextPage = () => {
   const initialLoadComplete = useRef(false);
   const [isLoadingChatState, setIsLoadingChatState] = useState(true);
 
+  // Native ad injection state
+  const [messagesSinceLastAd, setMessagesSinceLastAd] = useState(0);
+  const [nextAdThreshold, setNextAdThreshold] = useState(3); // First ad after 3 messages
+  const [adCounter, setAdCounter] = useState(0);
+
   const [messageCountSinceLastAd, setMessageCountSinceLastAd] = useState(0);
   const [showInterstitialAd, setShowInterstitialAd] = useState(false);
   const [interstitialAdMessage, setInterstitialAdMessage] = useState("Loading content...");
@@ -889,6 +894,18 @@ const KruthikaChatPage: NextPage = () => {
     setMessages(prev => [...prev, newUserMessage]);
     if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
 
+    // Check if we should inject a native ad
+    setMessagesSinceLastAd(prev => {
+      const newCount = prev + 1;
+      if (newCount >= nextAdThreshold && adSettings && adSettings.adsEnabledGlobally) {
+        // Use setTimeout to inject ad after current message is processed
+        setTimeout(() => {
+          injectNativeAdMessage();
+        }, 100);
+      }
+      return newCount;
+    });
+
     // Update last user message time for proactive messaging
     setLastUserMessageTime(Date.now());
 
@@ -1075,6 +1092,19 @@ const KruthikaChatPage: NextPage = () => {
         const readReceiptDelay = Math.random() * 3000 + 1000; // 1-4 seconds delay
         scheduleReadReceipt(newUserMessage.id, readReceiptDelay);
         if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
+        
+        // Count AI messages for ad injection too
+        setMessagesSinceLastAd(prev => {
+          const newCount = prev + 1;
+          if (newCount >= nextAdThreshold && adSettings && adSettings.adsEnabledGlobally) {
+            // Use setTimeout to inject ad after current message is processed
+            setTimeout(() => {
+              injectNativeAdMessage();
+            }, 100);
+          }
+          return newCount;
+        });
+
         setRecentInteractions(prevInteractions => [...prevInteractions, `AI: ${responseText}`].slice(-10));
         await logAiMessageToSupabase(responseText, newAiMessageId, false, false);
       };
@@ -1429,6 +1459,34 @@ const KruthikaChatPage: NextPage = () => {
     });
   };
 
+  // Function to inject native ad as a chat message
+  const injectNativeAdMessage = () => {
+    if (!adSettings || !adSettings.adsEnabledGlobally || !adSettings.adsterraNativeBannerEnabled || !adSettings.adsterraNativeBannerCode) {
+      return;
+    }
+
+    const adId = `native_ad_${Date.now()}_${adCounter}`;
+    const nativeAdMessage: Message = {
+      id: adId,
+      text: '',
+      sender: 'ad' as any, // Special sender type for ads
+      timestamp: new Date(),
+      status: 'read',
+      isNativeAd: true,
+      nativeAdCode: adSettings.adsterraNativeBannerCode,
+      nativeAdId: `native-ad-chat-${adCounter}`
+    };
+
+    setMessages(prev => [...prev, nativeAdMessage]);
+    setAdCounter(prev => prev + 1);
+    
+    // Set next threshold (alternating between 3 and 5 messages)
+    setNextAdThreshold(nextAdThreshold === 3 ? 5 : 3);
+    setMessagesSinceLastAd(0);
+
+    console.log('Native ad injected into chat:', adId);
+  };
+
   const handleLikeMessage = (messageId: string) => {
     setMessages(prev => prev.map(msg =>
       msg.id === messageId ? { ...msg, isLiked: !msg.isLiked } : msg
@@ -1494,11 +1552,7 @@ const KruthikaChatPage: NextPage = () => {
         />
       )}
 
-      <BannerAdDisplay adType="standard" placementKey="chatViewBottomStandard" className="mx-auto w-full max-w-md" />
-
-      <div className="my-1 mx-auto w-full max-w-md">
-        <BannerAdDisplay adType="native" placementKey="chatViewBottomNative" />
-      </div>
+      
 
 
       <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
