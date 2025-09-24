@@ -208,7 +208,7 @@ export function analyzeTaskComplexity(userMessage: string, hasContext: boolean =
   return 'conversation';
 }
 
-// Get cache statistics
+// Get cache statistics with cost savings
 export function getCacheStats() {
   const now = Date.now();
   const activeEntries = Array.from(responseCache.values()).filter(
@@ -218,12 +218,19 @@ export function getCacheStats() {
   const totalHits = activeEntries.reduce((sum, entry) => sum + entry.hitCount, 0);
   const hitRate = responseCache.size > 0 ? (totalHits / responseCache.size) : 0;
   
+  // Estimate cost savings from caching
+  const avgResponseLength = 30; // tokens
+  const costPerCacheHit = (avgResponseLength / 1000000) * 0.60; // $0.60 per M output tokens
+  const totalSavings = totalHits * costPerCacheHit;
+  
   return {
     totalEntries: responseCache.size,
     activeEntries: activeEntries.length,
     totalHits,
     hitRate: Math.round(hitRate * 100) / 100,
-    cacheSize: responseCache.size
+    cacheSize: responseCache.size,
+    estimatedSavings: Math.round(totalSavings * 100) / 100,
+    costPerHit: Math.round(costPerCacheHit * 100000) / 100000
   };
 }
 
