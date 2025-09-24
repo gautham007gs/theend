@@ -30,6 +30,10 @@ localPort = 36453
 externalPort = 6000
 
 [[ports]]
+localPort = 38643
+externalPort = 8000
+
+[[ports]]
 localPort = 42691
 externalPort = 3001
 
@@ -46,7 +50,7 @@ localPort = 44993
 externalPort = 4200
 
 [workflows]
-runButton = "Dev Server"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Run Next.js App"
@@ -70,13 +74,13 @@ args = "Frontend"
 name = "Frontend"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[workflows.workflow]]
 name = "Dev Server"
