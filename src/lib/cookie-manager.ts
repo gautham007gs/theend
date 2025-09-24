@@ -1,0 +1,221 @@
+
+// Enhanced Cookie Management for AI Girlfriend Experience
+export interface CookiePreferences {
+  necessary: boolean;
+  analytics: boolean;
+  advertising: boolean;
+  personalization: boolean;
+  aiLearning: boolean; // New: AI behavior learning
+  intimacyLevel: boolean; // New: Intimate conversation tracking
+}
+
+export interface UserBehaviorCookies {
+  // Anonymized user preferences
+  preferredChatStyle: 'casual' | 'romantic' | 'flirty' | 'supportive';
+  conversationTopics: string[];
+  activeHours: string; // When user is most active
+  responseSpeedPreference: 'instant' | 'natural' | 'slow';
+  
+  // Relationship progression
+  relationshipStage: 'new' | 'getting_to_know' | 'close' | 'intimate';
+  trustLevel: number; // 1-10 scale
+  
+  // AI learning data (anonymized)
+  favoriteGreetings: string[];
+  preferredEmojis: string[];
+  communicationStyle: string;
+}
+
+export class CookieManager {
+  private static readonly DOMAIN = typeof window !== 'undefined' ? window.location.hostname : '';
+  
+  // Cookie categories with expiry times
+  private static readonly COOKIE_CONFIG = {
+    necessary: { expiry: 365, sameSite: 'Lax' as const },
+    analytics: { expiry: 90, sameSite: 'Lax' as const },
+    advertising: { expiry: 30, sameSite: 'None' as const, secure: true },
+    personalization: { expiry: 180, sameSite: 'Lax' as const },
+    aiLearning: { expiry: 365, sameSite: 'Lax' as const },
+    intimacyLevel: { expiry: 30, sameSite: 'Strict' as const, secure: true }
+  };
+
+  // Set cookie with proper configuration
+  static setCookie(name: string, value: string, category: keyof typeof this.COOKIE_CONFIG): void {
+    if (typeof window === 'undefined') return;
+    
+    const config = this.COOKIE_CONFIG[category];
+    const date = new Date();
+    date.setTime(date.getTime() + (config.expiry * 24 * 60 * 60 * 1000));
+    
+    let cookieString = `${name}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
+    
+    if (config.sameSite) {
+      cookieString += `; SameSite=${config.sameSite}`;
+    }
+    
+    if (config.secure) {
+      cookieString += `; Secure`;
+    }
+    
+    document.cookie = cookieString;
+    
+    console.log(`Cookie set: ${name} (${category}) - expires in ${config.expiry} days`);
+  }
+
+  // Get cookie value
+  static getCookie(name: string): string | null {
+    if (typeof window === 'undefined') return null;
+    
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) {
+        return decodeURIComponent(c.substring(nameEQ.length, c.length));
+      }
+    }
+    return null;
+  }
+
+  // AI-specific cookie management
+  static setAIPreference(key: keyof UserBehaviorCookies, value: any): void {
+    const preferences = this.getConsentPreferences();
+    
+    if (preferences?.aiLearning) {
+      this.setCookie(`ai_${key}`, JSON.stringify(value), 'aiLearning');
+    }
+  }
+
+  static getAIPreference(key: keyof UserBehaviorCookies): any {
+    const cookieValue = this.getCookie(`ai_${key}`);
+    return cookieValue ? JSON.parse(cookieValue) : null;
+  }
+
+  // Relationship progression tracking
+  static updateRelationshipStage(stage: UserBehaviorCookies['relationshipStage']): void {
+    const preferences = this.getConsentPreferences();
+    
+    if (preferences?.personalization) {
+      this.setCookie('relationship_stage', stage, 'personalization');
+      
+      // Update AI behavior based on relationship stage
+      this.setCookie('ai_intimacy_allowed', 
+        stage === 'close' || stage === 'intimate' ? 'true' : 'false', 
+        'intimacyLevel'
+      );
+    }
+  }
+
+  // Get user's consent preferences
+  static getConsentPreferences(): CookiePreferences | null {
+    const consent = localStorage.getItem('kruthika_cookie_consent_v2');
+    return consent ? JSON.parse(consent) : null;
+  }
+
+  // Advanced analytics for ad optimization
+  static trackAdInteraction(adType: string, action: 'view' | 'click' | 'close'): void {
+    const preferences = this.getConsentPreferences();
+    
+    if (preferences?.advertising) {
+      const adData = this.getCookie('ad_interactions') || '{}';
+      const interactions = JSON.parse(adData);
+      
+      if (!interactions[adType]) interactions[adType] = {};
+      interactions[adType][action] = (interactions[adType][action] || 0) + 1;
+      
+      this.setCookie('ad_interactions', JSON.stringify(interactions), 'advertising');
+    }
+  }
+
+  // Chat behavior optimization
+  static updateChatPreferences(messageCount: number, responseTime: number): void {
+    const preferences = this.getConsentPreferences();
+    
+    if (preferences?.personalization) {
+      // Track optimal response timing
+      const avgResponseTime = this.getCookie('avg_response_time') || '2000';
+      const newAvg = (parseInt(avgResponseTime) + responseTime) / 2;
+      
+      this.setCookie('avg_response_time', newAvg.toString(), 'personalization');
+      
+      // Update chat style preference based on message patterns
+      if (messageCount > 10) {
+        const currentStyle = this.getCookie('chat_style') || 'casual';
+        // Logic to detect if user prefers romantic vs casual based on message analysis
+        this.setCookie('chat_style', currentStyle, 'personalization');
+      }
+    }
+  }
+
+  // Revenue optimization for ads
+  static getOptimalAdTiming(): number {
+    const preferences = this.getConsentPreferences();
+    if (!preferences?.advertising) return 30000; // Default 30 seconds
+    
+    const userActiveHours = this.getCookie('active_hours');
+    const currentHour = new Date().getHours();
+    
+    // Return optimal ad display timing based on user activity
+    if (userActiveHours && userActiveHours.includes(currentHour.toString())) {
+      return 20000; // More frequent during active hours
+    }
+    
+    return 45000; // Less frequent during inactive hours
+  }
+
+  // Clean expired cookies
+  static cleanupExpiredCookies(): void {
+    // This would run periodically to remove old cookies
+    const allCookies = document.cookie.split(';');
+    
+    allCookies.forEach(cookie => {
+      const [name] = cookie.trim().split('=');
+      if (name.startsWith('kruthika_expired_')) {
+        this.deleteCookie(name);
+      }
+    });
+  }
+
+  private static deleteCookie(name: string): void {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
+}
+
+// Usage examples for AI girlfriend app
+export const AIGirlfriendCookies = {
+  // Initialize user relationship
+  initializeNewUser(): void {
+    CookieManager.setAIPreference('relationshipStage', 'new');
+    CookieManager.setAIPreference('trustLevel', 1);
+    CookieManager.setAIPreference('preferredChatStyle', 'casual');
+  },
+
+  // Update based on conversation analysis
+  updateFromConversation(messageLength: number, topics: string[], sentiment: string): void {
+    // Update conversation topics
+    const existingTopics = CookieManager.getAIPreference('conversationTopics') || [];
+    const updatedTopics = [...new Set([...existingTopics, ...topics])].slice(-10); // Keep last 10 topics
+    
+    CookieManager.setAIPreference('conversationTopics', updatedTopics);
+    
+    // Update chat style based on message length and sentiment
+    if (messageLength > 50 && sentiment === 'romantic') {
+      CookieManager.setAIPreference('preferredChatStyle', 'romantic');
+    }
+  },
+
+  // Get personalized AI behavior
+  getPersonalizedBehavior(): Partial<UserBehaviorCookies> {
+    return {
+      preferredChatStyle: CookieManager.getAIPreference('preferredChatStyle'),
+      relationshipStage: CookieManager.getAIPreference('relationshipStage'),
+      trustLevel: CookieManager.getAIPreference('trustLevel'),
+      conversationTopics: CookieManager.getAIPreference('conversationTopics'),
+      responseSpeedPreference: CookieManager.getAIPreference('responseSpeedPreference')
+    };
+  }
+};
+
+console.log('Cookie Manager: Advanced AI girlfriend cookie system loaded');

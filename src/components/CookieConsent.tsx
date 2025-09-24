@@ -58,7 +58,9 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
       necessary: true,
       analytics: true,
       advertising: true,
-      personalization: true
+      personalization: true,
+      aiLearning: true,
+      intimacyLevel: true
     });
   };
 
@@ -67,7 +69,9 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
       necessary: true,
       analytics: false,
       advertising: false,
-      personalization: false
+      personalization: false,
+      aiLearning: false,
+      intimacyLevel: false
     });
   };
 
@@ -143,6 +147,14 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
             <div className="flex justify-between items-center py-0.5">
               <span>❤️ Personalization</span>
               <span className="text-muted-foreground hidden sm:inline">Customized experience</span>
+            </div>
+            <div className="flex justify-between items-center py-0.5">
+              <span>🧠 AI Learning</span>
+              <span className="text-muted-foreground hidden sm:inline">Better conversations</span>
+            </div>
+            <div className="flex justify-between items-center py-0.5">
+              <span>💕 Relationship Memory</span>
+              <span className="text-muted-foreground hidden sm:inline">Remember our bond</span>
             </div>
           </div>
 
