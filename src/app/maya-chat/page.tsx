@@ -449,10 +449,9 @@ const KruthikaChatPage: NextPage = () => {
   const initialLoadComplete = useRef(false);
   const [isLoadingChatState, setIsLoadingChatState] = useState(true);
 
-  // Native ad injection state
+  // Native ad injection state - single ad after 3 messages
   const [messagesSinceLastAd, setMessagesSinceLastAd] = useState(0);
-  const [nextAdThreshold, setNextAdThreshold] = useState(3); // First ad after 3 messages
-  const [adCounter, setAdCounter] = useState(0);
+  const [hasShownNativeAd, setHasShownNativeAd] = useState(false);
 
   const [messageCountSinceLastAd, setMessageCountSinceLastAd] = useState(0);
   const [showInterstitialAd, setShowInterstitialAd] = useState(false);
@@ -894,10 +893,10 @@ const KruthikaChatPage: NextPage = () => {
     setMessages(prev => [...prev, newUserMessage]);
     if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
 
-    // Check if we should inject a native ad
+    // Check if we should inject a native ad (only once after 3 messages)
     setMessagesSinceLastAd(prev => {
       const newCount = prev + 1;
-      if (newCount >= nextAdThreshold && adSettings && adSettings.adsEnabledGlobally) {
+      if (newCount >= 3 && !hasShownNativeAd && adSettings && adSettings.adsEnabledGlobally) {
         // Use setTimeout to inject ad after current message is processed
         setTimeout(() => {
           injectNativeAdMessage();
@@ -1093,10 +1092,10 @@ const KruthikaChatPage: NextPage = () => {
         scheduleReadReceipt(newUserMessage.id, readReceiptDelay);
         if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
         
-        // Count AI messages for ad injection too
+        // Count AI messages for ad injection (single occurrence only)
         setMessagesSinceLastAd(prev => {
           const newCount = prev + 1;
-          if (newCount >= nextAdThreshold && adSettings && adSettings.adsEnabledGlobally) {
+          if (newCount >= 3 && !hasShownNativeAd && adSettings && adSettings.adsEnabledGlobally) {
             // Use setTimeout to inject ad after current message is processed
             setTimeout(() => {
               injectNativeAdMessage();
@@ -1459,9 +1458,9 @@ const KruthikaChatPage: NextPage = () => {
     });
   };
 
-  // Function to inject native ad as a chat message
+  // Function to inject native ad as a chat message (single occurrence only)
   const injectNativeAdMessage = () => {
-    if (!adSettings || !adSettings.adsEnabledGlobally) {
+    if (!adSettings || !adSettings.adsEnabledGlobally || hasShownNativeAd) {
       return;
     }
 
@@ -1487,7 +1486,7 @@ const KruthikaChatPage: NextPage = () => {
       selectedCode = adSettings.monetagNativeBannerCode;
     }
 
-    const adId = `native_ad_${Date.now()}_${adCounter}`;
+    const adId = `native_ad_${Date.now()}`;
     const nativeAdMessage: Message = {
       id: adId,
       text: '',
@@ -1496,17 +1495,14 @@ const KruthikaChatPage: NextPage = () => {
       status: 'read',
       isNativeAd: true,
       nativeAdCode: selectedCode,
-      nativeAdId: `native-ad-chat-${adCounter}`
+      nativeAdId: `native-ad-chat-single`
     };
 
     setMessages(prev => [...prev, nativeAdMessage]);
-    setAdCounter(prev => prev + 1);
-    
-    // Set next threshold (alternating between 3 and 5 messages)
-    setNextAdThreshold(nextAdThreshold === 3 ? 5 : 3);
+    setHasShownNativeAd(true); // Mark that we've shown the native ad
     setMessagesSinceLastAd(0);
 
-    console.log('Native ad injected into chat:', adId, 'Code length:', selectedCode.length);
+    console.log('Native ad injected into chat (single occurrence):', adId, 'Code length:', selectedCode.length);
   };
 
   const handleLikeMessage = (messageId: string) => {
@@ -1577,10 +1573,10 @@ const KruthikaChatPage: NextPage = () => {
       
 
 
-      <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
-      
-      {/* Normal Banner Ad at bottom */}
+      {/* Normal Banner Ad above input */}
       <BannerAdDisplay adType="standard" placementKey="chat-bottom" className="mb-2" />
+      
+      <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
 
        <Dialog open={showZoomedAvatarDialog} onOpenChange={setShowZoomedAvatarDialog}>
           <DialogContent
