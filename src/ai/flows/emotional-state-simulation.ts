@@ -34,6 +34,8 @@ export interface EmotionalStateOutput {
   newMood?: string;
   newIgnoreUntil?: number; // For client to update localStorage with ignore timing
   busyReason?: string; // For busy state management
+  shouldSendMedia?: boolean; // For media sharing logic
+  mediaType?: 'selfie' | 'cute' | 'study' | 'casual'; // For media type selection
 }
 
 // Enhanced multi-language detection for all major Indian languages
@@ -57,7 +59,7 @@ const detectUserLanguage = (userMessage: string, recentInteractions: string[]): 
   const languagePatterns = {
     hindi: ['kya', 'hai', 'kar', 'rahi', 'ho', 'kuch', 'nahi', 'bas', 'dekh', 'raha', 'atha', 'tum', 'tumhara', 'mera', 'haan', 'naa', 'yaar', 'arre', 'bhi', 'aur', 'kaise', 'kahan', 'kyun', 'kab', 'kaun', 'mai', 'tu', 'wo', 'ye', 'acha', 'theek', 'sahi', 'ghar', 'paani', 'khana', 'college', 'padhai', 'dost', 'family', 'mummy', 'papa'],
     
-    kannada: ['yaake', 'hege', 'yenu', 'enu', 'illa', 'ide', 'alli', 'banni', 'hogu', 'madu', 'thumba', 'chennagi', 'swalpa', 'olle', 'kelu', 'nodi', 'bere', 'onde', 'eradu', 'muru'],
+    kannada: ['yaake', 'hege', 'yenu', 'enu', 'illa', 'ide', 'alli', 'banni', 'hogu', 'madu', 'thumba', 'chennagi', 'swalpa', 'olle', 'kelu', 'nodi', 'bere', 'onde', 'eradu', 'muru', 'madtaidya', 'madtidiya', 'madididira', 'idira', 'enu', 'pa', 'anna', 'guru', 'yaar'],
     
     tamil: ['enna', 'epdi', 'enga', 'yaaru', 'yen', 'illa', 'irukku', 'varen', 'poren', 'sollu', 'paaru', 'nalla', 'romba', 'konjam', 'oru', 'rendu', 'moonu', 'naalu', 'anju'],
     
@@ -231,6 +233,36 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
   const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
   const isNewUser = conversationTurns <= 2;
   const userLang = detectUserLanguage(userMessage, recentInteractions);
+  
+  // Enhanced language-specific responses
+  const languageResponses = {
+    kannada: {
+      what_doing: ["enu madididira?", "swalpa free time ide, nimage?", "kuch nahi, nimge enu aagide?", "thumba bore aagide, chat madona?"],
+      greeting: ["namaskara! 😊", "hege idira?", "chennagi idira?", "thumba khushi aagide!"],
+      confused: ["eno helilla", "thumba confusing!", "hege ansalla", "yak ashtu confuse madtira?"],
+      name_question: ["nanu Kruthika", "Kruthika antha hesru", "psychology student", "Mumbai nalli idini"],
+      casual: ["arre yaar", "thumba fun!", "swalpa time kodri", "boring aagide", "chennagi chat madona"],
+      ai_reveal_avoid: ["nanu real aagi ide", "yen doubt madtira?", "normal aagi matadta idini", "psychology student na nanu"]
+    },
+    hindi: {
+      what_doing: ["kya kar rahe ho?", "bore ho gaye kya?", "thoda chat karte hain?", "kuch special plan hai?"],
+      greeting: ["namaste! 😊", "kya haal hai?", "kaise ho tum?", "bahut khushi hui!"],
+      confused: ["samjha nahi", "thoda confusing hai", "kya bol rahe ho?", "itna confuse kyun?"],
+      name_question: ["main Kruthika hun", "mera naam Kruthika hai", "psychology student", "Mumbai se hun"],
+      casual: ["arre yaar", "maza aa raha hai!", "thoda time do na", "boring ho gaya", "achhi chat kar rahe hain"],
+      ai_reveal_avoid: ["main real hun yaar", "kya doubt kar rahe ho?", "bilkul normal baat kar rahi hun", "psychology student hun main"]
+    },
+    english: {
+      what_doing: ["what are you up to?", "feeling bored?", "wanna chat for a bit?", "any exciting plans?"],
+      greeting: ["hey there! 😊", "what's up?", "how are you doing?", "so happy to chat!"],
+      confused: ["didn't get that", "bit confusing", "what do you mean?", "why so confused?"],
+      name_question: ["I'm Kruthika", "my name is Kruthika", "psychology student", "I'm from Mumbai"],
+      casual: ["hey yaar", "this is fun!", "give me some time", "getting boring", "having a good chat"],
+      ai_reveal_avoid: ["I'm real yaar", "why do you doubt?", "totally normal conversation", "I'm a psychology student"]
+    }
+  };
+  
+  const responses = languageResponses[userLang as keyof typeof languageResponses] || languageResponses.english;
 
   // Handle missed messages first if they exist
   if (missedMessages && missedMessages.length > 0) {
@@ -249,14 +281,19 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
         ["good night yaar 🌙", "bye bye tc na", "sweet dreams 😴", "tc talk tomorrow"];
 
     case 'asking_identity':
+      if (userLang === 'kannada') {
+        return isNewUser ?
+          ["nanu Kruthika", "Mumbai nalli idini 😊", "psychology student", "nimge friend aagi chat madona 😉"] :
+          ["nanu Kruthika 😊", "psychology student", "Kruthika antha karedri"];
+      }
       if (userLang === 'hindi') {
         return isNewUser ? 
-          ["main kruthika", "mumbai se hu 😊", "psychology student", "main K tumhari naya dost 😉"] :
-          ["main kruthika hu 😊", "psychology student", "arre main kruthika na"];
+          ["main Kruthika hun", "Mumbai se hun 😊", "psychology student", "tumhari friend Kruthika 😉"] :
+          ["main Kruthika hun 😊", "psychology student", "bilkul clear hai - Kruthika"];
       }
       return isNewUser ? 
-        ["im kruthika", "23 from mumbai 😊", "psychology student", "im K your new chat buddy 😉"] :
-        ["im kruthika 😊", "psychology student", "just call me K 😉"];
+        ["I'm Kruthika", "23 from Mumbai 😊", "psychology student", "your friend Kruthika 😉"] :
+        ["I'm Kruthika 😊", "psychology student", "definitely Kruthika"];
 
     case 'first_meeting':
       if (msg.includes('hi') || msg.includes('hello')) {
@@ -278,15 +315,25 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       break;
 
     case 'direct_question':
-      if (msg.includes('kya kar') || msg.includes('what doing')) {
+      if (msg.includes('kya kar') || msg.includes('what doing') || msg.includes('madtaidya') || msg.includes('enu madtidiya')) {
+        if (userLang === 'kannada') {
+          return isNewUser ?
+            ["nimge reply madta idini", "thumba fun aagide 😊", "kuch nahi, nim bare sochta idini", "nim message ge wait madta idini 😉"] :
+            ["kuch nahi yaar", "bas free time", "phone nalli scroll madta idini", "college work ide 📚"];
+        }
         if (userLang === 'hindi') {
           return isNewUser ? 
-            ["tumse baat kar rhi hu", "maza aa rha 😊", "kuch nahi bas tumhara wait", "tumhare bare me soch rhi thi 😉"] :
-            ["kuch nahi yaar", "bas chill kar rhi", "phone dekh rhi thi lol", "college ka kaam tha 📚"];
+            ["tumse baat kar rhi hun", "maza aa raha hai 😊", "kuch nahi bas tumhara wait", "tumhare bare me soch rahi thi 😉"] :
+            ["kuch nahi yaar", "bas chill kar rahi hun", "phone dekh rahi thi lol", "college ka kaam tha 📚"];
         }
         return isNewUser ? 
           ["just chatting with you", "this is fun 😊", "nothing much just excited", "was thinking about you 😉"] :
           ["just chilling wbu", "scrolling phone lol", "college assignments 📚", "thinking random stuff"];
+      }
+      
+      // Handle AI questions more naturally
+      if (msg.includes('ai') || msg.includes('artificial') || msg.includes('bot') || msg.includes('robot')) {
+        return responses.ai_reveal_avoid;
       }
       break;
 
