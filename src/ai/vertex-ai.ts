@@ -9,7 +9,8 @@ import {
   buildOptimizedPrompt,
   optimizeConversationContext,
   estimateTokenSavings,
-  clearExpiredCache
+  clearExpiredCache,
+  trackTokenUsage
 } from './token-optimization';
 
 // -----------------------------------------------------------------------------
@@ -93,6 +94,8 @@ export async function generateAIResponse(
   const contextHash = context ? context.join('|').substring(0, 100) : '';
   const cachedResponse = getCachedResponse(userMessage, systemPrompt, contextHash);
   if (cachedResponse) {
+    // Track cache hit for cost analysis
+    trackTokenUsage(0, 0, true);
     console.log('Token Optimization: Returned cached response, 100% token savings!');
     return cachedResponse;
   }
@@ -154,10 +157,16 @@ export async function generateAIResponse(
       throw new Error('Empty response from Vertex AI');
     }
 
+    // Track token usage for cost monitoring
+    const estimatedInputTokens = Math.ceil(prompt.length / 4);
+    const estimatedOutputTokens = Math.ceil(text.length / 4);
+    trackTokenUsage(estimatedInputTokens, estimatedOutputTokens, false);
+    
     // Cache the response for future use
     cacheResponse(userMessage, text, systemPrompt, contextHash);
     
     console.log(`Vertex AI: Successfully generated optimized response, length: ${text.length}`);
+    console.log(`Token Usage: ~${estimatedInputTokens} input, ~${estimatedOutputTokens} output tokens`);
     return text;
     
   } catch (error) {

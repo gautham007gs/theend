@@ -253,6 +253,70 @@ export function clearExpiredCache(): number {
   return cleared;
 }
 
+// Track daily token usage for cost monitoring
+let dailyTokenTracker = {
+  date: new Date().toDateString(),
+  inputTokens: 0,
+  outputTokens: 0,
+  apiCalls: 0,
+  cacheHits: 0,
+  estimatedCost: 0
+};
+
+// Reset tracker daily
+function resetDailyTracker() {
+  const today = new Date().toDateString();
+  if (dailyTokenTracker.date !== today) {
+    console.log(`Token Optimization: Daily usage summary for ${dailyTokenTracker.date}:`, {
+      totalAPICalls: dailyTokenTracker.apiCalls,
+      inputTokens: dailyTokenTracker.inputTokens,
+      outputTokens: dailyTokenTracker.outputTokens,
+      cacheHits: dailyTokenTracker.cacheHits,
+      estimatedCost: `$${dailyTokenTracker.estimatedCost.toFixed(4)}`,
+      costPerCall: `$${(dailyTokenTracker.estimatedCost / Math.max(dailyTokenTracker.apiCalls, 1)).toFixed(6)}`
+    });
+    
+    dailyTokenTracker = {
+      date: today,
+      inputTokens: 0,
+      outputTokens: 0,
+      apiCalls: 0,
+      cacheHits: 0,
+      estimatedCost: 0
+    };
+  }
+}
+
+// Track token usage for cost analysis
+export function trackTokenUsage(inputTokens: number, outputTokens: number, wasCacheHit: boolean = false) {
+  resetDailyTracker();
+  
+  if (!wasCacheHit) {
+    dailyTokenTracker.inputTokens += inputTokens;
+    dailyTokenTracker.outputTokens += outputTokens;
+    dailyTokenTracker.apiCalls++;
+    
+    // Calculate cost using Gemini 2.0 Flash pricing
+    const inputCost = (inputTokens / 1000000) * 0.15;
+    const outputCost = (outputTokens / 1000000) * 0.60;
+    dailyTokenTracker.estimatedCost += inputCost + outputCost;
+  } else {
+    dailyTokenTracker.cacheHits++;
+  }
+}
+
+// Get current usage stats
+export function getDailyUsageStats() {
+  resetDailyTracker();
+  return {
+    ...dailyTokenTracker,
+    avgTokensPerCall: dailyTokenTracker.apiCalls > 0 ? 
+      Math.round((dailyTokenTracker.inputTokens + dailyTokenTracker.outputTokens) / dailyTokenTracker.apiCalls) : 0,
+    cacheHitRate: dailyTokenTracker.apiCalls + dailyTokenTracker.cacheHits > 0 ? 
+      Math.round((dailyTokenTracker.cacheHits / (dailyTokenTracker.apiCalls + dailyTokenTracker.cacheHits)) * 100) : 0
+  };
+}
+
 // Estimate token savings
 export function estimateTokenSavings(originalLength: number, optimizedLength: number, cacheHit: boolean): {
   inputSavings: number;
