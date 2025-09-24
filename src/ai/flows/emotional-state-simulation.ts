@@ -13,6 +13,9 @@ export interface EmotionalStateInput {
   timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
   mood?: string;
   recentInteractions: string[];
+  userLevel?: number; // New: User progression level (1-10)
+  intimacyScore?: number; // New: Relationship intimacy (0-1)
+  specialEvents?: string[]; // New: Birthdays, anniversaries, etc.
   availableImages?: string[];
   availableAudio?: string[];
   userPsychologyProfile?: any;

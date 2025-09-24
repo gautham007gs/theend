@@ -2,10 +2,11 @@ import { debounce, throttle } from './performance-utils';
 
 // Safe ad refresh intervals (in seconds) to avoid detection
 const REFRESH_INTERVALS = {
-  MINIMUM: 30, // Never refresh faster than 30 seconds
-  STANDARD: 45, // Standard refresh rate
-  EXTENDED: 60, // Conservative refresh rate
-  MAXIMUM: 120, // Very conservative for suspicious patterns
+  MINIMUM: 45, // Never refresh faster than 45 seconds (safer for ad networks)
+  STANDARD: 60, // Optimal refresh rate for revenue
+  EXTENDED: 90, // Conservative refresh rate
+  MAXIMUM: 180, // Very conservative for suspicious patterns
+  PEAK_HOURS: 75, // Longer intervals during peak traffic
 };
 
 // Viewability thresholds
