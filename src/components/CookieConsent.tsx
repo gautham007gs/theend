@@ -81,7 +81,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   return (
     <div 
       className={cn(
-        "fixed inset-0 z-50 flex items-end justify-center p-4 pointer-events-none",
+        "fixed inset-0 z-50 flex items-end justify-center p-2 sm:p-4 pointer-events-none",
         "bg-black/20 backdrop-blur-sm",
         "transition-opacity duration-300",
         isVisible ? "opacity-100" : "opacity-0",
@@ -92,9 +92,10 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
         "w-full max-w-lg pointer-events-auto",
         "bg-white/95 backdrop-blur-md border-primary/20 shadow-2xl",
         "transform transition-transform duration-300",
+        "max-h-[85vh] overflow-hidden", // Mobile-friendly height
         isVisible ? "translate-y-0" : "translate-y-full"
       )}>
-        <CardContent className="p-6 space-y-4">
+        <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
@@ -111,42 +112,44 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
             </Button>
           </div>
 
-          {/* Content */}
-          <div className="space-y-3">
+          {/* Content - Compact for mobile */}
+          <div className="space-y-2">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              We use cookies to enhance your experience with Kruthika, provide personalized AI conversations, 
-              and analyze usage to improve our service. Your intimate chats remain private and secure.
+              We use cookies for personalized AI conversations and service improvement. 
+              <span className="hidden sm:inline">Your intimate chats remain private and secure.</span>
             </p>
             
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Shield className="h-3 w-3 text-primary" />
-              <span>Your data is protected and never shared for marketing</span>
+              <span className="hidden sm:inline">Your data is protected and never shared for marketing</span>
+              <span className="sm:hidden">Data protected & private</span>
             </div>
           </div>
 
-          {/* Cookie Types */}
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between items-center py-1">
-              <span className="font-medium">✅ Essential cookies</span>
-              <span className="text-muted-foreground">Always active</span>
+          {/* Cookie Types - Compact for mobile */}
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between items-center py-0.5">
+              <span className="font-medium">✅ Essential</span>
+              <span className="text-muted-foreground hidden sm:inline">Always active</span>
             </div>
-            <div className="flex justify-between items-center py-1">
-              <span>📊 Analytics cookies</span>
-              <span className="text-muted-foreground">Help us improve</span>
+            <div className="flex justify-between items-center py-0.5">
+              <span>📊 Analytics</span>
+              <span className="text-muted-foreground hidden sm:inline">Help us improve</span>
             </div>
-            <div className="flex justify-between items-center py-1">
-              <span>🎯 Advertising cookies</span>
-              <span className="text-muted-foreground">Relevant content</span>
+            <div className="flex justify-between items-center py-0.5">
+              <span>🎯 Advertising</span>
+              <span className="text-muted-foreground hidden sm:inline">Relevant content</span>
             </div>
-            <div className="flex justify-between items-center py-1">
-              <span>❤️ Personalization cookies</span>
-              <span className="text-muted-foreground">Customized experience</span>
+            <div className="flex justify-between items-center py-0.5">
+              <span>❤️ Personalization</span>
+              <span className="text-muted-foreground hidden sm:inline">Customized experience</span>
             </div>
           </div>
 
-          {/* Legal links */}
+          {/* Legal links - Mobile optimized */}
           <div className="flex flex-wrap gap-1 text-xs">
-            <span className="text-muted-foreground">By accepting, you agree to our</span>
+            <span className="text-muted-foreground hidden sm:inline">By accepting, you agree to our</span>
+            <span className="text-muted-foreground sm:hidden">Agree to</span>
             <Link 
               href="/legal/privacy" 
               className="text-primary hover:underline font-medium"
@@ -158,34 +161,35 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
               href="/legal/terms" 
               className="text-primary hover:underline font-medium"
             >
-              Terms of Service
+              Terms
             </Link>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+          {/* Action buttons - Prominent Accept All for mobile */}
+          <div className="flex flex-col gap-2 pt-1">
             <Button
               onClick={handleAcceptAll}
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-              size="sm"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base py-3"
+              size="lg"
             >
-              <Heart className="h-4 w-4 mr-2" />
+              <Heart className="h-5 w-5 mr-2" />
               Accept All & Start Chatting
             </Button>
             <Button
               onClick={handleAcceptNecessary}
               variant="outline"
-              className="sm:flex-none text-xs px-3"
+              className="w-full text-xs py-2"
               size="sm"
             >
               Only Essential
             </Button>
           </div>
 
-          {/* Trust indicator */}
-          <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground pt-1">
+          {/* Trust indicator - Mobile compact */}
+          <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground pt-0">
             <Shield className="h-3 w-3" />
-            <span>Trusted by thousands for private AI conversations</span>
+            <span className="hidden sm:inline">Trusted by thousands for private AI conversations</span>
+            <span className="sm:hidden">Trusted & secure</span>
           </div>
         </CardContent>
       </Card>
