@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Kruthika.fun Team' }],
   creator: 'Kruthika.fun',
   publisher: 'Kruthika.fun',
-  robots: 'index, follow',
+  robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
   openGraph: {
     title: 'Kruthika.fun - #1 AI Girlfriend Chat | Best Virtual Companion 2024',
     description: 'Meet Kruthika, India\'s most realistic AI girlfriend. Experience authentic conversations and emotional connection with the best free AI girlfriend simulator. Chat now!',
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     canonical: 'https://kruthika.fun',
   },
   other: {
-    'google-site-verification': 'your-google-verification-code',
+    'google-site-verification': 'verification-for-kruthika-fun-search-console',
   },
 };
 

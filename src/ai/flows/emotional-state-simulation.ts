@@ -36,6 +36,7 @@ export interface EmotionalStateOutput {
   busyReason?: string; // For busy state management
   shouldSendMedia?: boolean; // For media sharing logic
   mediaType?: 'selfie' | 'cute' | 'study' | 'casual'; // For media type selection
+  followUpMessage?: string; // For follow-up messaging
 }
 
 // Enhanced multi-language detection for all major Indian languages
@@ -284,7 +285,7 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       if (userLang === 'kannada') {
         return isNewUser ?
           ["nanu Kruthika", "Mumbai nalli idini 😊", "psychology student", "nimge friend aagi chat madona 😉"] :
-          ["nanu Kruthika 😊", "psychology student", "Kruthika antha karedri"];
+          ["nanu Kruthika 😊", "psychology student", "Kruthika antha hesru"];
       }
       if (userLang === 'hindi') {
         return isNewUser ? 
@@ -935,4 +936,4 @@ Reply:`;
   }
 }
 
-console.log('Kruthika AI: Enhanced contextual response system loaded');
+console.log('Kruthika AI: Enhanced multilingual & realistic response system loaded - v2.0');
