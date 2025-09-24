@@ -14,6 +14,7 @@ import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
+import CookieConsent from '@/components/CookieConsent';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -130,6 +131,7 @@ export default function RootLayout({
                   <ResourceHints />
                   {children}
                   <SocialBarAdDisplay /> {/* Add SocialBarAdDisplay here */}
+                  <CookieConsent />
                   <Toaster />
                   <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
                 </AIMediaAssetsProvider>
