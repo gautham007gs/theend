@@ -275,25 +275,44 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     // Use a ref to inject the script after component mounts
     const adRef = useRef<HTMLDivElement>(null);
     const [adInjected, setAdInjected] = useState(false);
+    const [lastAdCode, setLastAdCode] = useState(message.nativeAdCode);
 
     useEffect(() => {
+      // Check if ad code has changed (for rotation)
+      if (message.nativeAdCode !== lastAdCode) {
+        setAdInjected(false);
+        setLastAdCode(message.nativeAdCode);
+      }
+
       if (adRef.current && message.nativeAdCode && !adInjected) {
         try {
-          // Clear any existing content
+          // Clear any existing content first
           adRef.current.innerHTML = '';
           
-          // Create a fragment and inject the ad code
-          const fragment = document.createRange().createContextualFragment(message.nativeAdCode);
-          adRef.current.appendChild(fragment);
-          setAdInjected(true);
+          // Small delay to ensure cleanup
+          setTimeout(() => {
+            if (adRef.current) {
+              // Create a fragment and inject the new ad code
+              const fragment = document.createRange().createContextualFragment(message.nativeAdCode);
+              adRef.current.appendChild(fragment);
+              setAdInjected(true);
+              
+              console.log('Native ad content updated in bubble:', message.id, 
+                         'Ad ID:', message.nativeAdId);
+            }
+          }, 50);
         } catch (error) {
           console.error('Error injecting native ad:', error);
           // Fallback to innerHTML if fragment creation fails
-          adRef.current.innerHTML = message.nativeAdCode;
-          setAdInjected(true);
+          setTimeout(() => {
+            if (adRef.current) {
+              adRef.current.innerHTML = message.nativeAdCode;
+              setAdInjected(true);
+            }
+          }, 50);
         }
       }
-    }, [message.nativeAdCode, adInjected]);
+    }, [message.nativeAdCode, adInjected, lastAdCode]);
 
     return (
       <div className="native-ad-container w-full">
@@ -301,11 +320,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           <span className="text-xs text-muted-foreground font-medium bg-muted/30 px-2 py-1 rounded-full">
             Sponsored
           </span>
+          {/* Add subtle refresh indicator */}
+          <span className="text-xs text-muted-foreground/60">
+            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
         </div>
         <div 
           ref={adRef}
           className="native-ad-content min-h-[80px]"
           id={message.nativeAdId}
+          key={message.nativeAdId} // Force re-render on ID change
         />
       </div>
     );

@@ -449,9 +449,10 @@ const KruthikaChatPage: NextPage = () => {
   const initialLoadComplete = useRef(false);
   const [isLoadingChatState, setIsLoadingChatState] = useState(true);
 
-  // Native ad injection state - single ad after 3 messages
+  // Native ad injection state - single ad after 3 messages with rotation
   const [messagesSinceLastAd, setMessagesSinceLastAd] = useState(0);
   const [hasShownNativeAd, setHasShownNativeAd] = useState(false);
+  const [currentActiveAdId, setCurrentActiveAdId] = useState<string | null>(null);
 
   const [messageCountSinceLastAd, setMessageCountSinceLastAd] = useState(0);
   const [showInterstitialAd, setShowInterstitialAd] = useState(false);
@@ -893,11 +894,11 @@ const KruthikaChatPage: NextPage = () => {
     setMessages(prev => [...prev, newUserMessage]);
     if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
 
-    // Check if we should inject a native ad (only once after 3 messages)
+    // Check if we should inject or refresh native ad after 3 messages
     setMessagesSinceLastAd(prev => {
       const newCount = prev + 1;
-      if (newCount >= 3 && !hasShownNativeAd && adSettings && adSettings.adsEnabledGlobally) {
-        // Use setTimeout to inject ad after current message is processed
+      if (newCount >= 3 && adSettings && adSettings.adsEnabledGlobally) {
+        // Use setTimeout to inject/refresh ad after current message is processed
         setTimeout(() => {
           injectNativeAdMessage();
         }, 100);
@@ -1092,11 +1093,11 @@ const KruthikaChatPage: NextPage = () => {
         scheduleReadReceipt(newUserMessage.id, readReceiptDelay);
         if (adSettings && adSettings.adsEnabledGlobally) maybeTriggerAdOnMessageCount();
         
-        // Count AI messages for ad injection (single occurrence only)
+        // Count AI messages for ad injection with rotation support
         setMessagesSinceLastAd(prev => {
           const newCount = prev + 1;
-          if (newCount >= 3 && !hasShownNativeAd && adSettings && adSettings.adsEnabledGlobally) {
-            // Use setTimeout to inject ad after current message is processed
+          if (newCount >= 3 && adSettings && adSettings.adsEnabledGlobally) {
+            // Use setTimeout to inject/refresh ad after current message is processed
             setTimeout(() => {
               injectNativeAdMessage();
             }, 100);
@@ -1458,9 +1459,9 @@ const KruthikaChatPage: NextPage = () => {
     });
   };
 
-  // Function to inject native ad as a chat message (single occurrence only)
+  // Function to inject or refresh native ad as a chat message with rotation
   const injectNativeAdMessage = () => {
-    if (!adSettings || !adSettings.adsEnabledGlobally || hasShownNativeAd) {
+    if (!adSettings || !adSettings.adsEnabledGlobally) {
       return;
     }
 
@@ -1478,31 +1479,70 @@ const KruthikaChatPage: NextPage = () => {
       return;
     }
 
-    // Prioritize Adsterra, fallback to Monetag
+    // Rotate between networks for better performance
+    const lastShownNetwork = localStorage.getItem('last_native_ad_network') || '';
     let selectedCode = '';
-    if (hasAdsterraCode) {
+    let selectedNetwork = '';
+
+    if (hasAdsterraCode && hasMonatagCode) {
+      // Rotate between networks
+      if (lastShownNetwork === 'adsterra') {
+        selectedCode = adSettings.monetagNativeBannerCode;
+        selectedNetwork = 'monetag';
+      } else {
+        selectedCode = adSettings.adsterraNativeBannerCode;
+        selectedNetwork = 'adsterra';
+      }
+    } else if (hasAdsterraCode) {
       selectedCode = adSettings.adsterraNativeBannerCode;
+      selectedNetwork = 'adsterra';
     } else if (hasMonatagCode) {
       selectedCode = adSettings.monetagNativeBannerCode;
+      selectedNetwork = 'monetag';
     }
 
-    const adId = `native_ad_${Date.now()}`;
-    const nativeAdMessage: Message = {
-      id: adId,
-      text: '',
-      sender: 'ad' as any, // Special sender type for ads
-      timestamp: new Date(),
-      status: 'read',
-      isNativeAd: true,
-      nativeAdCode: selectedCode,
-      nativeAdId: `native-ad-chat-single`
-    };
+    // Store the network for rotation
+    localStorage.setItem('last_native_ad_network', selectedNetwork);
 
-    setMessages(prev => [...prev, nativeAdMessage]);
-    setHasShownNativeAd(true); // Mark that we've shown the native ad
+    if (currentActiveAdId && hasShownNativeAd) {
+      // Replace existing ad content instead of creating new bubble
+      setMessages(prev => prev.map(msg => {
+        if (msg.id === currentActiveAdId && msg.isNativeAd) {
+          return {
+            ...msg,
+            nativeAdCode: selectedCode,
+            nativeAdId: `native-ad-chat-rotated-${Date.now()}`,
+            timestamp: new Date(), // Update timestamp for freshness
+          };
+        }
+        return msg;
+      }));
+      
+      console.log('Native ad content refreshed for existing bubble:', currentActiveAdId, 
+                  'Network:', selectedNetwork, 'Code length:', selectedCode.length);
+    } else {
+      // Create new ad bubble for first time
+      const adId = `native_ad_${Date.now()}`;
+      const nativeAdMessage: Message = {
+        id: adId,
+        text: '',
+        sender: 'ad' as any,
+        timestamp: new Date(),
+        status: 'read',
+        isNativeAd: true,
+        nativeAdCode: selectedCode,
+        nativeAdId: `native-ad-chat-${selectedNetwork}-${Date.now()}`
+      };
+
+      setMessages(prev => [...prev, nativeAdMessage]);
+      setCurrentActiveAdId(adId);
+      setHasShownNativeAd(true);
+      
+      console.log('New native ad bubble created:', adId, 
+                  'Network:', selectedNetwork, 'Code length:', selectedCode.length);
+    }
+
     setMessagesSinceLastAd(0);
-
-    console.log('Native ad injected into chat (single occurrence):', adId, 'Code length:', selectedCode.length);
   };
 
   const handleLikeMessage = (messageId: string) => {
