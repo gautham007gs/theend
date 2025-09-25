@@ -103,9 +103,19 @@ export const TIMING_INTERVALS = {
   futurePacingInterval: 10
 };
 
-// Response splitting logic for better engagement
-export function splitLongResponse(response: string, maxLength: number = 120): string[] {
-  if (response.length <= maxLength) {
+// Enhanced response splitting logic for more natural bubbling
+export function splitLongResponse(
+  response: string, 
+  maxLength: number = 120,
+  shouldSplitNaturally: boolean = true
+): string[] {
+  // If response is short enough or natural splitting is disabled, return as single bubble
+  if (response.length <= maxLength || !shouldSplitNaturally) {
+    return [response];
+  }
+  
+  // For very casual, short responses, prefer single bubble
+  if (response.length <= 200 && Math.random() < 0.6) {
     return [response];
   }
   

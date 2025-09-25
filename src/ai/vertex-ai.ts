@@ -389,33 +389,31 @@ function analyzeRomanizedLanguage(message: string): {
     Portuguese: /\b(ola|obrigado|obrigada|como|esta|muito|bem|que|onde|quando|porque|sim|nao|sou|es|e|somos|sao|a|o|de|em|para|com|por|esta|este|tudo|nada|mais|menos|tempo|casa|vida|amor|familia|trabalho|escola|dinheiro|comida|agua|luz|dia|noite|bom|mau|grande|pequeno|novo|velho|feliz|triste|cansado|doente|saude|ajuda|obrigado|desculpa|por|favor|perdao|boa|tchau|ate|logo|amanha|ontem|agora|aqui|ali|la|muito|pouco|bastante|demais|quero|preciso|posso|devo|tenho|tens|tem|temos|tem|vou|vais|vai|vamos|vao|faco|fazes|faz|fazemos|fazem|digo|dizes|diz|dizemos|dizem|vejo|ves|ve|vemos|veem)\b/i
   };
 
-  const messageLower = message.toLowerCase().replace(/[^\u0000-\u007F]/g, ' '); // Handle Unicode properly
-  const messageOriginal = message.toLowerCase(); // Keep original for script detection
+  const msgLower = message.toLowerCase().replace(/[^\u0000-\u007F]/g, ' ');
+  const msgOriginal = message.toLowerCase();
   
   // First priority: Check Indian language patterns
   for (const [language, pattern] of Object.entries(indianLanguagePatterns)) {
-    if (pattern.test(messageLower) || pattern.test(messageOriginal)) {
+    if (pattern.test(msgLower) || pattern.test(msgOriginal)) {
       console.log(`Language detected: ${language} (pattern match)`);
-      return language;
+      const purity = analyzePurityLevel(message, language);
+      return { language, mixingStyle: purity.mixingStyle, confidence: purity.confidence };
     }
   }
   
-  // Second priority: Check international language patterns
+  // Second priority: Check international language patterns  
   for (const [language, pattern] of Object.entries(internationalPatterns)) {
-    if (pattern.test(messageLower)) {
+    if (pattern.test(msgLower)) {
       console.log(`Language detected: ${language} (pattern match)`);
-      return language;
+      return { language, mixingStyle: 'pure', confidence: 0.8 };
     }
   }
-  
-  const messageLower = message.toLowerCase().replace(/[^\u0000-\u007F]/g, ' ');
-  const messageOriginal = message.toLowerCase();
   
   let bestMatch = { language: 'English', score: 0 };
   
-  // Check Indian language patterns
+  // Check romanized Indian language patterns
   for (const [language, pattern] of Object.entries(indianLanguagePatterns)) {
-    const matches = (messageLower.match(pattern) || []).length;
+    const matches = (msgLower.match(pattern) || []).length;
     if (matches > bestMatch.score) {
       bestMatch = { language, score: matches };
     }
@@ -423,7 +421,7 @@ function analyzeRomanizedLanguage(message: string): {
   
   // Check international language patterns
   for (const [language, pattern] of Object.entries(internationalPatterns)) {
-    const matches = (messageLower.match(pattern) || []).length;
+    const matches = (msgLower.match(pattern) || []).length;
     if (matches > bestMatch.score) {
       bestMatch = { language, score: matches };
     }
@@ -431,7 +429,7 @@ function analyzeRomanizedLanguage(message: string): {
   
   // Hinglish detection (mix of Hindi and English)
   const hinglishIndicators = /\b(yaar|arre|bas|kya|hai|haan|nahi|acha|theek|matlab|samjha|bhai|didi|uncle|aunty|ji|sahab|madam)\b/i;
-  if (hinglishIndicators.test(messageLower)) {
+  if (hinglishIndicators.test(msgLower)) {
     const englishWords = message.match(/\b[a-zA-Z]+\b/g) || [];
     const totalWords = message.split(/\s+/).length;
     const englishRatio = englishWords.length / totalWords;
