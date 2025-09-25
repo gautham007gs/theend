@@ -64,6 +64,12 @@ const nextConfig: NextConfig = {
   },
   // Configure for Replit environment
   experimental: {
+    allowedDevOrigins: [
+      "*.replit.dev",
+      "*.replit.app",
+      "localhost:5000",
+      "0.0.0.0:5000"
+    ],
     serverActions: {
       allowedOrigins: [
         "*.replit.dev",
