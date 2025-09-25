@@ -250,32 +250,111 @@ IMPORTANT: After your response, on separate lines, include these lines exactly i
   }
 }
 
-// Enhanced Indian language detection system supporting ALL major Indian languages
-function detectUserLanguage(message: string): string {
+// Advanced language style detection system - analyzes mixing patterns
+function detectUserLanguageStyle(message: string): {
+  language: string;
+  mixingStyle: 'pure' | 'mixed' | 'heavy_mixed';
+  confidence: number;
+} {
   // First check Unicode script ranges for Indian and international writing systems
   
   // INDIAN LANGUAGES - Full Unicode support for ALL major Indian scripts
-  if (/[\u0900-\u097f]/u.test(message)) return 'Hindi';
-  if (/[\u0980-\u09ff]/u.test(message)) return 'Bengali';
-  if (/[\u0a00-\u0a7f]/u.test(message)) return 'Gujarati';
-  if (/[\u0a80-\u0aff]/u.test(message)) return 'Punjabi';
-  if (/[\u0b00-\u0b7f]/u.test(message)) return 'Odia';
-  if (/[\u0b80-\u0bff]/u.test(message)) return 'Tamil';
-  if (/[\u0c00-\u0c7f]/u.test(message)) return 'Telugu';
-  if (/[\u0c80-\u0cff]/u.test(message)) return 'Kannada';
-  if (/[\u0d00-\u0d7f]/u.test(message)) return 'Malayalam';
-  if (/[\u0d80-\u0dff]/u.test(message)) return 'Sinhala';
-  if (/[\u1000-\u109f]/u.test(message)) return 'Myanmar';
+  if (/[\u0900-\u097f]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Hindi');
+    return { language: 'Hindi', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0980-\u09ff]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Bengali');
+    return { language: 'Bengali', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0a00-\u0a7f]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Gujarati');
+    return { language: 'Gujarati', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0a80-\u0aff]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Punjabi');
+    return { language: 'Punjabi', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0b00-\u0b7f]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Odia');
+    return { language: 'Odia', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0b80-\u0bff]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Tamil');
+    return { language: 'Tamil', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0c00-\u0c7f]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Telugu');
+    return { language: 'Telugu', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0c80-\u0cff]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Kannada');
+    return { language: 'Kannada', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0d00-\u0d7f]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Malayalam');
+    return { language: 'Malayalam', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u0d80-\u0dff]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Sinhala');
+    return { language: 'Sinhala', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
+  if (/[\u1000-\u109f]/u.test(message)) {
+    const purity = analyzePurityLevel(message, 'Myanmar');
+    return { language: 'Myanmar', mixingStyle: purity.mixingStyle, confidence: purity.confidence };
+  }
   
   // International languages
-  if (/[\u4e00-\u9fff\u3400-\u4dbf]/u.test(message)) return 'Chinese';
-  if (/[\u3040-\u309f\u30a0-\u30ff]/u.test(message)) return 'Japanese';
-  if (/[\uac00-\ud7af]/u.test(message)) return 'Korean';
-  if (/[\u0400-\u04ff]/u.test(message)) return 'Russian';
-  if (/[\u0370-\u03ff]/u.test(message)) return 'Greek';
-  if (/[\u0e00-\u0e7f]/u.test(message)) return 'Thai';
-  if (/[\u0600-\u06ff]/u.test(message)) return 'Arabic';
+  if (/[\u4e00-\u9fff\u3400-\u4dbf]/u.test(message)) {
+    return { language: 'Chinese', mixingStyle: 'pure', confidence: 0.9 };
+  }
+  if (/[\u3040-\u309f\u30a0-\u30ff]/u.test(message)) {
+    return { language: 'Japanese', mixingStyle: 'pure', confidence: 0.9 };
+  }
+  if (/[\uac00-\ud7af]/u.test(message)) {
+    return { language: 'Korean', mixingStyle: 'pure', confidence: 0.9 };
+  }
+  if (/[\u0400-\u04ff]/u.test(message)) {
+    return { language: 'Russian', mixingStyle: 'pure', confidence: 0.9 };
+  }
+  if (/[\u0370-\u03ff]/u.test(message)) {
+    return { language: 'Greek', mixingStyle: 'pure', confidence: 0.9 };
+  }
+  if (/[\u0e00-\u0e7f]/u.test(message)) {
+    return { language: 'Thai', mixingStyle: 'pure', confidence: 0.9 };
+  }
+  if (/[\u0600-\u06ff]/u.test(message)) {
+    return { language: 'Arabic', mixingStyle: 'pure', confidence: 0.9 };
+  }
   
+  // Continue with pattern analysis for romanized text
+  return analyzeRomanizedLanguage(message);
+}
+
+// Analyze language purity and mixing patterns
+function analyzePurityLevel(message: string, detectedLanguage: string): {
+  mixingStyle: 'pure' | 'mixed' | 'heavy_mixed';
+  confidence: number;
+} {
+  const englishWords = message.match(/\b[a-zA-Z]+\b/g) || [];
+  const totalWords = message.split(/\s+/).length;
+  const englishRatio = englishWords.length / totalWords;
+  
+  if (englishRatio < 0.2) {
+    return { mixingStyle: 'pure', confidence: 0.9 };
+  } else if (englishRatio < 0.6) {
+    return { mixingStyle: 'mixed', confidence: 0.8 };
+  } else {
+    return { mixingStyle: 'heavy_mixed', confidence: 0.7 };
+  }
+}
+
+// Analyze romanized Indian languages
+function analyzeRomanizedLanguage(message: string): {
+  language: string;
+  mixingStyle: 'pure' | 'mixed' | 'heavy_mixed';
+  confidence: number;
+} {
   // Advanced pattern detection for Indian languages using Latin script (Hinglish, etc.)
   const indianLanguagePatterns = {
     Hindi: /\b(namaste|namaskar|kaise|ho|aap|tum|main|hoon|hai|tha|tha|kya|kahan|kab|kyun|kaise|accha|theek|sach|jhooth|paani|khana|ghar|pyaar|dost|family|mummy|papa|bhai|behen|school|college|padhai|kaam|time|jagah|logo|samay|din|raat|subah|sham|kal|aaj|parso|haan|nahi|bilkul|shayad|pata|malum|samjha|dekha|suna|bola|kaha|gaya|aaya|jaana|aana|lena|dena|karna|hona|jana|chahiye|zaroor|bas|sirf|kitna|kuch|sabko|sabse)\b/i,
@@ -329,25 +408,78 @@ function detectUserLanguage(message: string): string {
     }
   }
   
+  const messageLower = message.toLowerCase().replace(/[^\u0000-\u007F]/g, ' ');
+  const messageOriginal = message.toLowerCase();
+  
+  let bestMatch = { language: 'English', score: 0 };
+  
+  // Check Indian language patterns
+  for (const [language, pattern] of Object.entries(indianLanguagePatterns)) {
+    const matches = (messageLower.match(pattern) || []).length;
+    if (matches > bestMatch.score) {
+      bestMatch = { language, score: matches };
+    }
+  }
+  
+  // Check international language patterns
+  for (const [language, pattern] of Object.entries(internationalPatterns)) {
+    const matches = (messageLower.match(pattern) || []).length;
+    if (matches > bestMatch.score) {
+      bestMatch = { language, score: matches };
+    }
+  }
+  
   // Hinglish detection (mix of Hindi and English)
   const hinglishIndicators = /\b(yaar|arre|bas|kya|hai|haan|nahi|acha|theek|matlab|samjha|bhai|didi|uncle|aunty|ji|sahab|madam)\b/i;
   if (hinglishIndicators.test(messageLower)) {
-    console.log('Language detected: Hinglish (mixed pattern)');
-    return 'Hinglish';
+    const englishWords = message.match(/\b[a-zA-Z]+\b/g) || [];
+    const totalWords = message.split(/\s+/).length;
+    const englishRatio = englishWords.length / totalWords;
+    
+    if (englishRatio > 0.7) {
+      return { language: 'Hinglish', mixingStyle: 'heavy_mixed', confidence: 0.8 };
+    } else if (englishRatio > 0.3) {
+      return { language: 'Hinglish', mixingStyle: 'mixed', confidence: 0.9 };
+    } else {
+      return { language: bestMatch.language || 'Hindi', mixingStyle: 'pure', confidence: 0.7 };
+    }
+  }
+  
+  if (bestMatch.score > 0) {
+    const purity = analyzePurityLevel(message, bestMatch.language);
+    console.log(`Language detected: ${bestMatch.language} (${purity.mixingStyle} style)`);
+    return { language: bestMatch.language, mixingStyle: purity.mixingStyle, confidence: purity.confidence };
   }
   
   console.log('Language detected: English (default fallback)');
-  return 'English'; // Default fallback
+  return { language: 'English', mixingStyle: 'pure', confidence: 0.6 };
 }
 
-// Function to generate multilingual responses
+// Backward compatibility function
+function detectUserLanguage(message: string): string {
+  const result = detectUserLanguageStyle(message);
+  return result.language;
+}
+
+// Enhanced multilingual response generation with style mirroring
 export async function generateMultilingualResponse(
   userMessage: string,
   targetLanguage: string = 'English',
   characterName: string = 'Kruthika'
 ): Promise<string> {
   
-  const systemPrompt = `You are ${characterName}, responding in ${targetLanguage}. 
+  const languageStyle = detectUserLanguageStyle(userMessage);
+  
+  let styleInstruction = '';
+  if (languageStyle.mixingStyle === 'mixed') {
+    styleInstruction = 'Mix languages naturally like the user did. ';
+  } else if (languageStyle.mixingStyle === 'heavy_mixed') {
+    styleInstruction = 'Use heavy language mixing with lots of English words mixed in. ';
+  } else {
+    styleInstruction = 'Keep the language pure and avoid mixing. ';
+  }
+  
+  const systemPrompt = `You are ${characterName}, responding in ${targetLanguage}. ${styleInstruction}
   Maintain your warm, friendly personality while communicating in the requested language.
   If the target language is English, respond naturally. 
   If it's another language, respond fluently in that language while keeping your personality.`;
