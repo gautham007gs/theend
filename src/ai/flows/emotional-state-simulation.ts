@@ -49,8 +49,6 @@ export interface EmotionalStateOutput {
   followUpMessage?: string; // For follow-up messaging
 }
 
-// Language detection removed - now relying on Gemini's built-in language detection
-
 // Analyze conversation context for proper flow - FIXED
 const analyzeConversationContext = (userMessage: string, recentInteractions: string[]) => {
   // Add validation to prevent undefined errors
@@ -58,7 +56,7 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
     console.error('Invalid userMessage provided to analyzeConversationContext:', userMessage);
     return 'normal_chat'; // Default fallback
   }
-  
+
   const msg = userMessage.toLowerCase().trim();
   const lastFewMessages = recentInteractions.slice(-6).join(' ').toLowerCase();
   const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
@@ -81,7 +79,7 @@ const analyzeConversationContext = (userMessage: string, recentInteractions: str
       (msg.includes('hi') || msg.includes('hello') || msg.includes('hey'))) {
     return 'first_meeting';
   }
-  
+
   // If user already had conversation turns, NEVER treat as first meeting
   if (conversationTurns > 0) {
     // This is ongoing conversation - analyze accordingly
@@ -133,7 +131,7 @@ function getCurrentActivity(): string {
     hour: '2-digit', 
     hour12: false 
   }));
-  
+
   if (istHour >= 8 && istHour <= 16) return "in college";
   if (istHour >= 17 && istHour <= 19) return "traveling";
   if (istHour >= 20 && istHour <= 21) return "with family";
@@ -182,10 +180,10 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
   const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
   const isNewUser = conversationTurns <= 2;
   // Language detection removed - Gemini handles this automatically
-  
+
   // Enhanced language-specific adaptive responses
   // Removed language-specific response logic - Gemini handles language adaptation now
-  
+
   // Using simplified responses since Gemini handles language detection
   const responses = {
     what_doing: ["what are you up to?", "feeling bored?", "wanna chat for a bit?"],
@@ -228,7 +226,7 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
           ["just chatting with you", "this is fun 😊", "nothing much just excited", "was thinking about you 😉"] :
           ["just chilling wbu", "scrolling phone lol", "college assignments 📚", "thinking random stuff"];
       }
-      
+
       // Handle AI questions more naturally - NEVER reveal AI nature
       if (msg.includes('ai') || msg.includes('artificial') || msg.includes('bot') || msg.includes('robot') || msg.includes('translate') || msg.includes('google')) {
         return responses.ai_reveal_avoid;
@@ -302,14 +300,14 @@ const calculateTypingDelay = (response: string): number => {
 // Detect if this is likely a quick reply
 const isQuickReply = (userMessage: string): boolean => {
   const msg = userMessage.trim();
-  
+
   // Common quick reply patterns
   const quickReplyPatterns = [
     /^(👍|👎|❤️|😂|😘|🌙|💤|😴)$/,  // Single emoji
     /^(ok|okay|cool|nice|wow|really|great|good|bad|yes|no|maybe|sure|nope)$/i, // Single words
     /^(good night|gn|tc|miss you too|love you too|same|exactly|true|right)$/i, // Common phrases
   ];
-  
+
   return quickReplyPatterns.some(pattern => pattern.test(msg)) || 
          (msg.length <= 10 && /^[👍👎❤️😂😘🌙💤😴🔥💯✨🎉👋😊😍🥰😘💕]+$/.test(msg));
 };
@@ -367,12 +365,12 @@ const getWarningBeforeBusy = (istHour: number, userCategory: string): string => 
       "wait wait, family movie time! good night ✨"
     ]
   };
-  
+
   let timeCategory = 'day';
   if (istHour >= 6 && istHour <= 11) timeCategory = 'morning';
   else if (istHour >= 17 && istHour <= 21) timeCategory = 'evening'; 
   else if (istHour >= 22 || istHour <= 5) timeCategory = 'night';
-  
+
   const categoryWarnings = warnings[timeCategory as keyof typeof warnings];
   return categoryWarnings[Math.floor(Math.random() * categoryWarnings.length)];
 };
@@ -410,12 +408,12 @@ const getDynamicBusyReason = (istHour: number, userCategory: string): string => 
       "so sleepy, can't keep eyes open 🌙"
     ]
   };
-  
+
   let timeCategory = 'day';
   if (istHour >= 6 && istHour <= 11) timeCategory = 'morning';
   else if (istHour >= 17 && istHour <= 21) timeCategory = 'evening'; 
   else if (istHour >= 22 || istHour <= 5) timeCategory = 'night';
-  
+
   const categoryReasons = reasons[timeCategory as keyof typeof reasons];
   return categoryReasons[Math.floor(Math.random() * categoryReasons.length)];
 };
@@ -430,30 +428,30 @@ const shouldShareMedia = (userMessage: string, recentInteractions: string[], use
 } => {
   const msg = userMessage.toLowerCase();
   const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
-  
+
   // Never send media to brand new users (first 3 messages)
   if (conversationTurns <= 3) return { shouldSend: false };
-  
+
   // High chance for direct requests
   if (msg.includes('pic') || msg.includes('photo') || msg.includes('selfie') || 
       msg.includes('image') || msg.includes('dikha') || msg.includes('face')) {
-    
+
     // Sometimes go busy/ignore instead of sending pics (realistic boundary)
     if (Math.random() < 0.3) {
       return { shouldSend: false }; // Will trigger ignore feature
     }
-    
+
     const followUps = userLang === 'hindi' ? 
       ['Mai buri dikhti hu na? 🥺', 'Kaise lagi mai?', 'Pasand aayi? 😊', 'Ugly toh nahi lagti na?'] :
       ['Do I look bad? 🥺', 'How do I look?', 'You like it? 😊', 'Not ugly right?'];
-    
+
     return {
       shouldSend: true,
       mediaType: 'selfie',
       followUp: followUps[Math.floor(Math.random() * followUps.length)]
     };
   }
-  
+
   // Contextual sharing (when conversation gets deeper)
   if (conversationTurns > 8) {
     // 15% chance to randomly share during good conversations
@@ -465,11 +463,11 @@ const shouldShareMedia = (userMessage: string, recentInteractions: string[], use
           followUp: userLang === 'hindi' ? 'Bore ho rahi hu study karte karte 😴' : 'Getting so bored studying 😴'
         };
       }
-      
+
       const casualFollowUps = userLang === 'hindi' ? 
         ['Aaj kya kar rahe ho?', 'Batao kya chal raha hai', 'Missing you 💕'] :
         ['What are you doing today?', 'Tell me what\'s happening', 'Missing you 💕'];
-        
+
       return {
         shouldSend: true,
         mediaType: 'casual',
@@ -477,7 +475,7 @@ const shouldShareMedia = (userMessage: string, recentInteractions: string[], use
       };
     }
   }
-  
+
   return { shouldSend: false };
 };
 
@@ -502,7 +500,7 @@ const getMediaFile = (type: 'selfie' | 'cute' | 'study' | 'casual'): string => {
       'https://i.postimg.cc/kruthika-coffee.jpg'
     ]
   };
-  
+
   const files = mediaFiles[type];
   return files[Math.floor(Math.random() * files.length)];
 };
@@ -517,7 +515,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       const offlineHours = (Date.now() - lastGoodbyeTime) / (1000 * 60 * 60);
       const comebackResponses = getComebackAfterGoodbyeResponse(offlineHours);
       const selectedComeback = comebackResponses[Math.floor(Math.random() * comebackResponses.length)];
-      
+
       console.log('Kruthika AI: Comeback after goodbye detected');
       return {
         response: selectedComeback,
@@ -531,10 +529,10 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     const userTypeData = (input as any).userTypeData || null;
     const lastMessages = (input as any).recentInteractions?.slice(-3) || [];
     const busyResult = shouldAIBeBusyServerSafe(currentIgnoreUntil, userTypeData, lastMessages);
-    
+
     if (busyResult.shouldIgnore) {
       console.log('Kruthika AI: Going busy with reason:', busyResult.busyReason);
-      
+
       // If should warn first, send warning message instead of going directly busy
       if (busyResult.shouldWarnFirst) {
         const istHour = parseInt(new Date().toLocaleString('en-US', { 
@@ -543,7 +541,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
           hour12: false 
         }));
         const warningMessage = getWarningBeforeBusy(istHour, userTypeData?.dailyMessageCount > 40 ? 'established' : 'developing');
-        
+
         return {
           response: warningMessage,
           newMood: 'about_to_be_busy',
@@ -564,10 +562,10 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     // Analyze what user is actually talking about
     const conversationContext = analyzeConversationContext(input.userMessage, input.recentInteractions);
     console.log('Conversation context:', conversationContext);
-    
+
     // Check for media sharing opportunities
     const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, 'auto');
-    
+
     if (mediaCheck.shouldSend) {
       console.log('Kruthika AI: Sending media with follow-up message');
       return {
@@ -604,24 +602,24 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     // Implement smart memory summarization to reduce tokens while maintaining quality
     const createMemorySummary = (interactions: string[]): string => {
       if (interactions.length <= 3) return interactions.slice(-2).join('; ');
-      
+
       const recentMsgs = interactions.slice(-4);
       const userMsgs = recentMsgs.filter(msg => msg.startsWith('User:')).map(msg => msg.replace('User: ', ''));
       const aiMsgs = recentMsgs.filter(msg => msg.startsWith('Kruthika:')).map(msg => msg.replace('Kruthika: ', ''));
-      
+
       const topicsDiscussed = userMsgs.join(' ').match(/(college|family|tv|movie|friend|work|study)/gi) || [];
-      
+
       return `Topics:[${topicsDiscussed.slice(0,3).join(',')}] Last:${userMsgs.slice(-1)[0]?.substring(0,30) || 'none'}`;
     };
-    
+
     const memSummary = createMemorySummary(input.recentInteractions);
-    
+
     // Enhanced natural system prompt with better personality
-    const systemPrompt = `You're Kruthika, 23, fun-loving psychology student from Mumbai! You LOVE making friends and chatting! 😊
+    const systemPrompt = `You're Kruthika, 23, fun-loving psychology student from Mumbai! You LOVE making friends and chatting 😊
 
 PERSONALITY: Super friendly, bubbly, genuine, loves connecting with people, always excited to chat, warm and caring, slightly flirty but innocent, very relatable and down-to-earth.
 
-LANGUAGE: Reply in the EXACT SAME LANGUAGE as the user! If they use Hindi, reply in Hindi. If Kannada, reply in Kannada. If they mix languages (Hinglish), mix naturally too. Mirror their style - pure language for pure, mixed for mixed.
+LANGUAGE: You know all languages fluently. Respond naturally in whatever language the user uses - Hindi, English, Kannada, Tamil, Telugu, or any mix. Be completely natural and authentic.
 
 Context: ${conversationContext}
 Recent: ${memSummary}
@@ -631,16 +629,8 @@ TEXTING STYLE:
 - Keep it real and natural like texting a close friend
 - Usually 1-12 words, sometimes longer when excited
 - Skip most punctuation (very casual!)
-- Use expressions like "yaar" "arre" "omg" naturally
-- Real shortcuts: "kya kar rhi" not "kya kar rahi", "ur" not "your"
-- NO asterisks, formal language, or AI-like responses
-- Show genuine interest in the person
-- Be enthusiastic and warm
-- Sometimes use emojis naturally
-
-You're genuinely interested in making this person your friend! Be yourself - bubbly, caring, fun!
-
-Reply:`;
+- Use expressions like "yaar" "arre" naturally
+`;
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
@@ -654,7 +644,7 @@ Reply:`;
       .replace(/\s+/g, ' ')
       .split('\n')[0]
       .trim();
-    
+
     // Remove formal words and make more casual
     processedResponse = processedResponse
       .replace(/\bmein\b/g, 'me')
@@ -668,7 +658,7 @@ Reply:`;
       .replace(/arre yaar,?\s*/gi, 'arre ')
       .replace(/\s+/g, ' ')
       .trim();
-    
+
     // Force shorter responses - cut at natural break points
     if (processedResponse.length > 40) {
       const words = processedResponse.split(' ');
@@ -686,50 +676,54 @@ Reply:`;
         }
       }
     }
-    
+
     // Add very casual endings sometimes
     if (Math.random() < 0.3 && processedResponse.length < 25 && !processedResponse.includes('😊') && !processedResponse.includes('😅')) {
       const casualEndings = ['😊', '😅', 'yaar', 'na'];
       processedResponse += ' ' + casualEndings[Math.floor(Math.random() * casualEndings.length)];
     }
 
-    // Check if response should be broken into multiple parts
-    const shouldBreakIntoMultipleParts = (text: string): boolean => {
-      return text.length > 25 && (
-        text.includes(' toh ') || 
-        text.includes(' aur ') || 
-        text.includes(' but ') ||
-        text.includes(' lectures ') ||
-        text.split(' ').length > 6
-      );
-    };
-
-    let finalResponse = processedResponse;
+    // Smart response splitting for natural flow
     let multiPartResponse: string[] | undefined;
+    let finalResponse = processedResponse;
 
-    // Break into natural parts if too long
-    if (shouldBreakIntoMultipleParts(processedResponse)) {
-      const breakPoints = [' toh ', ' aur ', ' but ', ' phir '];
+    // Only split if response is long enough and contains natural break points
+    if (processedResponse.length > 60) {
       let broken = false;
-      
-      for (const breakPoint of breakPoints) {
-        if (processedResponse.includes(breakPoint)) {
-          const parts = processedResponse.split(breakPoint);
-          if (parts.length === 2 && parts[0].length >= 8 && parts[1].length >= 8) {
-            multiPartResponse = [
-              parts[0].trim(),
-              parts[1].trim()
-            ];
+
+      // Look for natural break points (sentence endings)
+      const sentenceEndings = /[.!?]/g;
+      const matches = [...processedResponse.matchAll(sentenceEndings)];
+
+      if (matches.length > 1) {
+        // Find a good split point around the middle
+        const targetSplit = Math.floor(processedResponse.length / 2);
+        let bestSplit = -1;
+        let bestDistance = Infinity;
+
+        for (const match of matches) {
+          const distance = Math.abs(match.index! - targetSplit);
+          if (distance < bestDistance && match.index! > 15 && match.index! < processedResponse.length - 15) {
+            bestDistance = distance;
+            bestSplit = match.index! + 1;
+          }
+        }
+
+        if (bestSplit > 0) {
+          const firstPart = processedResponse.substring(0, bestSplit).trim();
+          const secondPart = processedResponse.substring(bestSplit).trim();
+
+          if (firstPart.length > 10 && secondPart.length > 10) {
+            multiPartResponse = [firstPart, secondPart];
             broken = true;
-            break;
           }
         }
       }
-      
-      // If no natural break found, split by length
-      if (!broken && processedResponse.length > 30) {
+
+      // Fallback: split by length if no good sentence break found
+      if (!broken && processedResponse.length > 80) {
         const words = processedResponse.split(' ');
-        if (words.length > 5) {
+        if (words.length > 8) {
           const mid = Math.floor(words.length / 2);
           multiPartResponse = [
             words.slice(0, mid).join(' '),
@@ -739,10 +733,6 @@ Reply:`;
       }
     }
 
-    console.log('Kruthika AI: Generated contextual response:', finalResponse);
-    if (multiPartResponse) {
-      console.log('Kruthika AI: Broken into parts:', multiPartResponse);
-    }
 
     // ENHANCE WITH PSYCHOLOGICAL ENGAGEMENT SYSTEM
     const conversationTurns = input.recentInteractions.filter(m => m.startsWith('User:')).length;
@@ -785,7 +775,7 @@ Reply:`;
     }
 
     const enhancedFinalResponse = enhancement.enhancedResponse || finalResponse;
-    
+
     console.log('Kruthika AI: Enhanced with psychological engagement, engagement level:', userProfile.engagementLevel);
     console.log('Kruthika AI: Final response:', enhancedFinalResponse);
 
