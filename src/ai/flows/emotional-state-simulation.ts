@@ -748,7 +748,7 @@ Reply:`;
       preferredInteractionStyle: 'playful'
     };
 
-    const userEngagement = (input.dailyMessageCount || 0) > 20 ? 'high' : 
+    const userEngagement: 'high' | 'medium' | 'low' = (input.dailyMessageCount || 0) > 20 ? 'high' : 
                           (input.dailyMessageCount || 0) > 8 ? 'medium' : 'low';
 
     const psychologyContext = {
