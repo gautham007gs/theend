@@ -20,32 +20,8 @@ export interface BusyResponse {
 
 // Detect user's primary language from recent chat
 export function detectChatLanguage(recentMessages: string[]): string {
-  const allText = recentMessages.join(' ').toLowerCase();
-  
-  // Enhanced Indian language detection
-  const languagePatterns = {
-    hindi: /\b(kya|hai|hoon|tum|mai|mujhe|tumhe|kaise|kahan|kyun|haan|nahi|acha|theek|arre|yaar|bhai|didi|ji|haan|woh|yeh|koi|kuch|sab|main|tu|aap|kar|raha|rahi|ho|na|se|me|ko|ki|ka|ke|baad|pehle|abhi|aur|ya|par|lekin|agar|toh|phir|jab|tab|kab|kaise|kahan|kyun|kaunsa|kitna|kaun|jo|jiske|jiska|dekh|dekho|suno|bolo|batao|pata|samjha|samjhi|lag|laga|lagta|feel|feeling|love|pyaar|dil|mann|ghar|paisa|time|kam|kaam|padhai|study|college|friend|dost|family|mummy|papa|maa|dad|behen|bhai|shaadi|boyfriend|girlfriend)\b/gi,
-    kannada: /\b(nanu|ninna|naanu|neenu|yaake|hege|elli|yenu|yen|illa|ide|idhe|guru|maga|hudugi|huduga|nanagoo|ninage|bekaytu|beka|agutte|agalla|chennagide|olleya|bari|hogi|banni|hogona|solpa|tumba|madri|madoke|kelsa|ushe|ruchi|khushi|ashtu|enaythu|gottu|gothilla|kodalla|kodu|tago|tingale|tappu|right|correct|sakkath|super|maja|masti|full|ok|sari|fine|good|bad|worst|best|first|last|time|iga|hinde|munche|naale|next|present|love|prema|dil|mana|hrudaya|ghar|mane|amma|appa|akka|anna|cousin|friend)\b/gi,
-    tamil: /\b(naan|nee|avan|aval|yaaruke|epadi|enge|enna|en|illa|iruku|varuma|poguma|vaa|poo|nalla|ketta|periya|chinna|rombha|konjam|seiya|solla|kekka|paakka|puriyuthu|puriyala|mukiyam|time|neram|kelamburen|vandhuten|sapduven|saapten|pakkalam|paathaalaam|sollu|kelu|sapadu|veetla|amma|appa|anna|akka|friend|nanban|tholan|love|kaadhal|manasu|moonu|naalu|anju|aaru|onnu|rendu)\b/gi,
-    bengali: /\b(ami|tumi|se|keno|kivabe|kothay|ki|na|ache|nei|korbo|korte|korchi|koro|kore|bhalo|bhalobastha|voy|lagche|lagbe|khub|ektu|boro|choto|notun|purano|shotti|mithya|ghor|baba|ma|bhai|bon|friend|bondhu|time|somoy|kaj|kaam|khaoa|jol|cha|coffee|college|school|office|jaabo|ashbo|aashchi|jabo|eshe|gechi|dekhechi|shune|bolechi|jani|jano|jane|chena|ochena|bhebhe|vebe|mone|chinta|hashte|hashchi|kadtey|kadchi)\b/gi,
-    marathi: /\b(mi|tu|to|ti|ka|kasa|kuthe|kay|nahi|aahe|nai|karto|kartes|karnar|kar|kela|kelela|chan|vait|motha|chota|nava|juna|khara|khota|ghar|aai|baba|bhau|tai|friend|mitra|velu|vel|ata|nantar|ajun|kal|uddya|khaycha|pinya|pani|cha|coffee|college|office|jaanar|yenar|aalo|gelo|pahila|aikla|sangitla|mahit|kalte|olakhte|vatate|hasnyacha|rodnyacha)\b/gi,
-    gujarati: /\b(hu|tu|te|kya|kevi|kya|kevi|kya|kem|kyan|na|che|nathi|karish|karje|kari|saras|kharab|moto|nano|navu|junu|sachu|khotu|ghar|papa|mama|bhai|ben|ben|friend|mitra|samay|kaam|khavu|piva|pani|cha|coffee|college|office|jaish|avish|aavya|gaya|joya|sanbhaylu|kehvu|jane|olkhe|lagtu|hasvu|rovu)\b/gi,
-    telugu: /\b(nenu|nuvvu|atanu|aame|enduku|ela|ekkada|emiti|em|ledu|undi|vasta|veltha|vachchi|velli|chesi|chestha|manchidi|chedu|pedda|chinna|kotha|paatha|nijam|koduku|kodalu|intlo|amma|nanna|anna|akka|friend|snehitudu|time|pani|tinta|taguta|neeru|tea|coffee|college|office|vastanu|veltanu|vachanu|vellanu|chusanu|vinna|cheppanu|telsu|teliyadu|anipistundi|navvu|edustanu|edavadam|edupu)\b/gi,
-    punjabi: /\b(main|tu|oh|kiun|kive|kithe|ki|nahi|hai|nai|karda|kardi|karuga|kar|kita|changa|mada|vadda|chota|nava|purana|sach|jhoot|ghar|papa|mama|veer|bhen|yaar|dost|time|kaam|khana|pina|pani|cha|coffee|college|office|janga|awega|aya|gaya|dekheya|suneya|keha|pata|lagda|hasna|rona)\b/gi
-  };
-
-  // Score each language based on pattern matches
-  const scores = {};
-  for (const [lang, pattern] of Object.entries(languagePatterns)) {
-    const matches = allText.match(pattern) || [];
-    scores[lang] = matches.length;
-  }
-
-  // Return language with highest score
-  const maxScore = Math.max(...Object.values(scores));
-  if (maxScore === 0) return 'english';
-  
-  return Object.keys(scores).find(lang => scores[lang] === maxScore) || 'english';
+  // Language detection removed - now relying on Gemini's built-in language detection
+  return 'auto';
 }
 
 // Get contextual busy reason based on chat flow and current context

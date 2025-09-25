@@ -42,69 +42,7 @@ export interface EmotionalStateOutput {
   followUpMessage?: string; // For follow-up messaging
 }
 
-// Enhanced multi-language detection for all major Indian languages
-const detectUserLanguage = (userMessage: string, recentInteractions: string[]): string => {
-  const msg = userMessage.toLowerCase();
-  const recentMsgs = recentInteractions.slice(-3).join(' ').toLowerCase();
-  const fullText = msg + ' ' + recentMsgs;
-  
-  // Unicode script detection for major Indian languages
-  if (/[\u0900-\u097F]/.test(userMessage)) return 'hindi';
-  if (/[\u0C80-\u0CFF]/.test(userMessage)) return 'kannada';
-  if (/[\u0B80-\u0BFF]/.test(userMessage)) return 'tamil';
-  if (/[\u0C00-\u0C7F]/.test(userMessage)) return 'telugu';
-  if (/[\u0980-\u09FF]/.test(userMessage)) return 'bengali';
-  if (/[\u0A80-\u0AFF]/.test(userMessage)) return 'gujarati';
-  if (/[\u0A00-\u0A7F]/.test(userMessage)) return 'punjabi';
-  if (/[\u0D00-\u0D7F]/.test(userMessage)) return 'malayalam';
-  if (/[\u0B00-\u0B7F]/.test(userMessage)) return 'odia';
-  
-  // Enhanced word pattern detection for precise language matching
-  const languagePatterns = {
-    hindi: ['kya', 'hai', 'kar', 'rahi', 'ho', 'kuch', 'nahi', 'bas', 'dekh', 'raha', 'tum', 'tumhara', 'mera', 'haan', 'naa', 'yaar', 'arre', 'bhi', 'aur', 'kaise', 'kahan', 'kyun', 'kab', 'kaun', 'mai', 'tu', 'wo', 'ye', 'acha', 'theek', 'sahi', 'ghar', 'paani', 'khana', 'college', 'padhai', 'dost', 'family', 'mummy', 'papa'],
-    
-    kannada: ['yaake', 'hege', 'yenu', 'enu', 'illa', 'ide', 'alli', 'banni', 'hogu', 'madu', 'thumba', 'chennagi', 'swalpa', 'olle', 'kelu', 'nodi', 'bere', 'onde', 'eradu', 'muru', 'madtaidya', 'madtidya', 'madididira', 'idira', 'pa', 'anna', 'guru', 'yaar', 'nim', 'nanu', 'hesru', 'yava', 'kaliri', 'rakta', 'nan', 'nivu', 'nimge', 'ninage'],
-    
-    tamil: ['enna', 'epdi', 'enga', 'yaaru', 'yen', 'illa', 'irukku', 'varen', 'poren', 'sollu', 'paaru', 'nalla', 'romba', 'konjam', 'oru', 'rendu', 'moonu', 'naalu', 'anju'],
-    
-    telugu: ['enti', 'ela', 'ekkada', 'evaru', 'enduku', 'ledu', 'undi', 'vastanu', 'potanu', 'cheppu', 'chudandi', 'bagundi', 'chala', 'konchem', 'okati', 'rendu', 'mudu', 'nalugu'],
-    
-    bengali: ['ki', 'kemon', 'kothay', 'ke', 'keno', 'na', 'ache', 'jabo', 'asbo', 'bolo', 'dekho', 'bhalo', 'khub', 'ektu', 'ek', 'dui', 'tin', 'char', 'panch'],
-    
-    marathi: ['kay', 'kasa', 'kuthe', 'kon', 'ka', 'nahi', 'ahe', 'jato', 'yeto', 'sang', 'bagh', 'chaan', 'khup', 'thoda', 'ek', 'don', 'teen', 'char', 'panch'],
-    
-    gujarati: ['shu', 'kem', 'kya', 'kon', 'kyare', 'nathi', 'che', 'jau', 'avu', 'kaho', 'juo', 'saru', 'ghanu', 'thodu', 'ek', 'be', 'tran', 'char', 'panch']
-  };
-  
-  // Count matches for each language
-  let maxMatches = 0;
-  let detectedLang = 'english';
-  
-  Object.entries(languagePatterns).forEach(([lang, words]) => {
-    const matches = words.filter(word => fullText.includes(word)).length;
-    if (matches > maxMatches) {
-      maxMatches = matches;
-      detectedLang = lang;
-    }
-  });
-  
-  // Hinglish detection (mix of English and Hindi words)
-  const englishWords = ['what', 'how', 'where', 'when', 'why', 'the', 'and', 'you', 'are', 'have', 'will', 'can', 'do', 'going', 'come', 'good', 'bad', 'ok', 'okay', 'nice', 'cool', 'awesome', 'great', 'hello', 'hi', 'hey', 'yes', 'no', 'maybe', 'really', 'super', 'totally'];
-  const englishCount = englishWords.filter(word => fullText.includes(word)).length;
-  const hindiCount = languagePatterns.hindi.filter(word => fullText.includes(word)).length;
-  
-  if (englishCount > 0 && hindiCount > 0) {
-    detectedLang = 'hinglish';
-  } else if (maxMatches >= 2) {
-    // Keep detected regional language
-  } else if (hindiCount >= 1) {
-    detectedLang = 'hindi';
-  } else if (englishCount > 0 || maxMatches === 0) {
-    detectedLang = 'english';
-  }
-  
-  return detectedLang;
-};
+// Language detection removed - now relying on Gemini's built-in language detection
 
 // Analyze conversation context for proper flow - FIXED
 const analyzeConversationContext = (userMessage: string, recentInteractions: string[]) => {
@@ -236,78 +174,19 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
   const msg = userMessage.toLowerCase().trim();
   const conversationTurns = recentInteractions.filter(m => m.startsWith('User:')).length;
   const isNewUser = conversationTurns <= 2;
-  const userLang = detectUserLanguage(userMessage, recentInteractions);
+  // Language detection removed - Gemini handles this automatically
   
   // Enhanced language-specific adaptive responses
-  const getLanguageAdaptedResponses = (userLang: string, userMessage: string) => {
-    const msg = userMessage.toLowerCase();
-    
-    // Detect English mixing for adaptive responses
-    const englishWords = ['what', 'how', 'where', 'when', 'why', 'the', 'and', 'you', 'are', 'have', 'will', 'can', 'do', 'going', 'come', 'good', 'bad', 'ok', 'okay', 'nice', 'cool', 'awesome', 'great', 'hello', 'hi', 'hey', 'yes', 'no', 'maybe', 'really', 'super', 'totally'];
-    const hasEnglish = englishWords.some(word => msg.includes(word));
-    
-    const responses = {
-      kannada: {
-        what_doing: hasEnglish ? ["enu madtaidya pa?", "what madtaidya?", "bore aagidya?"]
-                               : ["enu madididira?", "yaake bore aagidira?", "swalpa chat madona?"],
-        greeting: hasEnglish ? ["hey! hege idira?", "hi yaar, chennagi idira?", "namaskara yaar!"]
-                              : ["namaskara!", "hege idira?", "chennagi idira?"],
-        name_question: hasEnglish ? ["nanu Kruthika yaar", "I'm Kruthika pa", "Kruthika antha name"]
-                                  : ["nanu Kruthika", "Kruthika antha hesru", "psychology student"],
-        casual: hasEnglish ? ["arre yaar", "super fun!", "nice aagide", "cool madtaidya"]
-                           : ["thumba chennagi ide", "swalpa time kodri", "olle chat madona"],
-        ai_reveal_avoid: hasEnglish ? ["real aagi idini yaar", "why doubt madtira?", "normal chat madtaidvi"]
-                                    : ["nanu real aagi idini", "yen doubt madtira?", "normal aagi matadta idini"]
-      },
-      
-      tamil: {
-        what_doing: hasEnglish ? ["enna panra da?", "what panra?", "bore aaidcha?"]
-                               : ["enna pandringa?", "bore aaidchaa?", "konjam chat pannalaam?"],
-        greeting: hasEnglish ? ["hey! epdi irukka?", "hi da, nalla irukka?"]
-                              : ["vanakkam!", "epdi irukkenga?", "nalla irukkenga?"],
-        name_question: hasEnglish ? ["naan Kruthika da", "I'm Kruthika", "Kruthika nu name"]
-                                  : ["naan Kruthika", "en peru Kruthika", "psychology student"],
-        casual: hasEnglish ? ["super da", "romba fun!", "nice irukku"]
-                           : ["romba nalla irukku", "konjam time kudunga", "nalla chat pannalam"],
-        ai_reveal_avoid: hasEnglish ? ["real thaan da", "why doubt panra?", "normal chat thaan"]
-                                    : ["naan real thaan", "yen doubt panrenga?", "normal aaga pesittu irukken"]
-      },
-      
-      hindi: {
-        what_doing: hasEnglish ? ["kya kar rahe ho yaar?", "what's up?", "bore ho gaye?"]
-                               : ["kya kar rahe ho?", "bore ho gaye kya?", "thoda chat karte hain?"],
-        greeting: hasEnglish ? ["hey! kaise ho?", "hi yaar, kya haal?", "namaste yaar!"]
-                              : ["namaste!", "kya haal hai?", "kaise ho?"],
-        name_question: hasEnglish ? ["main Kruthika hun yaar", "I'm Kruthika", "name hai Kruthika"]
-                                  : ["main Kruthika hun", "mera naam Kruthika hai", "psychology student hun"],
-        casual: hasEnglish ? ["arre yaar", "super fun!", "nice chat", "awesome hai"]
-                           : ["bahut achha", "maza aa raha hai", "thoda time do"],
-        ai_reveal_avoid: hasEnglish ? ["real hun yaar", "why doubt kar rahe ho?", "normal baat kar rahi hun"]
-                                    : ["main real hun", "kya doubt kar rahe ho?", "bilkul normal baat kar rahi hun"]
-      },
-      
-      hinglish: {
-        what_doing: ["what's up yaar?", "kya kar rahe ho?", "feeling bored kya?", "wanna chat na?"],
-        greeting: ["hey there! kaise ho?", "hi yaar! what's up?", "namaste! how are you?"],
-        name_question: ["I'm Kruthika yaar", "name hai Kruthika", "main Kruthika hun", "psychology student hun"],
-        casual: ["super fun yaar", "really nice", "awesome chat kar rahe hain", "bahut maza aa raha hai"],
-        ai_reveal_avoid: ["real hun yaar", "why doubt kar rahe ho?", "totally normal conversation", "bilkul real hun"]
-      },
-      
-      english: {
-        what_doing: ["what are you up to?", "feeling bored?", "wanna chat for a bit?", "any exciting plans?"],
-        greeting: ["hey there!", "what's up?", "how are you doing?", "so happy to chat!"],
-        name_question: ["I'm Kruthika", "my name is Kruthika", "psychology student", "I'm from Mumbai"],
-        casual: ["this is fun!", "really nice", "awesome chat", "having a good time"],
-        ai_reveal_avoid: ["I'm real yaar", "why do you doubt?", "totally normal conversation", "I'm a psychology student"]
-      }
-    };
-    
-    return responses[userLang as keyof typeof responses] || responses.english;
-  };
+  // Removed language-specific response logic - Gemini handles language adaptation now
   
-  const adaptiveUserLang = detectUserLanguage(userMessage, recentInteractions);
-  const responses = getLanguageAdaptedResponses(adaptiveUserLang, userMessage);
+  // Using simplified responses since Gemini handles language detection
+  const responses = {
+    what_doing: ["what are you up to?", "feeling bored?", "wanna chat for a bit?"],
+    greeting: ["hey there!", "what's up?", "how are you doing?"],
+    name_question: ["I'm Kruthika", "my name is Kruthika", "psychology student"],
+    casual: ["this is fun!", "really nice", "awesome chat"],
+    ai_reveal_avoid: ["I'm real yaar", "why do you doubt?", "totally normal conversation"]
+  };
 
   // Handle missed messages first if they exist
   if (missedMessages && missedMessages.length > 0) {
@@ -316,40 +195,17 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
 
   switch (context) {
     case 'user_saying_goodbye':
-      if (userLang === 'hindi') {
-        return isNewUser ? 
-          ["arre itni jaldi 🥺", "wapas ana jaldi", "good night yaar ❤️"] :
-          ["good night yaar 🌙", "bye bye tc na", "soja achhe se", "kal baat krte hain"];
-      }
       return isNewUser ? 
-        ["aw leaving so soon 🥺", "come back soon miss u", "night cant wait to chat more"] :
-        ["good night yaar 🌙", "bye bye tc na", "sweet dreams 😴", "tc talk tomorrow"];
+        ["aww leaving so soon? 🥺", "come back soon yeah?", "take care! 💕"] :
+        ["good night! 🌙", "sleep well", "talk tomorrow?", "bye bye 👋"];
 
     case 'asking_identity':
-      if (userLang === 'kannada') {
-        return isNewUser ?
-          ["nanu Kruthika", "Mumbai nalli idini 😊", "psychology student", "nimge friend aagi chat madona 😉"] :
-          ["nanu Kruthika 😊", "psychology student", "Kruthika antha hesru"];
-      }
-      if (userLang === 'hindi') {
-        return isNewUser ? 
-          ["main Kruthika hun", "Mumbai se hun 😊", "psychology student", "tumhari friend Kruthika 😉"] :
-          ["main Kruthika hun 😊", "psychology student", "bilkul clear hai - Kruthika"];
-      }
       return isNewUser ? 
         ["I'm Kruthika", "23 from Mumbai 😊", "psychology student", "your friend Kruthika 😉"] :
         ["I'm Kruthika 😊", "psychology student", "definitely Kruthika"];
 
     case 'first_meeting':
       if (msg.includes('hi') || msg.includes('hello')) {
-        if (userLang === 'hindi') {
-          return [
-            "hey main kruthika", "tum kaun ho 😊",
-            "hiiii pehli baar", "welcome",
-            "hello main kruthika", "tumhara naya dost 👋",
-            "arre finally koi interesting 😉"
-          ];
-        }
         return [
           "hey there im kruthika 😊", "whats your name",
           "hiiii first time here", "welcome",
@@ -361,16 +217,6 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
 
     case 'direct_question':
       if (msg.includes('kya kar') || msg.includes('what doing') || msg.includes('madtaidya') || msg.includes('enu madtidiya')) {
-        if (userLang === 'kannada') {
-          return isNewUser ?
-            ["nimge reply madta idini", "thumba fun aagide 😊", "kuch nahi, nim bare sochta idini", "nim message ge wait madta idini 😉"] :
-            ["kuch nahi yaar", "bas free time", "phone nalli scroll madta idini", "college work ide 📚"];
-        }
-        if (userLang === 'hindi') {
-          return isNewUser ? 
-            ["tumse baat kar rhi hun", "maza aa raha hai 😊", "kuch nahi bas tumhara wait", "tumhare bare me soch rahi thi 😉"] :
-            ["kuch nahi yaar", "bas chill kar rahi hun", "phone dekh rahi thi lol", "college ka kaam tha 📚"];
-        }
         return isNewUser ? 
           ["just chatting with you", "this is fun 😊", "nothing much just excited", "was thinking about you 😉"] :
           ["just chilling wbu", "scrolling phone lol", "college assignments 📚", "thinking random stuff"];
@@ -383,14 +229,12 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
       break;
 
     case 'normal_chat':
-      // Handle common Hindi responses for ongoing chat
-      if (userLang === 'hindi') {
-        if (msg.includes('tv') || msg.includes('dekh')) {
-          return ["achha kya dekh rhe ho", "mujhe bhi dekhna hai", "boring hai ya interesting", "main bhi tv dekhti rehti hun"];
-        }
-        if (msg.includes('kuch nahi')) {
-          return ["arre bore ho rhe ho", "chalo kuch interesting baat krte", "main hun na mujhse baat karo 😊", "koi naya show dekho"];
-        }
+      // Handle common responses for ongoing chat
+      if (msg.includes('tv') || msg.includes('dekh') || msg.includes('watch')) {
+        return ["what are you watching?", "anything interesting?", "I love watching shows too", "tell me about it"];
+      }
+      if (msg.includes('nothing') || msg.includes('kuch nahi') || msg.includes('boring')) {
+        return ["feeling bored?", "let's chat about something fun", "I'm here to keep you company 😊", "what would you like to talk about?"];
       }
       break;
   }
@@ -778,8 +622,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     console.log('Conversation context:', conversationContext);
     
     // Check for media sharing opportunities
-    const detectedUserLang = detectUserLanguage(input.userMessage, input.recentInteractions);
-    const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, detectedUserLang);
+    const mediaCheck = shouldShareMedia(input.userMessage, input.recentInteractions, 'auto');
     
     if (mediaCheck.shouldSend) {
       console.log('Kruthika AI: Sending media with follow-up message');
@@ -822,18 +665,17 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       const userMsgs = recentMsgs.filter(msg => msg.startsWith('User:')).map(msg => msg.replace('User: ', ''));
       const aiMsgs = recentMsgs.filter(msg => msg.startsWith('Kruthika:')).map(msg => msg.replace('Kruthika: ', ''));
       
-      const langForSummary = detectUserLanguage(input.userMessage, interactions);
       const topicsDiscussed = userMsgs.join(' ').match(/(college|family|tv|movie|friend|work|study)/gi) || [];
       
-      return `Lang:${langForSummary} Topics:[${topicsDiscussed.slice(0,3).join(',')}] Last:${userMsgs.slice(-1)[0]?.substring(0,30) || 'none'}`;
+      return `Topics:[${topicsDiscussed.slice(0,3).join(',')}] Last:${userMsgs.slice(-1)[0]?.substring(0,30) || 'none'}`;
     };
     
     const memSummary = createMemorySummary(input.recentInteractions);
     
-    // Ultra-casual natural system prompt for realistic texting
+    // Natural system prompt that lets Gemini handle language detection
     const systemPrompt = `You're Kruthika, 23, Mumbai psychology student. Text like a real girl - super casual, no punctuation much, typos ok, short msgs.
 
-${detectedUserLang === 'hindi' || detectedUserLang === 'hinglish' ? 'Mix hindi english naturally like "haan yaar kya kar rhi hu"' : 'Reply naturally'}
+IMPORTANT: Reply in the SAME LANGUAGE as the user. If they use Hindi, reply in Hindi. If they use Kannada, reply in Kannada. If they mix languages (like Hinglish), mix naturally too. Mirror their language style completely.
 
 Context: ${conversationContext}
 Recent: ${memSummary}
@@ -842,10 +684,11 @@ User: "${input.userMessage}"
 Rules:
 - Max 1-8 words usually 
 - Skip periods/commas mostly
-- Use "yaar" "arre" "achha" naturally
+- Use natural expressions like "yaar" "arre" if chatting in Hindi/Hinglish
 - Real texting style like "kya kar rhi" not "kya kar rahi"
 - NO asterisks or formal stuff
 - Sound like 23yr old Mumbai girl texting
+- Match user's language and tone exactly
 
 Reply:`;
 
