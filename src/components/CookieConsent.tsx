@@ -18,6 +18,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   const [showConsent, setShowConsent] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   useEffect(() => {
     // Check if user has already given consent
@@ -57,6 +58,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   };
 
   const handleAcceptAll = () => {
+    setHasInteracted(true);
     setCookieConsent({
       necessary: true,
       analytics: true,
@@ -68,6 +70,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   };
 
   const handleAcceptNecessary = () => {
+    setHasInteracted(true);
     setCookieConsent({
       necessary: true,
       analytics: false,
@@ -84,66 +87,100 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   };
 
   const toggleCustomize = () => {
+    setHasInteracted(true);
     setShowCustomize(!showCustomize);
   };
 
   if (!showConsent) return null;
 
   return (
-    <div 
-      className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 pointer-events-none p-4",
-        "transition-opacity duration-300",
-        isVisible ? "opacity-100" : "opacity-0",
-        className
+    <>
+      {/* Background blur overlay until user interacts */}
+      {!hasInteracted && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" />
       )}
-    >
+      
+      <div 
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-50 pointer-events-none p-4",
+          "transition-opacity duration-300",
+          isVisible ? "opacity-100" : "opacity-0",
+          className
+        )}
+      >
       <Card className={cn(
-        "w-full max-w-2xl mx-auto pointer-events-auto",
-        "bg-white/95 backdrop-blur-md border-primary/20 shadow-2xl rounded-lg",
-        "transform transition-transform duration-300",
-        showCustomize ? "max-h-[400px]" : "max-h-[200px]", // Dynamic height
-        "overflow-hidden transition-all duration-300",
+        "w-full max-w-4xl mx-auto pointer-events-auto",
+        "bg-white/98 backdrop-blur-lg border-primary/30 shadow-2xl rounded-xl",
+        "transform transition-all duration-300",
+        showCustomize ? "max-h-[450px]" : "max-h-[280px]",
+        "overflow-hidden",
         isVisible ? "translate-y-0" : "translate-y-full"
       )}>
-        <CardContent className="p-4 space-y-4">
+        <CardContent className="p-6 space-y-5">
           {/* Header */}
-          <div className="flex items-center gap-2">
-            <Cookie className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold text-foreground text-lg">We use cookies</h3>
+          <div className="flex items-center gap-3">
+            <Cookie className="h-6 w-6 text-[#25D366]" />
+            <div>
+              <h3 className="font-bold text-foreground text-xl">Cookie Preferences</h3>
+              <p className="text-xs text-muted-foreground mt-1">Help us provide the best experience</p>
+            </div>
           </div>
 
-          {/* Simplified Content */}
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            We use cookies to personalize your chat experience and improve our services. You can choose which to allow.
-          </p>
+          {/* Enhanced Content */}
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We use cookies to personalize your chat experience with Kruthika and improve our services.
+            </p>
+            <p className="text-xs text-muted-foreground bg-blue-50 p-2 rounded-md">
+              💡 <strong>By clicking "Accept All",</strong> you agree to our <Link href="/legal/terms" className="text-primary hover:underline font-medium">Terms of Service</Link> and <Link href="/legal/privacy" className="text-primary hover:underline font-medium">Privacy Policy</Link>.
+            </p>
+          </div>
 
-          {/* Action buttons */}
-          <div className="flex gap-3">
+          {/* Optimized Action buttons for high click-through */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Primary CTA - positioned prominently for maximum clicks */}
             <Button
               onClick={handleAcceptAll}
-              className="bg-[#25D366] hover:bg-[#25D366]/90 text-white font-semibold px-6"
-              size="default"
+              className="bg-[#25D366] hover:bg-[#25D366]/90 text-white font-bold px-8 py-3 text-base shadow-lg order-1 sm:order-2 flex-1 sm:flex-none"
+              size="lg"
             >
-              Accept All
+              ✅ Accept All & Continue
             </Button>
-            <Button
-              onClick={handleAcceptNecessary}
-              variant="outline"
-              className="text-gray-600 border-gray-300 hover:bg-gray-50"
-              size="default"
-            >
-              Only Essential
-            </Button>
+            
+            {/* Secondary options - smaller and less prominent */}
+            <div className="flex gap-2 order-2 sm:order-1">
+              <Button
+                onClick={handleAcceptNecessary}
+                variant="outline"
+                className="text-gray-600 border-gray-300 hover:bg-gray-50 text-sm px-4 flex-1 sm:flex-none"
+                size="sm"
+              >
+                Essential Only
+              </Button>
+              
+              {/* Responsive customize - hidden on small screens */}
+              <Button
+                onClick={toggleCustomize}
+                variant="ghost"
+                className="text-primary hover:bg-primary/10 text-sm px-3 hidden sm:inline-flex"
+                size="sm"
+              >
+                Customize
+              </Button>
+            </div>
+          </div>
+          
+          {/* Mobile customize button - only shown when needed */}
+          {!showCustomize && (
             <Button
               onClick={toggleCustomize}
               variant="ghost"
-              className="text-primary hover:bg-primary/5"
-              size="default"
+              className="text-primary hover:bg-primary/10 text-xs w-full sm:hidden mt-1"
+              size="sm"
             >
-              Customize
+              ⚙️ Advanced Options
             </Button>
-          </div>
+          )}
 
           {/* Expandable Customize Section */}
           {showCustomize && (
@@ -193,6 +230,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

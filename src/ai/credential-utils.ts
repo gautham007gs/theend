@@ -24,7 +24,7 @@ export function parseGoogleCredentials(): any | null {
 
     console.log('Credential Utils: Processing credentials JSON...');
     console.log('Credential Utils: Raw JSON length:', credentialsJson.length);
-    console.log('Credential Utils: First 100 chars:', credentialsJson.substring(0, 100));
+    // NOTE: Never log credential content for security
     
     // Handle different credential formats
     let cleanedCredentials = credentialsJson.trim();
@@ -352,7 +352,7 @@ function readCredentialsFromEnvFile(): string | null {
         if (credentialsLines.length > 0) {
           const fullJson = credentialsLines.join('\n');
           console.log(`Credential Utils: Extracted ${credentialsLines.length} lines of JSON`);
-          console.log('Credential Utils: Extracted JSON preview:', fullJson.substring(0, 200) + '...');
+          console.log('Credential Utils: Successfully extracted JSON from .env.local (content masked for security)');
           return fullJson;
         }
       }

@@ -2,8 +2,15 @@
 'use server'
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
+import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
 
-export async function sendMessage(message: string, currentMood?: string, chatHistory?: string[]) {
+export async function sendMessage(
+  message: string, 
+  currentMood?: string, 
+  chatHistory?: string[],
+  userTypeData?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number },
+  currentIgnoreUntil?: number | null
+) {
   try {
     console.log('Server Action: Received message:', message);
     
@@ -24,41 +31,33 @@ export async function sendMessage(message: string, currentMood?: string, chatHis
       'sunset_bandra', 'temple_visit', 'festival_prep', 'mirror_selfie', 'getting_ready'
     ];
     
-    // Ignore system - randomly ignore messages sometimes to simulate real girl behavior
-    const ignoreChance = Math.random();
-    const shouldIgnore = ignoreChance < 0.05 && message.length > 5; // 5% chance to ignore non-trivial messages
+    // Smart ignore system - only for users who are 4+ days old and established
+    const ignoreLogic = shouldAIBeBusyServerSafe(currentIgnoreUntil, userTypeData, chatHistory?.slice(-3));
     
-    if (shouldIgnore) {
-      console.log('Server Action: Simulating authentic ignore behavior');
-      // 50% chance to truly ignore (no response), 50% chance to respond with delay/excuse
-      const trulyIgnore = Math.random() < 0.5;
+    if (ignoreLogic.shouldIgnore) {
+      console.log('Server Action: User-aware ignore behavior activated');
       
-      if (trulyIgnore) {
-        // Return special flag to indicate the message should be ignored completely
+      // If there's a busy reason, give a contextual response
+      if (ignoreLogic.busyReason && ignoreLogic.shouldWarnFirst) {
         return {
           success: true,
-          response: null, // No response at all
-          newMood: 'busy_ignoring',
+          response: ignoreLogic.busyReason,
+          newMood: 'naturally_busy',
           usedMood: dynamicMood,
           wasIgnored: true,
-          shouldIgnore: true
+          newIgnoreUntil: ignoreLogic.newIgnoreUntil,
+          delayedResponse: true
         };
       } else {
-        // Delayed "busy" response
-        const busyResponses = [
-          "Sorry yaar, was in class 📚",
-          "Arrey was helping mummy with something",
-          "Phone was on silent, sorry! 🙈",
-          "Was stuck in Mumbai traffic 🚗💨"
-        ];
-        
+        // Truly ignore - no response
         return {
           success: true,
-          response: busyResponses[Math.floor(Math.random() * busyResponses.length)],
-          newMood: 'slightly_distracted',
+          response: null,
+          newMood: 'naturally_busy',
           usedMood: dynamicMood,
           wasIgnored: true,
-          delayedResponse: true
+          newIgnoreUntil: ignoreLogic.newIgnoreUntil,
+          shouldIgnore: true
         };
       }
     }
