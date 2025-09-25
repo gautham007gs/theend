@@ -184,7 +184,7 @@ const ChatListPage: React.FC = () => {
             </button>
           </div>
           <div className="flex-1">
-            <Link href="/status">
+            <Link href="/status" className="block w-full">
               <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300">
                 STATUS
               </button>
@@ -196,12 +196,15 @@ const ChatListPage: React.FC = () => {
       <div className="flex-grow overflow-y-auto custom-scrollbar relative bg-gray-50">
         {/* Chat Item showing AI profile */}
         <div className="bg-white">
-          <ChatListItem
-            profile={effectiveAIProfile} 
-            lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
-            timestamp={lastMessageTime || "07:21 PM"}
-            unreadCount={1}
-          />
+          <Link href="/maya-chat" className="block">
+            <ChatListItem
+              profile={effectiveAIProfile} 
+              lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
+              lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
+              timestamp={lastMessageTime || "07:21 PM"}
+              unreadCount={1}
+            />
+          </Link>
         </div>
 
         {/* Welcome Section */}

@@ -54,7 +54,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        onClick={() => router.push('/')} 
+        onClick={(e) => {
+          e.preventDefault();
+          router.push('/');
+        }} 
         className="text-inherit hover:bg-accent/10 mr-2" 
         aria-label="Go back"
       >

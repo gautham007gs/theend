@@ -6,6 +6,7 @@
  */
 
 import { generateAIResponse } from '@/ai/vertex-ai';
+import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
 
 export interface EmotionalStateInput {
   userMessage: string;
