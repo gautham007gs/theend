@@ -250,20 +250,59 @@ IMPORTANT: After your response, on separate lines, include these lines exactly i
   }
 }
 
-// Smart language detection function (minimal token usage)
+// Enhanced Indian language detection system supporting ALL major Indian languages
 function detectUserLanguage(message: string): string {
-  // First check Unicode script ranges for major writing systems
+  // First check Unicode script ranges for Indian and international writing systems
+  
+  // INDIAN LANGUAGES - Full Unicode support for ALL major Indian scripts
+  if (/[\u0900-\u097f]/u.test(message)) return 'Hindi';
+  if (/[\u0980-\u09ff]/u.test(message)) return 'Bengali';
+  if (/[\u0a00-\u0a7f]/u.test(message)) return 'Gujarati';
+  if (/[\u0a80-\u0aff]/u.test(message)) return 'Punjabi';
+  if (/[\u0b00-\u0b7f]/u.test(message)) return 'Odia';
+  if (/[\u0b80-\u0bff]/u.test(message)) return 'Tamil';
+  if (/[\u0c00-\u0c7f]/u.test(message)) return 'Telugu';
+  if (/[\u0c80-\u0cff]/u.test(message)) return 'Kannada';
+  if (/[\u0d00-\u0d7f]/u.test(message)) return 'Malayalam';
+  if (/[\u0d80-\u0dff]/u.test(message)) return 'Sinhala';
+  if (/[\u1000-\u109f]/u.test(message)) return 'Myanmar';
+  
+  // International languages
   if (/[\u4e00-\u9fff\u3400-\u4dbf]/u.test(message)) return 'Chinese';
   if (/[\u3040-\u309f\u30a0-\u30ff]/u.test(message)) return 'Japanese';
   if (/[\uac00-\ud7af]/u.test(message)) return 'Korean';
   if (/[\u0400-\u04ff]/u.test(message)) return 'Russian';
   if (/[\u0370-\u03ff]/u.test(message)) return 'Greek';
   if (/[\u0e00-\u0e7f]/u.test(message)) return 'Thai';
-  if (/[\u0900-\u097f]/u.test(message)) return 'Hindi';
   if (/[\u0600-\u06ff]/u.test(message)) return 'Arabic';
   
-  // Smart detection patterns for Latin-script languages (no API calls needed)
-  const patterns = {
+  // Advanced pattern detection for Indian languages using Latin script (Hinglish, etc.)
+  const indianLanguagePatterns = {
+    Hindi: /\b(namaste|namaskar|kaise|ho|aap|tum|main|hoon|hai|tha|tha|kya|kahan|kab|kyun|kaise|accha|theek|sach|jhooth|paani|khana|ghar|pyaar|dost|family|mummy|papa|bhai|behen|school|college|padhai|kaam|time|jagah|logo|samay|din|raat|subah|sham|kal|aaj|parso|haan|nahi|bilkul|shayad|pata|malum|samjha|dekha|suna|bola|kaha|gaya|aaya|jaana|aana|lena|dena|karna|hona|jana|chahiye|zaroor|bas|sirf|kitna|kuch|sabko|sabse)\b/i,
+    
+    Bengali: /\b(namaskar|ki|kemon|acho|tumi|ami|ache|chilo|kothay|kokhon|keno|kemne|bhalo|thik|sotti|mithya|jol|khawa|bari|bhalobasha|bondhu|family|ma|baba|bhai|bon|school|college|pora|kaj|time|jaiga|manush|din|raat|sokal|bikel|kal|aj|porshoo|hyan|na|ekdom|hoyto|jani|bujhi|dekhechi|shunechi|bolechi|giyechi|eshechi|jete|aste|nite|dite|korte|hote|jawa|lagbe|dorkar|oto|sudhu|koto|kichu|sobai|sobcheye)\b/i,
+    
+    Tamil: /\b(vanakkam|eppadi|irukinga|neenga|naan|irukku|irundhuchu|enga|eppo|yen|eppadi|nalla|sari|unmai|poi|thanni|saapadu|veedu|kadhal|nanban|kudumbam|amma|appa|anna|akka|school|college|padikka|velai|time|idam|makkal|naal|raatri|kaalai|maalai|naalai|innikku|naalaikku|aamam|illa|romba|konjam|theriyum|purinjidhu|paarthen|kaeten|sonnaru|ponaru|vandaru|poga|vara|edukka|kudukka|panna|aaga|poga|vendum|avasiyam|adhaan|mattum|evlo|edhaavadhu|ellaarum|ellaaththu)\b/i,
+    
+    Telugu: /\b(namaste|ela|unnaru|meeru|nenu|undi|undindi|ekkada|eppudu|enduku|ela|manchi|correct|nijam|abaddham|neellu|thindam|intlo|prema|snehitudu|family|amma|nanna|anna|akka|school|college|chaduvukovadam|pani|time|chotu|manushulu|roju|raatri|udayam|saayantram|repu|eeoju|ninna|avunu|ledu|chaala|koncham|teliyali|arthamaindi|chusanu|vinanu|cheppanu|vellanu|vachanu|vellaali|ravaali|teesukonu|ichaali|chestha|avuthundi|vellaali|kaavali|avasaram|anthe|mathrame|entha|emi|andarini|andharkanna)\b/i,
+    
+    Kannada: /\b(namaskara|hege|iddira|neevu|naanu|ide|ittu|elli|yaavaga|yaake|hege|chennaagi|sari|nijavaada|sullu|neeru|oota|mane|preeti|snehita|family|amma|appa|anna|akka|school|college|odu|kelasa|time|stala|janaru|dina|raatri|belalge|saayam|naale|ivattu|ninna|haudu|illa|thumba|swalpa|gottide|artha|nodidde|kelide|helide|hodaru|bandaru|hogabeku|rabeku|tagoli|kodi|maadabeku|aagabeku|hogabeku|bekku|avasya|anthe|maatra|eshtu|yaavaduva|ellarigu|ellakkinta)\b/i,
+    
+    Malayalam: /\b(namaskaram|engane|unde|ningal|njan|undu|undayirunnu|evide|eppol|enthukond|engane|nallathu|sheri|satyam|poyi|vellam|bhojanam|veedu|sneham|snehitan|family|amma|achan|chettan|chechi|school|college|padikkuka|pani|time|sthalam|aalukal|divasam|raatri|raavile|vaikeet|naale|innu|innale|aanu|alla|valare|konjam|ariyam|manasilaayi|kandu|kettu|paranju|poyi|vannu|pokanum|varanam|edukkanam|kodukkanam|cheyyanum|aaganum|pokanam|venam|aavashyam|athaanu|mathram|ethra|enthaakilum|ellaavareyum|ellaathekkaal)\b/i,
+    
+    Gujarati: /\b(namaste|kem|cho|tame|hu|che|hatu|kya|kyare|shu|mate|kevi|rite|sachu|jhuthu|paani|jaman|ghar|prem|mitra|family|mummy|papa|bhai|ben|school|college|vanchvu|kaam|time|jagya|manas|din|raat|savaar|saanj|kale|aaj|gaykale|haa|na|khub|thodu|khabar|samjay|joyu|saambhlu|kahyu|gayo|avyo|jaavu|aavvu|levu|aapu|karvu|thavu|jaavu|joye|jarur|bas|ketlu|kai|badha|sabthee)\b/i,
+    
+    Punjabi: /\b(sat sri akal|ki haal|hai|tusi|main|hai|si|kithe|kado|kyun|kive|changa|theek|sach|jhooth|paani|khana|ghar|pyaar|yaar|family|mummy|papa|veer|bhen|school|college|padhna|kaam|time|jagah|lok|din|raat|savere|sham|kal|ajj|parso|haan|nahin|bahut|thoda|pata|samjha|dekhya|suneya|keha|gaya|aaya|jana|auna|lena|dena|karna|hona|jana|chahida|zaroor|bas|kinna|kujh|sabnu|sabton)\b/i,
+    
+    Marathi: /\b(namaskar|kasa|aahes|tumhi|mi|aahe|hota|kuthe|kevha|ka|kasa|chaan|barobar|kharach|khota|paani|jevan|ghar|prem|mitra|family|aai|baba|bhau|bahin|school|college|shikne|kaam|vel|jagah|lok|din|raat|sakal|sandhyakaal|udya|aaj|kal|ho|nahi|khup|thoda|mahit|samajle|pahile|aikle|sangitle|gelo|aalo|jaayche|yaayche|ghene|dene|karne|hone|jaane|pahije|avashya|tevhech|fakt|kiti|kahi|sarvanna|sarvaat)\b/i,
+    
+    Odia: /\b(namaskar|kemiti|achanti|apana|mun|achi|thila|kouthi|kebe|kaha|kemiti|bhala|thik|satya|misa|paani|khana|ghara|prema|bandhu|family|maa|bapa|bhai|bhauni|school|college|padhiba|kama|samaya|jagaha|loka|dina|raati|sakala|sandhya|kali|ajikali|gata|han|na|bahuta|thoda|jani|bujhi|dekhi|suni|kahi|gali|aasi|jiba|asiba|nei|debe|kariba|heba|jiba|darkar|avashya|sethi|keba|kete|kichhi|sabu|sabukari)\b/i,
+    
+    Nepali: /\b(namaste|kasto|cha|tapai|ma|cha|thiyo|kaha|kile|kina|kasari|ramro|thik|satyam|jhuto|paani|khana|ghar|maya|sathi|family|ama|ba|dai|didi|school|college|padhne|kaam|samaya|thau|manche|din|raat|bihaana|beluka|bholi|aja|hija|ho|hoina|dherai|ali|thaaha|bujhe|dekhe|sune|bhane|gayo|aayo|jane|aune|line|dine|garne|hune|jane|chahincha|jarur|bas|kati|kehi|sabailai|sabai)\b/i
+  };
+  
+  // Extended European and International language patterns  
+  const internationalPatterns = {
     Spanish: /\b(hola|gracias|como|estas|muy|bien|que|donde|cuando|porque|si|no|soy|eres|es|somos|son|la|el|de|en|para|con|por|esta|este|todo|nada|mas|menos|tiempo|casa|vida|amor|familia|trabajo|escuela|dinero|comida|agua|luz|dia|noche|bueno|malo|grande|pequeño|nuevo|viejo|feliz|triste|cansado|enfermo|salud|ayuda|gracias|lo siento|disculpa|por favor|perdon|buen|buena|hasta|luego|pronto|manana|ayer|ahora|aqui|alli|alla|mucho|poco|bastante|demasiado|quiero|necesito|puedo|debo|tengo|tienes|tiene|tenemos|tienen|voy|vas|va|vamos|van|hace|hacemos|hacen|digo|dices|dice|decimos|dicen|veo|ves|ve|vemos|ven)\b/i,
     French: /\b(bonjour|merci|comment|allez|vous|tres|bien|que|ou|quand|pourquoi|oui|non|suis|etes|est|sommes|sont|la|le|de|en|pour|avec|par|cette|ce|tout|rien|plus|moins|temps|maison|vie|amour|famille|travail|ecole|argent|nourriture|eau|lumiere|jour|nuit|bon|mauvais|grand|petit|nouveau|vieux|heureux|triste|fatigue|malade|sante|aide|merci|desole|excusez|moi|sil|vous|plait|pardon|bonne|au|revoir|a|bientot|demain|hier|maintenant|ici|la|bas|beaucoup|peu|assez|trop|veux|besoin|peux|dois|ai|avez|a|avons|ont|vais|allez|va|allons|vont|fais|faites|fait|faisons|font|dis|dites|dit|disons|disent|vois|voyez|voit|voyons|voient)\b/i,
     German: /\b(hallo|danke|wie|geht|sehr|gut|was|wo|wann|warum|ja|nein|bin|bist|ist|sind|seid|die|der|das|von|in|zu|mit|bei|auf|diese|dieses|alles|nichts|mehr|weniger|zeit|haus|leben|liebe|familie|arbeit|schule|geld|essen|wasser|licht|tag|nacht|gut|schlecht|gross|klein|neu|alt|glucklich|traurig|mude|krank|gesundheit|hilfe|danke|entschuldigung|bitte|verzeihung|gute|auf|wiedersehen|bis|bald|morgen|gestern|jetzt|hier|dort|da|viel|wenig|genug|zu|will|brauche|kann|muss|habe|hast|hat|haben|habt|gehe|gehst|geht|gehen|mache|machst|macht|machen|sage|sagst|sagt|sagen|sehe|siehst|sieht|sehen)\b/i,
@@ -271,15 +310,33 @@ function detectUserLanguage(message: string): string {
     Portuguese: /\b(ola|obrigado|obrigada|como|esta|muito|bem|que|onde|quando|porque|sim|nao|sou|es|e|somos|sao|a|o|de|em|para|com|por|esta|este|tudo|nada|mais|menos|tempo|casa|vida|amor|familia|trabalho|escola|dinheiro|comida|agua|luz|dia|noite|bom|mau|grande|pequeno|novo|velho|feliz|triste|cansado|doente|saude|ajuda|obrigado|desculpa|por|favor|perdao|boa|tchau|ate|logo|amanha|ontem|agora|aqui|ali|la|muito|pouco|bastante|demais|quero|preciso|posso|devo|tenho|tens|tem|temos|tem|vou|vais|vai|vamos|vao|faco|fazes|faz|fazemos|fazem|digo|dizes|diz|dizemos|dizem|vejo|ves|ve|vemos|veem)\b/i
   };
 
-  const messageLower = message.toLowerCase();
+  const messageLower = message.toLowerCase().replace(/[^\u0000-\u007F]/g, ' '); // Handle Unicode properly
+  const messageOriginal = message.toLowerCase(); // Keep original for script detection
   
-  // Check for language patterns
-  for (const [language, pattern] of Object.entries(patterns)) {
-    if (pattern.test(messageLower)) {
+  // First priority: Check Indian language patterns
+  for (const [language, pattern] of Object.entries(indianLanguagePatterns)) {
+    if (pattern.test(messageLower) || pattern.test(messageOriginal)) {
+      console.log(`Language detected: ${language} (pattern match)`);
       return language;
     }
   }
   
+  // Second priority: Check international language patterns
+  for (const [language, pattern] of Object.entries(internationalPatterns)) {
+    if (pattern.test(messageLower)) {
+      console.log(`Language detected: ${language} (pattern match)`);
+      return language;
+    }
+  }
+  
+  // Hinglish detection (mix of Hindi and English)
+  const hinglishIndicators = /\b(yaar|arre|bas|kya|hai|haan|nahi|acha|theek|matlab|samjha|bhai|didi|uncle|aunty|ji|sahab|madam)\b/i;
+  if (hinglishIndicators.test(messageLower)) {
+    console.log('Language detected: Hinglish (mixed pattern)');
+    return 'Hinglish';
+  }
+  
+  console.log('Language detected: English (default fallback)');
   return 'English'; // Default fallback
 }
 
