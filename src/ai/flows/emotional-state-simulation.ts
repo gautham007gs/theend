@@ -7,6 +7,12 @@
 
 import { generateAIResponse } from '@/ai/vertex-ai';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
+import { 
+  splitLongResponse, 
+  enhanceResponsePsychologically, 
+  PsychologicalProfile,
+  PSYCHOLOGICAL_HOOKS 
+} from './psychological-engagement';
 
 export interface EmotionalStateInput {
   userMessage: string;
@@ -732,10 +738,56 @@ Reply:`;
       console.log('Kruthika AI: Broken into parts:', multiPartResponse);
     }
 
+    // ENHANCE WITH PSYCHOLOGICAL ENGAGEMENT SYSTEM
+    const conversationTurns = input.recentInteractions.filter(m => m.startsWith('User:')).length;
+    const userProfile: Partial<PsychologicalProfile> = {
+      engagementLevel: conversationTurns < 5 ? 'new' : 
+                      conversationTurns < 15 ? 'interested' : 
+                      conversationTurns < 30 ? 'invested' : 'deeply_connected',
+      attachmentStyle: 'developing',
+      preferredInteractionStyle: 'playful'
+    };
+
+    const userEngagement = (input.dailyMessageCount || 0) > 20 ? 'high' : 
+                          (input.dailyMessageCount || 0) > 8 ? 'medium' : 'low';
+
+    const psychologyContext = {
+      turnsCount: conversationTurns,
+      lastEmotionalState: input.mood,
+      recentTopics: input.recentInteractions.slice(-3).map(msg => msg.toLowerCase()),
+      userEngagement
+    };
+
+    // Apply psychological enhancement
+    const enhancement = enhanceResponsePsychologically(
+      finalResponse,
+      userProfile,
+      psychologyContext
+    );
+
+    // Use enhanced response splitting if available
+    let finalMultiPartResponse = multiPartResponse;
+    if (enhancement.multiPartResponse && enhancement.multiPartResponse.length > 1) {
+      finalMultiPartResponse = enhancement.multiPartResponse;
+    }
+
+    // Add psychological hook as follow-up if available
+    let followUpMessage: string | undefined;
+    if (enhancement.psychologicalHook && Math.random() < 0.25) { // 25% chance for hooks
+      followUpMessage = enhancement.psychologicalHook;
+      console.log('Kruthika AI: Adding psychological hook:', followUpMessage.substring(0, 30) + '...');
+    }
+
+    const enhancedFinalResponse = enhancement.enhancedResponse || finalResponse;
+    
+    console.log('Kruthika AI: Enhanced with psychological engagement, engagement level:', userProfile.engagementLevel);
+    console.log('Kruthika AI: Final response:', enhancedFinalResponse);
+
     return {
-      response: multiPartResponse ? multiPartResponse[0] : finalResponse,
-      multiPartResponse: multiPartResponse,
-      newMood: 'naturally_responding'
+      response: finalMultiPartResponse ? finalMultiPartResponse[0] : enhancedFinalResponse,
+      multiPartResponse: finalMultiPartResponse,
+      followUpMessage,
+      newMood: enhancement.emotionalState || 'naturally_responding'
     };
 
   } catch (error) {
