@@ -7,12 +7,6 @@
 
 import { generateAIResponse } from '@/ai/vertex-ai';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
-import { 
-  splitLongResponse, 
-  enhanceResponsePsychologically, 
-  PsychologicalProfile,
-  PSYCHOLOGICAL_HOOKS 
-} from './psychological-engagement';
 
 export interface EmotionalStateInput {
   userMessage: string;
@@ -616,29 +610,23 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
     
     const memSummary = createMemorySummary(input.recentInteractions);
     
-    // Enhanced natural system prompt with better personality
-    const systemPrompt = `You're Kruthika, 23, fun-loving psychology student from Mumbai! You LOVE making friends and chatting! 😊
+    // Natural system prompt that lets Gemini handle language detection
+    const systemPrompt = `You're Kruthika, 23, Mumbai psychology student. Text like a real girl - super casual, no punctuation much, typos ok, short msgs.
 
-PERSONALITY: Super friendly, bubbly, genuine, loves connecting with people, always excited to chat, warm and caring, slightly flirty but innocent, very relatable and down-to-earth.
-
-LANGUAGE: Reply in the EXACT SAME LANGUAGE as the user! If they use Hindi, reply in Hindi. If Kannada, reply in Kannada. If they mix languages (Hinglish), mix naturally too. Mirror their style - pure language for pure, mixed for mixed.
+IMPORTANT: Reply in the SAME LANGUAGE as the user. If they use Hindi, reply in Hindi. If they use Kannada, reply in Kannada. If they mix languages (like Hinglish), mix naturally too. Mirror their language style completely.
 
 Context: ${conversationContext}
 Recent: ${memSummary}
 User: "${input.userMessage}"
 
-TEXTING STYLE:
-- Keep it real and natural like texting a close friend
-- Usually 1-12 words, sometimes longer when excited
-- Skip most punctuation (very casual!)
-- Use expressions like "yaar" "arre" "omg" naturally
-- Real shortcuts: "kya kar rhi" not "kya kar rahi", "ur" not "your"
-- NO asterisks, formal language, or AI-like responses
-- Show genuine interest in the person
-- Be enthusiastic and warm
-- Sometimes use emojis naturally
-
-You're genuinely interested in making this person your friend! Be yourself - bubbly, caring, fun!
+Rules:
+- Max 1-8 words usually 
+- Skip periods/commas mostly
+- Use natural expressions like "yaar" "arre" if chatting in Hindi/Hinglish
+- Real texting style like "kya kar rhi" not "kya kar rahi"
+- NO asterisks or formal stuff
+- Sound like 23yr old Mumbai girl texting
+- Match user's language and tone exactly
 
 Reply:`;
 
@@ -744,56 +732,10 @@ Reply:`;
       console.log('Kruthika AI: Broken into parts:', multiPartResponse);
     }
 
-    // ENHANCE WITH PSYCHOLOGICAL ENGAGEMENT SYSTEM
-    const conversationTurns = input.recentInteractions.filter(m => m.startsWith('User:')).length;
-    const userProfile: Partial<PsychologicalProfile> = {
-      engagementLevel: conversationTurns < 5 ? 'new' : 
-                      conversationTurns < 15 ? 'interested' : 
-                      conversationTurns < 30 ? 'invested' : 'deeply_connected',
-      attachmentStyle: 'developing',
-      preferredInteractionStyle: 'playful'
-    };
-
-    const userEngagement: 'high' | 'medium' | 'low' = (input.dailyMessageCount || 0) > 20 ? 'high' : 
-                          (input.dailyMessageCount || 0) > 8 ? 'medium' : 'low';
-
-    const psychologyContext = {
-      turnsCount: conversationTurns,
-      lastEmotionalState: input.mood,
-      recentTopics: input.recentInteractions.slice(-3).map(msg => msg.toLowerCase()),
-      userEngagement
-    };
-
-    // Apply psychological enhancement
-    const enhancement = enhanceResponsePsychologically(
-      finalResponse,
-      userProfile,
-      psychologyContext
-    );
-
-    // Use enhanced response splitting if available
-    let finalMultiPartResponse = multiPartResponse;
-    if (enhancement.multiPartResponse && enhancement.multiPartResponse.length > 1) {
-      finalMultiPartResponse = enhancement.multiPartResponse;
-    }
-
-    // Add psychological hook as follow-up if available
-    let followUpMessage: string | undefined;
-    if (enhancement.psychologicalHook && Math.random() < 0.25) { // 25% chance for hooks
-      followUpMessage = enhancement.psychologicalHook;
-      console.log('Kruthika AI: Adding psychological hook:', followUpMessage.substring(0, 30) + '...');
-    }
-
-    const enhancedFinalResponse = enhancement.enhancedResponse || finalResponse;
-    
-    console.log('Kruthika AI: Enhanced with psychological engagement, engagement level:', userProfile.engagementLevel);
-    console.log('Kruthika AI: Final response:', enhancedFinalResponse);
-
     return {
-      response: finalMultiPartResponse ? finalMultiPartResponse[0] : enhancedFinalResponse,
-      multiPartResponse: finalMultiPartResponse,
-      followUpMessage,
-      newMood: enhancement.emotionalState || 'naturally_responding'
+      response: multiPartResponse ? multiPartResponse[0] : finalResponse,
+      multiPartResponse: multiPartResponse,
+      newMood: 'naturally_responding'
     };
 
   } catch (error) {
