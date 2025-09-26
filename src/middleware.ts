@@ -70,15 +70,17 @@ function cleanupMaps(): void {
   }
 }
 
-// Clean up old entries periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, data] of rateLimitMap.entries()) {
-    if (now - data.lastReset > RATE_LIMIT_WINDOW * 2) {
-      rateLimitMap.delete(ip);
+// Clean up old entries periodically (only in browser environment)
+if (typeof window !== 'undefined') {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, data] of rateLimitMap.entries()) {
+      if (now - data.lastReset > RATE_LIMIT_WINDOW * 2) {
+        rateLimitMap.delete(ip);
+      }
     }
-  }
-}, RATE_LIMIT_WINDOW);
+  }, RATE_LIMIT_WINDOW);
+}
 
 function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
   if (userAgent) {

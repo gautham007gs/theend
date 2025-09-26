@@ -44,8 +44,6 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Enable static optimization and ISR
-  output: 'standalone',
   
   // Performance optimizations for large scale
   onDemandEntries: {

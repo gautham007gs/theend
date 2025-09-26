@@ -170,7 +170,7 @@ const PrivacyPolicyPage = () => {
               </div>
             </section>
             <div className="pt-4 flex justify-center">
-                 <Link href="/" legacyBehavior>
+                 <Link href="/">
                     <Button variant="outline">Back to Chats</Button>
                 </Link>
             </div>

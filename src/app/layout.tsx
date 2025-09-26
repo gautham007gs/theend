@@ -106,7 +106,6 @@ export default function RootLayout({
               "operatingSystem": "Web Browser"
             })
           }}
-          suppressHydrationWarning
         />
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#4F46E5" />

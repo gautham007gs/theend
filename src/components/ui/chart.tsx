@@ -159,7 +159,7 @@ const ChartLegendContent = ChartLegend // Maintained for compatibility if used e
 const ChartTooltip = RechartsPrimitive.Tooltip
 
 const ChartTooltipContent = React.forwardRef<
-  HTMLParagraphElement,
+  HTMLDivElement,
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
     React.ComponentProps<"div"> & {
       hideLabel?: boolean

@@ -34,47 +34,45 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
   };
 
   return (
-    <Link href="/maya-chat" legacyBehavior>
-      <a className="flex items-center p-3 bg-transparent hover:bg-secondary/50 cursor-pointer border-b border-border transition-colors">
-        <div
-          className={cn(
-            "relative rounded-full mr-4 shrink-0",
-            profile.name === "Kruthika" && "border-2 border-primary p-0.5" 
-          )}
-           key={`avatar-wrapper-${profile.name}-${avatarUrlToUse || 'default_wrapper_key_cli'}`}
+    <div className="flex items-center p-3 bg-transparent hover:bg-secondary/50 cursor-pointer border-b border-border transition-colors">
+      <div
+        className={cn(
+          "relative rounded-full mr-4 shrink-0",
+          profile.name === "Kruthika" && "border-2 border-primary p-0.5" 
+        )}
+         key={`avatar-wrapper-${profile.name}-${avatarUrlToUse || 'default_wrapper_key_cli'}`}
+      >
+        <Avatar 
+          className="h-12 w-12" 
+          key={`avatar-comp-${profile.name}-${avatarUrlToUse || 'default_avatar_comp_key_cli'}`}
         >
-          <Avatar 
-            className="h-12 w-12" 
-            key={`avatar-comp-${profile.name}-${avatarUrlToUse || 'default_avatar_comp_key_cli'}`}
-          >
-            <AvatarImage 
-              src={avatarUrlToUse || undefined} 
-              alt={profile.name} 
-              data-ai-hint="profile woman" 
-              key={`chat-list-item-avatar-img-${profile.name}-${avatarUrlToUse || 'no_avatar_fallback_img_cli'}`}
-              onError={handleAvatarError}
-            />
-            <AvatarFallback>{(profile.name || "K").charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <AvatarImage 
+            src={avatarUrlToUse || undefined} 
+            alt={profile.name} 
+            data-ai-hint="profile woman" 
+            key={`chat-list-item-avatar-img-${profile.name}-${avatarUrlToUse || 'no_avatar_fallback_img_cli'}`}
+            onError={handleAvatarError}
+          />
+          <AvatarFallback>{(profile.name || "K").charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
+      </div>
+      <div className="flex-grow overflow-hidden min-w-0">
+        <h2 className="font-semibold text-md truncate text-foreground">{profile.name}</h2>
+        <p className="text-sm text-muted-foreground truncate">{displayLastMessage}</p>
+        <div className="flex items-center mt-1">
+          <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+          <span className="text-xs text-green-600 font-medium">Online</span>
         </div>
-        <div className="flex-grow overflow-hidden min-w-0">
-          <h2 className="font-semibold text-md truncate text-foreground">{profile.name}</h2>
-          <p className="text-sm text-muted-foreground truncate">{displayLastMessage}</p>
-          <div className="flex items-center mt-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-            <span className="text-xs text-green-600 font-medium">Online</span>
-          </div>
-        </div>
-        <div className="flex flex-col items-end text-xs ml-2 shrink-0">
-          <span className="text-muted-foreground mb-1">{timestamp}</span>
-          {unreadCount && unreadCount > 0 && (
-            <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold">
-              {unreadCount}
-            </span>
-          )}
-        </div>
-      </a>
-    </Link>
+      </div>
+      <div className="flex flex-col items-end text-xs ml-2 shrink-0">
+        <span className="text-muted-foreground mb-1">{timestamp}</span>
+        {unreadCount && unreadCount > 0 && (
+          <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold">
+            {unreadCount}
+          </span>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -199,7 +197,6 @@ const ChatListPage: React.FC = () => {
           <Link href="/maya-chat" className="block">
             <ChatListItem
               profile={effectiveAIProfile} 
-              lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
               lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
               timestamp={lastMessageTime || "07:21 PM"}
               unreadCount={1}

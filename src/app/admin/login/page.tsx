@@ -47,7 +47,9 @@ const AdminLoginPage: React.FC = () => {
     } else if (data.user) {
       // Successfully authenticated with Supabase
       try {
-        sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+        }
         // Optionally, you could store the user object or a token if needed for further checks,
         // but for basic route protection, the flag is often sufficient for client-side.
         toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });

@@ -216,7 +216,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     
     // Use readAt timestamp if available, otherwise fall back to timestamp
     const readTime = message.readAt ? new Date(message.readAt) : timestamp;
-    const deliveryTime = message.deliveredAt ? new Date(message.deliveredAt) : timestamp;
     const now = new Date();
     
     if (status === 'read') {

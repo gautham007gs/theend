@@ -58,7 +58,7 @@ export const GlobalStatusProvider: React.FC<{ children: ReactNode }> = ({ childr
         .from('app_configurations')
         .select('settings')
         .eq('id', MANAGED_DEMO_CONTACTS_CONFIG_KEY)
-        .single();
+        .maybeSingle();
       
       if (demoContactsError && demoContactsError.code !== 'PGRST116') {
         console.error('Error fetching managed demo contacts from Supabase:', demoContactsError);

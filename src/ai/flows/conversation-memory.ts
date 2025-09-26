@@ -135,7 +135,11 @@ export function updateConversationContext(
   }
   
   if (typeof window !== 'undefined') {
-    localStorage.setItem('kruthika_conversation_context', JSON.stringify(updated));
+    try {
+      localStorage.setItem('kruthika_conversation_context', JSON.stringify(updated));
+    } catch (error) {
+      console.warn('Error saving conversation context:', error);
+    }
   }
   
   return updated;

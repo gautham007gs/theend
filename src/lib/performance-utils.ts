@@ -123,12 +123,18 @@ export const cleanupMemory = () => {
           caches.delete(name);
         }
       });
+    }).catch(error => {
+      console.warn('Error cleaning up caches:', error);
     });
   }
   
   // Trigger garbage collection if available
   if ('gc' in window && typeof (window as any).gc === 'function') {
-    (window as any).gc();
+    try {
+      (window as any).gc();
+    } catch (error) {
+      console.warn('Error triggering garbage collection:', error);
+    }
   }
 };
 

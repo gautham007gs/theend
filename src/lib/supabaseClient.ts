@@ -30,6 +30,20 @@ const createMockClient = (reason: string): SupabaseClient => {
         console.warn(`Supabase (mock client): Mock upsert into ${table}. Data:`, data);
         return { data: null, error: { message: `Mock client: ${reason}`, details: '', hint: '', code: '' }, count: null, status: 400, statusText: 'Bad Request' };
       },
+      eq: function(column: string, value: any) {
+        return this;
+      },
+      maybeSingle: async () => {
+        console.warn(`Supabase (mock client): Mock maybeSingle call.`);
+        return { data: null, error: { message: `Mock client: ${reason}`, details: '', hint: '', code: '' }, count: null, status: 400, statusText: 'Bad Request' };
+      },
+      single: async () => {
+        console.warn(`Supabase (mock client): Mock single call.`);
+        return { data: null, error: { message: `Mock client: ${reason}`, details: '', hint: '', code: '' }, count: null, status: 400, statusText: 'Bad Request' };
+      },
+      limit: function(count: number) {
+        return this;
+      },
       rpc: async (fn: string, params?: object, options = {}) => {
         console.warn(`Supabase (mock client): Mock rpc call to ${fn}. Params:`, params);
         return { data: null, error: { message: `Mock client: ${reason}`, details: '', hint: '', code: '' }, count: null, status: 400, statusText: 'Bad Request' };
