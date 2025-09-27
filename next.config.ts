@@ -92,7 +92,7 @@ const nextConfig: NextConfig = {
   },
   // Vercel-specific optimizations
   output: 'standalone', // Optimal for serverless deployment
-  swcMinify: true, // Use SWC for faster minification
+  // swcMinify is deprecated in Next.js 14+, SWC is default now
   // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
@@ -126,15 +126,25 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb'
     },
     optimizePackageImports: ['@radix-ui/react-dialog'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  },
+  
+  // Configure Turbopack (replaces deprecated experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
+  
+  // Fix cross-origin warnings for Replit
+  allowedDevOrigins: [
+    '*.replit.dev',
+    '*.replit.app',
+    '127.0.0.1',
+    'localhost'
+  ],
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first for better compression
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

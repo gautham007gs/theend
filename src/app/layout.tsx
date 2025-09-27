@@ -15,6 +15,7 @@ import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import CookieConsent from '@/components/CookieConsent';
+import StructuredData from '@/components/StructuredData';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -62,43 +63,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Kruthika.fun",
-    "description": "India's most realistic AI girlfriend chat and virtual companion. Experience authentic conversations with Kruthika, your personal AI girlfriend.",
-    "url": "https://kruthika.fun",
-    "applicationCategory": "EntertainmentApplication",
-    "operatingSystem": "Web Browser",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "creator": {
-      "@type": "Organization",
-      "name": "Kruthika.fun",
-      "url": "https://kruthika.fun"
-    },
-    "mainEntity": {
-      "@type": "VirtualAssistant",
-      "name": "Kruthika",
-      "description": "23-year-old psychology student from Mumbai, India. Your personal AI girlfriend and virtual companion.",
-      "image": "https://kruthika.fun/og-image.png",
-      "knowsAbout": ["Psychology", "Relationships", "Indian Culture", "Mumbai Life", "College Life"],
-      "speaks": "en-IN"
-    }
-  };
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData)
-          }}
-        />
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#4F46E5" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -118,6 +86,7 @@ export default function RootLayout({
             <AIProfileProvider>
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
+                  <StructuredData />
                   <InstagramBrowserPrompt />
                   <GlobalAdScripts />
                   <ServiceWorkerRegistration />
