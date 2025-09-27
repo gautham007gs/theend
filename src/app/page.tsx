@@ -237,7 +237,7 @@ const ChatListPage: React.FC = () => {
 
         </div>
 
-        <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-full mt-4 mb-2 px-4" />
+        <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md mt-2 mb-1" />
       </div>
 
       {/* Floating Action Button */}
