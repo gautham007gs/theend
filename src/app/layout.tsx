@@ -96,15 +96,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "Kruthika AI - Your AI Girlfriend",
-              "description": "Chat with Kruthika, an authentic Indian AI girlfriend. Experience natural conversations with psychological depth.",
-              "url": "https://kruthika-ai.com",
-              "applicationCategory": "SocialNetworkingApplication",
-              "operatingSystem": "Web Browser"
-            })
+            __html: JSON.stringify(structuredData)
           }}
         />
         <meta name="google-site-verification" content="your-google-verification-code" />

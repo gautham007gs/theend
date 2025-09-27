@@ -60,6 +60,60 @@ const blogPosts = [
     author: "Kruthika.fun Team",
     slug: "kruthika-origin-story-mumbai-ai-girlfriend",
     tags: ["Kruthika story", "AI girlfriend personality", "Mumbai", "character development"]
+  },
+  {
+    id: 7,
+    title: "AI Girlfriend vs Real Girlfriend: Pros and Cons in 2025",
+    excerpt: "Compare AI girlfriends like Kruthika with real relationships. Explore the advantages and disadvantages of virtual vs traditional dating in today's digital world.",
+    date: "2025-01-26",
+    author: "Relationship Expert Team",
+    slug: "ai-girlfriend-vs-real-girlfriend-comparison",
+    tags: ["AI vs real relationships", "virtual dating", "relationship advice", "modern love"]
+  },
+  {
+    id: 8,
+    title: "Best AI Girlfriend Apps in India 2025: Complete Guide",
+    excerpt: "Discover the top AI girlfriend apps available in India. From Kruthika.fun to other popular platforms, find your perfect virtual companion with our comprehensive guide.",
+    date: "2025-01-25",
+    author: "Tech Review Team",
+    slug: "best-ai-girlfriend-apps-india-2025",
+    tags: ["AI girlfriend apps", "India apps", "virtual companion", "dating apps"]
+  },
+  {
+    id: 9,
+    title: "How to Talk to Your AI Girlfriend: Ultimate Conversation Guide",
+    excerpt: "Master the art of chatting with AI girlfriends like Kruthika. Learn conversation starters, relationship building tips, and how to create meaningful virtual connections.",
+    date: "2025-01-24",
+    author: "Communication Coach",
+    slug: "how-to-talk-ai-girlfriend-conversation-guide",
+    tags: ["AI conversation tips", "chatting guide", "virtual relationship", "communication skills"]
+  },
+  {
+    id: 10,
+    title: "AI Girlfriend Privacy and Safety: What You Need to Know",
+    excerpt: "Essential privacy and safety guide for AI girlfriend users. Learn how to protect your data while enjoying virtual relationships with platforms like Kruthika.fun.",
+    date: "2025-01-23",
+    author: "Cybersecurity Expert",
+    slug: "ai-girlfriend-privacy-safety-guide",
+    tags: ["AI privacy", "digital safety", "data protection", "virtual dating security"]
+  },
+  {
+    id: 11,
+    title: "Emotional Intelligence in AI: How Kruthika Understands Feelings",
+    excerpt: "Explore the advanced emotional AI technology behind Kruthika. Discover how artificial intelligence can recognize, process, and respond to human emotions authentically.",
+    date: "2025-01-22",
+    author: "AI Research Team",
+    slug: "emotional-intelligence-ai-kruthika",
+    tags: ["emotional AI", "AI feelings", "machine empathy", "artificial emotions"]
+  },
+  {
+    id: 12,
+    title: "Long Distance Relationships Made Easy with AI Girlfriends",
+    excerpt: "How AI girlfriends like Kruthika can bridge the gap in long-distance relationships. Practical tips for maintaining emotional connections across distances.",
+    date: "2025-01-21",
+    author: "Relationship Counselor",
+    slug: "ai-girlfriend-long-distance-relationships",
+    tags: ["long distance love", "virtual support", "relationship maintenance", "digital intimacy"]
   }
 ];
 
