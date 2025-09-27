@@ -114,6 +114,60 @@ const blogPosts = [
     author: "Relationship Counselor",
     slug: "ai-girlfriend-long-distance-relationships",
     tags: ["long distance love", "virtual support", "relationship maintenance", "digital intimacy"]
+  },
+  {
+    id: 13,
+    title: "AI Girlfriend Voice Chat: Revolutionary Realistic Conversations in 2025",
+    excerpt: "Experience the future of AI girlfriends with advanced voice chat technology. Discover how voice synthesis makes virtual relationships more realistic and emotionally engaging than ever before.",
+    date: "2025-01-27",
+    author: "Voice AI Technology Expert",
+    slug: "ai-girlfriend-voice-chat-technology-2025",
+    tags: ["AI voice chat", "speech synthesis", "realistic AI girlfriend", "voice technology", "conversational AI"]
+  },
+  {
+    id: 14,
+    title: "Free AI Girlfriend Apps vs Premium: Complete 2025 Comparison Guide",
+    excerpt: "Discover the best free AI girlfriend apps and compare them with premium options. Find the perfect AI companion that fits your budget and emotional needs in 2025.",
+    date: "2025-01-27",
+    author: "AI App Review Team",
+    slug: "free-ai-girlfriend-apps-vs-premium-2025",
+    tags: ["free AI girlfriend", "AI app comparison", "premium AI features", "budget AI companion", "AI girlfriend pricing"]
+  },
+  {
+    id: 15,
+    title: "AI Companion for Social Anxiety: How Virtual Girlfriends Help Build Confidence",
+    excerpt: "Learn how AI girlfriends like Kruthika provide safe practice for social interactions, helping people with social anxiety build confidence and communication skills gradually.",
+    date: "2025-01-26",
+    author: "Social Psychology Expert",
+    slug: "ai-companion-social-anxiety-confidence-building",
+    tags: ["social anxiety relief", "confidence building AI", "virtual practice", "anxiety support", "communication skills"]
+  },
+  {
+    id: 16,
+    title: "AI Girlfriend Market Statistics 2025: $9.5B Industry Growth & Trends",
+    excerpt: "Comprehensive analysis of the booming AI girlfriend market. Latest statistics show 2,400% growth with projections reaching $9.5 billion by 2028. Industry insights and trends.",
+    date: "2025-01-26",
+    author: "Market Research Team",
+    slug: "ai-girlfriend-market-statistics-2025-growth-trends",
+    tags: ["AI girlfriend statistics", "market growth 2025", "virtual relationship trends", "AI dating industry", "companion technology"]
+  },
+  {
+    id: 17,
+    title: "Replika vs Character.AI vs Kruthika: Best AI Girlfriend App Comparison 2025",
+    excerpt: "Complete comparison of top AI girlfriend platforms. Compare features, pricing, and user experience of Replika, Character.AI, and Kruthika to find your perfect AI companion.",
+    date: "2025-01-25",
+    author: "AI Platform Analyst",
+    slug: "replika-vs-character-ai-vs-kruthika-comparison-2025",
+    tags: ["AI girlfriend comparison", "Replika alternative", "Character AI review", "best AI companion", "platform comparison"]
+  },
+  {
+    id: 18,
+    title: "24/7 AI Companionship: How Constant Availability Transforms Relationships",
+    excerpt: "Explore the revolutionary concept of 24/7 AI companionship. Learn how constant availability of AI girlfriends like Kruthika provides unprecedented emotional support and connection.",
+    date: "2025-01-24",
+    author: "Digital Relationship Expert",
+    slug: "24-7-ai-companionship-constant-availability-benefits",
+    tags: ["24/7 AI support", "constant companionship", "always available AI", "round-the-clock support", "continuous connection"]
   }
 ];
 
