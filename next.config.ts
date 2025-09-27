@@ -1,5 +1,10 @@
 
 import type {NextConfig} from 'next';
+import bundleAnalyzer from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 const securityHeaders = [
   // XSS Protection
@@ -125,7 +130,27 @@ const nextConfig: NextConfig = {
       ],
       bodySizeLimit: '2mb'
     },
-    optimizePackageImports: ['@radix-ui/react-dialog'],
+    optimizePackageImports: [
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-tabs',
+      'lucide-react'
+    ],
+    // Enable faster builds and better tree shaking
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
+    // Optimize server components
+    serverComponentsExternalPackages: ['@google-cloud/vertexai'],
+    // Enable performance profiling
+    instrumentationHook: true,
   },
   
   // Configure Turbopack (replaces deprecated experimental.turbo)
@@ -243,4 +268,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
