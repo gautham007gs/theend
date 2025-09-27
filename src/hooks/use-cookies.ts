@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { CookieManager, AIGirlfriendCookies, type UserBehaviorCookies, type CookiePreferences } from '@/lib/cookie-manager';
+import { CookiePerformanceOptimizer } from '@/lib/cookie-performance-optimizer';
 
 export const useCookies = () => {
   const [consentGiven, setConsentGiven] = useState<CookiePreferences | null>(null);
@@ -47,6 +48,29 @@ export const useCookies = () => {
     return CookieManager.getOptimalAdTiming();
   };
 
+  const trackUserValue = (messageCount: number, sessionDuration: number, imagesSent: number) => {
+    if (consentGiven?.analytics) {
+      CookieManager.trackUserValueMetrics(messageCount, sessionDuration, imagesSent);
+    }
+  };
+
+  const trackSEO = (pageType: string, source?: string) => {
+    if (consentGiven?.analytics) {
+      CookieManager.trackSEOMetrics(pageType, source);
+    }
+  };
+
+  const getAIPersonality = () => {
+    if (consentGiven?.aiLearning) {
+      return CookieManager.getAIPersonalityProfile();
+    }
+    return null;
+  };
+
+  const analyzeCookiePerformance = () => {
+    return CookiePerformanceOptimizer.analyzeCookieUsage();
+  };
+
   return {
     consentGiven,
     userBehavior,
@@ -54,6 +78,10 @@ export const useCookies = () => {
     trackAdInteraction,
     updateRelationshipStage,
     getOptimalAdTiming,
+    trackUserValue,
+    trackSEO,
+    getAIPersonality,
+    analyzeCookiePerformance,
     
     // Utility functions
     hasConsent: (type: keyof CookiePreferences) => consentGiven?.[type] || false,
