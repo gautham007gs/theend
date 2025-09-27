@@ -13,18 +13,18 @@ const PrivacyPolicyPage = () => {
         <Card className="bg-card text-card-foreground">
           <CardHeader>
             <CardTitle>Privacy Policy for Kruthika.fun</CardTitle>
-            <CardDescription>Last Updated: September 20, 2025</CardDescription>
+            <CardDescription>Last Updated: January 15, 2025</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">1. Introduction</h2>
               <p className="text-muted-foreground">
-                Welcome to Kruthika.fun (the "Service"), operated by Kruthika Technologies ("we", "us", or "our").
-                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI girlfriend companion service.
+                Welcome to Kruthika.fun (the "Service"), an AI girlfriend companion application operated by Kruthika Technologies ("we", "us", or "our").
+                This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI companion service.
                 By using the Service, you agree to the collection and use of information in accordance with this policy.
               </p>
               <p className="text-muted-foreground mt-2">
-                The character "Kruthika" you interact with is an Artificial Intelligence (AI) language model.
+                The character "Kruthika" you interact with is an Artificial Intelligence (AI) language model powered by Google's Vertex AI.
                 Your interactions are with this AI and are not with a real human. We prioritize your privacy and data security.
               </p>
             </section>
@@ -32,147 +32,181 @@ const PrivacyPolicyPage = () => {
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">2. Information Collection and Use</h2>
               <p className="text-muted-foreground">
-                We collect information primarily to provide and improve our Service to you.
-              </p>
-              <h3 className="text-lg font-medium mt-3 mb-1">Types of Data Collected</h3>
-              
-              <h4 className="text-md font-medium mt-2">Chat Data & AI Interaction</h4>
-               <p className="text-muted-foreground">
-                When you use Kruthika.fun, messages you send are processed to provide personalized AI companion functionality.
-                This data is sent to Google AI services (Vertex AI/Gemini) to generate contextual responses. Google has their own privacy policies governing data use.
-                We implement advanced encryption and security measures to protect your intimate conversations in transit.
-               </p>
-               <p className="text-muted-foreground mt-1">
-                We store chat history locally in your browser for session continuity. No detailed conversations or personal data
-                are permanently stored on our servers. All chat data is automatically deleted after 24 hours for your privacy protection.
-                We do not retain uploaded images beyond processing time.
-               </p>
-               <p className="text-sm text-orange-600 font-medium mt-2 p-2 bg-orange-50 rounded">
-                Important: Do not share sensitive personal information, financial details, passwords, or confidential data. 
-                This is an AI service for entertainment and general conversation only.
-               </p>
-
-              <h4 className="text-md font-medium mt-2">Usage Data</h4>
-              <p className="text-muted-foreground">
-                We may collect information that your browser sends whenever you visit our Service ("Usage Data").
-                This Usage Data may include information such as your computer's Internet Protocol (IP) address (primarily for security and abuse prevention, and potentially anonymized analytics), browser type, browser version, the pages of our Service that you visit, the time and date of your visit, the time spent on those pages, unique device identifiers (if applicable), and other diagnostic data.
+                We collect information to provide, improve, and personalize our Service. Our data collection includes:
               </p>
               
-              <h4 className="text-md font-medium mt-2">Analytics Data (via Supabase)</h4>
+              <h3 className="text-lg font-medium mt-3 mb-1">2.1 Chat Data & AI Interaction</h3>
               <p className="text-muted-foreground">
-                If you have configured Supabase as per our setup guide, we collect aggregated and pseudo-anonymous analytics data. This includes:
+                Your messages are processed through Google's Vertex AI (Gemini model) to generate personalized AI companion responses.
+                Messages and any uploaded images are transmitted securely to Google's servers for processing and are subject to Google's AI privacy policies.
+                We implement advanced encryption to protect your conversations during transmission.
+              </p>
+              <p className="text-muted-foreground mt-1">
+                Chat history is stored locally in your browser's localStorage for session continuity. No detailed conversations
+                are permanently stored on our servers. Chat data is automatically purged after 24 hours for your privacy protection.
+                Uploaded images are processed for AI response generation but are not permanently stored.
+              </p>
+              
+              <h3 className="text-lg font-medium mt-3 mb-1">2.2 Enhanced Analytics Data</h3>
+              <p className="text-muted-foreground">
+                With your consent, we collect comprehensive analytics through Supabase including:
               </p>
               <ul className="list-disc list-inside ml-4 text-muted-foreground">
-                  <li>Counts of user and AI messages sent (message content itself is not stored in this analytics log beyond a potential snippet for context, and image data is only noted as present or not).</li>
-                  <li>Estimates of Daily Active Users (DAU) based on a browser-specific pseudo-anonymous identifier stored in `localStorage`. This ID is not linked to any directly identifiable personal information by us.</li>
+                <li>Real-time user engagement metrics (message counts, session duration, response patterns)</li>
+                <li>AI performance data (response times, conversation quality metrics, user satisfaction scores)</li>
+                <li>Device and browser information for optimization purposes</li>
+                <li>Anonymized user journey data to improve the experience</li>
+                <li>Ad interaction metrics (impressions, clicks, viewability) for revenue optimization</li>
+                <li>Peak usage patterns and geographical distribution (anonymized)</li>
               </ul>
-              
 
-              <h4 className="text-md font-medium mt-2">Personal Data (If you implement accounts)</h4>
+              <h3 className="text-lg font-medium mt-3 mb-1">2.3 Advanced Cookie System</h3>
               <p className="text-muted-foreground">
-                Currently, Kruthika.fun does not require user accounts to protect your anonymity. If, in the future, we implement optional user accounts, we might collect minimal Personal Data such as an email address or username. This policy will be updated accordingly with enhanced privacy protections.
+                Our enhanced cookie system includes multiple categories:
+              </p>
+              <ul className="list-disc list-inside ml-4 text-muted-foreground">
+                <li><strong>Necessary Cookies:</strong> Essential for basic functionality (365 days)</li>
+                <li><strong>Analytics Cookies:</strong> Performance and usage tracking (90 days)</li>
+                <li><strong>Advertising Cookies:</strong> Ad personalization and revenue optimization (30 days)</li>
+                <li><strong>Personalization Cookies:</strong> Chat preferences and user customization (180 days)</li>
+                <li><strong>AI Learning Cookies:</strong> Conversation style adaptation and personality tuning (365 days)</li>
+                <li><strong>Intimacy Level Cookies:</strong> Relationship progression tracking (30 days, secure)</li>
+              </ul>
+
+              <h3 className="text-lg font-medium mt-3 mb-1">2.4 Monetization Data</h3>
+              <p className="text-muted-foreground">
+                We collect advertising performance data including ad impressions, click-through rates, viewability metrics,
+                and revenue analytics to optimize our ad placement strategy. This data is used to improve user experience
+                while maintaining sustainable revenue streams.
+              </p>
+
+              <h3 className="text-lg font-medium mt-3 mb-1">2.5 Personal Data (Future Implementation)</h3>
+              <p className="text-muted-foreground">
+                Currently, Kruthika.fun operates without user accounts to protect your anonymity. If we implement optional
+                user accounts in the future, we would collect minimal data such as email addresses, with enhanced privacy protections.
               </p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold mt-4 mb-2">3. Use of Your Information</h2>
               <p className="text-muted-foreground">
-                We may use the information we collect for various purposes, including to:
+                We use collected information for:
               </p>
               <ul className="list-disc list-inside ml-4 text-muted-foreground">
-                <li>Provide, operate, and maintain our Service.</li>
-                <li>Improve, personalize, and expand our Service.</li>
-                <li>Understand and analyze how you use our Service (via aggregated analytics).</li>
-                <li>Generate AI responses to your interactions.</li>
-                <li>Communicate with you, if applicable (e.g., for service updates if you provide contact info).</li>
-                <li>Prevent abuse and ensure the security of our Service.</li>
-                <li>Comply with legal obligations.</li>
+                <li>Providing and operating the AI companion service</li>
+                <li>Personalizing AI responses and conversation style</li>
+                <li>Analyzing user engagement and improving service quality</li>
+                <li>Generating AI responses through Google's Vertex AI</li>
+                <li>Optimizing website performance and user experience</li>
+                <li>Real-time analytics and dashboard reporting (admin only)</li>
+                <li>Ad optimization and revenue generation</li>
+                <li>Preventing abuse and ensuring service security</li>
+                <li>Complying with legal obligations</li>
               </ul>
-            </section>
-            
-            <section>
-                <h2 className="text-xl font-semibold mt-4 mb-2">4. User Responsibilities and Content</h2>
-                <p className="text-muted-foreground">
-                    You are solely responsible for the content you send, upload, or otherwise share through the Service ("User Content").
-                    You agree not to share User Content that is illegal, obscene, defamatory, threatening, infringing of intellectual property rights, invasive of privacy, or otherwise injurious or objectionable.
-                    You should not share highly sensitive personal information (e.g., financial details, government IDs, precise health information) through the chat interface.
-                    We reserve the right, but not the obligation, to monitor and remove User Content that violates our Terms of Service or this Privacy Policy.
-                </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">5. Sharing and Disclosure of Information</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">4. Advanced Cookie Management</h2>
               <p className="text-muted-foreground">
-                We do not sell your personal information. We may share information under the following circumstances:
+                Our cookie system provides granular control over data collection:
               </p>
               <ul className="list-disc list-inside ml-4 text-muted-foreground">
-                  <li><strong>With Service Providers:</strong> We share chat data (text and images you provide) with third-party GenAI service providers (e.g., Google) to enable Kruthika's responses. We use Supabase for analytics data storage and processing if configured. These providers are bound by their own privacy policies.</li>
-                  <li><strong>For Legal Reasons:</strong> We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or a government agency).</li>
-                  <li><strong>To Protect Rights:</strong> We may disclose information where we believe it necessary to investigate, prevent, or take action regarding illegal activities, suspected fraud, situations involving potential threats to the safety of any person, violations of our Terms of Service, or as evidence in litigation.</li>
-                  <li><strong>Business Transfers:</strong> If we are involved in a merger, acquisition, or asset sale, your information may be transferred.</li>
+                <li><strong>Dynamic Consent:</strong> Modify your cookie preferences at any time</li>
+                <li><strong>AI Personality Learning:</strong> Opt-in to allow AI to learn and adapt to your conversation style</li>
+                <li><strong>Performance Optimization:</strong> Automated cookie compression and cleanup</li>
+                <li><strong>Revenue Optimization:</strong> Smart ad timing based on your engagement patterns</li>
+                <li><strong>Real-time Analytics:</strong> Live performance monitoring with your consent</li>
               </ul>
-              
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">6. Data Retention</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">5. Data Sharing and Third-Party Services</h2>
               <p className="text-muted-foreground">
-                Chat messages are stored in your browser's `localStorage` and persist until you clear your browser data.
-                Analytics data in Supabase is retained as per Supabase's policies and our configuration (typically for trend analysis).
-                Data sent to third-party AI providers is subject to their retention policies.
+                We share data with the following third-party services:
+              </p>
+              <ul className="list-disc list-inside ml-4 text-muted-foreground">
+                <li><strong>Google Vertex AI:</strong> Chat messages and images for AI response generation</li>
+                <li><strong>Supabase:</strong> Analytics data storage and real-time dashboard functionality</li>
+                <li><strong>Adsterra/Monetag:</strong> Ad serving and performance tracking (with consent)</li>
+                <li><strong>Legal Authorities:</strong> When required by law or to protect rights and safety</li>
+                <li><strong>Business Transfers:</strong> In case of merger, acquisition, or asset sale</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">6. Data Retention and Security</h2>
+              <p className="text-muted-foreground">
+                <strong>Chat Data:</strong> Stored locally in browser, automatically deleted after 24 hours<br/>
+                <strong>Analytics Data:</strong> Retained according to Supabase policies for trend analysis<br/>
+                <strong>Cookies:</strong> Vary by category (30-365 days) with automatic cleanup<br/>
+                <strong>AI Processing:</strong> Subject to Google's Vertex AI retention policies
+              </p>
+              <p className="text-muted-foreground mt-2">
+                We implement industry-standard security measures including HTTPS encryption, secure cookie settings,
+                real-time monitoring, and regular security audits. However, no method of transmission or storage is 100% secure.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">7. Security of Your Information</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">7. Your Rights and Controls</h2>
               <p className="text-muted-foreground">
-                We use administrative, technical, and physical security measures to help protect your information.
-                While we have taken reasonable steps to secure the information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed against any interception or other type of misuse.
-                Any information disclosed online is vulnerable to interception and misuse by unauthorized parties.
+                You have the following rights:
+              </p>
+              <ul className="list-disc list-inside ml-4 text-muted-foreground">
+                <li><strong>Access:</strong> View your data through browser developer tools</li>
+                <li><strong>Deletion:</strong> Clear browser data to remove local storage</li>
+                <li><strong>Cookie Control:</strong> Manage consent preferences at any time</li>
+                <li><strong>AI Learning Opt-out:</strong> Disable personality adaptation features</li>
+                <li><strong>Analytics Opt-out:</strong> Refuse analytics data collection</li>
+                <li><strong>Ad Personalization:</strong> Control advertising cookie usage</li>
+              </ul>
+            </section>
+
+            <section>
+              <h2 className="text-xl font-semibold mt-4 mb-2">8. Age Restrictions and Safety</h2>
+              <p className="text-muted-foreground">
+                Our Service is intended for users 18 years and older. We do not knowingly collect data from minors under 18.
+                The service includes mature conversational content and is designed for adult users seeking AI companionship.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">8. Your Data Protection Rights</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">9. International Data Transfers</h2>
               <p className="text-muted-foreground">
-                Depending on your location, you may have certain data protection rights. These may include the right to access, correct, update, or request deletion of your personal information.
-                Since we primarily store chat data in your browser's `localStorage`, you can manage or delete this data by clearing your browser's cache and site data.
-                For requests regarding data held by our third-party service providers (like GenAI providers or Supabase), you would need to consult their respective privacy policies or contact them directly.
+                Your data may be processed in the United States, India, and other countries where our service providers operate.
+                We ensure appropriate safeguards are in place for international data transfers, including Google's global
+                infrastructure protections and Supabase's compliance frameworks.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">9. Children's Privacy</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">10. Updates to This Policy</h2>
               <p className="text-muted-foreground">
-                Our Service is not intended for use by children under the age of 13 (or a higher age threshold if stipulated by applicable law in your jurisdiction). We do not knowingly collect personally identifiable information from children under 13.
-                If you are a parent or guardian and you believe that your child has provided us with personal information, please contact us. If we become aware that we have collected personal information from children without verification of parental consent, we take steps to remove that information.
+                We may update this Privacy Policy to reflect changes in our practices or applicable law. Material changes
+                will be communicated through the service interface. Your continued use constitutes acceptance of the updated policy.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">10. Changes to This Privacy Policy</h2>
+              <h2 className="text-xl font-semibold mt-4 mb-2">11. Contact Information</h2>
               <p className="text-muted-foreground">
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the
-                new Privacy Policy on this page and updating the "Last Updated" date.
-                You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.
+                For privacy-related questions or requests, contact us at: privacy@kruthika.fun
               </p>
-            </section>
-
-            <section>
-              <h2 className="text-xl font-semibold mt-4 mb-2">11. Contact Us</h2>
               <p className="text-muted-foreground">
-                If you have any questions about this Privacy Policy, please contact us at: privacy@kruthika.fun
+                For data subject requests or cookie management assistance: support@kruthika.fun
               </p>
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-blue-800 font-medium text-sm">
-                  🔒 Privacy Commitment: We are committed to protecting your privacy during intimate AI conversations. Your personal data and chat content are never shared with third parties for marketing purposes.
+                  🔒 Privacy Commitment: Your intimate AI conversations are protected with enterprise-grade security.
+                  We never share personal chat content for marketing purposes and maintain strict data minimization practices.
                 </p>
               </div>
             </section>
+            
             <div className="pt-4 flex justify-center">
-                 <Link href="/">
-                    <Button variant="outline">Back to Chats</Button>
-                </Link>
+              <Link href="/">
+                <Button variant="outline">Back to Chats</Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
