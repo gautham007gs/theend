@@ -25,6 +25,8 @@ import { format, isToday } from 'date-fns';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext';
+import { AnalyticsProvider, useAnalyticsTracking } from './analytics-integration';
+import { analyticsTracker } from '@/lib/analytics-tracker';
 
 const AI_DISCLAIMER_SHOWN_KEY = 'ai_disclaimer_shown_kruthika_chat_v2';
 const AI_DISCLAIMER_DURATION = 2000;
@@ -63,7 +65,7 @@ const USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA = 'user_image_upload_last_date_kr
 const MAX_USER_IMAGES_PER_DAY = 5;
 
 
-export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean => {
+const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean => {
   if (typeof window === 'undefined' || !activeAdSettings || !activeAdSettings.adsEnabledGlobally) {
     return false;
   }

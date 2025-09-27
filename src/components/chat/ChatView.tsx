@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { Message, MessageReaction } from '@/types';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
+import { analyticsTracker } from '@/lib/analytics-tracker';
 
 interface ChatViewProps {
   messages: Message[];
@@ -33,9 +34,30 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
 
   useEffect(scrollToBottom, [messages, isAiTyping]);
 
+  // Track message interactions for analytics
+  useEffect(() => {
+    messages.forEach(message => {
+      // Track new messages for analytics
+      const messageKey = `tracked_${message.id}`;
+      if (!sessionStorage.getItem(messageKey)) {
+        const senderType = message.sender === 'ad' ? 'ai' : message.sender as 'user' | 'ai';
+        analyticsTracker.trackMessage(
+          message.id,
+          senderType,
+          message.text || '',
+          !!(message.aiImageUrl || message.media)
+        );
+        
+        // Mark as tracked in session storage
+        sessionStorage.setItem(messageKey, 'true');
+      }
+    });
+  }, [messages]);
+
   return (
     <div 
       className="flex-grow overflow-y-auto p-4 space-y-4 bg-chat-bg-default custom-scrollbar"
+      data-chat-container="true"
     >
       {messages.map((msg) => (
         <MessageBubble 
