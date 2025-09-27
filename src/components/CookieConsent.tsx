@@ -107,10 +107,10 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
           "w-full max-w-md mx-auto pointer-events-auto",
           "bg-white/95 backdrop-blur-xl border border-gray-200/50 shadow-2xl rounded-2xl",
           "transform transition-all duration-300",
-          showCustomize ? "max-h-[400px]" : "max-h-[200px]",
-          "overflow-hidden"
+          "max-h-[90vh] overflow-y-auto", // More responsive height
+          showCustomize ? "pb-2" : "pb-1" // Add bottom padding when expanded
         )}>
-          <CardContent className="p-5 space-y-4">
+          <CardContent className="p-4 space-y-3 sm:p-5 sm:space-y-4">
             {/* Compact Header */}
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 p-2 bg-[#25D366]/10 rounded-lg">

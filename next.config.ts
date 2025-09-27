@@ -2,38 +2,97 @@
 import type {NextConfig} from 'next';
 
 const securityHeaders = [
+  // XSS Protection
   {
     key: 'X-Content-Type-Options',
     value: 'nosniff',
   },
   {
     key: 'X-Frame-Options',
-    value: 'DENY', // Use 'SAMEORIGIN' if you need to embed this app in an iframe on the same domain
+    value: 'DENY', // Prevent clickjacking attacks
   },
   {
     key: 'X-XSS-Protection',
     value: '1; mode=block',
   },
+  // HSTS - Force HTTPS in production
+  {
+    key: 'Strict-Transport-Security',
+    value: 'max-age=31536000; includeSubDomains; preload',
+  },
+  // Referrer Policy - Limit referrer information
   {
     key: 'Referrer-Policy',
     value: 'strict-origin-when-cross-origin'
-  }
-  // Content-Security-Policy is powerful but complex. Add carefully if needed.
-  // Example (very restrictive, would need detailed configuration):
-  // {
-  //   key: 'Content-Security-Policy',
-  //   value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://placehold.co; font-src 'self';"
-  // }
+  },
+  // Cross-Origin Protection
+  {
+    key: 'Cross-Origin-Opener-Policy',
+    value: 'same-origin',
+  },
+  {
+    key: 'Cross-Origin-Resource-Policy',
+    value: 'cross-origin',
+  },
+  {
+    key: 'Cross-Origin-Embedder-Policy',
+    value: 'unsafe-none',
+  },
+  // Permissions Policy - Disable dangerous features
+  {
+    key: 'Permissions-Policy',
+    value: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
+  },
+  // Content Security Policy - Comprehensive protection against XSS and data injection
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com *.replit.dev *.replit.app",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
+      "img-src 'self' data: blob: https: http: *.supabase.co *.supabase.io https://placehold.co https://i.imghippo.com https://images.unsplash.com",
+      "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+      "connect-src 'self' https: wss: *.supabase.co *.supabase.io https://api.openai.com https://generativelanguage.googleapis.com *.replit.dev *.replit.app https://adsterra.com https://monetag.com",
+      "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
+      "media-src 'self' data: blob: https:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "block-all-mixed-content",
+    ].join('; '),
+  },
+  // Additional security headers
+  {
+    key: 'X-DNS-Prefetch-Control',
+    value: 'off',
+  },
+  {
+    key: 'X-Download-Options',
+    value: 'noopen',
+  },
+  {
+    key: 'X-Permitted-Cross-Domain-Policies',
+    value: 'none',
+  },
+  // Cache Control for security
+  {
+    key: 'Cache-Control',
+    value: 'public, max-age=31536000, immutable',
+  },
 ];
 
 const nextConfig: NextConfig = {
   /* config options here */
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Enable for production safety
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Enable for code quality
   },
+  // Vercel-specific optimizations
+  output: 'standalone', // Optimal for serverless deployment
+  swcMinify: true, // Use SWC for faster minification
   // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
@@ -57,12 +116,6 @@ const nextConfig: NextConfig = {
   },
   // Configure for Replit environment
   experimental: {
-    allowedDevOrigins: [
-      "*.replit.dev",
-      "*.replit.app",
-      "localhost:5000",
-      "0.0.0.0:5000"
-    ],
     serverActions: {
       allowedOrigins: [
         "*.replit.dev",
@@ -165,10 +218,6 @@ const nextConfig: NextConfig = {
           {
             key: 'Access-Control-Allow-Headers',
             value: 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
           },
           {
             key: 'Access-Control-Allow-Credentials',
