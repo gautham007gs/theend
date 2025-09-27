@@ -55,11 +55,6 @@ const nextConfig: NextConfig = {
   httpAgentOptions: {
     keepAlive: true,
   },
-  modularizeImports: {
-    'lucide-react': {
-      transform: 'lucide-react/icons/{{kebabCase member}}',
-    },
-  },
   // Configure for Replit environment
   experimental: {
     allowedDevOrigins: [
@@ -77,7 +72,7 @@ const nextConfig: NextConfig = {
       ],
       bodySizeLimit: '2mb'
     },
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog'],
+    optimizePackageImports: ['@radix-ui/react-dialog'],
     turbo: {
       rules: {
         '*.svg': {
