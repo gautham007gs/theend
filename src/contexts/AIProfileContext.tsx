@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
@@ -27,7 +26,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [aiProfile, setAIProfile] = useState<AIProfile | null>(null);
   const [isLoadingAIProfile, setIsLoadingAIProfile] = useState(true);
   const { toast } = useToast();
-  
+
   useEffect(() => {
     // This was for AdminProfilePage to control this context's loading state.
     // It might be simpler for AdminProfilePage to have its own combined loading state.
@@ -61,6 +60,20 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (error && error.code !== 'PGRST116') {
         console.error('[AIProfileContext] fetchAIProfile: Error fetching AI profile from Supabase:', error);
         toast({ title: "Error Loading AI Profile", description: `Could not load AI profile. Using defaults. ${error.message}`, variant: "destructive" });
+        
+        // Try to get profile from localStorage as fallback
+        try {
+          const localProfile = localStorage.getItem('ai_profile_backup');
+          if (localProfile) {
+            const parsedProfile = JSON.parse(localProfile);
+            setAIProfile(parsedProfile);
+            console.log('[AIProfileContext] Using local backup profile');
+            return;
+          }
+        } catch (localError) {
+          console.warn('[AIProfileContext] Local backup also failed:', localError);
+        }
+
         setAIProfile(defaultAIProfile);
         console.log("[AIProfileContext] fetchAIProfile: Set AI profile to default (Supabase error):", JSON.stringify(defaultAIProfile, null, 2));
       } else if (data && data.settings) {
@@ -71,7 +84,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
             console.warn(`[AIProfileContext] fetchAIProfile: Fetched avatarUrl ('${fetchedProfile.avatarUrl}') is invalid or empty. Falling back to default AI avatarUrl: ${defaultAIProfile.avatarUrl}`);
             fetchedProfile.avatarUrl = defaultAIProfile.avatarUrl;
         }
-        
+
         const mergedProfile: AIProfile = { 
           ...defaultAIProfile, 
           ...fetchedProfile 
@@ -79,6 +92,13 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
 
         setAIProfile(mergedProfile);
         console.log("[AIProfileContext] fetchAIProfile: Set AI profile from Supabase (merged with defaults):", JSON.stringify(mergedProfile, null, 2));
+        // Backup to local storage after successful fetch
+        try {
+          localStorage.setItem('ai_profile_backup', JSON.stringify(mergedProfile));
+          console.log('[AIProfileContext] AI profile backed up to local storage');
+        } catch (backupError) {
+          console.warn('[AIProfileContext] Failed to back up AI profile to local storage:', backupError);
+        }
       } else {
         console.log("[AIProfileContext] fetchAIProfile: No AI profile found in Supabase (error code PGRST116 or no data.settings). Using default values.");
         setAIProfile(defaultAIProfile);
@@ -87,6 +107,20 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
     } catch (e: any) {
       console.error('[AIProfileContext] fetchAIProfile: Unexpected error fetching AI profile:', e);
       toast({ title: "Error Loading AI Profile", description: `Unexpected error. Using defaults. ${e.message}`, variant: "destructive" });
+      
+      // Try to get profile from localStorage as fallback
+      try {
+        const localProfile = localStorage.getItem('ai_profile_backup');
+        if (localProfile) {
+          const parsedProfile = JSON.parse(localProfile);
+          setAIProfile(parsedProfile);
+          console.log('[AIProfileContext] Using local backup profile after unexpected error');
+          return;
+        }
+      } catch (localError) {
+        console.warn('[AIProfileContext] Local backup also failed after unexpected error:', localError);
+      }
+
       setAIProfile(defaultAIProfile);
       console.log("[AIProfileContext] fetchAIProfile: Set AI profile to default (catch block error):", JSON.stringify(defaultAIProfile, null, 2));
     } finally {
@@ -100,11 +134,11 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
       toast({ title: "Supabase Error", description: "Supabase client not available. Cannot save AI profile.", variant: "destructive" });
       return;
     }
-    
+
     console.log("[AIProfileContext] updateAIProfile: Received newProfileData:", JSON.stringify(newProfileData, null, 2));
 
     const currentProfileForUpdate = aiProfile || defaultAIProfile;
-    
+
     // Prepare avatarUrl: if explicitly cleared (empty string) make it undefined,
     // otherwise use the new value or keep the current one.
     let processedAvatarUrl = newProfileData.hasOwnProperty('avatarUrl') 
@@ -123,7 +157,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
       ...newProfileData, 
       avatarUrl: processedAvatarUrl, 
     };
-    
+
     console.log("[AIProfileContext] updateAIProfile: Optimistic profile for UI update:", JSON.stringify(optimisticProfile, null, 2));
     setAIProfile(optimisticProfile); // Optimistic UI update
 
@@ -142,13 +176,21 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         await fetchAIProfile(); // Re-fetch from DB to ensure consistency
         return; 
       }
-      
+
       console.log("[AIProfileContext] updateAIProfile: AI Profile successfully saved to Supabase.");
       toast({ title: "AI Profile Saved!", description: "Kruthika's profile has been saved globally to Supabase." });
-      
+
+      // Backup to local storage after successful save
+      try {
+        localStorage.setItem('ai_profile_backup', JSON.stringify(optimisticProfile));
+        console.log('[AIProfileContext] AI profile backed up to local storage after update');
+      } catch (backupError) {
+        console.warn('[AIProfileContext] Failed to back up AI profile to local storage after update:', backupError);
+      }
+
       // Re-fetch after successful save to ensure UI reflects DB state, though optimistic update helps.
       await fetchAIProfile();
-      
+
     } catch (error: any) {
       console.error("[AIProfileContext] updateAIProfile: Unexpected error during Supabase save:", error);
       toast({ title: "Error Saving AI Profile", description: `Unexpected error. ${error.message || ''}. Reverting optimistic update.`, variant: "destructive" });
@@ -186,5 +228,3 @@ export const setExternalIsLoadingAIProfile = (isLoading: boolean) => {
   //   setIsLoadingContextAIProfileExternal(isLoading);
   // }
 };
-
-    

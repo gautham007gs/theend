@@ -159,11 +159,9 @@ const ChatListPage: React.FC = () => {
                     <Settings size={16} />
                     Settings
                   </button>
-                  <Link href="/blog" legacyBehavior>
-                    <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
-                      <Zap size={16} />
-                      Blog
-                    </button>
+                  <Link href="/blog" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                    <Zap size={16} />
+                    Blog
                   </Link>
                   <div className="px-4 py-2 text-xs text-gray-400 text-center border-t border-gray-100 mt-1">
                     <span>Enhanced conversations</span>
