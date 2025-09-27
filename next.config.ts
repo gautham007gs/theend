@@ -120,6 +120,9 @@ const nextConfig: NextConfig = {
     keepAlive: true,
   },
   // Configure for Replit environment
+  // External packages for server-side rendering
+  serverExternalPackages: ['@google-cloud/vertexai'],
+  
   experimental: {
     serverActions: {
       allowedOrigins: [
@@ -137,20 +140,7 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-tooltip',
       '@radix-ui/react-tabs',
       'lucide-react'
-    ],
-    // Enable faster builds and better tree shaking
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-    // Optimize server components
-    serverComponentsExternalPackages: ['@google-cloud/vertexai'],
-    // Enable performance profiling
-    instrumentationHook: true,
+    ]
   },
   
   // Configure Turbopack (replaces deprecated experimental.turbo)

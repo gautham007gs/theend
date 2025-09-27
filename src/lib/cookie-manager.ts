@@ -31,11 +31,11 @@ export class CookieManager {
   
   // Cookie categories with expiry times
   private static readonly COOKIE_CONFIG = {
-    necessary: { expiry: 365, sameSite: 'Lax' as const },
-    analytics: { expiry: 90, sameSite: 'Lax' as const },
+    necessary: { expiry: 365, sameSite: 'Lax' as const, secure: false },
+    analytics: { expiry: 90, sameSite: 'Lax' as const, secure: false },
     advertising: { expiry: 30, sameSite: 'None' as const, secure: true },
-    personalization: { expiry: 180, sameSite: 'Lax' as const },
-    aiLearning: { expiry: 365, sameSite: 'Lax' as const },
+    personalization: { expiry: 180, sameSite: 'Lax' as const, secure: false },
+    aiLearning: { expiry: 365, sameSite: 'Lax' as const, secure: false },
     intimacyLevel: { expiry: 30, sameSite: 'Strict' as const, secure: true }
   };
 
