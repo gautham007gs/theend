@@ -34,7 +34,7 @@ export class CookiePerformanceOptimizer {
     return reverseMap[compressed as keyof typeof reverseMap] || compressed;
   }
 
-  // Batch cookie operations to reduce document.cookie calls
+  // Enhanced batch cookie operations with compression and optimization
   static batchSetCookies(cookies: Array<{ name: string; value: string; category: string }>): void {
     if (typeof window === 'undefined') return;
 
@@ -45,13 +45,26 @@ export class CookiePerformanceOptimizer {
       return acc;
     }, {} as Record<string, typeof cookies>);
 
-    Object.entries(categorized).forEach(([category, cookieList]) => {
+    // Use requestIdleCallback for non-blocking cookie operations
+    const processCategory = (category: string, cookieList: typeof cookies) => {
       cookieList.forEach(cookie => {
-        // Use existing CookieManager logic but in batches
+        // Compress value before setting
+        const compressedValue = this.compressValue(cookie.value);
+        
+        // Use existing CookieManager logic but with compression
         import('./cookie-manager').then(({ CookieManager }) => {
-          CookieManager.setCookie(cookie.name, cookie.value, category as any);
+          CookieManager.setCookie(cookie.name, compressedValue, category as any);
         });
       });
+    };
+
+    Object.entries(categorized).forEach(([category, cookieList]) => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => processCategory(category, cookieList));
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        setTimeout(() => processCategory(category, cookieList), 0);
+      }
     });
   }
 
@@ -90,40 +103,100 @@ export class CookiePerformanceOptimizer {
     this.cookieCache.clear();
   }
 
-  // Analyze cookie usage and suggest optimizations
+  // Enhanced cookie usage analysis with performance impact scoring
   static analyzeCookieUsage(): {
     totalSize: number;
     cookieCount: number;
     recommendations: string[];
+    performanceScore: number;
+    compressionSavings: number;
+    categoryBreakdown: Record<string, number>;
   } {
     if (typeof window === 'undefined') {
-      return { totalSize: 0, cookieCount: 0, recommendations: [] };
+      return { 
+        totalSize: 0, 
+        cookieCount: 0, 
+        recommendations: [],
+        performanceScore: 100,
+        compressionSavings: 0,
+        categoryBreakdown: {}
+      };
     }
 
-    const cookies = document.cookie.split(';');
+    const cookies = document.cookie.split(';').filter(cookie => cookie.trim());
     const totalSize = document.cookie.length;
     const recommendations: string[] = [];
+    const categoryBreakdown: Record<string, number> = {};
+    let compressionSavings = 0;
 
-    if (totalSize > 3000) {
-      recommendations.push('Cookie storage approaching limit. Consider data compression.');
+    // Calculate performance score (0-100)
+    let performanceScore = 100;
+    if (totalSize > 4000) performanceScore -= 30; // Approaching 4KB limit
+    if (totalSize > 3000) performanceScore -= 20;
+    if (cookies.length > 25) performanceScore -= 20; // Too many cookies
+    if (cookies.length > 15) performanceScore -= 10;
+
+    // Analyze each cookie
+    cookies.forEach(cookie => {
+      const [name, value] = cookie.split('=').map(s => s.trim());
+      const cookieSize = cookie.length;
+      
+      // Check for compression opportunities
+      if (value && this.compressionMap[value]) {
+        const compressed = this.compressValue(value);
+        const savings = value.length - compressed.length;
+        compressionSavings += savings;
+      }
+
+      // Categorize cookies
+      if (name.includes('session') || name.includes('user')) {
+        categoryBreakdown['User Session'] = (categoryBreakdown['User Session'] || 0) + cookieSize;
+      } else if (name.includes('preference') || name.includes('setting')) {
+        categoryBreakdown['Preferences'] = (categoryBreakdown['Preferences'] || 0) + cookieSize;
+      } else if (name.includes('analytics') || name.includes('tracking')) {
+        categoryBreakdown['Analytics'] = (categoryBreakdown['Analytics'] || 0) + cookieSize;
+      } else {
+        categoryBreakdown['Other'] = (categoryBreakdown['Other'] || 0) + cookieSize;
+      }
+
+      // Generate recommendations
+      if (cookieSize > 1000) {
+        recommendations.push(`Critical: Cookie '${name}' is ${cookieSize} bytes. Consider splitting or compression.`);
+        performanceScore -= 15;
+      } else if (cookieSize > 500) {
+        recommendations.push(`Warning: Cookie '${name}' is large (${cookieSize} bytes). Consider optimization.`);
+        performanceScore -= 5;
+      }
+    });
+
+    // Overall recommendations
+    if (totalSize > 3500) {
+      recommendations.push('🚨 Critical: Total cookie size approaching 4KB limit. Immediate optimization required.');
+    } else if (totalSize > 2500) {
+      recommendations.push('⚠️ Warning: Cookie storage getting large. Consider optimization.');
     }
 
     if (cookies.length > 20) {
-      recommendations.push('High cookie count detected. Consider consolidating related cookies.');
+      recommendations.push('💡 Consider consolidating related cookies to reduce HTTP header overhead.');
     }
 
-    // Check for large individual cookies
-    cookies.forEach(cookie => {
-      if (cookie.length > 500) {
-        const name = cookie.split('=')[0].trim();
-        recommendations.push(`Large cookie detected: ${name}. Consider compression.`);
-      }
-    });
+    if (compressionSavings > 100) {
+      recommendations.push(`💰 Potential ${compressionSavings} bytes savings through value compression.`);
+    }
+
+    // Performance tips
+    if (performanceScore < 70) {
+      recommendations.push('🔧 Consider implementing cookie lazy loading for non-critical data.');
+      recommendations.push('📦 Use localStorage for large, non-sensitive data instead of cookies.');
+    }
 
     return {
       totalSize,
       cookieCount: cookies.length,
-      recommendations
+      recommendations,
+      performanceScore: Math.max(0, performanceScore),
+      compressionSavings,
+      categoryBreakdown
     };
   }
 }
