@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google'; // Using Inter as a clean, readable font
+import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { PerformanceMonitor } from "@/components/PerformanceMonitor"; // Import PerformanceMonitor
+import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import ErrorBoundary from "@/components/ErrorBoundary";
-// import { Providers } from './providers'; // No longer using the generic Providers component
 import InstagramBrowserPrompt from '@/components/InstagramBrowserPrompt';
 import GlobalAdScripts from '@/components/GlobalAdScripts';
-import SocialBarAdDisplay from '@/components/SocialBarAdDisplay'; // Import SocialBarAdDisplay
+import SocialBarAdDisplay from '@/components/SocialBarAdDisplay';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 import ResourceHints from '@/components/ResourceHints';
 import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
@@ -16,9 +15,15 @@ import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import CookieConsent from '@/components/CookieConsent';
 import StructuredData from '@/components/StructuredData';
-import ClientOnly from '@/components/ClientOnly'; // Assuming ClientOnly is a component that renders its children only on the client side
+import ClientOnly from '@/components/ClientOnly';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+// Optimize font loading for better performance
+const inter = Inter({ 
+  subsets: ['latin'], 
+  variable: '--font-inter',
+  display: 'swap', // Improved font display strategy
+  preload: true
+});
 
 export const metadata: Metadata = {
   title: 'Kruthika.fun - #1 AI Girlfriend Chat | Best Virtual Companion 2024',
@@ -75,10 +80,26 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="canonical" href="https://kruthika.fun" />
         <link rel="manifest" href="/manifest.json" />
+        
+        {/* Critical performance optimizations */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://placehold.co" />
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
+        <link rel="preload" href="/chat-bg.png" as="image" type="image/png" />
+        <link rel="modulepreload" href="/_next/static/chunks/webpack.js" />
+        
+        {/* Reduce CLS with font metrics */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            :root { --font-inter: ${inter.style.fontFamily}; }
+            html { font-family: ${inter.style.fontFamily}, system-ui, sans-serif; }
+            body { margin: 0; overflow-x: hidden; }
+            .loading-skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
+            @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+          `
+        }} />
+        
         <ResourceHints />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>

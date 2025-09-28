@@ -26,6 +26,11 @@ export function PerformanceMonitor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Import performance optimizer
+    import('@/utils/performance-optimization').then(({ PerformanceOptimizer }) => {
+      PerformanceOptimizer.getInstance();
+    });
+
     // Send performance data to analytics
     const sendPerformanceData = (metrics: PerformanceMetrics) => {
       // Only send if analytics is enabled

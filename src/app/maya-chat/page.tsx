@@ -536,23 +536,35 @@ const KruthikaChatPage: NextPage = () => {
     const effectiveAIProfile = globalAIProfile || defaultAIProfile;
 
     try {
-      const savedMessages = localStorage.getItem(MESSAGES_KEY);
-      if (savedMessages) {
-        const parsedMessages: Message[] = JSON.parse(savedMessages).map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }));
-        setMessages(parsedMessages);
+      // Use requestIdleCallback for non-critical state loading
+      const loadState = () => {
+        const savedMessages = localStorage.getItem(MESSAGES_KEY);
+        if (savedMessages) {
+          const parsedMessages: Message[] = JSON.parse(savedMessages).map((msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp)
+          }));
+          setMessages(parsedMessages);
+        } else {
+           setMessages([{
+            id: Date.now().toString(),
+            text: `Hi! I'm ${effectiveAIProfile.name}. Kaise ho aap? 😊 Let's chat!`,
+            sender: 'ai',
+            timestamp: new Date(),
+            status: 'read',
+            aiImageUrl: undefined,
+            userImageUrl: undefined,
+          }]);
+        }
+      };
+
+      // Use scheduler API if available for better performance
+      if ('scheduler' in window && (window as any).scheduler.postTask) {
+        await (window as any).scheduler.postTask(loadState, { priority: 'user-visible' });
+      } else if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(loadState);
       } else {
-         setMessages([{
-          id: Date.now().toString(),
-          text: `Hi! I'm ${effectiveAIProfile.name}. Kaise ho aap? 😊 Let's chat!`,
-          sender: 'ai',
-          timestamp: new Date(),
-          status: 'read',
-          aiImageUrl: undefined,
-          userImageUrl: undefined,
-        }]);
+        loadState();
       }
 
       const savedMood = localStorage.getItem(AI_MOOD_KEY);

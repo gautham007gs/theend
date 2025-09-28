@@ -1,4 +1,3 @@
-
 'use server'
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
@@ -13,30 +12,32 @@ export async function sendMessage(
 ) {
   try {
     console.log('Server Action: Received message:', message);
-    
+
+    const startTime = Date.now(); // Start timing for performance logging
+
     // Get current time of day for enhanced personality
     const hour = new Date().getHours();
     const timeOfDay = hour >= 5 && hour < 12 ? 'morning' : 
                      hour >= 12 && hour < 17 ? 'afternoon' : 
                      hour >= 17 && hour < 21 ? 'evening' : 'night';
-    
+
     // Enhanced mood selection with psychological variation
     const moods = ['flirty', 'mysterious', 'bubbly', 'melancholic', 'excited', 'stressed'];
     const dynamicMood = currentMood || moods[Math.floor(Math.random() * moods.length)];
-    
+
     // Strategic image selection based on context and psychology
     const availableImages = [
       'selfie_morning', 'selfie_cafe', 'selfie_college', 'selfie_evening',
       'food_mumbai', 'cafe_work', 'college_friends', 'mumbai_rain', 'study_session',
       'sunset_bandra', 'temple_visit', 'festival_prep', 'mirror_selfie', 'getting_ready'
     ];
-    
+
     // Smart ignore system - only for users who are 4+ days old and established
     const ignoreLogic = shouldAIBeBusyServerSafe(currentIgnoreUntil, userTypeData, chatHistory?.slice(-3));
-    
+
     if (ignoreLogic.shouldIgnore) {
       console.log('Server Action: User-aware ignore behavior activated');
-      
+
       // If there's a busy reason, give a contextual response
       if (ignoreLogic.busyReason && ignoreLogic.shouldWarnFirst) {
         return {
@@ -71,11 +72,11 @@ export async function sendMessage(
       availableImages: [], // Remove images from regular responses to save tokens
       availableAudio: []
     };
-    
+
     // Removed artificial server delay - client handles typing delays more naturally
-    
+
     const aiResponse = await generateResponse(input);
-    
+
     // Extract the text response from the enhanced output
     let response: string;
     if (aiResponse.proactiveImageUrl) {
@@ -88,10 +89,14 @@ export async function sendMessage(
     } else {
       response = "Hey! What's up? 😊";
     }
-    
+
     console.log('Server Action: Generated enhanced response:', response);
     console.log('Server Action: New mood:', aiResponse.newMood);
-    
+
+    // Log performance metrics
+    const processingTime = Date.now() - startTime;
+    console.log(`🔧 Message processing time: ${processingTime}ms`);
+
     // Return response with mood and media for persistence
     return { 
       success: true, 
