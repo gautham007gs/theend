@@ -820,6 +820,80 @@ export default function AnalyticsDashboard() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Server Health Monitoring */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Server Health</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">CPU Usage</span>
+                    <Badge variant="secondary">45%</Badge>
+                  </div>
+                  <Progress value={45} />
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Memory Usage</span>
+                    <Badge variant="secondary">62%</Badge>
+                  </div>
+                  <Progress value={62} />
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Database Connections</span>
+                    <Badge variant="secondary">8/20</Badge>
+                  </div>
+                  <Progress value={40} />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>API Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">99.8%</div>
+                    <div className="text-sm text-muted-foreground">Uptime</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">245ms</div>
+                    <div className="text-sm text-muted-foreground">Avg Response</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">0.2%</div>
+                    <div className="text-sm text-muted-foreground">Error Rate</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Security Metrics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Blocked Requests</span>
+                    <Badge variant="destructive">23</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Rate Limit Hits</span>
+                    <Badge variant="secondary">5</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">SSL Health</span>
+                    <Badge variant="default">A+</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

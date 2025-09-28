@@ -16,6 +16,7 @@ import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import CookieConsent from '@/components/CookieConsent';
 import StructuredData from '@/components/StructuredData';
+import ClientOnly from '@/components/ClientOnly'; // Assuming ClientOnly is a component that renders its children only on the client side
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 

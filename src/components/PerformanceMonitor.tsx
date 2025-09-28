@@ -26,6 +26,28 @@ export function PerformanceMonitor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    // Send performance data to analytics
+    const sendPerformanceData = (metrics: PerformanceMetrics) => {
+      // Only send if analytics is enabled
+      const preferences = localStorage.getItem('cookie_preferences');
+      if (preferences && JSON.parse(preferences).analytics) {
+        fetch('/api/analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventType: 'performance_metrics',
+            eventData: {
+              loadTime: metrics.loadTime,
+              renderTime: metrics.renderTime,
+              memoryUsage: metrics.memoryUsage,
+              fps: metrics.fps,
+              timestamp: Date.now()
+            }
+          })
+        }).catch(console.warn);
+      }
+    };
+
     // Enhanced performance metrics collection
     const collectMetrics = () => {
       const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
