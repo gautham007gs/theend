@@ -25,28 +25,6 @@ const jsonLd = {
   image: 'https://kruthika.fun/og-image.png'
 };
 
-export const metadata = {
-  title: 'The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real',
-  description: 'Explore the psychological aspects of AI girlfriend relationships and why people form deep emotional bonds with virtual companions like Kruthika. Understand the science behind virtual love.',
-  keywords: 'AI girlfriend psychology, virtual relationships, emotional AI, digital intimacy, AI companion psychology',
-  openGraph: {
-    title: 'The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real',
-    description: 'Explore the psychological aspects of AI girlfriend relationships and why people form deep emotional bonds with virtual companions like Kruthika.',
-    url: 'https://kruthika.fun/blog/psychology-ai-girlfriends',
-  }
-};
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  headline: 'The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real',
-  description: 'Explore the psychological aspects of AI girlfriend relationships and why people form deep emotional bonds with virtual companions like Kruthika.',
-  author: { '@type': 'Person', name: 'Dr. Priya Sharma' },
-  publisher: { '@type': 'Organization', name: 'Kruthika.fun' },
-  datePublished: '2025-01-25',
-  mainEntityOfPage: 'https://kruthika.fun/blog/psychology-ai-girlfriends'
-};
-
 export default function PsychologyAIGirlfriends() {
   return (
     <>
