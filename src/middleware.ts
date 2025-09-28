@@ -111,7 +111,7 @@ export function middleware(request: NextRequest) {
     
     // Fix CORS and header issues for Replit
     const forwardedHost = request.headers.get('x-forwarded-host');
-    const origin = request.headers.get('origin');
+    const requestOrigin = request.headers.get('origin');
     
     if (forwardedHost && forwardedHost.includes('replit.dev')) {
       // For Server Actions, ensure consistent host/origin headers
@@ -131,6 +131,21 @@ export function middleware(request: NextRequest) {
       response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
       response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin');
     }
+    
+    // Add performance headers
+    response.headers.set('X-DNS-Prefetch-Control', 'on');
+    response.headers.set('X-Frame-Options', 'DENY');
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+    
+    // Add caching headers for static assets
+    if (request.nextUrl.pathname.startsWith('/_next/static/') || 
+        request.nextUrl.pathname.includes('.')) {
+      response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+    
+    // Add performance timing headers
+    response.headers.set('Server-Timing', `middleware;dur=${Date.now()}`);
     
     return response;
   }
@@ -208,28 +223,9 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  return NextResponse.next();
-}
-
-// Configure the matcher to run on page routes and API routes for header fixes
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for:
-     * - api (handled separately)
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, robots.txt
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt).*)',
-  ],
-};
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-
-export function middleware(request: NextRequest) {
+  // Apply performance headers to all other requests
   const response = NextResponse.next();
-
+  
   // Add performance headers
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('X-Frame-Options', 'DENY');
@@ -248,6 +244,16 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
+// Configure the matcher to run on page routes and API routes for header fixes
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - api (handled separately)
+     * - _next/static (static files)
+     * - _next/image (image optimization)
+     * - favicon.ico, robots.txt
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|robots.txt).*)',
+  ],
 };
