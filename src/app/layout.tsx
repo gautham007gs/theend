@@ -18,8 +18,8 @@ import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 
 // Optimize font loading for better performance
-const inter = Inter({ 
-  subsets: ['latin'], 
+const inter = Inter({
+  subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap', // Improved font display strategy
   preload: true
@@ -80,7 +80,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="canonical" href="https://kruthika.fun" />
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* Critical performance optimizations */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -88,21 +88,12 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
         <link rel="preload" href="/chat-bg.png" as="image" type="image/png" />
         <link rel="modulepreload" href="/_next/static/chunks/webpack.js" />
-        
-        {/* Reduce CLS with font metrics */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            :root { --font-inter: ${inter.style.fontFamily}; }
-            html { font-family: ${inter.style.fontFamily}, system-ui, sans-serif; }
-            body { margin: 0; overflow-x: hidden; }
-            .loading-skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-            @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-          `
-        }} />
-        
+
+        {/* Critical CSS moved to globals.css to prevent hydration issues */}
+
         <ResourceHints />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <ErrorBoundary>
           <AdSettingsProvider>
             <AIProfileProvider>
