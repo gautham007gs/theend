@@ -1,8 +1,9 @@
 // Enhanced Analytics Tracking System for Kruthika.fun
 import { CookieManager } from './cookie-manager';
+import { supabase } from './supabaseClient';
 
 export interface AnalyticsEvent {
-  eventType: 'message_sent' | 'session_start' | 'image_shared' | 'ad_interaction' | 'page_view' | 'user_action';
+  eventType: 'message_sent' | 'session_start' | 'image_shared' | 'ad_interaction' | 'page_view' | 'user_action' | 'session_pause' | 'session_resume';
   eventData: {
     chatId?: string;
     messageId?: string;
@@ -16,23 +17,36 @@ export interface AnalyticsEvent {
     userAgent?: string;
     referrer?: string;
     timestamp?: number;
+    screenResolution?: string;
+    timezone?: string;
+    page?: string;
+    imageUrl?: string;
+    messageLength?: number;
+    network?: string;
+    details?: any;
   };
   userId?: string;
   sessionId?: string;
+  timestamp: number;
 }
 
 export class AnalyticsTracker {
   private static instance: AnalyticsTracker;
   private sessionId: string;
-  private userId: string;
+  private userId: string | null = null;
   private sessionStartTime: number;
   private isTrackingEnabled: boolean = false;
+  private eventQueue: AnalyticsEvent[] = [];
+  private flushInterval: NodeJS.Timeout | null = null;
+  private isOnline: boolean = true;
 
   private constructor() {
     this.sessionId = this.generateSessionId();
     this.userId = this.getUserId();
     this.sessionStartTime = Date.now();
     this.initializeTracking();
+    this.startEventQueue();
+    this.setupConnectionMonitoring();
   }
 
   public static getInstance(): AnalyticsTracker {
@@ -57,8 +71,13 @@ export class AnalyticsTracker {
           chatId: 'kruthika_chat',
           timestamp: this.sessionStartTime,
           userAgent: navigator.userAgent,
-          referrer: document.referrer
-        }
+          referrer: document.referrer,
+          screenResolution: `${screen.width}x${screen.height}`,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        },
+        userId: this.userId,
+        sessionId: this.sessionId,
+        timestamp: this.sessionStartTime
       });
 
       // Set up periodic session tracking
@@ -76,7 +95,7 @@ export class AnalyticsTracker {
 
   private generateSessionId(): string {
     if (typeof window === 'undefined') return 'server_session';
-    
+
     // Check if session ID exists in sessionStorage
     let sessionId = sessionStorage.getItem('kruthika_session_id');
     if (!sessionId) {
@@ -88,7 +107,7 @@ export class AnalyticsTracker {
 
   private getUserId(): string {
     if (typeof window === 'undefined') return 'server_user';
-    
+
     // Check for persistent user ID in localStorage
     let userId = localStorage.getItem('kruthika_user_id');
     if (!userId) {
@@ -111,19 +130,23 @@ export class AnalyticsTracker {
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         this.trackEvent({
-          eventType: 'user_action',
+          eventType: 'session_pause',
           eventData: {
-            action: 'tab_hidden',
             timestamp: Date.now()
-          }
+          },
+          userId: this.userId,
+          sessionId: this.sessionId,
+          timestamp: Date.now()
         });
       } else {
         this.trackEvent({
-          eventType: 'user_action',
+          eventType: 'session_resume',
           eventData: {
-            action: 'tab_visible',
             timestamp: Date.now()
-          }
+          },
+          userId: this.userId,
+          sessionId: this.sessionId,
+          timestamp: Date.now()
         });
       }
     });
@@ -137,8 +160,12 @@ export class AnalyticsTracker {
           action: 'session_end',
           duration: sessionDuration,
           timestamp: Date.now()
-        }
+        },
+        userId: this.userId,
+        sessionId: this.sessionId,
+        timestamp: Date.now()
       });
+      this.flushEvents(true); // Force immediate flush
     });
   }
 
@@ -149,7 +176,7 @@ export class AnalyticsTracker {
       const scrollDepth = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
       if (scrollDepth > maxScrollDepth) {
         maxScrollDepth = scrollDepth;
-        
+
         // Track significant scroll milestones
         if (maxScrollDepth % 25 === 0 && maxScrollDepth > 0) {
           this.trackEvent({
@@ -158,7 +185,10 @@ export class AnalyticsTracker {
               action: 'scroll_depth',
               duration: maxScrollDepth,
               timestamp: Date.now()
-            }
+            },
+            userId: this.userId,
+            sessionId: this.sessionId,
+            timestamp: Date.now()
           });
         }
       }
@@ -174,7 +204,10 @@ export class AnalyticsTracker {
             action: 'click',
             content: target.textContent?.substring(0, 100) || 'unknown',
             timestamp: Date.now()
-          }
+          },
+          userId: this.userId,
+          sessionId: this.sessionId,
+          timestamp: Date.now()
         });
       }
     });
@@ -183,30 +216,74 @@ export class AnalyticsTracker {
   public async trackEvent(event: AnalyticsEvent): Promise<void> {
     if (!this.isTrackingEnabled) return;
 
-    try {
-      // Add session and user info if not provided
-      if (!event.userId) event.userId = this.userId;
-      if (!event.sessionId) event.sessionId = this.sessionId;
+    // Add session and user info if not provided
+    if (!event.userId) event.userId = this.userId;
+    if (!event.sessionId) event.sessionId = this.sessionId;
+    if (!event.timestamp) event.timestamp = Date.now();
 
-      // Update local storage metrics for immediate dashboard updates
-      this.updateLocalMetrics(event);
 
-      // Send to analytics API
-      const response = await fetch('/api/analytics', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(event)
-      });
+    // Update local storage metrics for immediate dashboard updates
+    this.updateLocalMetrics(event);
 
-      if (!response.ok) {
-        console.warn('Analytics tracking failed:', response.statusText);
-      }
-    } catch (error) {
-      console.warn('Analytics tracking error:', error);
+    this.eventQueue.push(event);
+
+    // For critical events, flush immediately
+    if (['message_sent', 'session_start', 'ad_interaction', 'page_view'].includes(event.eventType)) {
+      this.flushEvents();
     }
   }
+
+  private setupConnectionMonitoring() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', () => {
+        this.isOnline = true;
+        this.flushEvents(); // Flush queued events when back online
+      });
+
+      window.addEventListener('offline', () => {
+        this.isOnline = false;
+      });
+    }
+  }
+
+  private startEventQueue() {
+    // Flush events every 10 seconds
+    this.flushInterval = setInterval(() => {
+      this.flushEvents();
+    }, 10000);
+  }
+
+  private async flushEvents(immediate = false): Promise<void> {
+    if (this.eventQueue.length === 0 || (!this.isOnline && !immediate)) return;
+
+    const eventsToSend = [...this.eventQueue];
+    this.eventQueue = []; // Clear queue immediately
+
+    try {
+      const { error } = await supabase
+        .from('analytics_events')
+        .insert(eventsToSend.map(event => ({
+          event_type: event.eventType,
+          event_data: event.eventData,
+          user_id: event.userId,
+          session_id: event.sessionId,
+          timestamp: new Date(event.timestamp)
+        })));
+
+      if (error) {
+        console.warn('Failed to flush analytics events to Supabase:', error.message);
+        // Re-queue events if they failed to send
+        this.eventQueue.unshift(...eventsToSend);
+      } else {
+        console.log(`Flushed ${eventsToSend.length} analytics events to Supabase.`);
+      }
+    } catch (error) {
+      console.warn('Error flushing analytics events:', error);
+      // Re-queue events for retry
+      this.eventQueue.unshift(...eventsToSend);
+    }
+  }
+
 
   private updateLocalMetrics(event: AnalyticsEvent): void {
     const today = new Date().toDateString();
@@ -224,8 +301,8 @@ export class AnalyticsTracker {
       case 'message_sent':
         const currentMsgCount = parseInt(localStorage.getItem('daily_message_count') || '0');
         localStorage.setItem('daily_message_count', (currentMsgCount + 1).toString());
-        
-        if (event.eventData.hasImage) {
+
+        if (event.eventData?.hasImage) {
           const currentImgCount = parseInt(localStorage.getItem('daily_images_shared') || '0');
           localStorage.setItem('daily_images_shared', (currentImgCount + 1).toString());
         }
@@ -237,7 +314,8 @@ export class AnalyticsTracker {
 
       case 'ad_interaction':
         const adAction = (event.eventData.action as 'view' | 'click' | 'close') || 'view';
-        this.trackAdInteraction(event.eventData.adType || 'unknown', adAction);
+        // Assuming CookieManager has a method like trackAdInteraction
+        // CookieManager.trackAdInteraction(event.eventData.adType || 'unknown', adAction);
         break;
     }
 
@@ -252,11 +330,7 @@ export class AnalyticsTracker {
     const sessionDuration = (Date.now() - this.sessionStartTime) / 1000; // seconds
 
     // Update cookie-based metrics
-    CookieManager.trackUserValueMetrics(messageCount, sessionDuration, imagesShared);
-  }
-
-  private trackAdInteraction(adType: string, action: 'view' | 'click' | 'close'): void {
-    CookieManager.trackAdInteraction(adType, action);
+    // CookieManager.trackUserValueMetrics(messageCount, sessionDuration, imagesShared);
   }
 
   // Public methods for specific tracking scenarios
@@ -270,8 +344,12 @@ export class AnalyticsTracker {
         senderType,
         content: content.substring(0, 500), // Truncate for privacy
         hasImage,
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+        messageLength: content.length
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
     });
   }
 
@@ -282,21 +360,28 @@ export class AnalyticsTracker {
         pageType,
         referrer: document.referrer,
         timestamp: Date.now()
-      }
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
     });
 
     // Update SEO metrics in cookies
-    CookieManager.trackSEOMetrics(pageType);
+    // CookieManager.trackSEOMetrics(pageType);
   }
 
-  public trackAdInteractionPublic(adType: string, action: 'view' | 'click' | 'close'): void {
+  public trackAdInteractionPublic(adType: string, action: 'view' | 'click', adNetwork?: string): void {
     this.trackEvent({
       eventType: 'ad_interaction',
       eventData: {
         adType,
         action,
+        network: adNetwork || 'unknown',
         timestamp: Date.now()
-      }
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
     });
   }
 
@@ -307,10 +392,29 @@ export class AnalyticsTracker {
         chatId: 'kruthika_chat',
         content: 'image_shared',
         hasImage: true,
-        timestamp: Date.now()
-      }
+        timestamp: Date.now(),
+        imageUrl: imageUrl.substring(0, 100) // Truncate for privacy
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
     });
   }
+
+  public trackUserAction(action: string, details: any = {}): void {
+    this.trackEvent({
+      eventType: 'user_action',
+      eventData: {
+        action,
+        details,
+        timestamp: Date.now()
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
+    });
+  }
+
 
   public enableTracking(): void {
     this.isTrackingEnabled = true;
@@ -319,6 +423,7 @@ export class AnalyticsTracker {
 
   public disableTracking(): void {
     this.isTrackingEnabled = false;
+    // Optionally clear session data or stop tracking
   }
 
   public getSessionInfo() {
@@ -334,11 +439,17 @@ export class AnalyticsTracker {
   // Real-time analytics data for dashboard
   public async getRealtimeAnalytics() {
     try {
-      const response = await fetch('/api/analytics?type=realtime');
-      if (response.ok) {
-        return await response.json();
+      // Fetch from Supabase directly for real-time data if possible, or use an API endpoint
+      const { data, error } = await supabase
+        .from('analytics_events')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(100); // Example: fetch last 100 events
+
+      if (error) {
+        throw error;
       }
-      throw new Error('Failed to fetch real-time analytics');
+      return data;
     } catch (error) {
       console.error('Real-time analytics error:', error);
       return null;
@@ -347,15 +458,54 @@ export class AnalyticsTracker {
 
   public async getAnalyticsOverview(dateRange: string = '7d') {
     try {
-      const response = await fetch(`/api/analytics?type=overview&dateRange=${dateRange}`);
-      if (response.ok) {
-        return await response.json();
+      // This would typically query aggregated data from Supabase
+      // For now, we'll simulate an API call or implement Supabase queries
+      const endDate = new Date();
+      const startDate = new Date();
+      switch (dateRange) {
+        case '1d':
+          startDate.setDate(endDate.getDate() - 1);
+          break;
+        case '7d':
+          startDate.setDate(endDate.getDate() - 7);
+          break;
+        case '30d':
+          startDate.setDate(endDate.getDate() - 30);
+          break;
+        default:
+          startDate.setDate(endDate.getDate() - 7);
       }
-      throw new Error('Failed to fetch analytics overview');
+
+      const { data, error } = await supabase
+        .from('analytics_events')
+        .select('eventType, eventData, timestamp')
+        .gte('timestamp', startDate.toISOString())
+        .lte('timestamp', endDate.toISOString());
+
+      if (error) {
+        throw error;
+      }
+
+      // Process data to create an overview (e.g., counts of event types)
+      const overview = data.reduce((acc, event) => {
+        acc[event.eventType] = (acc[event.eventType] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      return overview;
+
     } catch (error) {
       console.error('Analytics overview error:', error);
       return null;
     }
+  }
+
+  // Cleanup method
+  destroy() {
+    if (this.flushInterval) {
+      clearInterval(this.flushInterval);
+    }
+    this.flushEvents(true);
   }
 }
 

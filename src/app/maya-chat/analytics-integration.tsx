@@ -1,34 +1,99 @@
-// Analytics Integration for Maya Chat
-import { useEffect } from 'react';
+
+'use client';
+
+import { useEffect, useRef } from 'react';
 import { analyticsTracker } from '@/lib/analytics-tracker';
 
 // Hook to integrate analytics into chat components
 export const useAnalyticsTracking = () => {
+  const sessionStartTime = useRef<number>(Date.now());
+  const lastActivityTime = useRef<number>(Date.now());
+
   useEffect(() => {
     // Track page view
-    analyticsTracker.trackPageView('chat');
+    analyticsTracker.trackPageView('maya-chat');
 
-    // Set up message tracking observer
+    // Update session duration tracking
+    const updateSessionDuration = () => {
+      if (typeof window !== 'undefined') {
+        const duration = (Date.now() - sessionStartTime.current) / 1000 / 60; // minutes
+        localStorage.setItem('current_session_duration', duration.toFixed(1));
+        localStorage.setItem('session_start_time', sessionStartTime.current.toString());
+      }
+    };
+
+    // Update session duration every 30 seconds
+    const sessionInterval = setInterval(updateSessionDuration, 30000);
+
+    // Track user activity
+    const trackActivity = () => {
+      lastActivityTime.current = Date.now();
+      analyticsTracker.trackUserAction('chat_interaction', {
+        type: 'activity_ping',
+        sessionDuration: (Date.now() - sessionStartTime.current) / 1000 / 60
+      });
+    };
+
+    // Set up activity tracking
+    const activityEvents = ['click', 'keypress', 'scroll', 'mousemove'];
+    const throttledTrackActivity = throttle(trackActivity, 60000); // Once per minute
+
+    activityEvents.forEach(event => {
+      document.addEventListener(event, throttledTrackActivity);
+    });
+
+    // Set up message tracking observer with better detection
     const messageObserver = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === 1 && (node as Element).classList.contains('message')) {
-              const messageElement = node as HTMLElement;
-              const isUserMessage = messageElement.classList.contains('user-message');
-              const hasImage = messageElement.querySelector('img') !== null;
-              const messageId = messageElement.getAttribute('data-message-id') || `msg_${Date.now()}`;
-              const content = messageElement.textContent || '';
+            if (node.nodeType === 1) {
+              const element = node as HTMLElement;
+              
+              // More robust message detection
+              const isMessage = element.classList.contains('message') || 
+                               element.querySelector('.message') || 
+                               element.getAttribute('data-message-id') ||
+                               (element.textContent && element.textContent.length > 10);
 
-              analyticsTracker.trackMessage(
-                messageId,
-                isUserMessage ? 'user' : 'ai',
-                content,
-                hasImage
-              );
+              if (isMessage) {
+                const messageElement = element.classList.contains('message') ? 
+                                     element : 
+                                     element.querySelector('.message') as HTMLElement;
+                
+                if (messageElement) {
+                  const isUserMessage = messageElement.classList.contains('user-message') ||
+                                       messageElement.querySelector('.user-message') ||
+                                       messageElement.getAttribute('data-sender') === 'user';
+                  
+                  const hasImage = messageElement.querySelector('img') !== null;
+                  const messageId = messageElement.getAttribute('data-message-id') || 
+                                   `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+                  const content = messageElement.textContent || '';
 
-              if (hasImage) {
-                analyticsTracker.trackImageShare(messageElement.querySelector('img')?.src || '');
+                  // Track the message
+                  analyticsTracker.trackMessage(
+                    messageId,
+                    isUserMessage ? 'user' : 'ai',
+                    content,
+                    hasImage
+                  );
+
+                  // Track image sharing separately
+                  if (hasImage) {
+                    const img = messageElement.querySelector('img');
+                    if (img && img.src) {
+                      analyticsTracker.trackImageShare(img.src);
+                    }
+                  }
+
+                  console.log('📊 Analytics: Tracked message', {
+                    id: messageId,
+                    type: isUserMessage ? 'user' : 'ai',
+                    hasImage,
+                    length: content.length
+                  });
+                }
               }
             }
           });
@@ -36,57 +101,173 @@ export const useAnalyticsTracking = () => {
       });
     });
 
-    // Observe chat container for new messages
-    const chatContainer = document.querySelector('.chat-container, [data-chat-container], .messages-container');
-    if (chatContainer) {
-      messageObserver.observe(chatContainer, {
+    // Observe multiple possible chat containers
+    const possibleSelectors = [
+      '.chat-container',
+      '[data-chat-container]',
+      '.messages-container',
+      '.chat-messages',
+      '#chat-container',
+      '.message-list'
+    ];
+
+    let observedContainer = null;
+    for (const selector of possibleSelectors) {
+      const container = document.querySelector(selector);
+      if (container) {
+        messageObserver.observe(container, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['data-message-id', 'class']
+        });
+        observedContainer = container;
+        console.log('📊 Analytics: Observing chat container:', selector);
+        break;
+      }
+    }
+
+    // Fallback: observe document body if no specific container found
+    if (!observedContainer) {
+      messageObserver.observe(document.body, {
         childList: true,
         subtree: true
       });
+      console.log('📊 Analytics: Observing document body as fallback');
     }
 
-    // Track ad interactions
+    // Enhanced ad tracking
     const setupAdTracking = () => {
-      const adElements = document.querySelectorAll('[data-ad-type]');
+      // Track existing ads
+      const adElements = document.querySelectorAll('[data-ad-type], .ad-banner, .ad-container, iframe[src*="ads"]');
+      
       adElements.forEach(adElement => {
-        const adType = adElement.getAttribute('data-ad-type') || 'unknown';
+        const adType = adElement.getAttribute('data-ad-type') || 
+                      adElement.getAttribute('data-ad-network') ||
+                      'banner';
         
-        // Track ad view
+        // Track ad impressions using Intersection Observer
         const observer = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
               analyticsTracker.trackAdInteractionPublic(adType, 'view');
+              console.log('📊 Analytics: Ad viewed', adType);
               observer.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.5 });
+        }, { 
+          threshold: 0.5,
+          rootMargin: '0px 0px -50px 0px' // Only count when significantly visible
+        });
 
         observer.observe(adElement);
 
         // Track ad clicks
-        adElement.addEventListener('click', () => {
+        adElement.addEventListener('click', (e) => {
           analyticsTracker.trackAdInteractionPublic(adType, 'click');
+          console.log('📊 Analytics: Ad clicked', adType);
         });
+      });
+
+      // Track dynamic ad elements that might be added later
+      const adMutationObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              const element = node as HTMLElement;
+              const isAd = element.matches('[data-ad-type], .ad-banner, .ad-container') ||
+                          element.querySelector('[data-ad-type], .ad-banner, .ad-container');
+              
+              if (isAd) {
+                setTimeout(() => setupAdTracking(), 1000); // Re-run setup for new ads
+              }
+            }
+          });
+        });
+      });
+
+      adMutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true
       });
     };
 
     // Set up ad tracking after a delay to ensure ads are loaded
     setTimeout(setupAdTracking, 2000);
+    // Re-run periodically to catch dynamically loaded ads
+    const adTrackingInterval = setInterval(setupAdTracking, 30000);
 
+    // Cleanup function
     return () => {
       messageObserver.disconnect();
+      clearInterval(sessionInterval);
+      clearInterval(adTrackingInterval);
+      
+      activityEvents.forEach(event => {
+        document.removeEventListener(event, throttledTrackActivity);
+      });
+
+      // Final session duration update
+      updateSessionDuration();
     };
   }, []);
 
   return {
     trackMessage: analyticsTracker.trackMessage.bind(analyticsTracker),
     trackImageShare: analyticsTracker.trackImageShare.bind(analyticsTracker),
-    trackAdInteraction: analyticsTracker.trackAdInteractionPublic.bind(analyticsTracker)
+    trackAdInteraction: analyticsTracker.trackAdInteractionPublic.bind(analyticsTracker),
+    trackUserAction: analyticsTracker.trackUserAction.bind(analyticsTracker)
   };
 };
+
+// Utility function for throttling
+function throttle(func: Function, limit: number) {
+  let inThrottle: boolean;
+  return function(this: any, ...args: any[]) {
+    if (!inThrottle) {
+      func.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
 
 // Component to add analytics to existing chat
 export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useAnalyticsTracking();
+  
+  useEffect(() => {
+    // Initialize real-time metrics tracking
+    const startRealTimeTracking = () => {
+      // Track performance metrics
+      if (typeof window !== 'undefined' && 'performance' in window) {
+        const paintMetrics = performance.getEntriesByType('paint');
+        paintMetrics.forEach(metric => {
+          analyticsTracker.trackUserAction('performance_metric', {
+            name: metric.name,
+            startTime: metric.startTime,
+            duration: metric.duration
+          });
+        });
+
+        // Track resource loading times
+        const resourceMetrics = performance.getEntriesByType('resource');
+        const slowResources = resourceMetrics.filter(resource => resource.duration > 1000);
+        if (slowResources.length > 0) {
+          analyticsTracker.trackUserAction('slow_resources', {
+            count: slowResources.length,
+            slowestResource: slowResources[0].name,
+            duration: slowResources[0].duration
+          });
+        }
+      }
+    };
+
+    startRealTimeTracking();
+  }, []);
+
   return <>{children}</>;
 };
+
+// Export for direct usage
+export { analyticsTracker };

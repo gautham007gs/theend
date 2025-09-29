@@ -2,29 +2,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
+interface BatchAnalyticsEvent {
+  eventType: string;
+  eventData: any;
+  userId?: string;
+  sessionId: string;
+  timestamp: number;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { events } = await request.json();
+    const { events, sessionId } = await request.json();
     
-    if (!Array.isArray(events)) {
-      return NextResponse.json({ error: 'Events must be an array' }, { status: 400 });
+    if (!Array.isArray(events) || events.length === 0) {
+      return NextResponse.json({ error: 'No events provided' }, { status: 400 });
     }
 
     const results = await Promise.allSettled(
-      events.map(async (event) => {
-        switch (event.type) {
-          case 'user_behavior':
-            return await trackUserBehavior(event);
-          case 'conversation_quality':
-            return await trackConversationQuality(event);
-          case 'ui_interaction':
-            return await trackUIInteraction(event);
-          case 'performance':
-            return await trackPerformance(event);
-          default:
-            console.warn('Unknown event type:', event.type);
-        }
-      })
+      events.map((event: BatchAnalyticsEvent) => processEvent(event))
     );
 
     const successful = results.filter(r => r.status === 'fulfilled').length;
@@ -34,64 +29,164 @@ export async function POST(request: NextRequest) {
       success: true,
       processed: events.length,
       successful,
-      failed
+      failed,
+      sessionId
     });
+
   } catch (error: any) {
     console.error('Batch Analytics Error:', error);
     return NextResponse.json(
-      { error: 'Failed to process batch analytics', details: error.message },
+      { error: 'Failed to process batch events', details: error.message },
       { status: 500 }
     );
   }
 }
 
-async function trackUserBehavior(event: any) {
-  // Store in a user_behavior_log table or extend messages_log
-  const { error } = await supabase
-    .from('messages_log')
-    .insert({
-      message_id: `behavior_${Date.now()}_${Math.random()}`,
-      sender_type: 'system',
-      chat_id: 'analytics',
-      text_content: JSON.stringify(event),
-      has_image: false
-    });
-  
-  if (error) throw error;
+async function processEvent(event: BatchAnalyticsEvent) {
+  const { eventType, eventData, userId, sessionId, timestamp } = event;
+  const chatId = eventData.chatId || 'kruthika_chat';
+
+  try {
+    switch (eventType) {
+      case 'message_sent':
+        // Insert message log
+        const { error: msgError } = await supabase
+          .from('messages_log')
+          .insert({
+            message_id: eventData.messageId || `msg_${timestamp}`,
+            sender_type: eventData.senderType || 'user',
+            chat_id: chatId,
+            text_content: eventData.content?.substring(0, 500),
+            has_image: eventData.hasImage || false,
+            created_at: new Date(timestamp).toISOString()
+          });
+
+        if (msgError) throw msgError;
+
+        // Update daily activity
+        const today = new Date(timestamp).toISOString().split('T')[0];
+        const userPseudoId = userId || sessionId || 'anonymous_' + timestamp;
+
+        await supabase
+          .from('daily_activity_log')
+          .upsert({
+            user_pseudo_id: userPseudoId,
+            activity_date: today,
+            chat_id: chatId
+          }, {
+            onConflict: 'user_pseudo_id,activity_date,chat_id',
+            ignoreDuplicates: true
+          });
+
+        // Update daily analytics aggregation
+        await updateDailyAnalytics(today, eventData.senderType === 'user' ? 1 : 0);
+        break;
+
+      case 'session_start':
+      case 'session_resume':
+        const sessionDate = new Date(timestamp).toISOString().split('T')[0];
+        const sessionUserId = userId || sessionId || 'anonymous_' + timestamp;
+
+        await supabase
+          .from('daily_activity_log')
+          .upsert({
+            user_pseudo_id: sessionUserId,
+            activity_date: sessionDate,
+            chat_id: chatId
+          }, {
+            onConflict: 'user_pseudo_id,activity_date,chat_id',
+            ignoreDuplicates: true
+          });
+        break;
+
+      case 'ad_interaction':
+        const adDate = new Date(timestamp).toISOString().split('T')[0];
+        const impressions = eventData.action === 'view' ? 1 : 0;
+        const clicks = eventData.action === 'click' ? 1 : 0;
+        const revenue = clicks * 0.01 + impressions * 0.001; // Estimate
+
+        await supabase
+          .from('ad_revenue_log')
+          .upsert({
+            date: adDate,
+            ad_network: eventData.network || 'unknown',
+            ad_type: eventData.adType || 'unknown',
+            impressions: impressions,
+            clicks: clicks,
+            estimated_revenue: revenue,
+            cpm: revenue / Math.max(impressions, 1) * 1000
+          }, {
+            onConflict: 'date,ad_network,ad_type'
+          });
+        break;
+
+      case 'image_shared':
+        // Track in messages_log with has_image flag
+        await supabase
+          .from('messages_log')
+          .insert({
+            message_id: `img_${timestamp}`,
+            sender_type: 'user',
+            chat_id: chatId,
+            text_content: 'Image shared',
+            has_image: true,
+            created_at: new Date(timestamp).toISOString()
+          });
+        break;
+
+      case 'page_view':
+        // Could track page views in a separate table if needed
+        console.log('Page view tracked:', eventData.page);
+        break;
+
+      case 'user_action':
+        // Log user actions for behavior analysis
+        if (eventData.action === 'performance_metric') {
+          await updateDailyAnalytics(
+            new Date(timestamp).toISOString().split('T')[0], 
+            0, 
+            0, 
+            eventData.details?.duration || 0
+          );
+        }
+        break;
+
+      default:
+        console.warn('Unknown batch event type:', eventType);
+    }
+
+    return { success: true, eventType };
+  } catch (error: any) {
+    console.error(`Error processing ${eventType}:`, error);
+    throw error;
+  }
 }
 
-async function trackConversationQuality(event: any) {
-  // Track conversation metrics
-  const today = new Date().toISOString().split('T')[0];
-  const { error } = await supabase
-    .from('daily_analytics')
-    .upsert({
-      date: today,
-      message_count: event.messageCount,
-      response_time: event.averageLength
-    }, {
-      onConflict: 'date'
-    });
-  
-  if (error) throw error;
-}
+async function updateDailyAnalytics(date: string, messageCount: number = 0, errorCount: number = 0, responseTime: number = 0) {
+  try {
+    // Get current DAU for the date
+    const { data: dauData } = await supabase
+      .from('daily_activity_log')
+      .select('user_pseudo_id')
+      .eq('activity_date', date);
 
-async function trackUIInteraction(event: any) {
-  // Track UI interactions for UX optimization
-  console.log('UI Interaction:', event);
-}
+    const dau = dauData ? new Set(dauData.map(d => d.user_pseudo_id)).size : 0;
 
-async function trackPerformance(event: any) {
-  // Track performance metrics
-  const today = new Date().toISOString().split('T')[0];
-  const { error } = await supabase
-    .from('daily_analytics')
-    .upsert({
-      date: today,
-      response_time: event.metric === 'response_time' ? event.value : 0
-    }, {
-      onConflict: 'date'
-    });
-  
-  if (error) throw error;
+    // Upsert daily analytics
+    await supabase
+      .from('daily_analytics')
+      .upsert({
+        date: date,
+        dau: dau,
+        message_count: messageCount,
+        error_count: errorCount,
+        response_time: responseTime,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'date'
+      });
+
+  } catch (error) {
+    console.error('Error updating daily analytics:', error);
+  }
 }
