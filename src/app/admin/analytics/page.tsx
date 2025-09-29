@@ -102,8 +102,6 @@ export default function AnalyticsDashboard() {
   const [newRealTimeStats, setNewRealTimeStats] = useState({
     responseTimeChart: [] as Array<{ time: string; responseTime: number }>,
     userFlowChart: [] as Array<{ step: string; count: number; dropOff: number }>,
-    emotionalStateDistribution: [] as Array<{ emotion: string; count: number; percentage: number }>,
-    languageUsageChart: [] as Array<{ language: string; messages: number; users: number }>,
     sessionQualityMetrics: {
       averageMessagesPerSession: 0,
       averageSessionLength: 0,
@@ -507,7 +505,7 @@ export default function AnalyticsDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{formatNumber(analytics.dailyUsers)}</div>
-                <p className="text-xs text-muted-foreground">{analytics.dailyUsers > 0 ? 'Real data from Supabase' : 'No data yet'}</p>
+                <p className="text-xs text-muted-foreground">{analytics.dailyUsers > 0 ? 'Unique users from database' : 'No unique users yet'}</p>
                 <Progress value={analytics.dailyUsers > 0 ? Math.min(100, analytics.dailyUsers * 2) : 0} className="mt-2" />
               </CardContent>
             </Card>
@@ -623,7 +621,7 @@ export default function AnalyticsDashboard() {
         </TabsContent>
 
         <TabsContent value="realtime" className="space-y-6">
-          <RealTimeTab newRealTimeStats={newRealTimeStats} />
+          <RealTimeTab newRealTimeStats={newRealTimeStats} peakHours={analytics.peakHours} />
         </TabsContent>
 
         <TabsContent value="users" className="space-y-6">

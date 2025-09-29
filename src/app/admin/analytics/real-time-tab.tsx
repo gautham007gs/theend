@@ -10,8 +10,6 @@ interface RealTimeTabProps {
   newRealTimeStats: {
     responseTimeChart: Array<{ time: string; responseTime: number }>;
     userFlowChart: Array<{ step: string; count: number; dropOff: number }>;
-    emotionalStateDistribution: Array<{ emotion: string; count: number; percentage: number }>;
-    languageUsageChart: Array<{ language: string; messages: number; users: number }>;
     sessionQualityMetrics: {
       averageMessagesPerSession: number;
       averageSessionLength: number;
@@ -25,11 +23,12 @@ interface RealTimeTabProps {
       cacheHitRate: number;
     };
   };
+  peakHours: Array<{ hour: number; users: number }>;
 }
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
 
-export function RealTimeTab({ newRealTimeStats }: RealTimeTabProps) {
+export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
   return (
     <div className="space-y-6">
       {/* Real Analytics Only - No Dummy Data */}
@@ -96,7 +95,7 @@ export function RealTimeTab({ newRealTimeStats }: RealTimeTabProps) {
         {/* User Journey Funnel - Real Data */}
         <Card>
           <CardHeader>
-            <CardTitle>Real User Journey Analysis</CardTitle>
+            <CardTitle>User Journey Funnel</CardTitle>
           </CardHeader>
           <CardContent>
             {newRealTimeStats.userFlowChart.length > 0 ? (
@@ -110,50 +109,40 @@ export function RealTimeTab({ newRealTimeStats }: RealTimeTabProps) {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-300 flex items-center justify-center text-muted-foreground">
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                 No user journey data available yet. Start using the app to see real metrics.
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Language Distribution - Real Data */}
+        {/* Peak Usage Hours - Real Data */}
         <Card>
           <CardHeader>
-            <CardTitle>Real Language Usage</CardTitle>
+            <CardTitle>Peak Usage Hours</CardTitle>
           </CardHeader>
           <CardContent>
-            {newRealTimeStats.languageUsageChart.length > 0 ? (
+            {peakHours && peakHours.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={newRealTimeStats.languageUsageChart}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ language, percentage }) => `${language} ${percentage}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="messages"
-                  >
-                    {newRealTimeStats.languageUsageChart.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
+                <AreaChart data={peakHours}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis />
                   <Tooltip />
-                </PieChart>
+                  <Area type="monotone" dataKey="users" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-300 flex items-center justify-center text-muted-foreground">
-                No language data available yet. Start chatting to see real language distribution.
+              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                No peak hours data available yet. Users will create activity patterns over time.
               </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Session Quality & Language Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* AI Performance & Session Quality */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Session Quality Metrics */}
         <Card>
           <CardHeader>
@@ -191,53 +180,41 @@ export function RealTimeTab({ newRealTimeStats }: RealTimeTabProps) {
           </CardContent>
         </Card>
 
-        {/* Emotional State Distribution */}
+        {/* AI Performance Metrics */}
         <Card>
           <CardHeader>
-            <CardTitle>Emotional State Distribution</CardTitle>
+            <CardTitle>AI Performance Metrics</CardTitle>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={newRealTimeStats.emotionalStateDistribution}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ emotion, percentage }) => `${emotion} ${percentage}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="count"
-                >
-                  {newRealTimeStats.emotionalStateDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Language Usage */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Language Usage</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {newRealTimeStats.languageUsageChart.map((lang, index) => (
-                <div key={lang.language} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Globe className="h-4 w-4" />
-                    <span className="text-sm font-medium">{lang.language}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant="secondary">{lang.users} users</Badge>
-                    <span className="text-sm text-muted-foreground">{lang.messages} msgs</span>
-                  </div>
-                </div>
-              ))}
+          <CardContent className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm">
+                <span>Response Time</span>
+                <span className="font-bold">{newRealTimeStats.responseTimeChart.length > 0 ? 
+                  `${newRealTimeStats.responseTimeChart[newRealTimeStats.responseTimeChart.length - 1]?.responseTime || 0}ms` : 
+                  '0ms'}</span>
+              </div>
+              <Progress value={Math.min(100, (newRealTimeStats.responseTimeChart[newRealTimeStats.responseTimeChart.length - 1]?.responseTime || 0) / 20)} className="mt-2" />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm">
+                <span>API Cost (Today)</span>
+                <span className="font-bold">${newRealTimeStats.apiCostMetrics.totalCost.toFixed(2)}</span>
+              </div>
+              <Progress value={Math.min(100, newRealTimeStats.apiCostMetrics.totalCost * 10)} className="mt-2" />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm">
+                <span>Cost Per User</span>
+                <span className="font-bold">${newRealTimeStats.apiCostMetrics.costPerUser.toFixed(3)}</span>
+              </div>
+              <Progress value={Math.min(100, newRealTimeStats.apiCostMetrics.costPerUser * 100)} className="mt-2" />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm">
+                <span>Cache Hit Rate</span>
+                <span className="font-bold text-green-600">{newRealTimeStats.apiCostMetrics.cacheHitRate.toFixed(1)}%</span>
+              </div>
+              <Progress value={newRealTimeStats.apiCostMetrics.cacheHitRate} className="mt-2" />
             </div>
           </CardContent>
         </Card>
