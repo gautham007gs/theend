@@ -1523,9 +1523,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         />
       )}
 
-      
-
-
       {/* Normal Banner Ad above input */}
       <BannerAdDisplay adType="standard" placementKey="chat-bottom" className="mb-2" />
       
@@ -1582,7 +1579,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       </Dialog>
     </div>
   );
-};
+});
 
 });
 
