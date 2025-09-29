@@ -118,30 +118,10 @@ export default function AnalyticsDashboard() {
     }
   });
 
-  const [chartData, setChartData] = useState([
-    { name: 'Mon', users: 120, messages: 450, engagement: 68 },
-    { name: 'Tue', users: 150, messages: 520, engagement: 72 },
-    { name: 'Wed', users: 180, messages: 640, engagement: 78 },
-    { name: 'Thu', users: 200, messages: 720, engagement: 82 },
-    { name: 'Fri', users: 240, messages: 850, engagement: 85 },
-    { name: 'Sat', users: 300, messages: 1200, engagement: 92 },
-    { name: 'Sun', users: 280, messages: 980, engagement: 88 }
-  ]);
+  const [chartData, setChartData] = useState([]);
 
-  const [userJourneyData] = useState([
-    { step: 'Landing', users: 1000, conversion: 100 },
-    { step: 'Chat Started', users: 850, conversion: 85 },
-    { step: 'Message Sent', users: 720, conversion: 72 },
-    { step: 'Image Shared', users: 480, conversion: 48 },
-    { step: 'Long Session', users: 320, conversion: 32 },
-    { step: 'Return Visit', users: 220, conversion: 22 }
-  ]);
-
-  const deviceData = [
-    { name: 'Mobile', value: 68, color: '#8884d8' },
-    { name: 'Desktop', value: 25, color: '#82ca9d' },
-    { name: 'Tablet', value: 7, color: '#ffc658' }
-  ];
+  const [userJourneyData, setUserJourneyData] = useState([]);
+  const [deviceData, setDeviceData] = useState([]);
 
   // Enhanced metrics fetching function using real API data
   const fetchEnhancedRealTimeMetrics = async () => {
@@ -276,6 +256,24 @@ export default function AnalyticsDashboard() {
           // Update chart data with real data if available
         if (data.chartData && Array.isArray(data.chartData)) {
           setChartData(data.chartData);
+        }
+
+        // Update user journey data if available
+        if (data.userJourney && Array.isArray(data.userJourney)) {
+          setUserJourneyData(data.userJourney);
+        }
+
+        // Update device data if available
+        if (data.deviceBreakdown) {
+          const deviceBreakdown = data.deviceBreakdown;
+          const totalDevices = deviceBreakdown.mobile + deviceBreakdown.desktop + deviceBreakdown.tablet;
+          if (totalDevices > 0) {
+            setDeviceData([
+              { name: 'Mobile', value: deviceBreakdown.mobile, color: '#8884d8' },
+              { name: 'Desktop', value: deviceBreakdown.desktop, color: '#82ca9d' },
+              { name: 'Tablet', value: deviceBreakdown.tablet, color: '#ffc658' }
+            ]);
+          }
         }
 
         // Update enhanced metrics with API data when available
@@ -517,16 +515,22 @@ export default function AnalyticsDashboard() {
                 <CardTitle>User Engagement Trends</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="users" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                    <Area type="monotone" dataKey="engagement" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {chartData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="users" stackId="1" stroke="#8884d8" fill="#8884d8" />
+                      <Area type="monotone" dataKey="engagement" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No engagement data available yet. Start using the app to see real metrics.
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -535,25 +539,31 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Device Breakdown</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={deviceData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {deviceData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                {deviceData.length > 0 && deviceData.some(d => d.value > 0) ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={deviceData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {deviceData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                    No device data available yet. Device tracking will appear once users visit the app.
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

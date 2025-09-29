@@ -352,13 +352,16 @@ async function getOverviewAnalytics(startDate: string) {
       return acc;
     }, {} as Record<string, number>);
 
-    // Process real daily active users
+    // Process real daily active users - ensure uniqueness by user_pseudo_id per day
     const usersByDay = dailyUsers.reduce((acc, activity) => {
       const date = activity.activity_date;
       if (!acc[date]) acc[date] = new Set();
       acc[date].add(activity.user_pseudo_id);
       return acc;
     }, {} as Record<string, Set<string>>);
+
+    // Calculate unique daily users across the entire period
+    const allUniqueUsers = new Set(dailyUsers.map(u => u.user_pseudo_id));
 
     // Generate chart data for the last 7 days with REAL data only
     const chartData = [];
@@ -385,7 +388,7 @@ async function getOverviewAnalytics(startDate: string) {
 
     // Calculate totals from real data
     const totalMessages = messages.length;
-    const totalUsers = new Set(dailyUsers.map(u => u.user_pseudo_id)).size;
+    const totalUsers = allUniqueUsers.size;
     const todayMessages = messages.filter(m => 
       new Date(m.created_at).toDateString() === new Date().toDateString()
     ).length;
