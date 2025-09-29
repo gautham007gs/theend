@@ -6,6 +6,7 @@ import React from 'react';
 interface ErrorBoundaryState {
   hasError: boolean;
   error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 class ErrorBoundary extends React.Component<
@@ -23,30 +24,8 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error Boundary caught an error:', error, errorInfo);
+    this.setState({ errorInfo });
   }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-          <div className="text-center p-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Something went wrong
-            </h2>
-            <p className="text-gray-600 mb-4">
-              The application encountered an unexpected error.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            >
-              Reload Page
-            </button>
-          </div>
-        </div>
-      );
-    }
-
 
   // Auto-recovery attempt
   private attemptRecovery = () => {
@@ -69,7 +48,7 @@ class ErrorBoundary extends React.Component<
         }
         
         console.log('✅ Error recovery completed');
-        this.setState({ hasError: false, error: null, errorInfo: null });
+        this.setState({ hasError: false, error: undefined, errorInfo: undefined });
         
         // Refresh page after 2 seconds
         setTimeout(() => {
@@ -80,6 +59,44 @@ class ErrorBoundary extends React.Component<
       }
     }
   };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+          <div className="text-center p-8">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Something went wrong
+            </h2>
+            <p className="text-gray-600 mb-4">
+              The application encountered an unexpected error.
+            </p>
+            <div className="space-y-2">
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
+              >
+                Reload Page
+              </button>
+              <button
+                onClick={this.attemptRecovery}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Auto Recovery
+              </button>
+            </div>
+            {this.state.error && (
+              <details className="mt-4 text-left">
+                <summary className="cursor-pointer text-gray-700">Error Details</summary>
+                <pre className="text-xs text-red-600 mt-2 bg-gray-100 p-2 rounded">
+                  {this.state.error.toString()}
+                </pre>
+              </details>
+            )}
+          </div>
+        </div>
+      );
+    }
 
     return this.props.children;
   }
