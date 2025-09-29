@@ -224,11 +224,13 @@ async function getRealSessionMetrics() {
     const { data: sessions, error } = await supabase
       .from('user_sessions')
       .select('duration_seconds, messages_sent, session_id')
-      .not('duration_seconds', 'is', null)
       .gte('started_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
       .limit(1000);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Session metrics error:', error);
+      throw error;
+    }
     if (!sessions || sessions.length === 0) {
       return {
         averageMessagesPerSession: 0,
@@ -451,8 +453,7 @@ async function getRealTimeMetrics() {
         .gte('created_at', oneHourAgo.toISOString()),
       supabase
         .from('user_sessions')
-        .select('session_id')
-        .eq('is_active', true)
+        .select('session_id, is_active')
         .gte('started_at', new Date(Date.now() - 15 * 60 * 1000).toISOString()),
       getRealAdMetrics(),
       getRealTopPages()

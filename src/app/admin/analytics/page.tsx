@@ -118,10 +118,11 @@ export default function AnalyticsDashboard() {
     }
   });
 
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
-  const [userJourneyData, setUserJourneyData] = useState([]);
-  const [deviceData, setDeviceData] = useState([]);
+  const [userJourneyData, setUserJourneyData] = useState<any[]>([]);
+  const [deviceData, setDeviceData] = useState<any[]>([]);
 
   // Enhanced metrics fetching function using real API data
   const fetchEnhancedRealTimeMetrics = async () => {
@@ -360,6 +361,7 @@ export default function AnalyticsDashboard() {
 
   // Enhanced real-time data fetching with Supabase integration
   useEffect(() => {
+    setIsClient(true);
     // Initial fetch
     fetchRealTimeData();
 
@@ -515,22 +517,28 @@ export default function AnalyticsDashboard() {
                 <CardTitle>User Engagement Trends</CardTitle>
               </CardHeader>
               <CardContent>
-                {chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="users" stackId="1" stroke="#8884d8" fill="#8884d8" />
-                      <Area type="monotone" dataKey="engagement" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                    No engagement data available yet. Start using the app to see real metrics.
-                  </div>
-                )}
+                <div className="h-[300px]">
+                  {!isClient ? (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      Loading chart...
+                    </div>
+                  ) : chartData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area type="monotone" dataKey="users" stackId="1" stroke="#8884d8" fill="#8884d8" />
+                        <Area type="monotone" dataKey="engagement" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      No engagement data available yet. Start using the app to see real metrics.
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
@@ -539,31 +547,37 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Device Breakdown</CardTitle>
               </CardHeader>
               <CardContent>
-                {deviceData.length > 0 && deviceData.some(d => d.value > 0) ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={deviceData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {deviceData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                    No device data available yet. Device tracking will appear once users visit the app.
-                  </div>
-                )}
+                <div className="h-[300px]">
+                  {!isClient ? (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      Loading chart...
+                    </div>
+                  ) : deviceData.length > 0 && deviceData.some(d => d.value > 0) ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                      <PieChart>
+                        <Pie
+                          data={deviceData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {deviceData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      No device data available yet. Device tracking will appear once users visit the app.
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
