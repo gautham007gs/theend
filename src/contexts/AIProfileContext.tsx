@@ -6,6 +6,7 @@ import { AI_PROFILE_CONFIG_KEY } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/utils/logger';
 
 interface AIProfileContextType {
   aiProfile: AIProfile | null;
@@ -39,11 +40,11 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const fetchAIProfile = useCallback(async () => {
     setIsLoadingAIProfile(true);
-    console.log("[AIProfileContext] fetchAIProfile: Starting to fetch AI profile...");
+    logger.dev("[AIProfileContext] fetchAIProfile: Starting to fetch AI profile...");
     if (!supabase) {
-      console.warn("[AIProfileContext] fetchAIProfile: Supabase client not available. Using defaults for AI profile.");
+      logger.warn("[AIProfileContext] fetchAIProfile: Supabase client not available. Using defaults for AI profile.");
       setAIProfile(defaultAIProfile);
-      console.log("[AIProfileContext] fetchAIProfile: Set AI profile to default (Supabase unavailable):", JSON.stringify(defaultAIProfile, null, 2));
+      logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (Supabase unavailable):", JSON.stringify(defaultAIProfile, null, 2));
       setIsLoadingAIProfile(false);
       return;
     }
@@ -55,7 +56,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         .eq('id', AI_PROFILE_CONFIG_KEY)
         .single();
 
-      console.log("[AIProfileContext] fetchAIProfile: Fetched from Supabase - raw data:", JSON.stringify(data, null, 2), "error:", error);
+      logger.dev("[AIProfileContext] fetchAIProfile: Fetched from Supabase - raw data:", JSON.stringify(data, null, 2), "error:", error);
 
       if (error && error.code !== 'PGRST116') {
         console.error('[AIProfileContext] fetchAIProfile: Error fetching AI profile from Supabase:', error);
@@ -67,7 +68,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
           if (localProfile) {
             const parsedProfile = JSON.parse(localProfile);
             setAIProfile(parsedProfile);
-            console.log('[AIProfileContext] Using local backup profile');
+            logger.dev('[AIProfileContext] Using local backup profile');
             return;
           }
         } catch (localError) {
@@ -75,10 +76,10 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
 
         setAIProfile(defaultAIProfile);
-        console.log("[AIProfileContext] fetchAIProfile: Set AI profile to default (Supabase error):", JSON.stringify(defaultAIProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (Supabase error):", JSON.stringify(defaultAIProfile, null, 2));
       } else if (data && data.settings) {
         let fetchedProfile = data.settings as Partial<AIProfile>; 
-        console.log("[AIProfileContext] fetchAIProfile: Raw profile settings from Supabase:", JSON.stringify(fetchedProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Raw profile settings from Supabase:", JSON.stringify(fetchedProfile, null, 2));
 
         if (!fetchedProfile.avatarUrl || typeof fetchedProfile.avatarUrl !== 'string' || fetchedProfile.avatarUrl.trim() === '' || (!fetchedProfile.avatarUrl.startsWith('http') && !fetchedProfile.avatarUrl.startsWith('data:'))) {
             console.warn(`[AIProfileContext] fetchAIProfile: Fetched avatarUrl ('${fetchedProfile.avatarUrl}') is invalid or empty. Falling back to default AI avatarUrl: ${defaultAIProfile.avatarUrl}`);
@@ -91,18 +92,18 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         };
 
         setAIProfile(mergedProfile);
-        console.log("[AIProfileContext] fetchAIProfile: Set AI profile from Supabase (merged with defaults):", JSON.stringify(mergedProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile from Supabase (merged with defaults):", JSON.stringify(mergedProfile, null, 2));
         // Backup to local storage after successful fetch
         try {
           localStorage.setItem('ai_profile_backup', JSON.stringify(mergedProfile));
-          console.log('[AIProfileContext] AI profile backed up to local storage');
+          logger.dev('[AIProfileContext] AI profile backed up to local storage');
         } catch (backupError) {
           console.warn('[AIProfileContext] Failed to back up AI profile to local storage:', backupError);
         }
       } else {
-        console.log("[AIProfileContext] fetchAIProfile: No AI profile found in Supabase (error code PGRST116 or no data.settings). Using default values.");
+        logger.dev("[AIProfileContext] fetchAIProfile: No AI profile found in Supabase (error code PGRST116 or no data.settings). Using default values.");
         setAIProfile(defaultAIProfile);
-        console.log("[AIProfileContext] fetchAIProfile: Set AI profile to default (no data in Supabase):", JSON.stringify(defaultAIProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (no data in Supabase):", JSON.stringify(defaultAIProfile, null, 2));
       }
     } catch (e: any) {
       console.error('[AIProfileContext] fetchAIProfile: Unexpected error fetching AI profile:', e);
@@ -114,7 +115,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         if (localProfile) {
           const parsedProfile = JSON.parse(localProfile);
           setAIProfile(parsedProfile);
-          console.log('[AIProfileContext] Using local backup profile after unexpected error');
+          logger.dev('[AIProfileContext] Using local backup profile after unexpected error');
           return;
         }
       } catch (localError) {
@@ -122,10 +123,10 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
       }
 
       setAIProfile(defaultAIProfile);
-      console.log("[AIProfileContext] fetchAIProfile: Set AI profile to default (catch block error):", JSON.stringify(defaultAIProfile, null, 2));
+      logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (catch block error):", JSON.stringify(defaultAIProfile, null, 2));
     } finally {
       setIsLoadingAIProfile(false);
-      console.log("[AIProfileContext] fetchAIProfile: Finished fetching AI profile. Loading state:", false);
+      logger.dev("[AIProfileContext] fetchAIProfile: Finished fetching AI profile. Loading state:", false);
     }
   }, [toast]);
 
@@ -135,7 +136,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
       return;
     }
 
-    console.log("[AIProfileContext] updateAIProfile: Received newProfileData:", JSON.stringify(newProfileData, null, 2));
+    logger.dev("[AIProfileContext] updateAIProfile: Received newProfileData:", JSON.stringify(newProfileData, null, 2));
 
     const currentProfileForUpdate = aiProfile || defaultAIProfile;
 
@@ -150,7 +151,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         console.warn(`[AIProfileContext updateAIProfile] Processed avatarUrl ('${processedAvatarUrl}') is invalid. Falling back to default: ${defaultAIProfile.avatarUrl}`);
         processedAvatarUrl = defaultAIProfile.avatarUrl;
     }
-    console.log("[AIProfileContext] updateAIProfile: Processed avatarUrl for optimistic update:", processedAvatarUrl);
+    logger.dev("[AIProfileContext] updateAIProfile: Processed avatarUrl for optimistic update:", processedAvatarUrl);
 
     const optimisticProfile: AIProfile = {
       ...currentProfileForUpdate,

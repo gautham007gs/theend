@@ -1,4 +1,5 @@
 import { VertexAI } from '@google-cloud/vertexai';
+import { logger } from '@/utils/logger';
 import { parseGoogleCredentials } from './credential-utils';
 import { 
   getCachedResponse, 
@@ -24,10 +25,10 @@ const getVertexAI = (): VertexAI | null => {
     const location = process.env.VERTEX_AI_LOCATION || process.env.GCLOUD_LOCATION || 'us-central1';
     const credentialsJson = process.env.GOOGLE_CREDENTIALS_JSON;
 
-    console.log('Vertex AI: Checking environment variables...');
-    console.log('Project ID:', projectId ? 'Found' : 'Missing');
-    console.log('Location:', location);
-    console.log('Credentials JSON:', credentialsJson ? 'Found' : 'Missing');
+    logger.dev('Vertex AI: Checking environment variables...');
+    logger.dev('Project ID:', projectId ? 'Found' : 'Missing');
+    logger.dev('Location:', location);
+    logger.dev('Credentials JSON:', credentialsJson ? 'Found' : 'Missing');
 
     if (!projectId) {
       console.error('Vertex AI: PROJECT_ID not found in environment variables');
@@ -42,7 +43,7 @@ const getVertexAI = (): VertexAI | null => {
       return null;
     }
 
-    console.log(`Vertex AI: Initializing with project ${projectId} in location ${location}`);
+    logger.dev(`Vertex AI: Initializing with project ${projectId} in location ${location}`);
     
     // Initialize Vertex AI with service account credentials
     const vertexAI = new VertexAI({
@@ -54,7 +55,7 @@ const getVertexAI = (): VertexAI | null => {
       }
     });
 
-    console.log('Vertex AI: Successfully initialized with service account credentials');
+    logger.dev('Vertex AI: Successfully initialized with service account credentials');
     return vertexAI;
 
   } catch (error) {
@@ -81,9 +82,9 @@ export async function generateAIResponse(
   context?: string[]
 ): Promise<string> {
   
-  console.log('Vertex AI: Starting optimized generateAIResponse...');
-  console.log('User message length:', userMessage.length);
-  console.log('System prompt provided:', !!systemPrompt);
+  logger.dev('Vertex AI: Starting optimized generateAIResponse...');
+  logger.dev('User message length:', userMessage.length);
+  logger.dev('System prompt provided:', !!systemPrompt);
   
   // Clear expired cache entries periodically
   if (Math.random() < 0.1) { // 10% chance to clean cache
@@ -96,19 +97,19 @@ export async function generateAIResponse(
   if (cachedResponse) {
     // Track cache hit for cost analysis
     trackTokenUsage(0, 0, true);
-    console.log('Token Optimization: Returned cached response, 100% token savings!');
+    logger.dev('Token Optimization: Returned cached response, 100% token savings!');
     return cachedResponse;
   }
 
   // Analyze task complexity for smart model selection
   const complexity = analyzeTaskComplexity(userMessage, !!context);
   const optimizedModel = model || selectOptimalModel(complexity === 'simple' ? 'simple' : 'conversation');
-  console.log(`Token Optimization: Selected ${optimizedModel} for ${complexity} task`);
+  logger.dev(`Token Optimization: Selected ${optimizedModel} for ${complexity} task`);
 
   // Optimize generation config based on expected response length
   const messageType = userMessage.length < 20 ? 'short' : userMessage.length > 100 ? 'detailed' : 'normal';
   const generationConfig = getOptimizedGenerationConfig(messageType);
-  console.log(`Token Optimization: Using ${messageType} config, max tokens: ${generationConfig.maxOutputTokens}`);
+  logger.dev(`Token Optimization: Using ${messageType} config, max tokens: ${generationConfig.maxOutputTokens}`);
 
   if (!vertexAI) {
     console.error('Vertex AI: Not initialized - checking environment...');
