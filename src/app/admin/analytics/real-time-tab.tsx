@@ -4,7 +4,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { TrendingUp, Clock, Zap, Users, MessageSquare, DollarSign, Globe, Activity } from 'lucide-react';
+import { TrendingUp, Clock, Zap, Users, MessageSquare, Globe, Activity } from 'lucide-react';
 
 interface RealTimeTabProps {
   newRealTimeStats: {

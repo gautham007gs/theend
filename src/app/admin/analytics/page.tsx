@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -18,13 +17,13 @@ interface AnalyticsData {
   totalMessages: number;
   avgSessionTime: number;
   userRetention: number;
-  
+
   // User engagement
   messagesSentToday: number;
   imagesSharedToday: number;
   avgResponseTime: number;
   bounceRate: number;
-  
+
   // Cookie analytics
   cookieConsent: {
     necessary: number;
@@ -33,19 +32,19 @@ interface AnalyticsData {
     personalization: number;
     aiLearning: number;
   };
-  
+
   // AI performance
   aiResponseTime: number;
   userSatisfaction: number;
   conversationLength: number;
   repeatUsers: number;
-  
+
   // Ad performance
   adImpressions: number;
   adClicks: number;
   adRevenue: number;
   ctr: number;
-  
+
   // Device & location data
   deviceBreakdown: { mobile: number; desktop: number; tablet: number };
   topCountries: Array<{ country: string; users: number }>;
@@ -88,7 +87,7 @@ export default function AnalyticsDashboard() {
     topCountries: [],
     peakHours: []
   });
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<'supabase' | 'fallback' | 'loading'>('loading');
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
@@ -152,19 +151,19 @@ export default function AnalyticsDashboard() {
       if (!response.ok) {
         throw new Error('Analytics API failed');
       }
-      
+
       const apiData = await response.json();
-      
+
       if (apiData.success && apiData.data) {
         // Use real API data directly
         const data = apiData.data;
-        
+
         return {
           responseTimeChart: data.chartData?.slice(-10).map((day: any, i: number) => ({
             time: new Date(Date.now() - (9 - i) * 60000).toLocaleTimeString(),
             responseTime: data.avgResponseTime * 1000 + (i * 50) // Convert to ms and add trend
           })) || [],
-          
+
           userFlowChart: [
             { step: 'Landing Page', count: data.totalMessages * 1.5, dropOff: 0 },
             { step: 'Start Chat', count: data.totalMessages * 1.2, dropOff: 20 },
@@ -173,17 +172,17 @@ export default function AnalyticsDashboard() {
             { step: 'Image Share', count: data.imagesSharedToday || 0, dropOff: 65 },
             { step: 'Return Visit', count: Math.floor(data.dailyUsers * 0.4), dropOff: 40 }
           ],
-          
+
           emotionalStateDistribution: data.emotionalStates || [],
           languageUsageChart: data.languageDistribution || [],
-          
+
           sessionQualityMetrics: data.sessionMetrics || {
             averageMessagesPerSession: 0,
             averageSessionLength: 0,
             bounceRate: 0,
             retentionRate: 0
           },
-          
+
           apiCostMetrics: data.revenueData ? {
             totalCost: parseFloat((data.totalMessages * 0.0012).toFixed(2)),
             costPerUser: parseFloat((data.totalMessages * 0.0012 / Math.max(1, data.dailyUsers)).toFixed(3)),
@@ -197,7 +196,7 @@ export default function AnalyticsDashboard() {
           }
         };
       }
-      
+
       throw new Error('No valid API data');
     } catch (error) {
       console.error('Enhanced metrics fetch error:', error);
@@ -237,61 +236,48 @@ export default function AnalyticsDashboard() {
       if (overviewData?.success && overviewData.data) {
         const data = overviewData.data;
         setDataSource(data.dataSource === 'supabase' ? 'supabase' : 'fallback');
-        
+
         // Get local metrics for immediate data
         const dailyMessages = parseInt(localStorage.getItem('daily_message_count') || '0');
         const totalImages = parseInt(localStorage.getItem('total_images_sent') || '0');
         const sessionStart = parseInt(localStorage.getItem('session_start_time') || Date.now().toString());
         const currentDuration = parseFloat(localStorage.getItem('current_session_duration') || '0');
-      
+
         setAnalytics({
           // Use real data from API with local enhancements
           dailyUsers: data.dailyUsers || 0,
           totalMessages: data.totalMessages || 0,
           avgSessionTime: currentDuration > 0 ? currentDuration : data.avgSessionTime || 0,
-          userRetention: data.userRetention || 68.2,
+          userRetention: data.userRetention || 0,
           messagesSentToday: Math.max(dailyMessages, data.messagesSentToday || 0),
           imagesSharedToday: Math.max(totalImages, data.imagesSharedToday || 0),
-          avgResponseTime: data.avgResponseTime || 1.2,
-          bounceRate: data.bounceRate || 32.1,
-          cookieConsent: {
-            necessary: 100,
-            analytics: 85.6 + (data.dailyUsers > 0 ? 5 : 0),
-            advertising: 72.3 + (data.totalMessages > 1000 ? 10 : 0),
-            personalization: 89.1,
-            aiLearning: 76.8 + (data.messagesSentToday > 10 ? 8 : 0)
+          avgResponseTime: data.avgResponseTime || 0,
+          bounceRate: data.bounceRate || 0,
+          cookieConsent: data.cookieConsent || {
+            necessary: 0,
+            analytics: 0,
+            advertising: 0,
+            personalization: 0,
+            aiLearning: 0
           },
-          aiResponseTime: data.aiResponseTime || 850,
-          userSatisfaction: data.userSatisfaction || 4.6,
-          conversationLength: data.conversationLength || 8.4,
-          repeatUsers: data.repeatUsers || 156,
-          adImpressions: data.adImpressions || 5420,
-          adClicks: data.adClicks || 243,
-          adRevenue: data.adRevenue || 18.50,
-          ctr: data.ctr || 4.48,
-          deviceBreakdown: data.deviceBreakdown || {
-            mobile: 68,
-            desktop: 25,
-            tablet: 7
-          },
-          topCountries: data.topCountries || [
-            { country: 'India', users: 456 },
-            { country: 'USA', users: 234 },
-            { country: 'UK', users: 123 },
-            { country: 'Canada', users: 89 },
-            { country: 'Australia', users: 67 }
-          ],
-          peakHours: data.peakHours || Array.from({ length: 24 }, (_, i) => ({
-            hour: i,
-            users: Math.floor(Math.random() * 100) + (i >= 19 && i <= 23 ? 150 : 50)
-          }))
+          aiResponseTime: data.aiResponseTime || 0,
+          userSatisfaction: data.userSatisfaction || 0,
+          conversationLength: data.conversationLength || 0,
+          repeatUsers: data.repeatUsers || 0,
+          adImpressions: data.adImpressions || 0,
+          adClicks: data.adClicks || 0,
+          adRevenue: data.adRevenue || 0,
+          ctr: data.ctr || 0,
+          deviceBreakdown: data.deviceBreakdown || { mobile: 0, desktop: 0, tablet: 0 },
+          topCountries: data.topCountries || [],
+          peakHours: data.peakHours || []
         });
 
           // Update chart data with real data if available
         if (data.chartData && Array.isArray(data.chartData)) {
           setChartData(data.chartData);
         }
-        
+
         // Update enhanced metrics with API data when available
         if (data.languageDistribution && data.emotionalStates) {
           setNewRealTimeStats(prev => ({
@@ -316,20 +302,15 @@ export default function AnalyticsDashboard() {
       if (realtimeData?.success && realtimeData.data) {
         const rtData = realtimeData.data;
         setRealTimeMetrics({
-          currentOnlineUsers: rtData.currentOnlineUsers || 23,
-          messagesLastHour: rtData.messagesLastHour || 20,
+          currentOnlineUsers: rtData.currentOnlineUsers || 0,
+          messagesLastHour: rtData.messagesLastHour || 0,
           averageSessionDuration: parseFloat(localStorage.getItem('current_session_duration') || '0') || (rtData.averageSessionDuration || 0),
-          topPages: rtData.topPages || [
-            { page: '/maya-chat', views: 1234 },
-            { page: '/blog', views: 567 },
-            { page: '/blog/psychology-ai-girlfriends', views: 234 },
-            { page: '/legal/privacy', views: 89 }
-          ]
+          topPages: rtData.topPages || []
         });
       }
 
       setLastRefresh(new Date());
-      
+
     } catch (error) {
       console.error('Failed to fetch real-time analytics:', error);
       setDataSource('fallback');
@@ -589,18 +570,24 @@ export default function AnalyticsDashboard() {
                 <CardTitle>User Journey Funnel</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {userJourneyData.map((step, index) => (
-                    <div key={step.step} className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{step.step}</span>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm">{step.users}</span>
-                        <Progress value={step.conversion} className="w-20" />
-                        <span className="text-xs text-muted-foreground">{step.conversion}%</span>
+                {userJourneyData.length > 0 ? (
+                  <div className="space-y-3">
+                    {userJourneyData.map((step, index) => (
+                      <div key={step.step} className="flex items-center justify-between">
+                        <span className="text-sm font-medium">{step.step}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm">{step.users || step.count}</span>
+                          <Progress value={step.conversion} className="w-20" />
+                          <span className="text-xs text-muted-foreground">{step.conversion}%</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-40 flex items-center justify-center text-muted-foreground">
+                    No user journey data available yet. Start using the app to see real user flow.
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -930,9 +917,9 @@ export default function AnalyticsDashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={chartData.map((day, index) => ({ 
-                    ...day, 
-                    revenue: (analytics.adRevenue / 7) * (1 + (index - 3) * 0.1), 
+                  <AreaChart data={chartData.map((day, index) => ({
+                    ...day,
+                    revenue: (analytics.adRevenue / 7) * (1 + (index - 3) * 0.1),
                     impressions: analytics.adImpressions / 7 * (1 + Math.sin(index) * 0.3)
                   }))}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -1081,13 +1068,13 @@ export default function AnalyticsDashboard() {
                     <Badge variant="secondary">45%</Badge>
                   </div>
                   <Progress value={45} />
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Memory Usage</span>
                     <Badge variant="secondary">62%</Badge>
                   </div>
                   <Progress value={62} />
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Database Connections</span>
                     <Badge variant="secondary">8/20</Badge>
