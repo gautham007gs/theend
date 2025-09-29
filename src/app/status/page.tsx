@@ -9,7 +9,7 @@ import { PlusCircle, Camera, X as XIcon, ArrowLeft, Search, MoreVertical } from 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import type { AdminStatusDisplay, ManagedContactStatus, AdSettings, AIProfile } from '@/types';
 import { defaultAIProfile, defaultAdminStatusDisplay, defaultManagedContactStatuses } from '@/config/ai';
-import { tryShowRotatedAd } from '@/app/maya-chat/page'; 
+import { tryShowRotatedAd } from '@/lib/ad-utils'; 
 import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
 import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useGlobalStatus } from '@/contexts/GlobalStatusContext'; 

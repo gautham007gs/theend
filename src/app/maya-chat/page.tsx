@@ -27,6 +27,7 @@ import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext';
 import { AnalyticsProvider, useAnalyticsTracking } from './analytics-integration';
 import { analyticsTracker } from '@/lib/analytics-tracker';
+import { tryShowRotatedAd } from '@/lib/ad-utils';
 
 const AI_DISCLAIMER_SHOWN_KEY = 'ai_disclaimer_shown_kruthika_chat_v2';
 const AI_DISCLAIMER_DURATION = 2000;
@@ -65,108 +66,6 @@ const USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA = 'user_image_upload_last_date_kr
 const MAX_USER_IMAGES_PER_DAY = 5;
 
 
-const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean => {
-  if (typeof window === 'undefined' || !activeAdSettings || !activeAdSettings.adsEnabledGlobally) {
-    return false;
-  }
-
-  const todayStr = new Date().toDateString();
-  const lastShownDate = localStorage.getItem(APP_ADS_LAST_SHOWN_DATE_KEY);
-  let currentDailyCount = parseInt(localStorage.getItem(APP_ADS_DAILY_COUNT_KEY) || '0', 10);
-  let currentSessionCount = parseInt(sessionStorage.getItem(APP_ADS_SESSION_COUNT_KEY) || '0', 10);
-
-  if (lastShownDate !== todayStr) {
-    currentDailyCount = 0;
-    localStorage.setItem(APP_ADS_LAST_SHOWN_DATE_KEY, todayStr);
-    currentSessionCount = 0;
-    sessionStorage.setItem(APP_ADS_SESSION_COUNT_KEY, '0');
-  }
-  localStorage.setItem(APP_ADS_DAILY_COUNT_KEY, currentDailyCount.toString());
-
-  // Use limits from AdSettings
-  const maxAdsPerDay = activeAdSettings.maxDirectLinkAdsPerDay ?? defaultAdSettings.maxDirectLinkAdsPerDay;
-  const maxAdsPerSession = activeAdSettings.maxDirectLinkAdsPerSession ?? defaultAdSettings.maxDirectLinkAdsPerSession;
-
-  if (currentSessionCount >= maxAdsPerSession || currentDailyCount >= maxAdsPerDay) {
-    return false;
-  }
-
-  const lastShownNetwork = localStorage.getItem(APP_ADS_LAST_SHOWN_NETWORK_KEY);
-  let networkToTry: 'adsterra' | 'monetag' | null = null;
-  let adLinkToShow: string | null = null;
-
-  const adsterraDirectEnabled = activeAdSettings.adsterraDirectLinkEnabled;
-  const monetagDirectEnabled = activeAdSettings.monetagDirectLinkEnabled;
-
-  const adsterraLink = activeAdSettings.adsterraDirectLink;
-  const monetagLink = activeAdSettings.monetagDirectLink;
-
-  if (!adsterraDirectEnabled && !monetagDirectEnabled) {
-    console.warn("Ad display: No direct link networks enabled in settings.");
-    return false;
-  }
-
-  if (adsterraDirectEnabled && monetagDirectEnabled) {
-    networkToTry = lastShownNetwork === 'adsterra' ? 'monetag' : 'adsterra';
-  } else if (adsterraDirectEnabled) {
-    networkToTry = 'adsterra';
-  } else if (monetagDirectEnabled) {
-    networkToTry = 'monetag';
-  }
-
-  if (networkToTry === 'adsterra') {
-    adLinkToShow = adsterraLink;
-  } else if (networkToTry === 'monetag') {
-    adLinkToShow = monetagLink;
-  }
-
-  const isValidLink = (link: string | null | undefined): boolean => !!link && (link.startsWith('http://') || link.startsWith('https://')) && link !== DEFAULT_ADSTERRA_DIRECT_LINK && link !== DEFAULT_MONETAG_DIRECT_LINK && !link.toLowerCase().includes("placeholder");
-
-  if (!isValidLink(adLinkToShow)) {
-    const originalNetworkAttempt = networkToTry;
-    if (networkToTry === 'adsterra' && monetagDirectEnabled && isValidLink(monetagLink)) {
-      networkToTry = 'monetag';
-      adLinkToShow = monetagLink;
-      console.warn(`Ad display: Adsterra link invalid/default ("${adsterraLink}"), falling back to Monetag: ${adLinkToShow}`);
-    } else if (networkToTry === 'monetag' && adsterraDirectEnabled && isValidLink(adsterraLink)) {
-      networkToTry = 'adsterra';
-      adLinkToShow = adsterraLink;
-      console.warn(`Ad display: Monetag link invalid/default ("${monetagLink}"), falling back to Adsterra: ${adLinkToShow}`);
-    } else {
-      console.warn(`Ad display: Primary choice (${originalNetworkAttempt}) link invalid or default placeholder. Fallback network not viable or also has invalid/default link. No ad shown. Adsterra Link: "${adsterraLink}", Monetag Link: "${monetagLink}"`);
-      return false;
-    }
-    if (!isValidLink(adLinkToShow)) {
-      console.warn(`Ad display: Fallback link for (${networkToTry}) is also invalid or default placeholder. No ad shown. Link: "${adLinkToShow}"`);
-      return false;
-    }
-  }
-
-  try {
-    const anchor = document.createElement('a');
-    anchor.href = adLinkToShow!;
-    anchor.target = '_blank';
-    anchor.rel = 'noopener noreferrer';
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-  } catch (e) {
-    console.error("Error opening ad link via anchor click, falling back to window.open:", e);
-    try {
-        window.open(adLinkToShow!, '_blank');
-    } catch (openError) {
-        console.error("Error opening ad link via window.open fallback:", openError);
-        return false;
-    }
-  }
-
-  currentDailyCount++;
-  localStorage.setItem(APP_ADS_DAILY_COUNT_KEY, currentDailyCount.toString());
-  currentSessionCount++;
-  sessionStorage.setItem(APP_ADS_SESSION_COUNT_KEY, currentSessionCount.toString());
-  if (networkToTry) localStorage.setItem(APP_ADS_LAST_SHOWN_NETWORK_KEY, networkToTry);
-  return true;
-};
 
 
 // Utility function to get time of day
@@ -1032,7 +931,7 @@ const KruthikaChatPage: NextPage = () => {
         // Server-safe ignore state
         currentIgnoreUntil: currentIgnoreTime,
         // Goodbye comeback data
-        lastGoodbyeTime: isComeback ? parseInt(lastGoodbyeTime) : undefined
+        // lastGoodbyeTime: isComeback ? parseInt(lastGoodbyeTime) : undefined // Removed - not in EmotionalStateInput interface
       };
 
       const serverResult = await sendMessage(text, aiMood, updatedRecentInteractions);
