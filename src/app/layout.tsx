@@ -16,6 +16,7 @@ import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import CookieConsent from '@/components/CookieConsent';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
+import '@/lib/critical-performance-boost';
 
 // Optimize font loading for better performance
 const inter = Inter({
