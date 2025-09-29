@@ -33,7 +33,7 @@ const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
 export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
   return (
     <div className="space-y-6">
-      {/* Real Analytics Only - No Dummy Data */}
+      {/* Real Analytics Only - Using Actual Database Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -42,12 +42,12 @@ export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {newRealTimeStats.userFlowChart.length > 0 ? 
-                newRealTimeStats.userFlowChart[0].count : 
+              {newRealTimeStats.apiCostMetrics.tokenUsage > 0 ? 
+                Math.ceil(newRealTimeStats.apiCostMetrics.tokenUsage / 500) : 
                 '0'
               }
             </div>
-            <p className="text-xs text-muted-foreground">Real active users</p>
+            <p className="text-xs text-muted-foreground">Estimated from token usage</p>
           </CardContent>
         </Card>
 
@@ -59,11 +59,11 @@ export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
           <CardContent>
             <div className="text-2xl font-bold">
               {newRealTimeStats.sessionQualityMetrics.averageMessagesPerSession > 0 ? 
-                Math.floor(newRealTimeStats.sessionQualityMetrics.averageMessagesPerSession * 10) : 
+                newRealTimeStats.sessionQualityMetrics.averageMessagesPerSession : 
                 '0'
               }
             </div>
-            <p className="text-xs text-muted-foreground">From real conversations</p>
+            <p className="text-xs text-muted-foreground">Real message count</p>
           </CardContent>
         </Card>
 

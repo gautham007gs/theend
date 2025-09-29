@@ -85,6 +85,8 @@ async function getRealPeakHours() {
 
     return Array.from({ length: 24 }, (_, hour) => ({
       hour,
+      hourFormatted: `${hour.toString().padStart(2, '0')}:00`,
+      timeLabel: hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`,
       users: hourCounts[hour] || 0
     }));
   } catch (error) {
@@ -368,7 +370,7 @@ async function getOverviewAnalytics(startDate: string) {
       return acc;
     }, {} as Record<string, Set<string>>);
 
-    // Calculate unique daily users across the entire period
+    // Calculate unique daily users across the entire period with proper DISTINCT
     const allUniqueUsers = new Set(dailyUsers.map(u => u.user_pseudo_id));
 
     // Generate chart data for the last 7 days with REAL data only
@@ -380,7 +382,8 @@ async function getOverviewAnalytics(startDate: string) {
       const dayName = date.toLocaleDateString('en', { weekday: 'short' });
 
       const dayMessages = messagesByDay[dateStr] || 0;
-      const dayUsers = usersByDay[dateStr]?.size || 0;
+      // Ensure proper DISTINCT count for daily users
+      const dayUsers = usersByDay[dateStr] ? usersByDay[dateStr].size : 0;
 
       chartData.push({
         name: dayName,

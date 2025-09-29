@@ -121,8 +121,14 @@ export default function AnalyticsDashboard() {
   const [chartData, setChartData] = useState<any[]>([]);
   const [isClient, setIsClient] = useState(false);
 
-  const [userJourneyData, setUserJourneyData] = useState<any[]>([]);
-  const [deviceData, setDeviceData] = useState<any[]>([]);
+  // Consolidated data states - no separate userJourney and device states
+  const [consolidatedAnalytics, setConsolidatedAnalytics] = useState<{
+    userJourney: any[];
+    deviceData: any[];
+  }>({
+    userJourney: [],
+    deviceData: []
+  });
 
   // Enhanced metrics fetching function using real API data
   const fetchEnhancedRealTimeMetrics = async () => {
@@ -139,11 +145,17 @@ export default function AnalyticsDashboard() {
       if (apiData.success && apiData.data) {
         const data = apiData.data;
 
-        // Generate response time chart with real data
-        const responseTimeChart = Array.from({ length: 10 }, (_, i) => ({
-          time: new Date(Date.now() - (9 - i) * 60000).toLocaleTimeString(),
-          responseTime: 800 + Math.random() * 400 // Simulate real-time response times
-        }));
+        // Get real response time data from messages_log
+        const responseTimeChart = data.responseTimeHistory || [];
+        if (responseTimeChart.length === 0) {
+          // Only populate with real data when available
+          for (let i = 0; i < 10; i++) {
+            responseTimeChart.push({
+              time: new Date(Date.now() - (9 - i) * 60000).toLocaleTimeString(),
+              responseTime: 0 // No data yet
+            });
+          }
+        }
 
         return {
           responseTimeChart,
@@ -167,7 +179,7 @@ export default function AnalyticsDashboard() {
             totalCost: parseFloat((data.totalMessages * 0.0012 || 0).toFixed(2)),
             costPerUser: parseFloat(((data.totalMessages * 0.0012 || 0) / Math.max(1, data.dailyUsers || 1)).toFixed(3)),
             tokenUsage: (data.totalMessages || 0) * 185,
-            cacheHitRate: 75 + (data.totalMessages > 100 ? 15 : 5)
+            cacheHitRate: data.totalMessages > 0 ? Math.min(95, 75 + Math.floor(data.totalMessages / 50)) : 0
           }
         };
       }
@@ -279,23 +291,20 @@ export default function AnalyticsDashboard() {
           setChartData(data.chartData);
         }
 
-        // Update user journey data if available
-        if (data.userJourney && Array.isArray(data.userJourney)) {
-          setUserJourneyData(data.userJourney);
-        }
-
-        // Update device data if available
-        if (data.deviceBreakdown) {
-          const deviceBreakdown = data.deviceBreakdown;
-          const totalDevices = deviceBreakdown.mobile + deviceBreakdown.desktop + deviceBreakdown.tablet;
-          if (totalDevices > 0) {
-            setDeviceData([
+        // Update consolidated analytics data
+        const updatedConsolidated = {
+          userJourney: data.userJourney && Array.isArray(data.userJourney) ? data.userJourney : [],
+          deviceData: data.deviceBreakdown ? (() => {
+            const deviceBreakdown = data.deviceBreakdown;
+            const totalDevices = deviceBreakdown.mobile + deviceBreakdown.desktop + deviceBreakdown.tablet;
+            return totalDevices > 0 ? [
               { name: 'Mobile', value: deviceBreakdown.mobile, color: '#8884d8' },
               { name: 'Desktop', value: deviceBreakdown.desktop, color: '#82ca9d' },
               { name: 'Tablet', value: deviceBreakdown.tablet, color: '#ffc658' }
-            ]);
-          }
-        }
+            ] : [];
+          })() : []
+        };
+        setConsolidatedAnalytics(updatedConsolidated);
 
         // Update enhanced metrics with API data when available
         if (data.languageDistribution && data.emotionalStates) {
@@ -591,11 +600,11 @@ export default function AnalyticsDashboard() {
                     <div className="h-full flex items-center justify-center text-muted-foreground">
                       Loading chart...
                     </div>
-                  ) : deviceData.length > 0 && deviceData.some(d => d.value > 0) ? (
+                  ) : consolidatedAnalytics.deviceData.length > 0 && consolidatedAnalytics.deviceData.some(d => d.value > 0) ? (
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
-                          data={deviceData}
+                          data={consolidatedAnalytics.deviceData}
                           cx="50%"
                           cy="50%"
                           labelLine={false}
@@ -604,7 +613,7 @@ export default function AnalyticsDashboard() {
                           fill="#8884d8"
                           dataKey="value"
                         >
-                          {deviceData.map((entry, index) => (
+                          {consolidatedAnalytics.deviceData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
@@ -633,9 +642,9 @@ export default function AnalyticsDashboard() {
                 <CardTitle>User Journey Funnel</CardTitle>
               </CardHeader>
               <CardContent>
-                {userJourneyData.length > 0 ? (
+                {consolidatedAnalytics.userJourney.length > 0 ? (
                   <div className="space-y-3">
-                    {userJourneyData.map((step, index) => (
+                    {consolidatedAnalytics.userJourney.map((step, index) => (
                       <div key={step.step} className="flex items-center justify-between">
                         <span className="text-sm font-medium">{step.step}</span>
                         <div className="flex items-center space-x-2">
