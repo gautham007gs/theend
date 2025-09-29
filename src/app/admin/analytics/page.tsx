@@ -341,60 +341,41 @@ export default function AnalyticsDashboard() {
   };
 
   const fetchFallbackData = async () => {
-    // Fallback to local storage and simulated data
-    const dailyMessages = parseInt(localStorage.getItem('daily_message_count') || '0');
-    const totalImages = parseInt(localStorage.getItem('total_images_sent') || '0');
-    const sessionStart = parseInt(localStorage.getItem('session_start_time') || Date.now().toString());
-    const sessionDuration = (Date.now() - sessionStart) / 1000 / 60; // minutes
-
+    // No fallback data - show only real metrics or zero
     setAnalytics({
-      dailyUsers: 1247,
-      totalMessages: 15690 + dailyMessages,
-      avgSessionTime: sessionDuration > 0 ? sessionDuration : 12.5,
-      userRetention: 68.2,
-      messagesSentToday: dailyMessages,
-      imagesSharedToday: totalImages,
-      avgResponseTime: 1.2,
-      bounceRate: 32.1,
+      dailyUsers: 0,
+      totalMessages: 0,
+      avgSessionTime: 0,
+      userRetention: 0,
+      messagesSentToday: 0,
+      imagesSharedToday: 0,
+      avgResponseTime: 0,
+      bounceRate: 0,
       cookieConsent: {
-        necessary: 100,
-        analytics: 85.6,
-        advertising: 72.3,
-        personalization: 89.1,
-        aiLearning: 76.8
+        necessary: 0,
+        analytics: 0,
+        advertising: 0,
+        personalization: 0,
+        aiLearning: 0
       },
-      aiResponseTime: 850,
-      userSatisfaction: 4.6,
-      conversationLength: 8.4,
-      repeatUsers: 156,
-      adImpressions: 5420,
-      adClicks: 243,
-      adRevenue: 18.50,
-      ctr: 4.48,
-      deviceBreakdown: { mobile: 68, desktop: 25, tablet: 7 },
-      topCountries: [
-        { country: 'India', users: 456 },
-        { country: 'USA', users: 234 },
-        { country: 'UK', users: 123 },
-        { country: 'Canada', users: 89 },
-        { country: 'Australia', users: 67 }
-      ],
-      peakHours: Array.from({ length: 24 }, (_, i) => ({
-        hour: i,
-        users: Math.floor(Math.random() * 100) + (i >= 19 && i <= 23 ? 150 : 50)
-      }))
+      aiResponseTime: 0,
+      userSatisfaction: 0,
+      conversationLength: 0,
+      repeatUsers: 0,
+      adImpressions: 0,
+      adClicks: 0,
+      adRevenue: 0,
+      ctr: 0,
+      deviceBreakdown: { mobile: 0, desktop: 0, tablet: 0 },
+      topCountries: [],
+      peakHours: []
     });
 
     setRealTimeMetrics({
-      currentOnlineUsers: 23,
-      messagesLastHour: 30,
-      averageSessionDuration: sessionDuration,
-      topPages: [
-        { page: '/maya-chat', views: 1234 },
-        { page: '/blog', views: 567 },
-        { page: '/blog/psychology-ai-girlfriends', views: 234 },
-        { page: '/legal/privacy', views: 89 }
-      ]
+      currentOnlineUsers: 0,
+      messagesLastHour: 0,
+      averageSessionDuration: 0,
+      topPages: []
     });
   };
 

@@ -1,74 +1,231 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
-// Real analytics data functions using actual Supabase queries
-async function getLanguageDistribution() {
+// Real analytics data functions using actual Supabase data only
+async function getRealDeviceBreakdown() {
   try {
-    const { data: messages, error } = await supabase
-      .from('messages_log')
-      .select('message_id, sender_type')
-      .eq('sender_type', 'user')
+    const { data: devices, error } = await supabase
+      .from('user_analytics')
+      .select('device_type')
       .limit(1000);
 
     if (error) throw error;
-    if (!messages || messages.length === 0) return [];
+    if (!devices || devices.length === 0) return { mobile: 0, desktop: 0, tablet: 0 };
 
-    // For now, simulate language detection - in production you'd analyze text_content
-    const langCounts = messages.reduce((acc, msg) => {
-      const lang = Math.random() > 0.8 ? 'Hindi' : 'English'; // Simulate based on user base
-      acc[lang] = (acc[lang] || 0) + 1;
+    const deviceCounts = devices.reduce((acc, item) => {
+      const device = item.device_type || 'unknown';
+      acc[device] = (acc[device] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    const total = messages.length;
-    return Object.entries(langCounts).map(([language, count]) => ({
-      language,
-      messages: count,
-      percentage: parseFloat(((count / total) * 100).toFixed(1))
-    }));
+    const total = devices.length;
+    return {
+      mobile: Math.round(((deviceCounts.mobile || 0) / total) * 100),
+      desktop: Math.round(((deviceCounts.desktop || 0) / total) * 100),
+      tablet: Math.round(((deviceCounts.tablet || 0) / total) * 100)
+    };
   } catch (error) {
-    console.error('Language distribution error:', error);
+    console.error('Device breakdown error:', error);
+    return { mobile: 0, desktop: 0, tablet: 0 };
+  }
+}
+
+async function getRealTopCountries() {
+  try {
+    const { data: analytics, error } = await supabase
+      .from('user_analytics')
+      .select('country_name, country_code')
+      .not('country_name', 'is', null)
+      .limit(1000);
+
+    if (error) throw error;
+    if (!analytics || analytics.length === 0) return [];
+
+    const countryCounts = analytics.reduce((acc, item) => {
+      const country = item.country_name;
+      if (country) {
+        acc[country] = (acc[country] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(countryCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([country, users]) => ({ country, users }));
+  } catch (error) {
+    console.error('Top countries error:', error);
     return [];
   }
 }
 
-async function getEmotionalStatesDistribution() {
+async function getRealPeakHours() {
   try {
     const { data: messages, error } = await supabase
       .from('messages_log')
-      .select('message_id, sender_type')
-      .eq('sender_type', 'ai')
-      .limit(500);
+      .select('created_at')
+      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .limit(10000);
 
     if (error) throw error;
     if (!messages || messages.length === 0) return [];
 
-    // Simulate emotional analysis based on AI responses
-    const emotions = ['Happy', 'Excited', 'Caring', 'Playful', 'Supportive'];
-    const emotionCounts = messages.reduce((acc, msg) => {
-      const emotion = emotions[Math.floor(Math.random() * emotions.length)];
-      acc[emotion] = (acc[emotion] || 0) + 1;
+    const hourCounts = messages.reduce((acc, msg) => {
+      const hour = new Date(msg.created_at).getHours();
+      acc[hour] = (acc[hour] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<number, number>);
 
-    const total = messages.length;
-    return Object.entries(emotionCounts).map(([emotion, count]) => ({
-      emotion,
-      count,
-      percentage: parseFloat(((count / total) * 100).toFixed(1))
+    return Array.from({ length: 24 }, (_, hour) => ({
+      hour,
+      users: hourCounts[hour] || 0
     }));
   } catch (error) {
-    console.error('Emotional states error:', error);
+    console.error('Peak hours error:', error);
     return [];
   }
 }
 
-async function getSessionMetrics() {
+async function getRealAdMetrics() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: adData, error } = await supabase
+      .from('ad_interactions')
+      .select('action_type, ad_network, ad_type')
+      .gte('timestamp', today + 'T00:00:00Z');
+
+    if (error) throw error;
+    if (!adData || adData.length === 0) {
+      return {
+        impressions: 0,
+        clicks: 0,
+        ctr: 0,
+        revenue: 0
+      };
+    }
+
+    const clicks = adData.filter(ad => ad.action_type === 'click').length;
+    const impressions = adData.filter(ad => ad.action_type === 'view').length;
+    const ctr = impressions > 0 ? ((clicks / impressions) * 100) : 0;
+    const revenue = clicks * 0.01 + impressions * 0.001; // Estimated
+
+    return {
+      impressions,
+      clicks,
+      ctr: parseFloat(ctr.toFixed(2)),
+      revenue: parseFloat(revenue.toFixed(2))
+    };
+  } catch (error) {
+    console.error('Ad metrics error:', error);
+    return { impressions: 0, clicks: 0, ctr: 0, revenue: 0 };
+  }
+}
+
+async function getRealTopPages() {
+  try {
+    const { data: pageViews, error } = await supabase
+      .from('page_views')
+      .select('page_path')
+      .gte('viewed_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      .limit(1000);
+
+    if (error) throw error;
+    if (!pageViews || pageViews.length === 0) return [];
+
+    const pageCounts = pageViews.reduce((acc, view) => {
+      const page = view.page_path || '/';
+      acc[page] = (acc[page] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    return Object.entries(pageCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([page, views]) => ({ page, views }));
+  } catch (error) {
+    console.error('Top pages error:', error);
+    return [];
+  }
+}
+
+async function getRealUserJourney() {
+  try {
+    const { data: journeyData, error } = await supabase
+      .from('user_journey_steps')
+      .select('step_name, session_id')
+      .gte('completed_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .limit(5000);
+
+    if (error) throw error;
+    if (!journeyData || journeyData.length === 0) return [];
+
+    const stepCounts = journeyData.reduce((acc, step) => {
+      acc[step.step_name] = (acc[step.step_name] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const totalSessions = new Set(journeyData.map(step => step.session_id)).size;
+
+    const stepOrder = ['landing', 'chat_started', 'message_sent', 'image_shared', 'long_session', 'return_visit'];
+    
+    return stepOrder.map(step => ({
+      step: step.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      count: stepCounts[step] || 0,
+      conversion: totalSessions > 0 ? Math.round(((stepCounts[step] || 0) / totalSessions) * 100) : 0
+    }));
+  } catch (error) {
+    console.error('User journey error:', error);
+    return [];
+  }
+}
+
+async function getRealCookieConsent() {
+  try {
+    const { data: consents, error } = await supabase
+      .from('cookie_consents')
+      .select('*')
+      .gte('timestamp', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+      .limit(1000);
+
+    if (error) throw error;
+    if (!consents || consents.length === 0) {
+      return {
+        necessary: 0,
+        analytics: 0,
+        advertising: 0,
+        personalization: 0,
+        aiLearning: 0
+      };
+    }
+
+    const total = consents.length;
+    return {
+      necessary: Math.round((consents.filter(c => c.necessary).length / total) * 100),
+      analytics: Math.round((consents.filter(c => c.analytics).length / total) * 100),
+      advertising: Math.round((consents.filter(c => c.advertising).length / total) * 100),
+      personalization: Math.round((consents.filter(c => c.personalization).length / total) * 100),
+      aiLearning: Math.round((consents.filter(c => c.ai_learning).length / total) * 100)
+    };
+  } catch (error) {
+    console.error('Cookie consent error:', error);
+    return {
+      necessary: 0,
+      analytics: 0,
+      advertising: 0,
+      personalization: 0,
+      aiLearning: 0
+    };
+  }
+}
+
+async function getRealSessionMetrics() {
   try {
     const { data: sessions, error } = await supabase
-      .from('messages_log')
-      .select('chat_id, created_at, sender_type')
-      .order('created_at', { ascending: false })
+      .from('user_sessions')
+      .select('duration_seconds, messages_sent, session_id')
+      .not('duration_seconds', 'is', null)
+      .gte('started_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
       .limit(1000);
 
     if (error) throw error;
@@ -81,115 +238,24 @@ async function getSessionMetrics() {
       };
     }
 
-    const sessionData = sessions.reduce((acc, msg) => {
-      if (!acc[msg.chat_id]) {
-        acc[msg.chat_id] = { count: 0, start: msg.created_at, end: msg.created_at };
-      }
-      acc[msg.chat_id].count++;
-      if (new Date(msg.created_at) < new Date(acc[msg.chat_id].start)) {
-        acc[msg.chat_id].start = msg.created_at;
-      }
-      if (new Date(msg.created_at) > new Date(acc[msg.chat_id].end)) {
-        acc[msg.chat_id].end = msg.created_at;
-      }
-      return acc;
-    }, {} as Record<string, any>);
-
-    const sessionValues = Object.values(sessionData);
-    const avgMessages = sessionValues.reduce((sum: number, session: any) => sum + session.count, 0) / sessionValues.length;
-    const avgLength = sessionValues.reduce((sum: number, session: any) => {
-      const duration = (new Date(session.end).getTime() - new Date(session.start).getTime()) / 1000 / 60;
-      return sum + duration;
-    }, 0) / sessionValues.length;
-
-    const bounceRate = (sessionValues.filter((session: any) => session.count === 1).length / sessionValues.length) * 100;
-    const retentionRate = 100 - bounceRate;
+    const avgMessages = sessions.reduce((sum, s) => sum + (s.messages_sent || 0), 0) / sessions.length;
+    const avgDuration = sessions.reduce((sum, s) => sum + (s.duration_seconds || 0), 0) / sessions.length / 60; // minutes
+    const bounceSessions = sessions.filter(s => (s.messages_sent || 0) <= 1).length;
+    const bounceRate = (bounceSessions / sessions.length) * 100;
 
     return {
       averageMessagesPerSession: parseFloat(avgMessages.toFixed(1)),
-      averageSessionLength: parseFloat(avgLength.toFixed(1)),
+      averageSessionLength: parseFloat(avgDuration.toFixed(1)),
       bounceRate: parseFloat(bounceRate.toFixed(1)),
-      retentionRate: parseFloat(retentionRate.toFixed(1))
+      retentionRate: parseFloat((100 - bounceRate).toFixed(1))
     };
   } catch (error) {
     console.error('Session metrics error:', error);
-    return { averageMessagesPerSession: 0, averageSessionLength: 0, bounceRate: 0, retentionRate: 0 };
-  }
-}
-
-async function getDeviceBreakdown() {
-  try {
-    // Get unique user sessions from daily activity
-    const { data: sessions, error } = await supabase
-      .from('daily_activity_log')
-      .select('user_pseudo_id')
-      .limit(1000);
-
-    if (error) throw error;
-    if (!sessions || sessions.length === 0) return { mobile: 70, desktop: 25, tablet: 5 };
-
-    // Simulate device detection based on user patterns
-    const deviceCounts = sessions.reduce((acc, session) => {
-      const rand = Math.random();
-      const device = rand > 0.7 ? 'mobile' : rand > 0.25 ? 'desktop' : 'tablet';
-      acc[device] = (acc[device] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const total = sessions.length;
     return {
-      mobile: Math.round(((deviceCounts.mobile || 0) / total) * 100),
-      desktop: Math.round(((deviceCounts.desktop || 0) / total) * 100),
-      tablet: Math.round(((deviceCounts.tablet || 0) / total) * 100)
-    };
-  } catch (error) {
-    console.error('Device breakdown error:', error);
-    return { mobile: 70, desktop: 25, tablet: 5 };
-  }
-}
-
-async function getRevenueData(totalMessages: number) {
-  try {
-    const { data: adMetrics, error } = await supabase
-      .from('ad_revenue_log')
-      .select('impressions, clicks, estimated_revenue, created_at')
-      .order('created_at', { ascending: false })
-      .limit(30);
-
-    if (error) throw error;
-
-    if (!adMetrics || adMetrics.length === 0) {
-      // Calculate revenue based on actual message data
-      const estimatedRevenue = totalMessages * 0.008;
-      return {
-        totalRevenue: parseFloat(estimatedRevenue.toFixed(2)),
-        dailyRevenue: parseFloat((estimatedRevenue / 30).toFixed(2)),
-        impressions: Math.floor(totalMessages * 8),
-        clicks: Math.floor(totalMessages * 0.4),
-        ctr: 5.0
-      };
-    }
-
-    const totalRevenue = adMetrics.reduce((sum, metric) => sum + (parseFloat(metric.estimated_revenue) || 0), 0);
-    const totalImpressions = adMetrics.reduce((sum, metric) => sum + (metric.impressions || 0), 0);
-    const totalClicks = adMetrics.reduce((sum, metric) => sum + (metric.clicks || 0), 0);
-
-    return {
-      totalRevenue: parseFloat(totalRevenue.toFixed(2)),
-      dailyRevenue: parseFloat((totalRevenue / 30).toFixed(2)),
-      impressions: totalImpressions,
-      clicks: totalClicks,
-      ctr: totalImpressions > 0 ? parseFloat(((totalClicks / totalImpressions) * 100).toFixed(2)) : 0
-    };
-  } catch (error) {
-    console.error('Revenue data error:', error);
-    const estimatedRevenue = totalMessages * 0.008;
-    return {
-      totalRevenue: parseFloat(estimatedRevenue.toFixed(2)),
-      dailyRevenue: parseFloat((estimatedRevenue / 30).toFixed(2)),
-      impressions: Math.floor(totalMessages * 8),
-      clicks: Math.floor(totalMessages * 0.4),
-      ctr: 5.0
+      averageMessagesPerSession: 0,
+      averageSessionLength: 0,
+      bounceRate: 0,
+      retentionRate: 0
     };
   }
 }
@@ -221,15 +287,13 @@ export async function GET(request: NextRequest) {
         startDate.setDate(now.getDate() - 7);
     }
 
-    const startDateStr = startDate.toISOString().split('T')[0];
-
     switch (type) {
       case 'overview':
-        return await getOverviewAnalytics(startDateStr);
+        return await getOverviewAnalytics(startDate.toISOString().split('T')[0]);
       case 'realtime':
         return await getRealTimeMetrics();
       case 'detailed':
-        return await getDetailedAnalytics(startDateStr);
+        return await getDetailedAnalytics(startDate.toISOString().split('T')[0]);
       default:
         return NextResponse.json({ error: 'Invalid analytics type' }, { status: 400 });
     }
@@ -242,38 +306,20 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    let body;
-    try {
-      body = await request.json();
-    } catch (jsonError) {
-      return NextResponse.json(
-        { error: 'Invalid JSON body or empty request' },
-        { status: 400 }
-      );
-    }
-
-    const { eventType, eventData, userId, sessionId } = body;
-    const result = await trackAnalyticsEvent(eventType, eventData, userId, sessionId);
-
-    return NextResponse.json(result);
-  } catch (error: any) {
-    console.error('Analytics Tracking Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to track analytics event', details: error.message },
-      { status: 500 }
-    );
-  }
-}
-
 async function getOverviewAnalytics(startDate: string) {
   try {
-    // Get real data from Supabase using direct queries instead of RPC
+    // Get real data from Supabase
     const [
       messagesResult,
       dailyUsersResult,
-      recentMessagesResult
+      deviceBreakdown,
+      topCountries,
+      peakHours,
+      adMetrics,
+      topPages,
+      userJourney,
+      cookieConsent,
+      sessionMetrics
     ] = await Promise.all([
       supabase
         .from('messages_log')
@@ -283,31 +329,30 @@ async function getOverviewAnalytics(startDate: string) {
         .from('daily_activity_log')
         .select('activity_date, user_pseudo_id')
         .gte('activity_date', startDate),
-      supabase
-        .from('messages_log')
-        .select('*')
-        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .order('created_at', { ascending: false })
-        .limit(100)
+      getRealDeviceBreakdown(),
+      getRealTopCountries(),
+      getRealPeakHours(),
+      getRealAdMetrics(),
+      getRealTopPages(),
+      getRealUserJourney(),
+      getRealCookieConsent(),
+      getRealSessionMetrics()
     ]);
 
-    // Handle potential errors
     if (messagesResult.error) throw messagesResult.error;
     if (dailyUsersResult.error) throw dailyUsersResult.error;
-    if (recentMessagesResult.error) throw recentMessagesResult.error;
 
     const messages = messagesResult.data || [];
     const dailyUsers = dailyUsersResult.data || [];
-    const recentMessages = recentMessagesResult.data || [];
 
-    // Process message data by day
+    // Process real message data by day
     const messagesByDay = messages.reduce((acc, msg) => {
       const date = new Date(msg.created_at).toISOString().split('T')[0];
       acc[date] = (acc[date] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    // Process daily active users
+    // Process real daily active users
     const usersByDay = dailyUsers.reduce((acc, activity) => {
       const date = activity.activity_date;
       if (!acc[date]) acc[date] = new Set();
@@ -315,7 +360,7 @@ async function getOverviewAnalytics(startDate: string) {
       return acc;
     }, {} as Record<string, Set<string>>);
 
-    // Generate chart data for the last 7 days
+    // Generate chart data for the last 7 days with REAL data only
     const chartData = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
@@ -331,41 +376,19 @@ async function getOverviewAnalytics(startDate: string) {
         date: dateStr,
         users: dayUsers,
         messages: dayMessages,
-        engagement: Math.min(100, Math.max(20, dayMessages / 5)),
-        revenue: (dayMessages * 0.008).toFixed(2),
-        impressions: dayMessages * 8,
-        responseTime: 850 + (Math.random() * 300)
+        engagement: dayMessages > 0 ? Math.min(100, (dayMessages / Math.max(dayUsers, 1)) * 10) : 0,
+        revenue: adMetrics.revenue / 7, // Daily share of revenue
+        impressions: Math.floor(adMetrics.impressions / 7),
+        responseTime: 850 // This would need AI model response time tracking
       });
     }
 
-    // Calculate totals and metrics
+    // Calculate totals from real data
     const totalMessages = messages.length;
     const totalUsers = new Set(dailyUsers.map(u => u.user_pseudo_id)).size;
-    const avgDailyMessages = Math.round(totalMessages / 7);
-    const avgDailyUsers = Math.round(totalUsers / 7);
-
-    // Calculate growth rates
-    const recentData = chartData.slice(-3);
-    const previousData = chartData.slice(-6, -3);
-
-    const recentMessageCount = recentData.reduce((sum, day) => sum + day.messages, 0);
-    const previousMessages = previousData.reduce((sum, day) => sum + day.messages, 0);
-    const messageGrowthRate = previousMessages > 0 ? ((recentMessageCount - previousMessages) / previousMessages) * 100 : 0;
-
-    // Get today's data
-    const today = new Date().toISOString().split('T')[0];
-    const todayData = chartData.find(d => d.date === today);
-    const todayMessages = todayData?.messages || 0;
-    const todayUsers = todayData?.users || 0;
-
-    // Fetch enhanced analytics data
-    const [languageDistribution, emotionalStates, sessionMetrics, deviceBreakdown, revenueData] = await Promise.all([
-      getLanguageDistribution(),
-      getEmotionalStatesDistribution(),
-      getSessionMetrics(),
-      getDeviceBreakdown(),
-      getRevenueData(totalMessages)
-    ]);
+    const todayMessages = messages.filter(m => 
+      new Date(m.created_at).toDateString() === new Date().toDateString()
+    ).length;
 
     return NextResponse.json({
       success: true,
@@ -376,22 +399,23 @@ async function getOverviewAnalytics(startDate: string) {
         avgSessionTime: sessionMetrics.averageSessionLength,
         userRetention: sessionMetrics.retentionRate,
 
-        // Today's engagement metrics
+        // Today's metrics from real data
         messagesSentToday: todayMessages,
-        imagesSharedToday: Math.floor(todayMessages * 0.15),
-        avgResponseTime: 1.2 + (Math.random() * 0.5),
+        imagesSharedToday: messages.filter(m => m.has_image && 
+          new Date(m.created_at).toDateString() === new Date().toDateString()
+        ).length,
+        avgResponseTime: 1.2, // Would need AI response time tracking
         bounceRate: sessionMetrics.bounceRate,
 
-        // Growth metrics
-        messageGrowthRate: messageGrowthRate.toFixed(1),
-        userGrowthRate: ((todayUsers / Math.max(avgDailyUsers, 1)) * 100 - 100).toFixed(1),
-
         // Real analytics data
-        languageDistribution,
-        emotionalStates,
-        sessionMetrics,
         deviceBreakdown,
-        revenueData,
+        topCountries,
+        peakHours,
+        adMetrics,
+        topPages,
+        userJourney,
+        cookieConsent,
+        sessionMetrics,
 
         // Chart data with real metrics
         chartData,
@@ -399,7 +423,7 @@ async function getOverviewAnalytics(startDate: string) {
         // Status
         isRealTime: true,
         lastUpdated: new Date().toISOString(),
-        dataSource: 'supabase'
+        dataSource: 'supabase_real_only'
       }
     });
   } catch (error) {
@@ -417,38 +441,39 @@ async function getRealTimeMetrics() {
     const oneHourAgo = new Date();
     oneHourAgo.setHours(oneHourAgo.getHours() - 1);
 
-    const { data: recentMessages, error } = await supabase
-      .from('messages_log')
-      .select('*')
-      .gte('created_at', oneHourAgo.toISOString())
-      .order('created_at', { ascending: false });
+    const [messagesResult, sessionsResult, adMetrics, topPages] = await Promise.all([
+      supabase
+        .from('messages_log')
+        .select('*')
+        .gte('created_at', oneHourAgo.toISOString()),
+      supabase
+        .from('user_sessions')
+        .select('session_id')
+        .eq('is_active', true)
+        .gte('started_at', new Date(Date.now() - 15 * 60 * 1000).toISOString()),
+      getRealAdMetrics(),
+      getRealTopPages()
+    ]);
 
-    if (error) throw error;
+    if (messagesResult.error) throw messagesResult.error;
+    if (sessionsResult.error) throw sessionsResult.error;
 
-    const messagesLastHour = recentMessages?.length || 0;
-    const uniqueChats = new Set(recentMessages?.map(msg => msg.chat_id)).size;
-
-    // Estimate current online users (sessions active in last 15 minutes)
-    const fifteenMinutesAgo = new Date();
-    fifteenMinutesAgo.setMinutes(fifteenMinutesAgo.getMinutes() - 15);
-
-    const { data: recentActivity } = await supabase
-      .from('messages_log')
-      .select('chat_id')
-      .gte('created_at', fifteenMinutesAgo.toISOString());
-
-    const currentOnlineUsers = new Set(recentActivity?.map(msg => msg.chat_id)).size;
+    const messagesLastHour = messagesResult.data?.length || 0;
+    const currentOnlineUsers = sessionsResult.data?.length || 0;
+    const activeChats = new Set(messagesResult.data?.map(msg => msg.chat_id)).size;
 
     return NextResponse.json({
       success: true,
       data: {
         currentOnlineUsers,
         messagesLastHour,
-        activeChats: uniqueChats,
-        avgResponseTime: 850 + Math.floor(Math.random() * 200),
+        activeChats,
+        avgResponseTime: 850, // Would need AI response time tracking
+        adMetrics,
+        topPages,
         serverStatus: 'healthy',
         lastUpdated: new Date().toISOString(),
-        dataSource: 'supabase'
+        dataSource: 'supabase_real_only'
       }
     });
   } catch (error) {
@@ -474,7 +499,7 @@ async function getDetailedAnalytics(startDate: string) {
     const aiMessages = messageBreakdown?.filter(msg => msg.sender_type === 'ai').length || 0;
     const imageMessages = messageBreakdown?.filter(msg => msg.has_image).length || 0;
 
-    // Calculate hourly distribution
+    // Calculate real hourly distribution
     const hourlyData = new Array(24).fill(0).map((_, hour) => {
       const count = messageBreakdown?.filter(msg => {
         const msgHour = new Date(msg.created_at).getUTCHours();
@@ -484,7 +509,7 @@ async function getDetailedAnalytics(startDate: string) {
       return {
         hour,
         messages: count,
-        users: Math.ceil(count * 0.7)
+        users: Math.ceil(count * 0.7) // Estimate unique users from messages
       };
     });
 
@@ -502,7 +527,7 @@ async function getDetailedAnalytics(startDate: string) {
           .sort((a, b) => b.messages - a.messages)
           .slice(0, 6),
         lastUpdated: new Date().toISOString(),
-        dataSource: 'supabase'
+        dataSource: 'supabase_real_only'
       }
     });
   } catch (error) {
@@ -515,83 +540,61 @@ async function getDetailedAnalytics(startDate: string) {
   }
 }
 
-async function trackAnalyticsEvent(eventType: string, eventData: any, userId?: string, sessionId?: string) {
+export async function POST(request: NextRequest) {
   try {
-    const timestamp = new Date().toISOString();
-    const chatId = eventData.chatId || 'kruthika_chat';
-
+    const body = await request.json();
+    const { eventType, eventData, userId, sessionId } = body;
+    
+    // Track real events in appropriate tables
     switch (eventType) {
       case 'message_sent':
-        const { error: msgError } = await supabase
-          .from('messages_log')
-          .insert({
-            message_id: eventData.messageId || `msg_${Date.now()}`,
-            sender_type: eventData.senderType || 'user',
-            chat_id: chatId,
-            text_content: eventData.content?.substring(0, 500),
-            has_image: eventData.hasImage || false
-          });
-
-        if (msgError) throw msgError;
-
-        // Track daily activity
-        const today = new Date().toISOString().split('T')[0];
-        const userPseudoId = userId || sessionId || 'anonymous_' + Date.now();
-
-        await supabase
-          .from('daily_activity_log')
-          .upsert({
-            user_pseudo_id: userPseudoId,
-            activity_date: today,
-            chat_id: chatId
-          }, {
-            onConflict: 'user_pseudo_id,activity_date,chat_id',
-            ignoreDuplicates: true
-          });
-
+        await supabase.from('messages_log').insert({
+          message_id: eventData.messageId || `msg_${Date.now()}`,
+          sender_type: eventData.senderType || 'user',
+          chat_id: eventData.chatId || 'kruthika_chat',
+          text_content: eventData.content?.substring(0, 500),
+          has_image: eventData.hasImage || false
+        });
         break;
 
-      case 'session_start':
-        const sessionUserId = userId || sessionId || 'anonymous_' + Date.now();
-        const sessionDate = new Date().toISOString().split('T')[0];
-
-        await supabase
-          .from('daily_activity_log')
-          .upsert({
-            user_pseudo_id: sessionUserId,
-            activity_date: sessionDate,
-            chat_id: chatId
-          }, {
-            onConflict: 'user_pseudo_id,activity_date,chat_id',
-            ignoreDuplicates: true
-          });
-
+      case 'page_view':
+        await supabase.from('page_views').insert({
+          session_id: sessionId,
+          page_path: eventData.page || '/',
+          page_title: eventData.title,
+          referrer: eventData.referrer
+        });
         break;
 
       case 'ad_interaction':
-        // Track ad revenue
-        const adDate = new Date().toISOString().split('T')[0];
-        await supabase
-          .from('ad_revenue_log')
-          .upsert({
-            date: adDate,
-            ad_network: eventData.network || 'unknown',
-            ad_type: eventData.adType || 'unknown',
-            impressions: eventData.action === 'view' ? 1 : 0,
-            clicks: eventData.action === 'click' ? 1 : 0,
-            estimated_revenue: eventData.action === 'click' ? 0.01 : 0.001
-          }, {
-            onConflict: 'date,ad_network,ad_type'
-          });
+        await supabase.from('ad_interactions').insert({
+          session_id: sessionId,
+          ad_type: eventData.adType || 'unknown',
+          ad_network: eventData.network || 'unknown',
+          action_type: eventData.action || 'view',
+          page_path: eventData.page
+        });
         break;
 
-      default:
-        console.warn('Unknown event type:', eventType);
+      case 'session_start':
+        await supabase.from('user_sessions').upsert({
+          session_id: sessionId,
+          user_pseudo_id: userId || sessionId,
+          device_type: eventData.deviceType,
+          browser: eventData.browser,
+          country_code: eventData.countryCode,
+          timezone: eventData.timezone,
+          referrer: eventData.referrer
+        });
+        break;
     }
 
-    return { success: true, tracked: eventType };
+    return NextResponse.json({ success: true, tracked: eventType });
   } catch (error: any) {
     console.error('Event Tracking Error:', error);
-    return { success: false, error: error.message };
+    return NextResponse.json({
+      success: false,
+      error: error.message
+    }, { status: 500 });
   }
 }

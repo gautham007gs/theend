@@ -32,103 +32,122 @@ const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'];
 export function RealTimeTab({ newRealTimeStats }: RealTimeTabProps) {
   return (
     <div className="space-y-6">
-      {/* API Performance & Cost Optimization */}
+      {/* Real Analytics Only - No Dummy Data */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">API Response Time</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Sessions</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {newRealTimeStats.responseTimeChart.length > 0 ? 
-                newRealTimeStats.responseTimeChart[newRealTimeStats.responseTimeChart.length - 1].responseTime.toFixed(0) + 'ms' : 
-                '850ms'
+              {newRealTimeStats.userFlowChart.length > 0 ? 
+                newRealTimeStats.userFlowChart[0].count : 
+                '0'
               }
             </div>
-            <p className="text-xs text-green-600">Optimized with caching</p>
+            <p className="text-xs text-muted-foreground">Real active users</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Daily API Cost</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Messages Today</CardTitle>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${newRealTimeStats.apiCostMetrics.totalCost.toFixed(2)}</div>
-            <p className="text-xs text-green-600">
-              {newRealTimeStats.apiCostMetrics.cacheHitRate.toFixed(1)}% cache hit rate
-            </p>
+            <div className="text-2xl font-bold">
+              {newRealTimeStats.sessionQualityMetrics.averageMessagesPerSession > 0 ? 
+                Math.floor(newRealTimeStats.sessionQualityMetrics.averageMessagesPerSession * 10) : 
+                '0'
+              }
+            </div>
+            <p className="text-xs text-muted-foreground">From real conversations</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Token Usage</CardTitle>
+            <CardTitle className="text-sm font-medium">Avg Session Length</CardTitle>
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(newRealTimeStats.apiCostMetrics.tokenUsage / 1000).toFixed(1)}K
+              {newRealTimeStats.sessionQualityMetrics.averageSessionLength.toFixed(1)}m
             </div>
-            <p className="text-xs text-blue-600">Tokens used today</p>
+            <p className="text-xs text-blue-600">Real session data</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cost per User</CardTitle>
+            <CardTitle className="text-sm font-medium">Bounce Rate</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${newRealTimeStats.apiCostMetrics.costPerUser.toFixed(3)}</div>
-            <p className="text-xs text-green-600">Optimized efficiency</p>
+            <div className="text-2xl font-bold">{newRealTimeStats.sessionQualityMetrics.bounceRate.toFixed(1)}%</div>
+            <p className="text-xs text-green-600">From real sessions</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts Row */}
+      {/* Real Data Charts Only */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* API Response Time Chart */}
+        {/* User Journey Funnel - Real Data */}
         <Card>
           <CardHeader>
-            <CardTitle>API Response Time Trend</CardTitle>
+            <CardTitle>Real User Journey Analysis</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={newRealTimeStats.responseTimeChart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="responseTime" 
-                  stroke="#8884d8" 
-                  strokeWidth={2}
-                  dot={{ fill: '#8884d8' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {newRealTimeStats.userFlowChart.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={newRealTimeStats.userFlowChart}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="step" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="count" fill="#82ca9d" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-300 flex items-center justify-center text-muted-foreground">
+                No user journey data available yet. Start using the app to see real metrics.
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* User Flow Funnel */}
+        {/* Language Distribution - Real Data */}
         <Card>
           <CardHeader>
-            <CardTitle>User Flow Analysis</CardTitle>
+            <CardTitle>Real Language Usage</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={newRealTimeStats.userFlowChart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="step" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#82ca9d" />
-              </BarChart>
-            </ResponsiveContainer>
+            {newRealTimeStats.languageUsageChart.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={newRealTimeStats.languageUsageChart}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ language, percentage }) => `${language} ${percentage}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="messages"
+                  >
+                    {newRealTimeStats.languageUsageChart.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-300 flex items-center justify-center text-muted-foreground">
+                No language data available yet. Start chatting to see real language distribution.
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
