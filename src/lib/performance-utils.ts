@@ -169,4 +169,4 @@ export const getResourceTiming = () => {
   }));
 };
 
-console.log('Performance Utils: Advanced optimization utilities loaded');
+// Performance utilities loaded

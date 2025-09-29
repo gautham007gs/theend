@@ -1,4 +1,3 @@
-
 // Advanced performance optimization utilities for better Core Web Vitals
 
 interface PerformanceMetrics {
@@ -35,7 +34,7 @@ export class PerformanceOptimizer {
         const entries = entryList.getEntries();
         const lastEntry = entries[entries.length - 1] as any;
         this.metrics.lcp = lastEntry.startTime;
-        
+
         if (lastEntry.startTime > 2500) {
           this.optimizeLCP();
         }
@@ -52,7 +51,7 @@ export class PerformanceOptimizer {
         const entries = entryList.getEntries();
         entries.forEach((entry: any) => {
           this.metrics.fid = entry.processingStart - entry.startTime;
-          
+
           if (this.metrics.fid > 100) {
             this.optimizeFID();
           }
@@ -75,7 +74,7 @@ export class PerformanceOptimizer {
           }
         });
         this.metrics.cls = clsValue;
-        
+
         if (clsValue > 0.1) {
           this.optimizeCLS();
         }
@@ -90,16 +89,16 @@ export class PerformanceOptimizer {
   private optimizePageLoad() {
     // Preload critical resources
     this.preloadCriticalResources();
-    
+
     // Optimize images
     this.setupLazyLoading();
-    
+
     // Reduce main thread blocking
     this.scheduleNonCriticalTasks();
-    
+
     // Optimize fonts
     this.optimizeFontLoading();
-    
+
     // Setup resource hints
     this.addResourceHints();
   }
@@ -168,7 +167,7 @@ export class PerformanceOptimizer {
   private scheduleNonCriticalTasks() {
     // Use scheduler API if available, otherwise use setTimeout
     const scheduler = (window as any).scheduler;
-    
+
     const scheduleTask = (task: () => void, priority: 'user-blocking' | 'user-visible' | 'background' = 'background') => {
       if (scheduler && scheduler.postTask) {
         scheduler.postTask(task, { priority });
@@ -225,19 +224,16 @@ export class PerformanceOptimizer {
   }
 
   private optimizeLCP() {
-    console.log('LCP optimization triggered');
     // Additional LCP optimizations
     this.preloadCriticalResources();
   }
 
   private optimizeFID() {
-    console.log('FID optimization triggered');
     // Break up long tasks
     this.scheduleNonCriticalTasks();
   }
 
   private optimizeCLS() {
-    console.log('CLS optimization triggered');
     // Add size attributes to images and reserve space for dynamic content
     document.querySelectorAll('img:not([width]):not([height])').forEach(img => {
       const htmlImg = img as HTMLImageElement;
@@ -265,7 +261,7 @@ export class ImageOptimizer {
     if (src.includes('placehold.co')) {
       return src;
     }
-    
+
     // Add width/height parameters for better performance
     if (width && height) {
       const url = new URL(src, window.location.origin);
@@ -274,7 +270,7 @@ export class ImageOptimizer {
       url.searchParams.set('q', '75'); // Good quality/size balance
       return url.toString();
     }
-    
+
     return src;
   }
 
@@ -285,11 +281,11 @@ export class ImageOptimizer {
     img.className = `lazy ${className || ''}`;
     img.style.opacity = '0';
     img.style.transition = 'opacity 0.3s';
-    
+
     img.onload = () => {
       img.style.opacity = '1';
     };
-    
+
     return img;
   }
 }
@@ -397,16 +393,16 @@ export class MemoryOptimizer {
 if (typeof window !== 'undefined') {
   // Initialize performance optimizer
   const performanceOptimizer = PerformanceOptimizer.getInstance();
-  
+
   // Optimize memory usage
   MemoryOptimizer.optimizeEventListeners();
-  
+
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     performanceOptimizer.cleanup();
     MemoryOptimizer.cleanup();
   });
-  
+
   console.log('🚀 Advanced performance optimizations loaded');
 }
 

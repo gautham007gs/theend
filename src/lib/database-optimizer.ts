@@ -48,7 +48,10 @@ class DatabaseOptimizer {
       
       // Log slow queries
       if (duration > 1000) {
-        console.warn(`Slow query detected: ${queryName} took ${duration}ms`);
+        // Log slow queries only in development
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Slow query detected: ${queryName} took ${duration}ms`);
+        }
       }
       
       return result;

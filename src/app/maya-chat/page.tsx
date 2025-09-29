@@ -335,7 +335,7 @@ const updateUserEmotionalState = (userMessage: string) => {
   }
 };
 
-const KruthikaChatPage: NextPage = () => {
+const KruthikaChatPage: NextPage = React.memo(() => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const { mediaAssetsConfig, isLoadingMediaAssets } = useAIMediaAssets();
@@ -1583,5 +1583,7 @@ const KruthikaChatPage: NextPage = () => {
     </div>
   );
 };
+
+});
 
 export default KruthikaChatPage;
