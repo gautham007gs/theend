@@ -923,7 +923,16 @@ const AdminProfilePage: React.FC = () => {
         <TabsContent value="analytics">
           <Card className="bg-card text-card-foreground shadow-lg">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center text-xl font-semibold"><Database className="mr-2 h-5 w-5 text-primary"/>Usage Analytics Dashboard</CardTitle>
+              <CardTitle className="flex items-center text-xl font-semibold">
+                <Database className="mr-2 h-5 w-5 text-primary"/>
+                Usage Analytics Dashboard
+                <a 
+                  href="/admin/analytics" 
+                  className="ml-auto text-sm bg-primary text-primary-foreground px-3 py-1 rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  View Full Dashboard →
+                </a>
+              </CardTitle>
               <Alert variant={supabaseError ? "destructive" : "default"} className={`mt-4 ${supabaseError ? "" : "bg-primary/10 border-primary/30"}`}>
                 {supabaseError ? <Terminal className="h-4 w-4 !text-destructive" /> : <Database className="h-4 w-4 !text-primary" />}
                 <AlertTitle className={supabaseError ? "text-destructive font-semibold" : "text-primary font-semibold"}>
