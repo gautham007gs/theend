@@ -542,7 +542,24 @@ async function getDetailedAnalytics(startDate: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    // Check if request has body content
+    const contentLength = request.headers.get('content-length');
+    if (!contentLength || contentLength === '0') {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Empty request body' 
+      }, { status: 400 });
+    }
+
+    const text = await request.text();
+    if (!text.trim()) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Empty request body' 
+      }, { status: 400 });
+    }
+
+    const body = JSON.parse(text);
     const { eventType, eventData, userId, sessionId } = body;
     
     // Track real events in appropriate tables

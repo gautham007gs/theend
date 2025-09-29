@@ -46,7 +46,7 @@ localPort = 44993
 externalPort = 4200
 
 [workflows]
-runButton = "Project"
+runButton = "Fresh Dev Server"
 
 [[workflows.workflow]]
 name = "Run Next.js App"
@@ -120,6 +120,15 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx next dev --turbopack -p 3001 -H 0.0.0.0"
+
+[[workflows.workflow]]
+name = "Fresh Dev Server"
+author = 48105997
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx next dev --turbopack -p 3000 -H 0.0.0.0"
 
 [deployment]
 deploymentTarget = "autoscale"

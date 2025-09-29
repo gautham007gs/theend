@@ -215,6 +215,7 @@ export class AnalyticsTracker {
 
   public async trackEvent(event: AnalyticsEvent): Promise<void> {
     if (!this.isTrackingEnabled) return;
+    if (!event || !event.eventType || !event.eventData) return;
 
     if (!event.userId) event.userId = this.userId;
     if (!event.sessionId) event.sessionId = this.sessionId;
@@ -341,7 +342,9 @@ export class AnalyticsTracker {
 
     try {
       for (const event of eventsToSend) {
-        await this.processEvent(event);
+        if (event && event.eventType && event.eventData) {
+          await this.processEvent(event);
+        }
       }
     } catch (error) {
       console.warn('Error flushing analytics events:', error);
