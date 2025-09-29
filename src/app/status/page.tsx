@@ -44,7 +44,7 @@ const StatusPage: React.FC = () => {
     if (!avatarUrlToUse || typeof avatarUrlToUse !== 'string' || avatarUrlToUse.trim() === '' || (!avatarUrlToUse.startsWith('http') && !avatarUrlToUse.startsWith('data:'))) {
       avatarUrlToUse = defaultAIProfile.avatarUrl;
     }
-    
+
     // if (isKruthikaProfile) {
       // console.log(`[StatusItemDisplay-Kruthika] Final avatarUrlToUse for list/dialog avatar: ${avatarUrlToUse}`);
     // }
@@ -79,7 +79,7 @@ const StatusPage: React.FC = () => {
     const handleCloseStoryViewer = () => {
       setShowStoryImageViewer(false);
       if (storyViewTimerRef.current) clearTimeout(storyViewTimerRef.current);
-      
+
       if (storyImageUrl && storyViewedLongEnoughRef.current && adSettings && adSettings.adsEnabledGlobally) { 
         tryShowRotatedAd(adSettings); 
       }
@@ -87,11 +87,11 @@ const StatusPage: React.FC = () => {
     };
 
     const handleAvatarError = (e: React.SyntheticEvent<HTMLImageElement, Event>, context: string) => {
-      console.error(`StatusItemDisplay - ${context} AvatarImage load error for ${displayName}. URL: ${avatarUrlToUse}`, e);
+      process.env.NODE_ENV === 'development' && console.error(`StatusItemDisplay - ${context} AvatarImage load error for ${displayName}. URL: ${avatarUrlToUse}`, e);
     };
-    
+
     const handleStoryImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-      console.error(`StatusItemDisplay - Story Image load error for ${displayName}. URL: ${storyImageUrl}`, e);
+      process.env.NODE_ENV === 'development' && console.error(`StatusItemDisplay - Story Image load error for ${displayName}. URL: ${storyImageUrl}`, e);
       toast({
         title: "Image Load Failed",
         description: `Could not load story image for ${displayName}. The image might be unavailable or the URL incorrect.`,
@@ -256,9 +256,9 @@ const StatusPage: React.FC = () => {
             isMyStatusStyle={true}
             isKruthikaProfile={false}
         />
-        
+
         <div className="p-2 px-4 text-sm font-medium text-muted-foreground bg-secondary/30">RECENT UPDATES</div>
-        
+
         {(effectiveAIProfile.statusStoryHasUpdate || (effectiveAIProfile.statusStoryText && effectiveAIProfile.statusStoryText !== defaultAIProfile.statusStoryText) || effectiveAIProfile.statusStoryImageUrl) && (
             <StatusItemDisplay
                 statusKey="kruthika-status-story-item"

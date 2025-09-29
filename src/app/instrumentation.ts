@@ -3,7 +3,9 @@
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     // Server-side performance monitoring
-    console.log('🔧 Performance instrumentation loaded for server');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔧 Performance instrumentation loaded for server');
+    }
     
     // Monitor server startup time
     const startTime = process.hrtime.bigint();

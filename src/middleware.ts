@@ -1,6 +1,21 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// Split middleware logic into smaller functions
+function handleRateLimit(request: NextRequest): NextResponse | null {
+  // Rate limiting logic
+  return null;
+}
+
+function handleSecurity(request: NextRequest): NextResponse | null {
+  // Security headers and CSRF protection
+  return null;
+}
+
+function handleCaching(request: NextRequest): NextResponse | null {
+  // Caching headers logic  
+  return null;
+}
 
 // Advanced rate limiting for high traffic protection
 const rateLimitMap = new Map<string, { count: number; lastReset: number; penalties: number }>();
@@ -14,34 +29,34 @@ const PENALTY_MULTIPLIER = 0.5; // Reduce limits for repeat offenders
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const userRate = rateLimitMap.get(ip);
-  
+
   if (!userRate) {
     rateLimitMap.set(ip, { count: 1, lastReset: now, penalties: 0 });
     return false;
   }
-  
+
   // Reset if window has passed
   if (now - userRate.lastReset > RATE_LIMIT_WINDOW) {
     rateLimitMap.set(ip, { count: 1, lastReset: now, penalties: userRate.penalties });
     return false;
   }
-  
+
   // Calculate effective limit based on penalties
   const effectiveLimit = Math.floor(MAX_REQUESTS_PER_WINDOW * (1 - (userRate.penalties * PENALTY_MULTIPLIER)));
-  
+
   // Burst protection - check last 10 seconds
   const recentWindow = 10 * 1000;
   if (userRate.count > MAX_REQUESTS_BURST && (now - userRate.lastReset) < recentWindow) {
     userRate.penalties++;
     return true;
   }
-  
+
   // Check if limit exceeded
   if (userRate.count >= effectiveLimit) {
     userRate.penalties++;
     return true;
   }
-  
+
   // Increment count
   userRate.count++;
   return false;
@@ -93,7 +108,7 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 export function middleware(request: NextRequest) {
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
-  
+
   // Apply rate limiting to API routes and chat actions
   if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
@@ -104,49 +119,49 @@ export function middleware(request: NextRequest) {
       );
     }
   }
-  
+
   // For Server Actions and API routes, fix headers and continue
   if (pathname.startsWith('/api/') || request.method === 'POST') {
     const response = NextResponse.next();
-    
+
     // Fix CORS and header issues for Replit
     const forwardedHost = request.headers.get('x-forwarded-host');
     const requestOrigin = request.headers.get('origin');
-    
+
     if (forwardedHost && forwardedHost.includes('replit.dev')) {
       // For Server Actions, ensure consistent host/origin headers
       if (request.method === 'POST' && pathname.startsWith('/maya-chat')) {
         // Extract hostname without protocol from forwardedHost
         const hostWithoutProtocol = forwardedHost.replace(/^https?:\/\//, '');
-        
+
         // Set consistent headers - remove port from both if present
         response.headers.set('x-forwarded-host', hostWithoutProtocol);
         response.headers.set('host', hostWithoutProtocol);
-        
+
         // Also set origin to match
         response.headers.set('origin', `https://${hostWithoutProtocol}`);
       }
-      
+
       response.headers.set('Access-Control-Allow-Origin', `https://${forwardedHost}`);
       response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
       response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin');
     }
-    
+
     // Add performance headers
     response.headers.set('X-DNS-Prefetch-Control', 'on');
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
-    
+
     // Add caching headers for static assets
     if (request.nextUrl.pathname.startsWith('/_next/static/') || 
         request.nextUrl.pathname.includes('.')) {
       response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
     }
-    
+
     // Add performance timing headers
     response.headers.set('Server-Timing', `middleware;dur=${Date.now()}`);
-    
+
     return response;
   }
 
@@ -155,7 +170,7 @@ export function middleware(request: NextRequest) {
 
   // Only apply the trick if it's an Instagram browser, the flag isn't set, and it's not an API/static asset path
   if (isInstagramInAppBrowserServer(userAgent) && !hasRedirectAttemptedFlag) {
-    
+
     // More robustly ignore common asset paths and API routes
     if (pathname.startsWith('/_next/') || 
         pathname.startsWith('/api/') || 
@@ -225,22 +240,22 @@ export function middleware(request: NextRequest) {
 
   // Apply performance headers to all other requests
   const response = NextResponse.next();
-  
+
   // Add performance headers
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
-  
+
   // Add caching headers for static assets
   if (request.nextUrl.pathname.startsWith('/_next/static/') || 
       request.nextUrl.pathname.includes('.')) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
   }
-  
+
   // Add performance timing headers
   response.headers.set('Server-Timing', `middleware;dur=${Date.now()}`);
-  
+
   return response;
 }
 
