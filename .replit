@@ -112,6 +112,15 @@ waitForPort = 5000
 [workflows.workflow.metadata]
 outputType = "webview"
 
+[[workflows.workflow]]
+name = "Clean Dev Restart"
+author = 48105997
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx next dev --turbopack -p 3001 -H 0.0.0.0"
+
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]

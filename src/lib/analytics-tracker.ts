@@ -434,6 +434,7 @@ export class AnalyticsTracker {
   destroy() {
     if (this.flushInterval) {
       clearInterval(this.flushInterval);
+      this.flushInterval = null;
     }
     this.updateSessionDuration();
     this.flushEvents(true);
