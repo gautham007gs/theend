@@ -102,6 +102,8 @@ export default function AnalyticsDashboard() {
   const [newRealTimeStats, setNewRealTimeStats] = useState({
     responseTimeChart: [] as Array<{ time: string; responseTime: number }>,
     userFlowChart: [] as Array<{ step: string; count: number; dropOff: number }>,
+    emotionalStateDistribution: [] as Array<{ emotion: string; count: number; percentage: number }>,
+    languageUsageChart: [] as Array<{ language: string; messages: number; percentage: number }>,
     sessionQualityMetrics: {
       averageMessagesPerSession: 0,
       averageSessionLength: 0,
@@ -764,7 +766,7 @@ export default function AnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={newRealTimeStats.languageUsageChart}
+                      data={newRealTimeStats.languageUsageChart || []}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
@@ -773,7 +775,7 @@ export default function AnalyticsDashboard() {
                       fill="#8884d8"
                       dataKey="messages"
                     >
-                      {newRealTimeStats.languageUsageChart.map((entry, index) => (
+                      {(newRealTimeStats.languageUsageChart || []).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'][index % 5]} />
                       ))}
                     </Pie>
@@ -861,7 +863,7 @@ export default function AnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={newRealTimeStats.emotionalStateDistribution}
+                      data={newRealTimeStats.emotionalStateDistribution || []}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
@@ -870,7 +872,7 @@ export default function AnalyticsDashboard() {
                       fill="#8884d8"
                       dataKey="count"
                     >
-                      {newRealTimeStats.emotionalStateDistribution.map((entry, index) => (
+                      {(newRealTimeStats.emotionalStateDistribution || []).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'][index % 5]} />
                       ))}
                     </Pie>

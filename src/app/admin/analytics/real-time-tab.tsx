@@ -10,6 +10,8 @@ interface RealTimeTabProps {
   newRealTimeStats: {
     responseTimeChart: Array<{ time: string; responseTime: number }>;
     userFlowChart: Array<{ step: string; count: number; dropOff: number }>;
+    emotionalStateDistribution: Array<{ emotion: string; count: number; percentage: number }>;
+    languageUsageChart: Array<{ language: string; messages: number; percentage: number }>;
     sessionQualityMetrics: {
       averageMessagesPerSession: number;
       averageSessionLength: number;
