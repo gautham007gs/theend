@@ -341,7 +341,7 @@ export default function AnalyticsDashboard() {
   };
 
   const fetchFallbackData = async () => {
-    // No fallback data - show only real metrics or zero
+    // Show zero values for all metrics when no real data is available
     setAnalytics({
       dailyUsers: 0,
       totalMessages: 0,
@@ -376,6 +376,25 @@ export default function AnalyticsDashboard() {
       messagesLastHour: 0,
       averageSessionDuration: 0,
       topPages: []
+    });
+    
+    setNewRealTimeStats({
+      responseTimeChart: [],
+      userFlowChart: [],
+      emotionalStateDistribution: [],
+      languageUsageChart: [],
+      sessionQualityMetrics: {
+        averageMessagesPerSession: 0,
+        averageSessionLength: 0,
+        bounceRate: 0,
+        retentionRate: 0
+      },
+      apiCostMetrics: {
+        totalCost: 0,
+        costPerUser: 0,
+        tokenUsage: 0,
+        cacheHitRate: 0
+      }
     });
   };
 
@@ -488,8 +507,8 @@ export default function AnalyticsDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{formatNumber(analytics.dailyUsers)}</div>
-                <p className="text-xs text-muted-foreground">+12% from yesterday</p>
-                <Progress value={85} className="mt-2" />
+                <p className="text-xs text-muted-foreground">{analytics.dailyUsers > 0 ? 'Real data from Supabase' : 'No data yet'}</p>
+                <Progress value={analytics.dailyUsers > 0 ? Math.min(100, analytics.dailyUsers * 2) : 0} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -500,8 +519,8 @@ export default function AnalyticsDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{formatNumber(analytics.totalMessages)}</div>
-                <p className="text-xs text-muted-foreground">+8% from yesterday</p>
-                <Progress value={92} className="mt-2" />
+                <p className="text-xs text-muted-foreground">{analytics.totalMessages > 0 ? 'Real messages from database' : 'No messages yet'}</p>
+                <Progress value={analytics.totalMessages > 0 ? Math.min(100, analytics.totalMessages / 10) : 0} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -512,8 +531,8 @@ export default function AnalyticsDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{analytics.avgSessionTime.toFixed(1)}m</div>
-                <p className="text-xs text-muted-foreground">+2.1 min from yesterday</p>
-                <Progress value={78} className="mt-2" />
+                <p className="text-xs text-muted-foreground">{analytics.avgSessionTime > 0 ? 'Real session data' : 'No session data yet'}</p>
+                <Progress value={Math.min(100, analytics.avgSessionTime * 5)} className="mt-2" />
               </CardContent>
             </Card>
 
@@ -524,7 +543,7 @@ export default function AnalyticsDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{analytics.userRetention.toFixed(1)}%</div>
-                <p className="text-xs text-muted-foreground">+5.2% from last week</p>
+                <p className="text-xs text-muted-foreground">{analytics.userRetention > 0 ? 'Real retention data' : 'No retention data yet'}</p>
                 <Progress value={analytics.userRetention} className="mt-2" />
               </CardContent>
             </Card>

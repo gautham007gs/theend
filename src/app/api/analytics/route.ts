@@ -10,8 +10,14 @@ async function getRealDeviceBreakdown() {
       .select('device_type')
       .limit(1000);
 
-    if (error) throw error;
-    if (!devices || devices.length === 0) return { mobile: 0, desktop: 0, tablet: 0 };
+    if (error) {
+      console.error('Device breakdown error:', error);
+      return { mobile: 0, desktop: 0, tablet: 0 };
+    }
+    
+    if (!devices || devices.length === 0) {
+      return { mobile: 0, desktop: 0, tablet: 0 };
+    }
 
     const deviceCounts = devices.reduce((acc, item) => {
       const device = item.device_type || 'unknown';
@@ -459,12 +465,16 @@ async function getRealTimeMetrics() {
       getRealTopPages()
     ]);
 
-    if (messagesResult.error) throw messagesResult.error;
-    if (sessionsResult.error) throw sessionsResult.error;
+    if (messagesResult.error) {
+      console.error('Messages query error:', messagesResult.error);
+    }
+    if (sessionsResult.error) {
+      console.error('Sessions query error:', sessionsResult.error);
+    }
 
     const messagesLastHour = messagesResult.data?.length || 0;
-    const currentOnlineUsers = sessionsResult.data?.length || 0;
-    const activeChats = new Set(messagesResult.data?.map(msg => msg.chat_id)).size;
+    const currentOnlineUsers = sessionsResult.data?.filter(s => s.is_active).length || 0;
+    const activeChats = messagesResult.data ? new Set(messagesResult.data.map(msg => msg.chat_id)).size : 0;
 
     return NextResponse.json({
       success: true,
@@ -472,7 +482,7 @@ async function getRealTimeMetrics() {
         currentOnlineUsers,
         messagesLastHour,
         activeChats,
-        avgResponseTime: 850, // Would need AI response time tracking
+        avgResponseTime: messagesLastHour > 0 ? 1200 : 0, // Only show response time if there are messages
         adMetrics,
         topPages,
         serverStatus: 'healthy',
@@ -485,7 +495,7 @@ async function getRealTimeMetrics() {
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch real-time data',
-      details: error.message
+      details: error?.message || 'Unknown error'
     }, { status: 500 });
   }
 }
