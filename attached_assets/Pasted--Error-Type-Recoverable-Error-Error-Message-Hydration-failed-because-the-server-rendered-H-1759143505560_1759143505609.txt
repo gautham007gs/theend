@@ -1,0 +1,57 @@
+## Error Type
+Recoverable Error
+
+## Error Message
+Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <TabsProvider scope={undefined} baseId="radix-_R_9..." value="overview" ...>
+      <Primitive.div dir="ltr" data-orientation="horizontal" className="space-y-4" ref={null}>
+        <div dir="ltr" data-orientation="horizontal" className="space-y-4" ref={null}>
+          <_c>
+          <_c4 value="overview" className="space-y-6">
+            <TabsContent ref={null} className="mt-2 ring-..." value="overview">
+              <Presence present={true}>
+                <Primitive.div data-state="active" data-orientation="horizontal" role="tabpanel" ...>
+                  <div data-state="active" data-orientation="horizontal" role="tabpanel" aria-labelledby="radix-_R_9..." ...>
+                    <div>
+                    <div className="grid grid-...">
+                      <_c>
+                        <div ref={null} className="rounded-lg...">
+                          <_c2>
+                          <_c8>
+                            <div ref={null} className="p-6 pt-0">
+                              <div
+                                id={undefined}
++                               className="recharts-responsive-container"
+-                               className="h-[300px] flex items-center justify-center text-muted-foreground"
+                                style={{
++                                 width: "100%"
++                                 height: 300
++                                 minWidth: 0
++                                 minHeight: undefined
++                                 maxHeight: undefined
+                                }}
+                                ref={{current:null}}
+                              >
+-                               No engagement data available yet. Start using the app to see real metrics.
+                      ...
+          ...
+
+
+
+    at div (<anonymous>:null:null)
+    at <unknown> (file:///home/runner/workspace/.next/static/chunks/node_modules_recharts_es6_2509bce0._.js:16094:195)
+    at AnalyticsDashboard (file:///home/runner/workspace/.next/static/chunks/src_bde1c643._.js:3036:261)
+
+Next.js version: 15.5.4 (Turbopack)
