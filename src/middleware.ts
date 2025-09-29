@@ -96,7 +96,7 @@ export function middleware(request: NextRequest) {
   
   // Apply rate limiting to API routes and chat actions
   if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
-    const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     if (isRateLimited(ip)) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
