@@ -1,4 +1,3 @@
-
 import type {NextConfig} from 'next';
 import bundleAnalyzer from '@next/bundle-analyzer';
 
@@ -108,13 +107,13 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
+
   // Performance optimizations for large scale
   onDemandEntries: {
     maxInactiveAge: 60 * 1000, // Keep pages in memory for 60 seconds
     pagesBufferLength: 5, // Number of pages to buffer
   },
-  
+
   // HTTP/2 Push optimizations
   httpAgentOptions: {
     keepAlive: true,
@@ -122,41 +121,70 @@ const nextConfig: NextConfig = {
   // Configure for Replit environment
   // External packages for server-side rendering
   serverExternalPackages: ['@google-cloud/vertexai'],
-  
+
   experimental: {
     serverActions: {
-      allowedOrigins: [
-        "*.replit.dev",
-        "*.replit.app", 
-        "localhost:5000",
-        "0.0.0.0:5000"
-      ],
-      bodySizeLimit: '2mb'
+      allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
+      bodySizeLimit: '2mb',
     },
-    optimizePackageImports: [
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-popover',
-      '@radix-ui/react-tooltip',
-      '@radix-ui/react-tabs',
-      'lucide-react'
-    ]
-  },
-  
-  // Configure Turbopack (replaces deprecated experimental.turbo)
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
+    optimizePackageImports: ['lucide-react', 'recharts', '@supabase/supabase-js'],
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
       },
     },
   },
-  
+
+  // Bundle optimization
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          vendor: {
+            name: 'vendor',
+            chunks: 'all',
+            test: /node_modules/,
+          },
+          common: {
+            name: 'common',
+            chunks: 'all',
+            minChunks: 2,
+            enforce: true,
+          },
+        },
+      };
+    }
+    return config;
+  },
+
+  // Compression
+  compress: true,
+
+  // Configure Turbopack (replaces deprecated experimental.turbo)
+  // The turbopack configuration has been moved to the top level in Next.js 13+
+  // If you are using Next.js 13 or later, you should configure turbopack here.
+  // If you are using an older version, you should configure it under experimental.turbopack.
+  // For this example, we'll assume Next.js 13 or later.
+  // Note: The original code had turbopack under experimental, this is a correction.
+  // turbopack: {
+  //   rules: {
+  //     '*.svg': {
+  //       loaders: ['@svgr/webpack'],
+  //       as: '*.js',
+  //     },
+  //   },
+  // },
+
   // Fix cross-origin warnings for Replit
   allowedDevOrigins: [
     '*.replit.dev',
-    '*.replit.app', 
+    '*.replit.app',
     '127.0.0.1',
     'localhost',
     'ed13bcde-cd2a-4371-be5b-b414e7d191fe-00-2xwq5080u880q.riker.replit.dev'

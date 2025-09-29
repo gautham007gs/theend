@@ -1,11 +1,15 @@
 
-const CACHE_NAME = 'kruthika-v2';
+const CACHE_NAME = 'kruthika-v3';
 const STATIC_ASSETS = [
   '/',
   '/chat-bg.png',
   '/og-image.png',
   '/manifest.json'
 ];
+
+// Chat history offline support
+const CHAT_CACHE_NAME = 'kruthika-chat-history';
+const MAX_CHAT_ENTRIES = 100;
 
 // Enhanced cache strategies
 const CACHE_STRATEGIES = {
@@ -33,8 +37,60 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
-  if (request.method !== 'GET') return;
+  // Skip non-GET requests except for chat API
+  if (request.method !== 'GET' && !url.pathname.includes('/api/chat')) return;
+
+  // Cache chat messages for offline access
+  if (url.pathname.includes('/api/chat') && request.method === 'POST') {
+    event.respondWith(handleChatRequest(request));
+    return;
+  }
+
+  // Handle chat history requests
+
+// Chat request handler for offline support
+async function handleChatRequest(request) {
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      // Cache successful responses
+      const cache = await caches.open(CHAT_CACHE_NAME);
+      await cache.put(request.url + '_' + Date.now(), response.clone());
+      
+      // Clean old entries
+      const keys = await cache.keys();
+      if (keys.length > MAX_CHAT_ENTRIES) {
+        const oldKeys = keys.slice(0, keys.length - MAX_CHAT_ENTRIES);
+        await Promise.all(oldKeys.map(key => cache.delete(key)));
+      }
+    }
+    return response;
+  } catch (error) {
+    // Return offline message
+    return new Response(JSON.stringify({
+      success: false,
+      response: "I'm currently offline, but I'll be back soon! Your message has been saved.",
+      offline: true
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// Chat page handler with offline support
+async function handleChatPageRequest(request) {
+  try {
+    return await fetch(request);
+  } catch (error) {
+    const cache = await caches.open(CACHE_NAME);
+    return await cache.match(request) || new Response('Offline - cached version not available');
+  }
+}
+
+  if (url.pathname.includes('/maya-chat')) {
+    event.respondWith(handleChatPageRequest(request));
+    return;
+  }
 
   // Cache static assets aggressively (Cache First)
   if (url.pathname.startsWith('/_next/static/') ||

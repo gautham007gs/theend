@@ -47,6 +47,40 @@ class ErrorBoundary extends React.Component<
       );
     }
 
+
+  // Auto-recovery attempt
+  private attemptRecovery = () => {
+    console.log('🔄 Attempting error recovery...');
+    
+    // Clear potentially corrupted cache
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('messages_kruthika');
+        localStorage.removeItem('aiMood_kruthika');
+        sessionStorage.clear();
+        
+        // Reload specific modules
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then(registration => {
+            if (registration) {
+              registration.update();
+            }
+          });
+        }
+        
+        console.log('✅ Error recovery completed');
+        this.setState({ hasError: false, error: null, errorInfo: null });
+        
+        // Refresh page after 2 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } catch (recoveryError) {
+        console.error('❌ Recovery failed:', recoveryError);
+      }
+    }
+  };
+
     return this.props.children;
   }
 }

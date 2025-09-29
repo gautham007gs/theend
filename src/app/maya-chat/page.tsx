@@ -1581,6 +1581,4 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   );
 });
 
-});
-
 export default KruthikaChatPage;
