@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     template: '%s | Kruthika.fun'
   },
   description: 'Meet Kruthika - India\'s most authentic AI girlfriend. Free unlimited chat with emotional intelligence, cultural understanding, and genuine personality. Start chatting now!',
-  keywords: 'Kruthika.fun, AI girlfriend, AI girlfriend free, best AI girlfriend 2025, virtual girlfriend, AI companion, AI chat, virtual companion, AI girlfriend India, AI girlfriend chat, online girlfriend, chatbot girlfriend, AI relationship simulator, virtual dating, Indian AI girlfriend, Mumbai AI girlfriend, college girl AI, emotional AI, virtual relationship, AI dating simulator, companion AI, girlfriend simulator, AI chat app, virtual girlfriend online, AI girlfriend 2024, realistic AI girlfriend, authentic AI girlfriend, AI companion chat, virtual girlfriend free, AI dating app, virtual girlfriend simulator, AI girlfriend experience, Indian virtual girlfriend, psychology AI girlfriend, emotional support AI, mental health companion, loneliness solution, relationship practice AI',
+  keywords: 'Kruthika.fun, AI girlfriend, AI girlfriend free, best AI girlfriend 2025, virtual girlfriend, AI companion, AI chat, virtual companion, AI girlfriend India, AI girlfriend chat, online girlfriend, chatbot girlfriend, AI relationship simulator, virtual dating, Indian AI girlfriend, Mumbai AI girlfriend, college girl AI, emotional AI, virtual relationship, AI dating simulator, companion AI, girlfriend simulator, AI chat app, virtual girlfriend online, AI girlfriend 2024, realistic AI girlfriend, authentic AI girlfriend, AI companion chat, virtual girlfriend free, AI dating app, virtual girlfriend simulator, AI girlfriend experience, Indian virtual girlfriend, psychology AI girlfriend, emotional support AI, mental health companion, loneliness solution, relationship practice AI, hindi AI girlfriend, multilingual AI chat, emotional intelligence AI, realistic conversation AI',
   authors: [{ name: 'Kruthika.fun Team' }],
   creator: 'Kruthika.fun',
   publisher: 'Kruthika.fun',
@@ -85,6 +85,8 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="canonical" href="https://kruthika.fun" />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
 
         {/* Critical performance optimizations */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

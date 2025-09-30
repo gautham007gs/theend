@@ -11,7 +11,15 @@ export default function MobilePerformanceOptimizer() {
     
     if (isMobile) {
       // Reduce animation complexity on mobile
-      document.documentElement.style.setProperty('--animation-duration', '0.2s');
+      document.documentElement.style.setProperty('--animation-duration', '0.15s');
+      
+      // Optimize touch response
+      document.documentElement.style.setProperty('touch-action', 'manipulation');
+      
+      // Reduce motion for performance
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.style.setProperty('--animation-duration', '0.01s');
+      }
       
       // Optimize touch events
       document.addEventListener('touchstart', () => {}, { passive: true });
