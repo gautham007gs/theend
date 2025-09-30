@@ -120,6 +120,36 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // CSRF Protection for state-changing requests
+  if (request.method === 'POST' || request.method === 'PUT' || request.method === 'DELETE') {
+    const csrfToken = request.headers.get('x-csrf-token');
+    const referer = request.headers.get('referer');
+    const origin = request.headers.get('origin');
+    
+    // Skip CSRF for some endpoints
+    const skipCSRF = pathname.startsWith('/api/analytics') && request.method === 'POST';
+    
+    if (!skipCSRF) {
+      // Validate referer/origin
+      const allowedOrigins = [
+        process.env.NEXT_PUBLIC_SITE_URL,
+        origin,
+        forwardedHost ? `https://${forwardedHost}` : null
+      ].filter(Boolean);
+      
+      const isValidOrigin = referer && allowedOrigins.some(allowed => 
+        referer.startsWith(allowed || '')
+      );
+      
+      if (!isValidOrigin && !csrfToken) {
+        return NextResponse.json(
+          { error: 'CSRF validation failed' },
+          { status: 403 }
+        );
+      }
+    }
+  }
+
   // For Server Actions and API routes, fix headers and continue
   if (pathname.startsWith('/api/') || request.method === 'POST') {
     const response = NextResponse.next();

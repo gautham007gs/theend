@@ -1,9 +1,9 @@
-
 import React, { useState, useRef } from 'react';
 import { Send, Paperclip, Smile, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
+import SecurityValidator from '@/lib/security-utils'; // Import SecurityValidator
 
 interface ChatInputProps {
   onSendMessage: (text: string, imageUri?: string) => void;
@@ -60,7 +60,21 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
     const imageToSend = selectedImage;
 
     if (textToSend || imageToSend) {
-      onSendMessage(textToSend, imageToSend || undefined);
+      // Validate message on client side
+      const validation = SecurityValidator.validateMessageInput(textToSend);
+      if (!validation.isValid) {
+        console.error('Message validation failed:', validation.reason);
+        // Optionally show a toast to the user
+        toast({
+            title: "Invalid Message",
+            description: "Your message contains disallowed content.",
+            variant: "destructive",
+            duration: 5000,
+        });
+        return;
+      }
+      
+      onSendMessage(validation.sanitized || textToSend, imageToSend || undefined);
       setInputValue('');
       setSelectedImage(null);
       if (textareaRef.current) {
@@ -77,7 +91,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
       handleSubmit();
     }
   };
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
     if (textareaRef.current) {
@@ -134,4 +148,3 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
 };
 
 export default ChatInput;
-

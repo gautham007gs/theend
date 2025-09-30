@@ -2,10 +2,11 @@
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
+import { headers } from 'next/headers'; // Import headers
 
 export async function sendMessage(
-  message: string, 
-  currentMood?: string, 
+  message: string,
+  currentMood?: string,
   chatHistory?: string[],
   userTypeData?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number },
   currentIgnoreUntil?: number | null
@@ -13,12 +14,35 @@ export async function sendMessage(
   try {
     console.log('Server Action: Received message:', message);
 
+    // Basic origin validation (CSRF protection)
+    const headersList = headers();
+    const origin = headersList.get('origin');
+    const referer = headersList.get('referer');
+
+    if (origin && referer && !referer.startsWith(origin)) {
+      console.error('CSRF validation failed: Invalid referer');
+      return {
+        success: false,
+        error: 'Security validation failed'
+      };
+    }
+
+    // Validate input using security utils
+    const validation = SecurityValidator.validateMessageInput(message, 'anonymous');
+    if (!validation.isValid) {
+      console.error('Message validation failed:', validation.reason);
+      return {
+        success: false,
+        error: validation.reason || 'Invalid message content'
+      };
+    }
+
     const startTime = Date.now(); // Start timing for performance logging
 
     // Get current time of day for enhanced personality
     const hour = new Date().getHours();
-    const timeOfDay = hour >= 5 && hour < 12 ? 'morning' : 
-                     hour >= 12 && hour < 17 ? 'afternoon' : 
+    const timeOfDay = hour >= 5 && hour < 12 ? 'morning' :
+                     hour >= 12 && hour < 17 ? 'afternoon' :
                      hour >= 17 && hour < 21 ? 'evening' : 'night';
 
     // Enhanced mood selection with psychological variation
@@ -98,8 +122,8 @@ export async function sendMessage(
     console.log(`🔧 Message processing time: ${processingTime}ms`);
 
     // Return response with mood and media for persistence
-    return { 
-      success: true, 
+    return {
+      success: true,
       response,
       multiPartResponse: aiResponse.multiPartResponse, // Pass multi-part responses to client
       newMood: aiResponse.newMood || dynamicMood,
@@ -110,9 +134,9 @@ export async function sendMessage(
     };
   } catch (error) {
     console.error('Server Action: Error generating response:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 }

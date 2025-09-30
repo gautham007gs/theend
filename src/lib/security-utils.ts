@@ -103,16 +103,50 @@ export class SecurityValidator {
     return { isValid: true };
   }
   
-  // CSRF token generation
+  // CSRF token generation with timestamp
   static generateCSRFToken(): string {
     const array = new Uint8Array(32);
     crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    const token = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    const timestamp = Date.now().toString(36);
+    return `${token}.${timestamp}`;
   }
   
-  // Validate CSRF token
-  static validateCSRFToken(token: string, expectedToken: string): boolean {
-    return token === expectedToken && token.length === 64;
+  // Validate CSRF token with expiration
+  static validateCSRFToken(token: string, expectedToken: string, maxAge: number = 3600000): boolean {
+    if (!token || !expectedToken || token !== expectedToken) return false;
+    
+    const parts = token.split('.');
+    if (parts.length !== 2) return false;
+    
+    const timestamp = parseInt(parts[1], 36);
+    const age = Date.now() - timestamp;
+    
+    return age <= maxAge && token.length >= 64;
+  }
+
+  // Get CSRF token from session/cookie
+  static getCSRFToken(): string {
+    if (typeof window === 'undefined') return '';
+    
+    let token = sessionStorage.getItem('csrf_token');
+    if (!token || !this.validateCSRFToken(token, token)) {
+      token = this.generateCSRFToken();
+      sessionStorage.setItem('csrf_token', token);
+    }
+    return token;
+  }
+
+  // CSRF middleware for API requests
+  static addCSRFToRequest(options: RequestInit = {}): RequestInit {
+    const token = this.getCSRFToken();
+    return {
+      ...options,
+      headers: {
+        ...options.headers,
+        'X-CSRF-Token': token
+      }
+    };
   }
 }
 
