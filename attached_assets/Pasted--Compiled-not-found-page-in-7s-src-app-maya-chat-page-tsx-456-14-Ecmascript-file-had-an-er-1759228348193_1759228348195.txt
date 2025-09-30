@@ -1,0 +1,93 @@
+✓ Compiled /_not-found/page in 7s
+ ⨯ ./src/app/maya-chat/page.tsx:456:14
+Ecmascript file had an error
+  454 | };
+  455 |
+> 456 | export const metadata = {
+      |              ^^^^^^^^
+  457 |   title: 'Chat with Kruthika - AI Girlfriend | Free Online',
+  458 |   description: 'Chat with Kruthika, your AI girlfriend from Mumbai. Free unlimited conversations with emotional AI companion. Start your virtual relationship now!',
+  459 |   keywords: 'AI girlfriend chat, virtual girlfriend, AI companion, Kruthika chat, free AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/maya-chat/page.tsx [Client Component Browser]
+    ./src/app/maya-chat/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/maya-chat/page.tsx [Client Component SSR]
+    ./src/app/maya-chat/page.tsx [Server Component]
+
+
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 3.5s
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error [ModuleBuildError]: ./src/app/maya-chat/page.tsx:456:14
+Ecmascript file had an error
+  454 | };
+  455 |
+> 456 | export const metadata = {
+      |              ^^^^^^^^
+  457 |   title: 'Chat with Kruthika - AI Girlfriend | Free Online',
+  458 |   description: 'Chat with Kruthika, your AI girlfriend from Mumbai. Free unlimited conversations with emotional AI companion. Start your virtual relationship now!',
+  459 |   keywords: 'AI girlfriend chat, virtual girlfriend, AI companion, Kruthika chat, free AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/maya-chat/page.tsx [Client Component Browser]
+    ./src/app/maya-chat/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/maya-chat/page.tsx [Client Component SSR]
+    ./src/app/maya-chat/page.tsx [Server Component]
+
+
+    at <unknown> (ModuleBuildError: ./src/app/maya-chat/page.tsx:456:14)
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET /maya-chat 500 in 11106ms
+ GET /maya-chat 500 in 166ms
