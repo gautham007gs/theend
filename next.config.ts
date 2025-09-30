@@ -163,9 +163,6 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Compression
-  compress: true,
-
   // Configure Turbopack (replaces deprecated experimental.turbo)
   // The turbopack configuration has been moved to the top level in Next.js 13+
   // If you are using Next.js 13 or later, you should configure turbopack here.
