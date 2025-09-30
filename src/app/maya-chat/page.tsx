@@ -1703,11 +1703,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const onlineStatus = useMemo(() => {
     if (isAiTyping) return "typing...";
 
-    // Check daily message count - new users see different status (client-side only)
-    const dailyCount =
-      typeof window !== "undefined"
-        ? parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || "0")
-        : 0;
+    // Check daily message count - ensure consistent between server and client
+    const dailyCount = parseInt(
+      localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || "0"
+    );
     const isNewUser = dailyCount <= 20;
 
     // Add realistic activity status

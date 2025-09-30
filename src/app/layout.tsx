@@ -18,6 +18,7 @@ import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import MobilePerformanceOptimizer from '@/components/MobilePerformanceOptimizer';
+import MobileChatOptimizer from '@/components/chat/MobileChatOptimizer';
 
 // Optimize font loading for better performance
 const inter = Inter({
@@ -120,6 +121,7 @@ export default function RootLayout({
                   <Toaster />
                   <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
                   <MobilePerformanceOptimizer />
+                  <MobileChatOptimizer />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>
