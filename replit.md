@@ -4,6 +4,25 @@
 
 Maya Chat is an AI-powered conversational application featuring "Kruthika," a 23-year-old Indian AI companion. The application simulates realistic chat experiences with WhatsApp-like UI, multilingual support (English, Hindi, Kannada), emotional state management, and time-based behavioral patterns. Built with Next.js 15, the app integrates Google's Gemini AI through both Genkit framework and direct Google AI SDK implementation, with Supabase for analytics and configuration management.
 
+## Recent Changes (September 30, 2025)
+
+### Bug Fixes and Performance Improvements
+- **Fixed Next.js Configuration Issues**: Removed duplicate `compress` property in next.config.ts
+- **Migrated Turbopack Configuration**: Moved from deprecated `experimental.turbo` to stable `turbopack` configuration
+- **Fixed Cross-Origin Warnings**: Updated `allowedDevOrigins` with current Replit domain
+- **Resolved Hydration Errors**: Wrapped all Recharts ResponsiveContainer components with ClientOnly to prevent server/client HTML mismatches
+- **Configured Deployment**: Set up autoscale deployment configuration for production
+- **All Tests Passing**: Server running without warnings or hydration errors
+
+### Configuration Updates
+- Next.js now uses stable Turbopack for faster development builds
+- Cross-origin requests properly configured for Replit environment
+- Deployment ready with proper build and start commands
+
+### Known Issues Requiring Setup
+- Supabase database tables need to be created (see SUPABASE_SETUP.md for SQL scripts)
+- Environment variables NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY need to be configured
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
