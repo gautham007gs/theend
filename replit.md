@@ -6,18 +6,36 @@ Maya Chat is an AI-powered conversational application featuring "Kruthika," a 23
 
 ## Recent Changes (September 30, 2025)
 
-### Bug Fixes and Performance Improvements
+### Critical Bug Fixes
+- **Fixed Duplicate Message ID Bug**: Implemented UUID-based message ID generation using `crypto.randomUUID()` to prevent Supabase constraint violations. This eliminates the "duplicate key value violates unique constraint 'messages_log_message_id_key'" error that occurred when users sent messages rapidly
 - **Fixed Next.js Configuration Issues**: Removed duplicate `compress` property in next.config.ts
 - **Migrated Turbopack Configuration**: Moved from deprecated `experimental.turbo` to stable `turbopack` configuration
 - **Fixed Cross-Origin Warnings**: Updated `allowedDevOrigins` with current Replit domain
 - **Resolved Hydration Errors**: Wrapped all Recharts ResponsiveContainer components with ClientOnly to prevent server/client HTML mismatches
-- **Configured Deployment**: Set up autoscale deployment configuration for production
-- **All Tests Passing**: Server running without warnings or hydration errors
+- **Fixed TypeScript Errors**: Corrected class/className issues in all blog pages
+
+### Mobile Performance Optimizations
+- **Passive Event Listeners**: Implemented passive touch event handlers for smoother scrolling on mobile devices
+- **Memory Leak Prevention**: Added `useMessageCleanup` hook that monitors message count and warns when it exceeds 150 messages to prevent memory issues in long chat sessions
+- **Touch Optimization**: Reduced animation duration on mobile for snappier interactions
+- **Bundle Size Reduction**: Enabled CSS optimization and added more packages to `optimizePackageImports` for smaller JavaScript bundles
+- **Lazy Loading**: Added loading.tsx files with skeleton loaders for maya-chat and admin/analytics routes
+
+### Performance Enhancements
+- **Code Splitting**: Enhanced webpack configuration for optimal code splitting with vendor and common chunk strategies
+- **CSS Optimization**: Enabled `optimizeCss` experimental flag for smaller CSS bundles
+- **Package Import Optimization**: Optimized imports for lucide-react, recharts, @supabase/supabase-js, @radix-ui packages
+- **Skeleton Loaders**: Created comprehensive skeleton components (ChatSkeleton, AnalyticsSkeleton, BlogSkeleton, ProfileSkeleton) instead of plain "Loading..." text
+
+### SEO Improvements
+- **Structured Data**: Added JSON-LD structured data to chat page with SoftwareApplication and WebApplication schemas for better search engine visibility
+- **Rich Snippets**: Included aggregate ratings, feature lists, and application metadata
 
 ### Configuration Updates
-- Next.js now uses stable Turbopack for faster development builds
+- Next.js now uses stable Turbopack with optimizeCss enabled for faster development builds
 - Cross-origin requests properly configured for Replit environment
 - Deployment ready with proper build and start commands
+- Enhanced security headers and CSRF protection already in place
 
 ### Known Issues Requiring Setup
 - Supabase database tables need to be created (see SUPABASE_SETUP.md for SQL scripts)
