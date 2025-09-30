@@ -453,16 +453,7 @@ const updateUserEmotionalState = (userMessage: string) => {
   }
 };
 
-export const metadata = {
-  title: 'Chat with Kruthika - AI Girlfriend | Free Online',
-  description: 'Chat with Kruthika, your AI girlfriend from Mumbai. Free unlimited conversations with emotional AI companion. Start your virtual relationship now!',
-  keywords: 'AI girlfriend chat, virtual girlfriend, AI companion, Kruthika chat, free AI girlfriend',
-  openGraph: {
-    title: 'Chat with Kruthika - AI Girlfriend',
-    description: 'Experience authentic conversations with Kruthika, your AI girlfriend from Mumbai.',
-    type: 'website',
-  }
-};
+
 
 const KruthikaChatPage: NextPage = React.memo(() => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
