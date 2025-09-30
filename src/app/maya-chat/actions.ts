@@ -2,7 +2,8 @@
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
-import { headers } from 'next/headers'; // Import headers
+import { SecurityValidator } from '@/lib/security-utils';
+import { headers } from 'next/headers';
 
 export async function sendMessage(
   message: string,
