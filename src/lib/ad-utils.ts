@@ -28,7 +28,15 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
   const maxAdsPerDay = activeAdSettings.maxDirectLinkAdsPerDay ?? defaultAdSettings.maxDirectLinkAdsPerDay;
   const maxAdsPerSession = activeAdSettings.maxDirectLinkAdsPerSession ?? defaultAdSettings.maxDirectLinkAdsPerSession;
 
-  if (currentSessionCount >= maxAdsPerSession || currentDailyCount >= maxAdsPerDay) {
+  // Check user engagement before showing ads
+  const userEngagement = localStorage.getItem('user_engagement_score') || '0.5';
+  const engagementScore = parseFloat(userEngagement);
+  
+  // Higher engagement users see more ads (they're more likely to click)
+  const adjustedMaxSession = engagementScore > 0.7 ? maxAdsPerSession + 1 : maxAdsPerSession;
+  const adjustedMaxDaily = engagementScore > 0.8 ? maxAdsPerDay + 2 : maxAdsPerDay;
+  
+  if (currentSessionCount >= adjustedMaxSession || currentDailyCount >= adjustedMaxDaily) {
     return false;
   }
 

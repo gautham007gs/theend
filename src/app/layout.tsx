@@ -100,19 +100,7 @@ export default function RootLayout({
         <StructuredData />
 
         {/* Reduce CLS with font metrics - use CSS variables only */}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            :root { 
-              --font-inter: 'Inter', system-ui, sans-serif;
-            }
-            html { 
-              font-family: var(--font-inter);
-            }
-            body { 
-              font-family: var(--font-inter);
-            }
-          `
-        }} />
+        
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <ErrorBoundary>

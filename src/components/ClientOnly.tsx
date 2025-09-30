@@ -1,27 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ClientOnlyProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
 
-/**
- * Wrapper component to prevent hydration mismatches for client-only content.
- * This component ensures that children are only rendered on the client side,
- * preventing server/client HTML mismatches.
- */
 export default function ClientOnly({ children, fallback = null }: ClientOnlyProps) {
-  const [isClient, setIsClient] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    setHasMounted(true);
   }, []);
 
-  if (!isClient) {
-    return <>{fallback}</>;
+  if (!hasMounted) {
+    return <div suppressHydrationWarning>{fallback}</div>;
   }
 
-  return <>{children}</>;
+  return <div suppressHydrationWarning>{children}</div>;
 }
