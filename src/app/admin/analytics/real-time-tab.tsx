@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Clock, Zap, Users, MessageSquare, Globe, Activity } from 'lucide-react';
+import ClientOnly from '@/components/ClientOnly';
 
 interface RealTimeTabProps {
   newRealTimeStats: {
@@ -100,21 +101,23 @@ export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
             <CardTitle>User Journey Funnel</CardTitle>
           </CardHeader>
           <CardContent>
-            {newRealTimeStats.userFlowChart.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={newRealTimeStats.userFlowChart}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="step" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" fill="#82ca9d" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                No user journey data available yet. Start using the app to see real metrics.
-              </div>
-            )}
+            <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+              {newRealTimeStats.userFlowChart.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={newRealTimeStats.userFlowChart}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="step" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#82ca9d" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                  No user journey data available yet. Start using the app to see real metrics.
+                </div>
+              )}
+            </ClientOnly>
           </CardContent>
         </Card>
 
@@ -124,21 +127,23 @@ export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
             <CardTitle>Peak Usage Hours</CardTitle>
           </CardHeader>
           <CardContent>
-            {peakHours && peakHours.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={peakHours}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="users" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                No peak hours data available yet. Users will create activity patterns over time.
-              </div>
-            )}
+            <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+              {peakHours && peakHours.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={peakHours}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="hour" />
+                    <YAxis />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="users" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                  No peak hours data available yet. Users will create activity patterns over time.
+                </div>
+              )}
+            </ClientOnly>
           </CardContent>
         </Card>
       </div>

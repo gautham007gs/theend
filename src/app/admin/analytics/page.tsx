@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { analyticsTracker } from '@/lib/analytics-tracker';
 import { RealTimeTab } from './real-time-tab';
+import ClientOnly from '@/components/ClientOnly';
 
 interface AnalyticsData {
   // Real-time metrics
@@ -684,15 +685,17 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Peak Usage Hours</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={analytics.peakHours.filter((_, i) => i % 3 === 0)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="hour" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="users" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[200px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={analytics.peakHours.filter((_, i) => i % 3 === 0)}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="hour" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="users" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
           </div>
@@ -754,16 +757,18 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Message Engagement Over Time</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="messages" stroke="#8884d8" strokeWidth={2} />
-                    <Line type="monotone" dataKey="engagement" stroke="#82ca9d" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="messages" stroke="#8884d8" strokeWidth={2} />
+                      <Line type="monotone" dataKey="engagement" stroke="#82ca9d" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
 
@@ -772,25 +777,27 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Language Usage Distribution</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={newRealTimeStats.languageUsageChart || []}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ language, percentage }) => `${language} ${percentage ? percentage.toFixed(1) : '0'}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="messages"
-                    >
-                      {(newRealTimeStats.languageUsageChart || []).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'][index % 5]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={newRealTimeStats.languageUsageChart || []}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ language, percentage }) => `${language} ${percentage ? percentage.toFixed(1) : '0'}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="messages"
+                      >
+                        {(newRealTimeStats.languageUsageChart || []).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'][index % 5]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
           </div>
@@ -852,15 +859,17 @@ export default function AnalyticsDashboard() {
                 <CardTitle>AI Response Time Trends</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={newRealTimeStats.responseTimeChart}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="responseTime" stroke="#8884d8" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={newRealTimeStats.responseTimeChart}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="time" />
+                      <YAxis />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="responseTime" stroke="#8884d8" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
 
@@ -869,25 +878,27 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Emotional State Analysis</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={newRealTimeStats.emotionalStateDistribution || []}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ emotion, percentage }) => `${emotion} ${percentage}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="count"
-                    >
-                      {(newRealTimeStats.emotionalStateDistribution || []).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'][index % 5]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={newRealTimeStats.emotionalStateDistribution || []}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ emotion, percentage }) => `${emotion} ${percentage}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="count"
+                      >
+                        {(newRealTimeStats.emotionalStateDistribution || []).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1'][index % 5]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
           </div>
@@ -988,20 +999,22 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Revenue & Ad Performance Trends</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={chartData.map((day, index) => ({
-                    ...day,
-                    revenue: (analytics.adRevenue / 7) * (1 + (index - 3) * 0.1),
-                    impressions: analytics.adImpressions / 7 * (1 + Math.sin(index) * 0.3)
-                  }))}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="revenue" stackId="1" stroke="#8884d8" fill="#8884d8" name="Revenue ($)" />
-                    <Area type="monotone" dataKey="impressions" stackId="2" stroke="#82ca9d" fill="#82ca9d" name="Impressions (scaled)" />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={chartData.map((day, index) => ({
+                      ...day,
+                      revenue: (analytics.adRevenue / 7) * (1 + (index - 3) * 0.1),
+                      impressions: analytics.adImpressions / 7 * (1 + Math.sin(index) * 0.3)
+                    }))}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Area type="monotone" dataKey="revenue" stackId="1" stroke="#8884d8" fill="#8884d8" name="Revenue ($)" />
+                      <Area type="monotone" dataKey="impressions" stackId="2" stroke="#82ca9d" fill="#82ca9d" name="Impressions (scaled)" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
 
@@ -1010,21 +1023,23 @@ export default function AnalyticsDashboard() {
                 <CardTitle>Ad Performance Breakdown</CardTitle>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={[
-                    { type: 'Banner Ads', impressions: analytics.adImpressions * 0.6, clicks: analytics.adClicks * 0.5, revenue: analytics.adRevenue * 0.45 },
-                    { type: 'Native Ads', impressions: analytics.adImpressions * 0.25, clicks: analytics.adClicks * 0.3, revenue: analytics.adRevenue * 0.35 },
-                    { type: 'Social Bar', impressions: analytics.adImpressions * 0.15, clicks: analytics.adClicks * 0.2, revenue: analytics.adRevenue * 0.2 }
-                  ]}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="type" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="impressions" fill="#8884d8" name="Impressions" />
-                    <Bar dataKey="clicks" fill="#82ca9d" name="Clicks" />
-                    <Bar dataKey="revenue" fill="#ffc658" name="Revenue ($)" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <ClientOnly fallback={<div className="h-[300px] flex items-center justify-center text-muted-foreground">Loading chart...</div>}>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={[
+                      { type: 'Banner Ads', impressions: analytics.adImpressions * 0.6, clicks: analytics.adClicks * 0.5, revenue: analytics.adRevenue * 0.45 },
+                      { type: 'Native Ads', impressions: analytics.adImpressions * 0.25, clicks: analytics.adClicks * 0.3, revenue: analytics.adRevenue * 0.35 },
+                      { type: 'Social Bar', impressions: analytics.adImpressions * 0.15, clicks: analytics.adClicks * 0.2, revenue: analytics.adRevenue * 0.2 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="type" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="impressions" fill="#8884d8" name="Impressions" />
+                      <Bar dataKey="clicks" fill="#82ca9d" name="Clicks" />
+                      <Bar dataKey="revenue" fill="#ffc658" name="Revenue ($)" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ClientOnly>
               </CardContent>
             </Card>
           </div>
