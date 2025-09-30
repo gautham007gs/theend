@@ -128,12 +128,14 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
     optimizePackageImports: ['lucide-react', 'recharts', '@supabase/supabase-js'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
+  },
+
+  // Turbopack configuration (migrated from experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
     },
   },
@@ -163,28 +165,13 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Configure Turbopack (replaces deprecated experimental.turbo)
-  // The turbopack configuration has been moved to the top level in Next.js 13+
-  // If you are using Next.js 13 or later, you should configure turbopack here.
-  // If you are using an older version, you should configure it under experimental.turbopack.
-  // For this example, we'll assume Next.js 13 or later.
-  // Note: The original code had turbopack under experimental, this is a correction.
-  // turbopack: {
-  //   rules: {
-  //     '*.svg': {
-  //       loaders: ['@svgr/webpack'],
-  //       as: '*.js',
-  //     },
-  //   },
-  // },
-
   // Fix cross-origin warnings for Replit
   allowedDevOrigins: [
     '*.replit.dev',
     '*.replit.app',
     '127.0.0.1',
     'localhost',
-    'ed13bcde-cd2a-4371-be5b-b414e7d191fe-00-2xwq5080u880q.riker.replit.dev'
+    'b149a1da-e0f8-43b0-872a-7abd45a5da54-00-2bkcsxn0o6yfv.picard.replit.dev'
   ],
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first for better compression
