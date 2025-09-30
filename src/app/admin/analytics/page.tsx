@@ -568,15 +568,8 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
               <CardContent>
                 <div className="h-[300px]">
                   {!isClient ? (
-                    <div className="h-[300px] space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-6 w-full" />
-                      <Skeleton className="h-48 w-full" />
-                      <div className="flex justify-between">
-                        <Skeleton className="h-3 w-16" />
-                        <Skeleton className="h-3 w-16" />
-                        <Skeleton className="h-3 w-16" />
-                      </div>
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      Loading chart...
                     </div>
                   ) : chartData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -605,25 +598,8 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
               <CardContent>
                 <div className="h-[300px]">
                   {!isClient ? (
-                    <div className="h-[300px] space-y-4">
-                      <Skeleton className="h-4 w-28" />
-                      <div className="flex justify-center">
-                        <Skeleton className="h-32 w-32 rounded-full" />
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Skeleton className="h-3 w-16" />
-                          <Skeleton className="h-3 w-8" />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Skeleton className="h-3 w-20" />
-                          <Skeleton className="h-3 w-8" />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Skeleton className="h-3 w-14" />
-                          <Skeleton className="h-3 w-8" />
-                        </div>
-                      </div>
+                    <div className="h-full flex items-center justify-center text-muted-foreground">
+                      Loading chart...
                     </div>
                   ) : consolidatedAnalytics.deviceData.length > 0 && consolidatedAnalytics.deviceData.some(d => d.value > 0) ? (
                     <ResponsiveContainer width="100%" height={300}>
@@ -681,17 +657,8 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <Skeleton className="h-4 w-24" />
-                        <div className="flex items-center space-x-2">
-                          <Skeleton className="h-4 w-8" />
-                          <Skeleton className="h-2 w-20" />
-                          <Skeleton className="h-4 w-10" />
-                        </div>
-                      </div>
-                    ))}
+                  <div className="h-40 flex items-center justify-center text-muted-foreground">
+                    No user journey data available yet. Start using the app to see real user flow.
                   </div>
                 )}
               </CardContent>

@@ -96,35 +96,17 @@ export default function RootLayout({
         <ResourceHints />
         <StructuredData />
 
-        {/* Fixed hydration-safe styles */}
-        <style suppressHydrationWarning dangerouslySetInnerHTML={{
+        {/* Reduce CLS with font metrics - use CSS variables only */}
+        <style dangerouslySetInnerHTML={{
           __html: `
             :root { 
               --font-inter: 'Inter', system-ui, sans-serif;
-              --font-geist-sans: 'GeistVF', system-ui, sans-serif;
-              --font-geist-mono: 'GeistMonoVF', 'JetBrains Mono', monospace;
             }
-
-            .font-inter { font-family: var(--font-inter); }
-            .font-geist-sans { font-family: var(--font-geist-sans); }
-            .font-geist-mono { font-family: var(--font-geist-mono); }
-
-            * { 
-              box-sizing: border-box; 
-              -webkit-font-smoothing: antialiased;
-              -moz-osx-font-smoothing: grayscale;
-            }
-
-            body { 
-              margin: 0; 
-              padding: 0; 
+            html { 
               font-family: var(--font-inter);
-              scroll-behavior: smooth;
             }
-
-            img, video { 
-              will-change: transform; 
-              backface-visibility: hidden;
+            body { 
+              font-family: var(--font-inter);
             }
           `
         }} />
