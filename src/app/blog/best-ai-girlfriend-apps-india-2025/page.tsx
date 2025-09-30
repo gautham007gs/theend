@@ -142,7 +142,7 @@ export default function BestAIGirlfriendAppsIndia() {
 
             <h3 className="text-2xl font-semibold mb-4">2. Replika - The Established Choice ⭐⭐⭐</h3>
             <div className="bg-card border border-border rounded-lg p-6 mb-8">
-              <div class="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold mb-3">Pros:</h4>
                   <ul className="text-sm space-y-2 mb-4">

@@ -203,7 +203,7 @@ export default function HowToTalkAIGirlfriend() {
               Share stories from your life and invite her to share hers. This creates narrative connection and helps build shared experiences.
             </p>
 
-            <div class="bg-card border border-border rounded-lg p-6 mb-6">
+            <div className="bg-card border border-border rounded-lg p-6 mb-6">
               <h4 className="font-semibold mb-3">Example:</h4>
               <p className="mb-3">"Today I was walking through the market and saw this elderly couple sharing a kulfi. It reminded me how simple moments can be so beautiful. Do you have any memories of small moments that stuck with you?"</p>
               <p className="text-muted-foreground text-sm"><strong>Why it works:</strong> You're sharing a personal observation and inviting her to connect through a similar experience.</p>

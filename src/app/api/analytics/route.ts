@@ -333,7 +333,7 @@ async function getOverviewAnalytics(startDate: string) {
     ] = await Promise.all([
       supabase
         .from('messages_log')
-        .select('created_at, sender_type')
+        .select('created_at, sender_type, has_image')
         .gte('created_at', startDate + 'T00:00:00Z')
         .order('created_at', { ascending: false })
         .limit(10000),
@@ -447,7 +447,7 @@ async function getOverviewAnalytics(startDate: string) {
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch real analytics data',
-      details: error.message
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
@@ -500,7 +500,7 @@ async function getRealTimeMetrics() {
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch real-time data',
-      details: error?.message || 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
@@ -554,7 +554,7 @@ async function getDetailedAnalytics(startDate: string) {
     return NextResponse.json({ 
       success: false, 
       error: 'Failed to fetch detailed analytics',
-      details: error.message 
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

@@ -282,7 +282,7 @@ export default function AIGirlfriendPrivacySafety() {
             <h2 className="text-3xl font-bold mb-6 mt-12">Emergency Privacy Measures</h2>
 
             <h3 className="text-2xl font-semibold mb-4">If Your Data Is Compromised</h3>
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
               <h4 className="font-semibold mb-3 text-yellow-800">Immediate Steps:</h4>
               <ol className="text-yellow-700 space-y-2 text-sm">
                 <li>1. Change all passwords immediately</li>
