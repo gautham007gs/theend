@@ -441,26 +441,37 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     const effectiveAIProfile = globalAIProfile || defaultAIProfile;
 
     try {
-      // Use requestIdleCallback for non-critical state loading
-      const loadState = () => {
-        const savedMessages = localStorage.getItem(MESSAGES_KEY);
-        if (savedMessages) {
-          const parsedMessages: Message[] = JSON.parse(savedMessages).map((msg: any) => ({
-            ...msg,
-            timestamp: new Date(msg.timestamp)
-          }));
-          setMessages(parsedMessages);
-        } else {
-           setMessages([{
-            id: Date.now().toString(),
-            text: `Hi! I'm ${effectiveAIProfile.name}. Kaise ho aap? 😊 Let's chat!`,
-            sender: 'ai',
-            timestamp: new Date(),
-            status: 'read',
-            aiImageUrl: undefined,
-            userImageUrl: undefined,
-          }]);
-        }
+      // Client-side only operations to prevent hydration mismatch
+      if (typeof window !== 'undefined') {
+        const loadState = () => {
+          const savedMessages = localStorage.getItem(MESSAGES_KEY);
+          if (savedMessages) {
+            try {
+              const parsedMessages: Message[] = JSON.parse(savedMessages).map((msg: any) => ({
+                ...msg,
+                timestamp: new Date(msg.timestamp)
+              }));
+              setMessages(parsedMessages);
+            } catch (error) {
+              console.error('Error parsing saved messages:', error);
+              // Reset to default if corrupted
+              setMessages([{
+                id: `welcome_${Date.now()}`,
+                text: `Hi! I'm ${effectiveAIProfile.name}. Kaise ho aap? 😊 Let's chat!`,
+                sender: 'ai',
+                timestamp: new Date(),
+                status: 'read',
+              }]);
+            }
+          } else {
+            setMessages([{
+              id: `welcome_${Date.now()}`,
+              text: `Hi! I'm ${effectiveAIProfile.name}. Kaise ho aap? 😊 Let's chat!`,
+              sender: 'ai',
+              timestamp: new Date(),
+              status: 'read',
+            }]);
+          }
       };
 
       // Use scheduler API if available for better performance

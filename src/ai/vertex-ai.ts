@@ -74,7 +74,7 @@ export const VERTEX_MODELS = {
   GEMINI_2_FLASH: 'gemini-2.0-flash-001'
 };
 
-// Main chat function using Vertex AI with token optimization
+// Enhanced chat function with caching and parallel processing
 export async function generateAIResponse(
   userMessage: string,
   systemPrompt?: string,

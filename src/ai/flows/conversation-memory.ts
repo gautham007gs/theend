@@ -1,4 +1,3 @@
-
 'use client';
 
 interface ConversationContext {
@@ -31,13 +30,17 @@ interface ConversationContext {
     timestamp: number;
     importance: number;
   }>;
+  firstInteraction?: number; // Added for tracking first interaction
+  totalDays?: number; // Added for tracking total days of interaction
 }
+
+const CONVERSATION_CONTEXT_KEY = 'kruthika_conversation_context';
 
 export function getConversationContext(): ConversationContext {
   if (typeof window === 'undefined') return getDefaultContext();
-  
+
   try {
-    const stored = localStorage.getItem('kruthika_conversation_context');
+    const stored = localStorage.getItem(CONVERSATION_CONTEXT_KEY);
     return stored ? JSON.parse(stored) : getDefaultContext();
   } catch {
     return getDefaultContext();
@@ -61,25 +64,27 @@ function getDefaultContext(): ConversationContext {
       lastActiveTime: Date.now(),
       engagementLevel: 0.5
     },
-    sharedMoments: []
+    sharedMoments: [],
+    firstInteraction: Date.now(), // Set default first interaction
+    totalDays: 1
   };
 }
 
 export function updateConversationContext(
-  userMessage: string, 
+  userMessage: string,
   userEmotion: string,
   context: ConversationContext
 ): ConversationContext {
   const updated = { ...context };
-  
+
   // Increase relationship level more dynamically
   const msgLength = userMessage.length;
   const timeSpent = Date.now() - updated.conversationPatterns.lastActiveTime;
-  
+
   if (msgLength > 50) updated.relationshipLevel += 0.05; // Longer messages = more engagement
   if (timeSpent < 60000) updated.relationshipLevel += 0.02; // Quick responses = engagement
   updated.relationshipLevel = Math.min(1, updated.relationshipLevel);
-  
+
   // Track topics with better weighting
   const topics = extractTopics(userMessage);
   topics.forEach(topic => {
@@ -96,7 +101,7 @@ export function updateConversationContext(
       });
     }
   });
-  
+
   // Enhanced emotional tracking
   if (userEmotion !== 'neutral') {
     updated.pastEmotions.push({
@@ -104,26 +109,26 @@ export function updateConversationContext(
       timestamp: Date.now(),
       trigger: userMessage.substring(0, 50)
     });
-    
+
     updated.pastEmotions = updated.pastEmotions.slice(-15);
   }
-  
+
   // Better communication style detection
   const emojiCount = (userMessage.match(/[😊😅😂🤣😍🥰😘😉😎🤔😴😢😭🙄]/g) || []).length;
   if (emojiCount > 2) updated.userPersonality.communicationStyle = 'emoji-heavy';
   else if (userMessage.length < 25) updated.userPersonality.communicationStyle = 'short';
   else if (userMessage.length > 80) updated.userPersonality.communicationStyle = 'long';
-  
+
   // Track engagement patterns
   updated.conversationPatterns.lastActiveTime = Date.now();
   updated.conversationPatterns.msgFrequency += 1;
-  
+
   // Calculate engagement based on message quality
   if (userMessage.includes('?') || msgLength > 30 || emojiCount > 0) {
-    updated.conversationPatterns.engagementLevel = Math.min(1, 
+    updated.conversationPatterns.engagementLevel = Math.min(1,
       updated.conversationPatterns.engagementLevel + 0.1);
   }
-  
+
   // Track shared moments
   if (msgLength > 40 && (userMessage.includes('feel') || userMessage.includes('think'))) {
     updated.sharedMoments.push({
@@ -133,17 +138,69 @@ export function updateConversationContext(
     });
     updated.sharedMoments = updated.sharedMoments.slice(-10);
   }
-  
+
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem('kruthika_conversation_context', JSON.stringify(updated));
+      localStorage.setItem(CONVERSATION_CONTEXT_KEY, JSON.stringify(updated));
     } catch (error) {
       console.warn('Error saving conversation context:', error);
     }
   }
-  
+
   return updated;
 }
+
+// Enhanced relationship and preference tracking
+export const updateRelationshipLevel = (userMessage: string): number => {
+  try {
+    const currentLevel = getConversationContext()?.relationshipLevel || 0.1;
+    let increment = 0;
+
+    // Analyze message for relationship indicators with better detection
+    const message = userMessage.toLowerCase();
+
+    // Strong emotional indicators
+    if (message.includes('love you') || message.includes('i love')) {
+      increment = 0.15;
+    } else if (message.includes('miss you') || message.includes('thinking of you')) {
+      increment = 0.12;
+    } else if (message.includes('like you') || message.includes('care about')) {
+      increment = 0.08;
+    } else if (message.includes('beautiful') || message.includes('amazing') || message.includes('perfect')) {
+      increment = 0.06;
+    } else if (message.length > 100) {
+      increment = 0.03; // Very long messages show deep engagement
+    } else if (message.length > 50) {
+      increment = 0.01;
+    }
+
+    // Time-based relationship building
+    const context = getConversationContext();
+    const daysSinceFirst = context?.firstInteraction
+      ? Math.floor((Date.now() - context.firstInteraction) / (1000 * 60 * 60 * 24))
+      : 0;
+
+    if (daysSinceFirst > 7) increment *= 1.2; // Bonus for long-term users
+
+    const newLevel = Math.min(1.0, currentLevel + increment);
+
+    // Store updated relationship level with user preferences
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CONVERSATION_CONTEXT_KEY, JSON.stringify({
+        ...context,
+        relationshipLevel: newLevel,
+        lastUpdated: Date.now(),
+        firstInteraction: context?.firstInteraction || Date.now(),
+        totalDays: daysSinceFirst + 1
+      }));
+    }
+
+    return newLevel;
+  } catch (error) {
+    console.error('Error updating relationship level:', error);
+    return 0.1;
+  }
+};
 
 function getKruthikaInterestInTopic(topic: string): number {
   const interests = {
@@ -166,26 +223,26 @@ function getKruthikaInterestInTopic(topic: string): number {
     'fashion': 0.7,
     'books': 0.6
   };
-  
+
   return interests[topic as keyof typeof interests] || (0.3 + Math.random() * 0.4);
 }
 
 function extractTopics(message: string): string[] {
   const commonTopics = [
-    'college', 'study', 'exam', 'friends', 'family', 'movies', 'music', 
+    'college', 'study', 'exam', 'friends', 'family', 'movies', 'music',
     'food', 'travel', 'work', 'love', 'relationship', 'games', 'sports',
     'books', 'art', 'cooking', 'shopping', 'fashion', 'technology',
     'mumbai', 'bollywood', 'psychology', 'coffee', 'cafe', 'weekend',
     'party', 'festival', 'rain', 'weather', 'phone', 'instagram'
   ];
-  
+
   const lowerMessage = message.toLowerCase();
   return commonTopics.filter(topic => lowerMessage.includes(topic));
 }
 
 export function getContextualPromptAddition(context: ConversationContext): string {
   let addition = "";
-  
+
   // Relationship-based prompting
   if (context.relationshipLevel > 0.8) {
     addition += "You're very close with this user. Be more intimate, use inside jokes, remember past conversations. ";
@@ -194,43 +251,43 @@ export function getContextualPromptAddition(context: ConversationContext): strin
   } else if (context.relationshipLevel < 0.2) {
     addition += "This is a newer user. Be friendly but not too personal yet. ";
   }
-  
+
   // Emotional pattern awareness
   const recentEmotions = context.pastEmotions.slice(-5);
   const sadCount = recentEmotions.filter(e => e.emotion === 'sad').length;
   const excitedCount = recentEmotions.filter(e => e.emotion === 'excited').length;
-  
+
   if (sadCount > 2) addition += "User has been sad recently, be extra supportive and caring. ";
   if (excitedCount > 2) addition += "User gets excited easily, match their high energy! ";
-  
+
   // Communication style adaptation
   const style = context.userPersonality.communicationStyle;
   if (style === 'emoji-heavy') addition += "User loves emojis, use them naturally. ";
   if (style === 'short') addition += "User prefers brief messages, keep responses concise. ";
   if (style === 'long') addition += "User writes longer messages, you can be more detailed. ";
-  
+
   // Topic preferences
   const favoriteTopics = context.topics
     .filter(t => t.userInterest > 0.7)
     .map(t => t.topic)
     .slice(0, 3);
-    
+
   if (favoriteTopics.length > 0) {
     addition += `User loves talking about: ${favoriteTopics.join(', ')}. Bring these up occasionally. `;
   }
-  
+
   // Engagement level
   if (context.conversationPatterns.engagementLevel > 0.8) {
     addition += "User is highly engaged, be more playful and ask questions. ";
   } else if (context.conversationPatterns.engagementLevel < 0.3) {
     addition += "User seems less engaged, try to spark their interest with interesting topics. ";
   }
-  
+
   // Shared moments
   if (context.sharedMoments.length > 3) {
     const recentMoment = context.sharedMoments[context.sharedMoments.length - 1];
     addition += `Remember you recently talked about: "${recentMoment.moment}". `;
   }
-  
+
   return addition;
 }
