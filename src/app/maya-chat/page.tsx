@@ -1704,9 +1704,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     if (isAiTyping) return "typing...";
 
     // Check daily message count - ensure consistent between server and client
-    const dailyCount = parseInt(
-      localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || "0"
-    );
+    const dailyCount = typeof window !== "undefined" 
+      ? parseInt(localStorage.getItem(USER_DAILY_MESSAGE_COUNT_KEY) || "0")
+      : 0;
     const isNewUser = dailyCount <= 20;
 
     // Add realistic activity status
@@ -1742,7 +1742,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     };
 
     // Check if AI is paused/offline first
-    if (shouldAIBePaused()) {
+    if (typeof window !== "undefined" && shouldAIBePaused()) {
       const lastGoodbyeTime = localStorage.getItem(AI_LAST_GOODBYE_TIME_KEY);
       const ignoreUntil = localStorage.getItem(AI_IGNORE_UNTIL_KEY);
 
@@ -1774,7 +1774,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         }
       }
 
-      if (ignoreUntil && !isNewUser) {
+      if (ignoreUntil && !isNewUser && typeof window !== "undefined") {
         const remainingMin = Math.ceil(
           (parseInt(ignoreUntil) - Date.now()) / 60000,
         );
