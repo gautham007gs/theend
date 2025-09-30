@@ -178,5 +178,3 @@ if (typeof window !== 'undefined') {
   
   console.log('🔧 API optimizations initialized');
 }
-
-export { APIOptimizer, MessageOptimizer };
