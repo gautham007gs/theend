@@ -126,14 +126,10 @@ export function middleware(request: NextRequest) {
     const referer = request.headers.get('referer');
     const origin = request.headers.get('origin');
     
-    // Skip CSRF for some endpoints and Server Actions
-    const skipCSRF = pathname.startsWith('/api/analytics') && request.method === 'POST' ||
-                     pathname.startsWith('/maya-chat') && request.method === 'POST';
+    // Skip CSRF for some endpoints
+    const skipCSRF = pathname.startsWith('/api/analytics') && request.method === 'POST';
     
     if (!skipCSRF) {
-      // Get forwardedHost from headers
-      const forwardedHost = request.headers.get('x-forwarded-host');
-      
       // Validate referer/origin
       const allowedOrigins = [
         process.env.NEXT_PUBLIC_SITE_URL,

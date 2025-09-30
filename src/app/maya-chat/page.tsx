@@ -28,7 +28,6 @@ import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext';
 import { AnalyticsProvider, useAnalyticsTracking } from './analytics-integration';
 import { analyticsTracker } from '@/lib/analytics-tracker';
 import { tryShowRotatedAd } from '@/lib/ad-utils';
-import { Skeleton, ChatLoadingSkeleton } from '@/components/ui/skeleton-loader';
 
 const AI_DISCLAIMER_SHOWN_KEY = 'ai_disclaimer_shown_kruthika_chat_v2';
 const AI_DISCLAIMER_DURATION = 2000;
@@ -645,7 +644,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           // Stop typing and send message
           setIsAiTyping(false);
 
-          const proactiveMessageId = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}_proactive`;
+          const proactiveMessageId = (Date.now() + Math.random()).toString() + '_proactive';
           const proactiveMessage: Message = {
             id: proactiveMessageId,
             text: proactiveResult.message!,
@@ -708,7 +707,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     }
 
     const newUserMessage: Message = {
-      id: `${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+      id: Date.now().toString(),
       text,
       sender: 'user',
       timestamp: new Date(),
@@ -992,7 +991,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         // Stop typing and send message
         setIsAiTyping(false);
 
-        const newAiMessageId = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}${messageIdSuffix}`;
+        const newAiMessageId = (Date.now() + Math.random()).toString() + messageIdSuffix;
         const newAiMessage: Message = {
           id: newAiMessageId,
           text: responseText,
@@ -1033,7 +1032,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         // Stop typing and send media
         setIsAiTyping(false);
 
-        const newAiMediaMessageId = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}_${mediaType}`;
+        const newAiMediaMessageId = (Date.now() + Math.random()).toString() + `_${mediaType}`;
         const newAiMediaMessage: Message = {
             id: newAiMediaMessageId,
             text: caption || "",
@@ -1143,7 +1142,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
       toast({ title: "Error", description: errorDescription, variant: "destructive" });
       const errorAiMessage: Message = {
-        id: `${Date.now()}_${Math.random().toString(36).substring(2, 15)}_error`,
+        id: (Date.now() + 1).toString(),
         text: "Uff, my brain's a bit fuzzy right now. Try again in a bit? 😓",
         sender: 'ai',
         timestamp: new Date(),
@@ -1185,7 +1184,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           const offlineResult = await generateOfflineMessage(offlineInput);
           const typingDelay = Math.min(Math.max(offlineResult.message.length * 60, 700), 3500);
           await new Promise(resolve => setTimeout(resolve, typingDelay));
-          const newOfflineMsgId = `${Date.now()}_${Math.random().toString(36).substring(2, 15)}_offline`;
+          const newOfflineMsgId = (Date.now() + Math.random()).toString();
           const offlineMessage: Message = {
             id: newOfflineMsgId,
             text: offlineResult.message,
@@ -1436,7 +1435,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                   'Network:', selectedNetwork, 'Code length:', selectedCode.length);
     } else {
       // Create new ad bubble for first time
-      const adId = `native_ad_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      const adId = `native_ad_${Date.now()}`;
       const nativeAdMessage: Message = {
         id: adId,
         text: '',
@@ -1488,18 +1487,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const displayAIProfile = globalAIProfile || defaultAIProfile;
 
   if (isLoadingAIProfile || !globalAIProfile || isLoadingAdSettings || isLoadingMediaAssets || isLoadingChatState ) {
-    return (
-      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-chat-bg-default shadow-2xl">
-        <div className="flex items-center p-4 border-b">
-          <Skeleton className="h-10 w-10 rounded-full mr-3" />
-          <div className="flex-1">
-            <Skeleton className="h-4 w-24 mb-1" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-        </div>
-        <ChatLoadingSkeleton />
-      </div>
-    );
+    return <div className="flex justify-center items-center h-screen bg-chat-bg-default text-foreground">Loading Kruthika's Chat...</div>;
   }
 
   return (
