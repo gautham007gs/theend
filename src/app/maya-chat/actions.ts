@@ -3,6 +3,37 @@
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
 
+const isEmojiOnlyMessage = (text: string): boolean => {
+  const trimmed = text.trim();
+  if (!trimmed || trimmed.length > 10) return false;
+  const emojiRegex = /^[\p{Emoji}\p{Emoji_Component}\s]+$/u;
+  return emojiRegex.test(trimmed);
+};
+
+const getSimpleEmojiResponse = (userMessage: string): string | null => {
+  const emojiResponses: Record<string, string[]> = {
+    '❤️': ['❤️', '💕', '😊❤️', '❤️✨'],
+    '😊': ['😊', '😄', '☺️', '😁'],
+    '😂': ['😂😂', '🤣', '😆', 'haha 😂'],
+    '😭': ['🥺', '💔', 'aww 😭', '🫂'],
+    '👋': ['hey! 👋', 'hi! 😊', '👋✨'],
+    '🔥': ['🔥🔥', '💯', '🔥✨'],
+    '💯': ['💯💯', '🔥', 'yass! 💯'],
+    '🤔': ['hmm 🤔', '😅', 'why? 😊'],
+    '😴': ['gn 😴', '💤', 'sleep well 😴'],
+    '🙏': ['🙏❤️', '😊🙏', 'welcome! 😊'],
+  };
+
+  const trimmed = userMessage.trim();
+  for (const [emoji, responses] of Object.entries(emojiResponses)) {
+    if (trimmed.includes(emoji)) {
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
+  }
+  
+  return isEmojiOnlyMessage(userMessage) ? '😊' : null;
+};
+
 export async function sendMessage(
   message: string, 
   currentMood?: string, 
@@ -12,6 +43,18 @@ export async function sendMessage(
 ) {
   try {
     console.log('Server Action: Received message:', message);
+
+    const emojiResponse = getSimpleEmojiResponse(message);
+    if (emojiResponse) {
+      console.log('Server Action: Emoji-only response (no AI tokens used):', emojiResponse);
+      return {
+        success: true,
+        response: emojiResponse,
+        newMood: currentMood || 'friendly',
+        usedMood: currentMood || 'friendly',
+        tokenOptimized: true
+      };
+    }
 
     const startTime = Date.now(); // Start timing for performance logging
 

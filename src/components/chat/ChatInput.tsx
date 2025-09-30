@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Send, Paperclip, Smile, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,6 +9,68 @@ interface ChatInputProps {
   onSendMessage: (text: string, imageUri?: string) => void;
   isAiTyping: boolean;
 }
+
+const LAST_MESSAGE_TIME_KEY = 'kruthika_last_message_time';
+const MESSAGE_COOLDOWN_MS = 2000;
+const SHORT_MESSAGE_SPAM_THRESHOLD = 3;
+const SHORT_MESSAGE_SPAM_WINDOW_MS = 10000;
+const SHORT_MESSAGE_SPAM_KEY = 'kruthika_short_message_spam_count';
+const SHORT_MESSAGE_SPAM_TIME_KEY = 'kruthika_short_message_spam_time';
+
+const isMessageMeaningless = (text: string): boolean => {
+  const trimmed = text.trim();
+  if (!trimmed) return true;
+  if (trimmed.length > 2) return false;
+  
+  const emojiRegex = /^[\p{Emoji}\p{Emoji_Component}]+$/u;
+  const punctuationRegex = /^[.,!?;:'"()\-_+={}[\]|\\/<>@#$%^&*~`]+$/;
+  const singleCharRegex = /^[a-zA-Z0-9]$/;
+  
+  return emojiRegex.test(trimmed) || punctuationRegex.test(trimmed) || singleCharRegex.test(trimmed);
+};
+
+const checkSpamRate = (): { isSpam: boolean; message?: string } => {
+  const lastMessageTime = localStorage.getItem(LAST_MESSAGE_TIME_KEY);
+  const now = Date.now();
+  
+  if (lastMessageTime) {
+    const timeSinceLastMessage = now - parseInt(lastMessageTime);
+    if (timeSinceLastMessage < MESSAGE_COOLDOWN_MS) {
+      return {
+        isSpam: true,
+        message: `Please wait ${Math.ceil((MESSAGE_COOLDOWN_MS - timeSinceLastMessage) / 1000)} seconds before sending another message`
+      };
+    }
+  }
+  
+  return { isSpam: false };
+};
+
+const checkShortMessageSpam = (text: string): { isSpam: boolean; message?: string } => {
+  if (!isMessageMeaningless(text)) return { isSpam: false };
+  
+  const now = Date.now();
+  const spamCount = parseInt(localStorage.getItem(SHORT_MESSAGE_SPAM_KEY) || '0');
+  const spamTime = parseInt(localStorage.getItem(SHORT_MESSAGE_SPAM_TIME_KEY) || '0');
+  
+  if (now - spamTime > SHORT_MESSAGE_SPAM_WINDOW_MS) {
+    localStorage.setItem(SHORT_MESSAGE_SPAM_KEY, '1');
+    localStorage.setItem(SHORT_MESSAGE_SPAM_TIME_KEY, now.toString());
+    return {
+      isSpam: false
+    };
+  }
+  
+  if (spamCount >= SHORT_MESSAGE_SPAM_THRESHOLD) {
+    return {
+      isSpam: true,
+      message: 'Please send a proper message instead of single characters or emojis. This helps reduce costs! 💰'
+    };
+  }
+  
+  localStorage.setItem(SHORT_MESSAGE_SPAM_KEY, (spamCount + 1).toString());
+  return { isSpam: false };
+};
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
   const [inputValue, setInputValue] = useState('');
@@ -54,22 +116,48 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
     }
   };
 
-  const handleSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback((e?: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
     const textToSend = inputValue.trim();
     const imageToSend = selectedImage;
+
+    if (!textToSend && !imageToSend) return;
+
+    const spamCheck = checkSpamRate();
+    if (spamCheck.isSpam) {
+      toast({
+        title: "Slow down! ⏱️",
+        description: spamCheck.message,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return;
+    }
+
+    const shortMessageCheck = checkShortMessageSpam(textToSend);
+    if (shortMessageCheck.isSpam && !imageToSend) {
+      toast({
+        title: "Message Blocked",
+        description: shortMessageCheck.message,
+        variant: "destructive",
+        duration: 4000,
+      });
+      return;
+    }
+
+    localStorage.setItem(LAST_MESSAGE_TIME_KEY, Date.now().toString());
 
     if (textToSend || imageToSend) {
       onSendMessage(textToSend, imageToSend || undefined);
       setInputValue('');
       setSelectedImage(null);
       if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto'; // Reset height
+        textareaRef.current.style.height = 'auto';
       }
-      if(fileInputRef.current) fileInputRef.current.value = ""; // Reset file input
+      if(fileInputRef.current) fileInputRef.current.value = "";
       textareaRef.current?.focus();
     }
-  };
+  }, [inputValue, selectedImage, onSendMessage, toast]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
