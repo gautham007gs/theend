@@ -61,14 +61,16 @@ const checkShortMessageSpam = (text: string): { isSpam: boolean; message?: strin
     };
   }
   
-  if (spamCount >= SHORT_MESSAGE_SPAM_THRESHOLD) {
+  const newCount = spamCount + 1;
+  localStorage.setItem(SHORT_MESSAGE_SPAM_KEY, newCount.toString());
+  
+  if (newCount >= SHORT_MESSAGE_SPAM_THRESHOLD) {
     return {
       isSpam: true,
       message: 'Please send a proper message instead of single characters or emojis. This helps reduce costs! 💰'
     };
   }
   
-  localStorage.setItem(SHORT_MESSAGE_SPAM_KEY, (spamCount + 1).toString());
   return { isSpam: false };
 };
 

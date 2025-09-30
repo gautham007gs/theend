@@ -2065,6 +2065,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           onQuickReply={handleQuickReply}
           onLikeMessage={handleLikeMessage}
           onReactToMessage={handleReactToMessage}
+          onAvatarClick={handleOpenAvatarZoom}
         />
 
         {showInterstitialAd && (
@@ -2093,74 +2094,76 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           open={showZoomedAvatarDialog}
           onOpenChange={setShowZoomedAvatarDialog}
         >
-          <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-[90vw] max-w-xs translate-x-[-50%] translate-y-[-50%] border bg-neutral-900 p-0 shadow-lg duration-200 sm:rounded-lg flex flex-col overflow-hidden aspect-square max-h-[90vw] sm:max-h-[70vh]">
-            <DialogHeader className="flex flex-row items-center space-x-2 p-3 bg-neutral-800/80 backdrop-blur-sm sticky top-0 z-10">
-              <DialogClose asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-neutral-300 hover:text-white h-9 w-9"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-              </DialogClose>
-              <DialogTitle className="text-lg font-semibold text-white">
-                {displayAIProfile.name}
-              </DialogTitle>
+          <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-0 bg-[#0b141a] p-0 shadow-2xl duration-200 sm:rounded-lg flex flex-col overflow-hidden max-h-[95vh]">
+            <DialogHeader className="flex flex-row items-center justify-between space-x-3 px-4 py-3 bg-[#202c33] border-b border-[#2a3942] sticky top-0 z-10">
+              <div className="flex items-center space-x-3">
+                <DialogClose asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-[#8696a0] hover:text-[#d1d7db] hover:bg-[#2a3942] h-10 w-10 rounded-full"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                </DialogClose>
+                <DialogTitle className="text-lg font-normal text-[#e9edef]">
+                  {displayAIProfile.name}
+                </DialogTitle>
+              </div>
             </DialogHeader>
 
-            <div className="relative flex-1 w-full bg-black flex items-center justify-center overflow-hidden">
+            <div className="relative w-full bg-[#0b141a] flex items-center justify-center overflow-hidden" style={{ aspectRatio: '1/1', maxHeight: 'calc(95vh - 140px)' }}>
               {zoomedAvatarUrl && (
                 <Image
                   key={`zoomed-${zoomedAvatarUrl}`}
                   src={zoomedAvatarUrl}
-                  alt={`${displayAIProfile.name}'s zoomed avatar`}
+                  alt={`${displayAIProfile.name}'s profile photo`}
                   fill
                   style={{ objectFit: "contain" }}
-                  className="rounded-sm"
+                  className="select-none"
                   data-ai-hint="profile woman large"
                   priority={true}
-                  unoptimized // For original quality as requested for status, applying here too
+                  unoptimized
                 />
               )}
             </div>
 
-            <DialogFooter className="p-3 bg-neutral-800/80 backdrop-blur-sm flex flex-row justify-around items-center border-t border-neutral-700 sticky bottom-0 z-10 mt-auto">
+            <DialogFooter className="px-5 py-4 bg-[#202c33] flex flex-row justify-between items-center border-t border-[#2a3942] sticky bottom-0 z-10">
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-neutral-200 hover:text-white hover:bg-neutral-700/70 flex flex-col items-center h-auto p-2"
+                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
                 onClick={() => setShowZoomedAvatarDialog(false)}
               >
-                <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-xs mt-1">Message</span>
+                <MessageSquare className="h-6 w-6" />
+                <span className="text-[11px] font-medium">Message</span>
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-neutral-200 hover:text-white hover:bg-neutral-700/70 flex flex-col items-center h-auto p-2"
+                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
                 onClick={handleCallVideoClick}
               >
-                <Phone className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-xs mt-1">Audio</span>
+                <Phone className="h-6 w-6" />
+                <span className="text-[11px] font-medium">Call</span>
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-neutral-200 hover:text-white hover:bg-neutral-700/70 flex flex-col items-center h-auto p-2"
+                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
                 onClick={handleCallVideoClick}
               >
-                <Video className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-xs mt-1">Video</span>
+                <Video className="h-6 w-6" />
+                <span className="text-[11px] font-medium">Video</span>
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-neutral-200 hover:text-white hover:bg-neutral-700/70 flex flex-col items-center h-auto p-2"
+                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
                 onClick={() => alert("View contact info - Not implemented")}
               >
-                <Info className="h-5 w-5 sm:h-6 sm:w-6" />
-                <span className="text-xs mt-1">Info</span>
+                <Info className="h-6 w-6" />
+                <span className="text-[11px] font-medium">Info</span>
               </Button>
             </DialogFooter>
           </DialogContent>

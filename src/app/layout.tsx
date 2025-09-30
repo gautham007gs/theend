@@ -29,6 +29,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://kruthika.fun'),
   title: {
     default: 'Kruthika.fun - India\'s Most Realistic AI Girlfriend | Free Chat',
     template: '%s | Kruthika.fun'
@@ -38,7 +39,21 @@ export const metadata: Metadata = {
   authors: [{ name: 'Kruthika.fun Team' }],
   creator: 'Kruthika.fun',
   publisher: 'Kruthika.fun',
-  robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+  applicationName: 'Kruthika AI Girlfriend',
+  referrer: 'origin-when-cross-origin',
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  category: 'technology',
   openGraph: {
     title: 'Kruthika.fun - #1 AI Girlfriend Chat | Best Virtual Companion 2024',
     description: 'Meet Kruthika, India\'s most realistic AI girlfriend. Experience authentic conversations and emotional connection with the best free AI girlfriend simulator. Chat now!',

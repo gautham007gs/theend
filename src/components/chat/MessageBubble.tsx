@@ -19,9 +19,10 @@ interface MessageBubbleProps {
   currentlySwipingMessageId?: string | null;
   onSwipeStart?: (messageId: string) => void;
   onSwipeEnd?: () => void;
+  onAvatarClick?: () => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd, onAvatarClick }) => {
   const isUser = message.sender === 'user';
   const isAd = message.sender === 'ad' || message.isNativeAd;
   const timestamp = new Date(message.timestamp);
@@ -280,7 +281,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       // Check if ad code has changed (for rotation)
       if (message.nativeAdCode !== lastAdCode) {
         setAdInjected(false);
-        setLastAdCode(message.nativeAdCode);
+        setLastAdCode(message.nativeAdCode || '');
       }
 
       if (adRef.current && message.nativeAdCode && !adInjected) {
@@ -290,7 +291,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           
           // Small delay to ensure cleanup
           setTimeout(() => {
-            if (adRef.current) {
+            if (adRef.current && message.nativeAdCode) {
               // Create a fragment and inject the new ad code
               const fragment = document.createRange().createContextualFragment(message.nativeAdCode);
               adRef.current.appendChild(fragment);
@@ -304,7 +305,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           console.error('Error injecting native ad:', error);
           // Fallback to innerHTML if fragment creation fails
           setTimeout(() => {
-            if (adRef.current) {
+            if (adRef.current && message.nativeAdCode) {
               adRef.current.innerHTML = message.nativeAdCode;
               setAdInjected(true);
             }
@@ -380,19 +381,25 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       )}
            ref={bubbleRef}>
         {!isUser && !isAd && (
-          <Avatar 
-            className="h-8 w-8 mr-2 self-end shrink-0"
-            key={`ai-msg-avatar-comp-${message.id}-${aiAvatarUrlToUse || 'default_avatar_comp_key_mb'}`}
+          <button
+            onClick={onAvatarClick}
+            className="h-8 w-8 mr-2 self-end shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded-full"
+            aria-label={`View ${aiName}'s profile`}
           >
-            <AvatarImage
-              src={aiAvatarUrlToUse || undefined}
-              alt={aiName}
-              data-ai-hint="profile woman"
-              key={`ai-msg-avatar-img-${message.id}-${aiAvatarUrlToUse || 'no_avatar_fallback_img_mb'}`}
-              onError={handleAIAvatarError}
-            />
-            <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
+            <Avatar 
+              className="h-8 w-8"
+              key={`ai-msg-avatar-comp-${message.id}-${aiAvatarUrlToUse || 'default_avatar_comp_key_mb'}`}
+            >
+              <AvatarImage
+                src={aiAvatarUrlToUse || undefined}
+                alt={aiName}
+                data-ai-hint="profile woman"
+                key={`ai-msg-avatar-img-${message.id}-${aiAvatarUrlToUse || 'no_avatar_fallback_img_mb'}`}
+                onError={handleAIAvatarError}
+              />
+              <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </button>
         )}
         {isAd && (
           <div className="h-8 w-8 mr-2 self-end shrink-0 flex items-center justify-center bg-blue-500/20 text-blue-600 rounded-full text-xs font-medium">

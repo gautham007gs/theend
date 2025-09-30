@@ -76,7 +76,7 @@ export async function sendMessage(
     ];
 
     // Smart ignore system - only for users who are 4+ days old and established
-    const ignoreLogic = shouldAIBeBusyServerSafe(currentIgnoreUntil, userTypeData, chatHistory?.slice(-3));
+    const ignoreLogic = shouldAIBeBusyServerSafe(currentIgnoreUntil ?? null, userTypeData, chatHistory?.slice(-3));
 
     if (ignoreLogic.shouldIgnore) {
       console.log('Server Action: User-aware ignore behavior activated');

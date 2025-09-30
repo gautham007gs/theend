@@ -24,23 +24,40 @@ export function useMobileOptimization() {
       document.removeEventListener('touchend', touchHandler);
     });
 
-    // Reduce animation duration on mobile
-    document.documentElement.style.setProperty('--animation-duration', '0.15s');
+    // Enhanced mobile optimizations
+    document.documentElement.style.setProperty('--animation-duration', '0.1s');
+    document.documentElement.style.setProperty('touch-action', 'manipulation');
+    document.documentElement.style.setProperty('-webkit-tap-highlight-color', 'rgba(0,0,0,0)');
+    
+    // Optimize scrolling performance
+    document.documentElement.style.setProperty('overflow-scrolling', 'touch');
+    document.documentElement.style.setProperty('-webkit-overflow-scrolling', 'touch');
+    
+    // Enable GPU acceleration for smooth animations
+    const chatContainer = document.querySelector('[data-chat-container]');
+    if (chatContainer instanceof HTMLElement) {
+      chatContainer.style.transform = 'translateZ(0)';
+      chatContainer.style.willChange = 'transform';
+    }
 
     // Optimize memory usage
     const memoryCleanup = setInterval(() => {
-      // Clean up old DOM references
       if ('memory' in performance && (performance as any).memory) {
         const memory = (performance as any).memory;
         if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * 0.9) {
           console.warn('Memory usage high, consider clearing chat history');
         }
       }
-    }, 30000); // Check every 30 seconds
+    }, 30000);
 
     cleanupRef.current.push(() => clearInterval(memoryCleanup));
 
-    // Cleanup function
+    // Add viewport meta optimization for better mobile rendering
+    let viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (viewportMeta) {
+      viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover');
+    }
+
     return () => {
       cleanupRef.current.forEach(cleanup => cleanup());
       cleanupRef.current = [];

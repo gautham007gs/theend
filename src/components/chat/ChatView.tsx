@@ -10,13 +10,14 @@ interface ChatViewProps {
   aiAvatarUrl: string;
   aiName: string;
   isAiTyping: boolean;
-  onTriggerAd?: () => void; // New prop for handling ad clicks from bubbles
+  onTriggerAd?: () => void;
   onQuickReply?: (replyText: string, originalMessage: Message) => void;
   onLikeMessage?: (messageId: string) => void;
   onReactToMessage?: (messageId: string, reaction: MessageReaction) => void;
+  onAvatarClick?: () => void;
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage }) => {
+const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, onAvatarClick }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentlySwipingMessageId, setCurrentlySwipingMessageId] = useState<string | null>(null);
 
@@ -45,7 +46,7 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
           message.id,
           senderType,
           message.text || '',
-          !!(message.aiImageUrl || message.media)
+          !!(message.aiImageUrl || message.userImageUrl)
         );
         
         // Mark as tracked in session storage
@@ -65,13 +66,14 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
             message={msg} 
             aiAvatarUrl={aiAvatarUrl} 
             aiName={aiName} 
-            onTriggerAd={onTriggerAd} // Pass down the callback
-            onQuickReply={onQuickReply} // Pass down quick reply callback
-            onLikeMessage={onLikeMessage} // Pass down like callback
-            onReactToMessage={onReactToMessage} // Pass down reaction callback
-            currentlySwipingMessageId={currentlySwipingMessageId} // Pass swipe state
-            onSwipeStart={handleSwipeStart} // Handle swipe start
-            onSwipeEnd={handleSwipeEnd} // Handle swipe end
+            onTriggerAd={onTriggerAd}
+            onQuickReply={onQuickReply}
+            onLikeMessage={onLikeMessage}
+            onReactToMessage={onReactToMessage}
+            currentlySwipingMessageId={currentlySwipingMessageId}
+            onSwipeStart={handleSwipeStart}
+            onSwipeEnd={handleSwipeEnd}
+            onAvatarClick={onAvatarClick}
         />
       ))}
       {isAiTyping && <TypingIndicator avatarUrl={aiAvatarUrl} />}
