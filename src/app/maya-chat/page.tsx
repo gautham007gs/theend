@@ -1860,8 +1860,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   }, [messages, isAiTyping]);
 
   const handleOpenAvatarZoom = () => {
-    if (isLoadingAIProfile || !globalAIProfile?.avatarUrl) return;
-    setZoomedAvatarUrl(globalAIProfile.avatarUrl);
+    if (isLoadingAIProfile) return;
+    const avatarUrl = globalAIProfile?.avatarUrl || defaultAIProfile.avatarUrl;
+    setZoomedAvatarUrl(avatarUrl);
     setShowZoomedAvatarDialog(true);
   };
 
@@ -2094,78 +2095,120 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           open={showZoomedAvatarDialog}
           onOpenChange={setShowZoomedAvatarDialog}
         >
-          <DialogContent className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-0 bg-[#0b141a] p-0 shadow-2xl duration-200 sm:rounded-lg flex flex-col overflow-hidden max-h-[95vh]">
-            <DialogHeader className="flex flex-row items-center justify-between space-x-3 px-4 py-3 bg-[#202c33] border-b border-[#2a3942] sticky top-0 z-10">
-              <div className="flex items-center space-x-3">
+          <DialogContent className="!fixed !inset-0 !z-[60] flex !w-screen !h-screen flex-col !bg-black !p-0 !border-0 !shadow-2xl !outline-none !rounded-none !max-w-none !translate-x-0 !translate-y-0">
+            {/* Header */}
+            <div className="absolute top-0 left-0 right-0 z-20 p-4 flex items-center justify-between bg-gradient-to-b from-black/80 via-black/60 to-transparent">
+              <div className="flex items-center gap-3">
                 <DialogClose asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="text-[#8696a0] hover:text-[#d1d7db] hover:bg-[#2a3942] h-10 w-10 rounded-full"
+                    className="text-white hover:text-white/80 hover:bg-white/10 h-10 w-10 rounded-full"
                   >
-                    <X className="h-5 w-5" />
+                    <ArrowLeft className="h-6 w-6" />
                   </Button>
                 </DialogClose>
-                <DialogTitle className="text-lg font-normal text-[#e9edef]">
-                  {displayAIProfile.name}
-                </DialogTitle>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10 border-2 border-white/20">
+                    <AvatarImage 
+                      src={displayAIProfile.avatarUrl || undefined} 
+                      alt={displayAIProfile.name}
+                      data-ai-hint="profile woman small"
+                    />
+                    <AvatarFallback className="bg-gray-600 text-white">
+                      {(displayAIProfile.name || "K").charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <DialogTitle className="text-white text-lg font-medium">
+                      {displayAIProfile.name}
+                    </DialogTitle>
+                    <p className="text-white/70 text-sm">{onlineStatus}</p>
+                  </div>
+                </div>
               </div>
-            </DialogHeader>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:text-white/80 hover:bg-white/10 h-10 w-10 rounded-full"
+                onClick={() => alert("More options - Not implemented")}
+              >
+                <MoreVertical className="h-6 w-6" />
+              </Button>
+            </div>
 
-            <div className="relative w-full bg-[#0b141a] flex items-center justify-center overflow-hidden" style={{ aspectRatio: '1/1', maxHeight: 'calc(95vh - 140px)' }}>
-              {zoomedAvatarUrl && (
-                <Image
-                  key={`zoomed-${zoomedAvatarUrl}`}
-                  src={zoomedAvatarUrl}
-                  alt={`${displayAIProfile.name}'s profile photo`}
-                  fill
-                  style={{ objectFit: "contain" }}
-                  className="select-none"
-                  data-ai-hint="profile woman large"
-                  priority={true}
-                  unoptimized
-                />
+            {/* Main Image Area */}
+            <div className="flex-1 flex items-center justify-center bg-black relative overflow-hidden">
+              {zoomedAvatarUrl && zoomedAvatarUrl !== 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K' ? (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <Image
+                    key={`zoomed-${zoomedAvatarUrl}`}
+                    src={zoomedAvatarUrl}
+                    alt={`${displayAIProfile.name}'s profile photo`}
+                    fill
+                    style={{ objectFit: "contain" }}
+                    className="select-none max-w-full max-h-full"
+                    data-ai-hint="profile woman large"
+                    priority={true}
+                    unoptimized
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-white/60 gap-4">
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 bg-gray-700 rounded-full flex items-center justify-center">
+                    <span className="text-4xl sm:text-5xl font-light">
+                      {(displayAIProfile.name || "K").charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-medium text-white">{displayAIProfile.name}</p>
+                    <p className="text-sm text-white/70 mt-1">No profile photo</p>
+                  </div>
+                </div>
               )}
             </div>
 
-            <DialogFooter className="px-5 py-4 bg-[#202c33] flex flex-row justify-between items-center border-t border-[#2a3942] sticky bottom-0 z-10">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
-                onClick={() => setShowZoomedAvatarDialog(false)}
-              >
-                <MessageSquare className="h-6 w-6" />
-                <span className="text-[11px] font-medium">Message</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
-                onClick={handleCallVideoClick}
-              >
-                <Phone className="h-6 w-6" />
-                <span className="text-[11px] font-medium">Call</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
-                onClick={handleCallVideoClick}
-              >
-                <Video className="h-6 w-6" />
-                <span className="text-[11px] font-medium">Video</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-[#00a884] hover:text-[#06cf9c] hover:bg-[#2a3942] flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg transition-colors"
-                onClick={() => alert("View contact info - Not implemented")}
-              >
-                <Info className="h-6 w-6" />
-                <span className="text-[11px] font-medium">Info</span>
-              </Button>
-            </DialogFooter>
+            {/* Bottom Action Bar */}
+            <div className="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/80 via-black/60 to-transparent">
+              <div className="flex justify-center gap-8 sm:gap-12">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-4 gap-2 rounded-xl transition-colors"
+                  onClick={() => setShowZoomedAvatarDialog(false)}
+                >
+                  <MessageSquare className="h-7 w-7" />
+                  <span className="text-xs font-medium">Message</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-4 gap-2 rounded-xl transition-colors"
+                  onClick={handleCallVideoClick}
+                >
+                  <Phone className="h-7 w-7" />
+                  <span className="text-xs font-medium">Call</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-4 gap-2 rounded-xl transition-colors"
+                  onClick={handleCallVideoClick}
+                >
+                  <Video className="h-7 w-7" />
+                  <span className="text-xs font-medium">Video</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-4 gap-2 rounded-xl transition-colors"
+                  onClick={() => alert("View contact info - Not implemented")}
+                >
+                  <Info className="h-7 w-7" />
+                  <span className="text-xs font-medium">Info</span>
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
