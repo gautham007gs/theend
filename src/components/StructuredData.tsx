@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 export default function StructuredData() {
   useEffect(() => {
     // Only add structured data on client side to prevent hydration mismatch
+    if (typeof window === 'undefined') return;
+    
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "WebApplication",

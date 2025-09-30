@@ -334,7 +334,9 @@ async function getOverviewAnalytics(startDate: string) {
       supabase
         .from('messages_log')
         .select('created_at, sender_type')
-        .gte('created_at', startDate + 'T00:00:00Z'),
+        .gte('created_at', startDate + 'T00:00:00Z')
+        .order('created_at', { ascending: false })
+        .limit(10000),
       supabase
         .from('daily_activity_log')
         .select('activity_date, user_pseudo_id')

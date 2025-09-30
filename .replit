@@ -42,7 +42,7 @@ localPort = 44993
 externalPort = 4200
 
 [workflows]
-runButton = "Project"
+runButton = "Dev Server"
 
 [[workflows.workflow]]
 name = "Run Next.js App"

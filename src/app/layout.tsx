@@ -17,6 +17,7 @@ import CookieConsent from '@/components/CookieConsent';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
+import MobilePerformanceOptimizer from '@/components/MobilePerformanceOptimizer';
 
 // Optimize font loading for better performance
 const inter = Inter({
@@ -93,6 +94,22 @@ export default function RootLayout({
         {/* Critical CSS moved to globals.css to prevent hydration issues */}
 
         <ResourceHints />
+        <StructuredData />
+
+        {/* Reduce CLS with font metrics - use CSS variables only */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            :root { 
+              --font-inter: 'Inter', system-ui, sans-serif;
+            }
+            html { 
+              font-family: var(--font-inter);
+            }
+            body { 
+              font-family: var(--font-inter);
+            }
+          `
+        }} />
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <ErrorBoundary>
@@ -100,7 +117,6 @@ export default function RootLayout({
             <AIProfileProvider>
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
-                  <StructuredData />
                   <InstagramBrowserPrompt />
                   <GlobalAdScripts />
                   <ServiceWorkerRegistration />
@@ -110,6 +126,7 @@ export default function RootLayout({
                   <CookieConsent />
                   <Toaster />
                   <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
+                  <MobilePerformanceOptimizer />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>

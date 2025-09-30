@@ -59,7 +59,7 @@ interface RealTimeMetrics {
   topPages: Array<{ page: string; views: number }>;
 }
 
-export default function AnalyticsDashboard() {
+const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     dailyUsers: 0,
     totalMessages: 0,
@@ -223,7 +223,7 @@ export default function AnalyticsDashboard() {
   const fetchRealTimeData = async () => {
     setIsLoading(true);
     try {
-      console.log('🔄 Fetching analytics data...');
+      if (process.env.NODE_ENV === 'development') console.log('🔄 Fetching analytics data...');
       
       // Fetch real analytics data from API with enhanced metrics
       const [overviewData, realtimeData, enhancedMetrics] = await Promise.all([
@@ -241,7 +241,7 @@ export default function AnalyticsDashboard() {
         })
       ]);
 
-      console.log('📊 Analytics data fetched:', { 
+      if (process.env.NODE_ENV === 'development') console.log('📊 Analytics data fetched:', { 
         overviewSuccess: overviewData?.success,
         realtimeSuccess: realtimeData?.success,
         enhancedMetrics: !!enhancedMetrics
@@ -1219,4 +1219,6 @@ export default function AnalyticsDashboard() {
       </Tabs>
     </div>
   );
-}
+});
+
+export default AnalyticsDashboard;
