@@ -28,6 +28,7 @@ import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext';
 import { AnalyticsProvider, useAnalyticsTracking } from './analytics-integration';
 import { analyticsTracker } from '@/lib/analytics-tracker';
 import { tryShowRotatedAd } from '@/lib/ad-utils';
+import { ChatStructuredData } from './structured-data';
 
 const AI_DISCLAIMER_SHOWN_KEY = 'ai_disclaimer_shown_kruthika_chat_v2';
 const AI_DISCLAIMER_DURATION = 2000;
@@ -683,6 +684,16 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     }
   };
 
+  // Generate unique message IDs to prevent duplicate key violations
+  const generateUniqueMessageId = (): string => {
+    // Use crypto.randomUUID() for true uniqueness across rapid messages
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Fallback for older browsers: timestamp + high-resolution counter + random
+    return `${Date.now()}-${performance.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
   // Shared function for calculating realistic typing delays
   const calculateTypingDelay = (text: string): number => {
     const words = text.trim().split(' ').length;
@@ -707,7 +718,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     }
 
     const newUserMessage: Message = {
-      id: Date.now().toString(),
+      id: generateUniqueMessageId(),
       text,
       sender: 'user',
       timestamp: new Date(),
@@ -991,7 +1002,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         // Stop typing and send message
         setIsAiTyping(false);
 
-        const newAiMessageId = (Date.now() + Math.random()).toString() + messageIdSuffix;
+        const newAiMessageId = generateUniqueMessageId() + messageIdSuffix;
         const newAiMessage: Message = {
           id: newAiMessageId,
           text: responseText,
@@ -1491,8 +1502,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   }
 
   return (
-    <div className="flex flex-col h-screen max-w-3xl mx-auto bg-chat-bg-default shadow-2xl">
-      <ChatHeader
+    <>
+      <ChatStructuredData />
+      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-chat-bg-default shadow-2xl">
+        <ChatHeader
         aiName={displayAIProfile.name}
         aiAvatarUrl={displayAIProfile.avatarUrl}
         onlineStatus={onlineStatus}
@@ -1577,7 +1590,8 @@ const KruthikaChatPage: NextPage = React.memo(() => {
               </DialogFooter>
           </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 });
 
