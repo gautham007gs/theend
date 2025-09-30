@@ -171,7 +171,7 @@ const nextConfig: NextConfig = {
     '*.replit.app',
     '127.0.0.1',
     'localhost',
-    'b149a1da-e0f8-43b0-872a-7abd45a5da54-00-2bkcsxn0o6yfv.picard.replit.dev'
+    '8cbf2d02-b044-48ac-9eb4-ced89f30eadc-00-2mafo1nbhguvy.kirk.replit.dev'
   ],
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first for better compression

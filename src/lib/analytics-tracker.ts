@@ -32,7 +32,7 @@ export interface AnalyticsEvent {
 export class AnalyticsTracker {
   private static instance: AnalyticsTracker;
   private sessionId: string;
-  private userId: string | null = null;
+  private userId: string;
   private sessionStartTime: number;
   private isTrackingEnabled: boolean = false;
   private eventQueue: AnalyticsEvent[] = [];
@@ -291,6 +291,42 @@ export class AnalyticsTracker {
       sessionId: this.sessionId,
       timestamp: Date.now()
     });
+  }
+
+  public async trackAdInteractionPublic(adType: string, action: 'view' | 'click', adNetwork?: string): Promise<void> {
+    return this.trackAdInteraction(adType, action, adNetwork);
+  }
+
+  public async trackUserAction(action: string, metadata?: Record<string, any>): Promise<void> {
+    await this.trackEvent({
+      eventType: 'user_action',
+      eventData: {
+        action,
+        ...metadata,
+        page: window.location.pathname
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
+    });
+  }
+
+  public async trackImageShare(imageUrl: string, context?: string): Promise<void> {
+    await this.trackEvent({
+      eventType: 'user_action',
+      eventData: {
+        action: 'image_share',
+        imageUrl,
+        context,
+        page: window.location.pathname
+      },
+      userId: this.userId,
+      sessionId: this.sessionId,
+      timestamp: Date.now()
+    });
+
+    // Track journey step for image sharing
+    await this.trackJourneyStep('image_share', 4);
   }
 
   public async trackJourneyStep(stepName: string, order: number): Promise<void> {
