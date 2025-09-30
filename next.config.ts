@@ -127,7 +127,8 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
       bodySizeLimit: '2mb',
     },
-    optimizePackageImports: ['lucide-react', 'recharts', '@supabase/supabase-js'],
+    optimizePackageImports: ['lucide-react', 'recharts', '@supabase/supabase-js', '@radix-ui/react-dialog', '@radix-ui/react-tabs'],
+    optimizeCss: true,
   },
 
   // Turbopack configuration (migrated from experimental.turbo)

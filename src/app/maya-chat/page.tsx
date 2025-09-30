@@ -29,6 +29,7 @@ import { AnalyticsProvider, useAnalyticsTracking } from './analytics-integration
 import { analyticsTracker } from '@/lib/analytics-tracker';
 import { tryShowRotatedAd } from '@/lib/ad-utils';
 import { ChatStructuredData } from './structured-data';
+import { useMobileOptimization, useMessageCleanup } from '@/hooks/use-mobile-optimization';
 
 const AI_DISCLAIMER_SHOWN_KEY = 'ai_disclaimer_shown_kruthika_chat_v2';
 const AI_DISCLAIMER_DURATION = 2000;
@@ -345,6 +346,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const [aiMood, setAiMood] = useState<string>("neutral");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
+  
+  // Mobile optimizations and memory leak prevention
+  useMobileOptimization();
+  useMessageCleanup(messages, 150);
   const [showZoomedAvatarDialog, setShowZoomedAvatarDialog] = useState(false);
   const [zoomedAvatarUrl, setZoomedAvatarUrl] = useState('');
   const { toast } = useToast();
