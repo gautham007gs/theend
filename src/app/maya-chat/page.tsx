@@ -890,8 +890,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
       return crypto.randomUUID();
     }
-    // Fallback for older browsers: timestamp + high-resolution counter + random
-    return `${Date.now()}-${performance.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Fallback for older browsers: timestamp + high-resolution counter + random + extra entropy
+    const timestamp = Date.now();
+    const highRes = Math.floor(performance.now() * 1000); // Microsecond precision
+    const random1 = Math.random().toString(36).substr(2, 9);
+    const random2 = Math.random().toString(36).substr(2, 5);
+    return `${timestamp}-${highRes}-${random1}-${random2}`;
   };
 
   // Shared function for calculating realistic typing delays
@@ -1068,11 +1072,36 @@ const KruthikaChatPage: NextPage = React.memo(() => {
               has_image: !!newUserMessage.userImageUrl,
             },
           ]);
-        if (userLogError)
-          console.error(
-            "Supabase error logging user message:",
-            userLogError.message,
-          );
+        if (userLogError) {
+          // Handle duplicate key error specifically
+          if (userLogError.message.includes("duplicate key value violates unique constraint")) {
+            console.warn(
+              "Duplicate user message ID detected, retrying with new ID:",
+              newUserMessage.id
+            );
+            // Generate new ID and retry once
+            const newId = generateUniqueMessageId();
+            const { error: retryError } = await supabase
+              .from("messages_log")
+              .insert([
+                {
+                  message_id: newId,
+                  sender_type: "user",
+                  chat_id: "kruthika_chat",
+                  text_content: newUserMessage.text.substring(0, 500),
+                  has_image: !!newUserMessage.userImageUrl,
+                },
+              ]);
+            if (retryError) {
+              console.error("User message retry failed:", retryError.message);
+            }
+          } else {
+            console.error(
+              "Supabase error logging user message:",
+              userLogError.message,
+            );
+          }
+        }
       } catch (e: any) {
         console.error(
           "Supabase user message logging failed (catch block):",
@@ -1268,11 +1297,36 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                   has_image: hasImage || hasAudio,
                 },
               ]);
-            if (aiLogError)
-              console.error(
-                "Supabase error logging AI message:",
-                aiLogError.message,
-              );
+            if (aiLogError) {
+              // Handle duplicate key error specifically
+              if (aiLogError.message.includes("duplicate key value violates unique constraint")) {
+                console.warn(
+                  "Duplicate message ID detected, retrying with new ID:",
+                  aiMsgId
+                );
+                // Generate new ID and retry once
+                const newId = generateUniqueMessageId();
+                const { error: retryError } = await supabase
+                  .from("messages_log")
+                  .insert([
+                    {
+                      message_id: newId,
+                      sender_type: "ai",
+                      chat_id: "kruthika_chat",
+                      text_content: aiText.substring(0, 500),
+                      has_image: hasImage || hasAudio,
+                    },
+                  ]);
+                if (retryError) {
+                  console.error("Retry failed:", retryError.message);
+                }
+              } else {
+                console.error(
+                  "Supabase error logging AI message:",
+                  aiLogError.message,
+                );
+              }
+            }
           } catch (e: any) {
             console.error(
               "Supabase AI message logging failed (catch block):",
