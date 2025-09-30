@@ -26,6 +26,10 @@ localPort = 36453
 externalPort = 6000
 
 [[ports]]
+localPort = 38113
+externalPort = 3001
+
+[[ports]]
 localPort = 43797
 externalPort = 3000
 
@@ -109,4 +113,4 @@ args = "npx next dev --turbopack -p 3000 -H 0.0.0.0"
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
-run = ["npm", "start"]
+run = ["npm", "run", "start"]
