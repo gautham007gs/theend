@@ -6,30 +6,45 @@ Maya Chat is an AI-powered conversational application featuring "Kruthika," a 23
 
 ## Recent Changes (September 30, 2025)
 
+### Latest Updates - Anti-Spam & Cost Optimization
+- **Anti-Spam System**: Implemented comprehensive spam detection that blocks users after 3 meaningless messages (single characters, emojis, punctuation only) within 10 seconds to reduce AI costs
+- **Rate Limiting**: Added 2-second cooldown between messages to prevent rapid spam submissions
+- **Input Validation**: Messages are now limited to 200 characters maximum to optimize token usage
+- **Emoji Optimization**: Emoji-only responses now use a local response map instead of consuming AI tokens
+- **Cost Reduction**: Smart message filtering prevents meaningless inputs from being sent to AI, significantly reducing operational costs
+
+### WhatsApp-Style UI Enhancements
+- **Avatar Zoom View**: Updated avatar zoom modal to match WhatsApp's dark theme with proper colors (#0b141a, #202c33, #00a884)
+- **Improved Modal**: Better header and footer design with X close icon instead of arrow
+- **Clickable AI Avatars**: AI avatars in chat messages are now clickable to open zoom view, just like WhatsApp
+- **Better UX**: Enhanced modal layout with improved spacing and visual hierarchy
+
+### Mobile Performance Optimizations (Enhanced)
+- **GPU Acceleration**: Added enhanced touch event optimization with hardware acceleration for smooth interactions
+- **Viewport Settings**: Improved mobile viewport configuration for better rendering
+- **Touch Responsiveness**: Eliminated tap highlighting and improved touch feedback across all device types
+- **Scrolling Performance**: Optimized scroll behavior for smoother chat experience on mobile devices
+
+### SEO Improvements (Enhanced)
+- **Enhanced Metadata**: Added metadataBase, applicationName, and category fields for better search visibility
+- **Google Bot Optimization**: Improved Google-specific settings and robots configuration
+- **Better Indexing**: Optimized metadata structure for improved search engine crawling
+
 ### Critical Bug Fixes
-- **Fixed Duplicate Message ID Bug**: Implemented UUID-based message ID generation using `crypto.randomUUID()` to prevent Supabase constraint violations. This eliminates the "duplicate key value violates unique constraint 'messages_log_message_id_key'" error that occurred when users sent messages rapidly
+- **Fixed Duplicate Message ID Bug**: Implemented UUID-based message ID generation using `crypto.randomUUID()` to prevent Supabase constraint violations
+- **Fixed Analytics Tracking**: Corrected message.media reference to message.userImageUrl in ChatView.tsx to prevent TypeScript errors
 - **Fixed Next.js Configuration Issues**: Removed duplicate `compress` property in next.config.ts
 - **Migrated Turbopack Configuration**: Moved from deprecated `experimental.turbo` to stable `turbopack` configuration
 - **Fixed Cross-Origin Warnings**: Updated `allowedDevOrigins` with current Replit domain
 - **Resolved Hydration Errors**: Wrapped all Recharts ResponsiveContainer components with ClientOnly to prevent server/client HTML mismatches
 - **Fixed TypeScript Errors**: Corrected class/className issues in all blog pages
 
-### Mobile Performance Optimizations
-- **Passive Event Listeners**: Implemented passive touch event handlers for smoother scrolling on mobile devices
-- **Memory Leak Prevention**: Added `useMessageCleanup` hook that monitors message count and warns when it exceeds 150 messages to prevent memory issues in long chat sessions
-- **Touch Optimization**: Reduced animation duration on mobile for snappier interactions
-- **Bundle Size Reduction**: Enabled CSS optimization and added more packages to `optimizePackageImports` for smaller JavaScript bundles
-- **Lazy Loading**: Added loading.tsx files with skeleton loaders for maya-chat and admin/analytics routes
-
 ### Performance Enhancements
 - **Code Splitting**: Enhanced webpack configuration for optimal code splitting with vendor and common chunk strategies
 - **CSS Optimization**: Enabled `optimizeCss` experimental flag for smaller CSS bundles
 - **Package Import Optimization**: Optimized imports for lucide-react, recharts, @supabase/supabase-js, @radix-ui packages
 - **Skeleton Loaders**: Created comprehensive skeleton components (ChatSkeleton, AnalyticsSkeleton, BlogSkeleton, ProfileSkeleton) instead of plain "Loading..." text
-
-### SEO Improvements
-- **Structured Data**: Added JSON-LD structured data to chat page with SoftwareApplication and WebApplication schemas for better search engine visibility
-- **Rich Snippets**: Included aggregate ratings, feature lists, and application metadata
+- **Lazy Loading**: Added loading.tsx files with skeleton loaders for maya-chat and admin/analytics routes
 
 ### Configuration Updates
 - Next.js now uses stable Turbopack with optimizeCss enabled for faster development builds
