@@ -1,8 +1,8 @@
 
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,26 @@ const AdminLoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
+  
+  // Get return URL from query parameters, default to /admin/profile
+  const returnUrl = searchParams.get('returnUrl') || '/admin/profile';
+
+  // Check if already authenticated
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined') {
+        const isAuth = sessionStorage.getItem(ADMIN_AUTH_KEY);
+        if (isAuth === 'true') {
+          // Already logged in, redirect to return URL
+          router.replace(returnUrl);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+    }
+  }, [router, returnUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +72,8 @@ const AdminLoginPage: React.FC = () => {
         // Optionally, you could store the user object or a token if needed for further checks,
         // but for basic route protection, the flag is often sufficient for client-side.
         toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
-        router.push('/admin/profile');
+        // Redirect to the return URL (the page they were trying to access)
+        router.push(returnUrl);
       } catch (sessionError: any) {
           console.error("Error setting sessionStorage:", sessionError);
           setError(`Failed to initiate session. Please ensure cookies/session storage are enabled. ${sessionError.message || ''}`);

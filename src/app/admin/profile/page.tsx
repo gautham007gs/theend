@@ -78,13 +78,14 @@ const AdminProfilePage: React.FC = () => {
     try {
         const authStatus = sessionStorage.getItem(ADMIN_AUTH_KEY);
         if (authStatus !== 'true') {
-          router.replace('/admin/login');
+          // Redirect to login with current path as return URL
+          router.replace('/admin/login?returnUrl=/admin/profile');
         } else {
           setIsAuthenticated(true);
         }
     } catch (error) {
         console.error("Error accessing sessionStorage for auth:", error);
-        router.replace('/admin/login');
+        router.replace('/admin/login?returnUrl=/admin/profile');
     }
   }, [router]);
 
