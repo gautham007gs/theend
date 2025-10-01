@@ -102,14 +102,14 @@ class DDoSProtection {
   static checkRequest(ip: string, endpoint: string): { allowed: boolean; reason?: string } {
     const now = Date.now();
     
-    // Global DDoS protection - 10000 requests per minute globally
+    // Global DDoS protection - 100000 requests per minute globally (handles 1000+ concurrent users)
     if (now - this.globalWindowStart > 60000) {
       this.globalRequestCount = 0;
       this.globalWindowStart = now;
     }
     
     this.globalRequestCount++;
-    if (this.globalRequestCount > 10000) {
+    if (this.globalRequestCount > 100000) {
       return { allowed: false, reason: 'Global rate limit exceeded - DDoS protection active' };
     }
     

@@ -1,12 +1,9 @@
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 import { NextRequest, NextResponse } from 'next/server';
-import { aiChat } from '@/ai/vertex-ai';
-import { trackAnalytics } from '@/lib/analytics-tracker';
-import { enhancedUserManager } from '@/lib/enhanced-user-manager';
-import { Logger } from '@/utils/logger';
-import { PerformanceUtils } from '@/lib/performance-utils';
+import { generateAIResponse } from '@/ai/vertex-ai';
+import { logger } from '@/utils/logger';
 import SecurityValidator from '@/lib/security-utils';
-import APISecurityManager from '@/lib/api-security';
+import { APISecurityManager } from '@/lib/api-security';
 import MaximumSecurity from '@/lib/enhanced-security';
 
 export async function POST(request: NextRequest) {
@@ -31,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Validate and sanitize entire POST body with enhanced security
     const postValidation = await MaximumSecurity.validatePostData(request, body);
     if (!postValidation.valid) {
-      Logger.error('Security validation failed', {
+      logger.error('Security validation failed', {
         error: postValidation.error,
         ip: request.headers.get('x-forwarded-for') || 'unknown',
         timestamp: new Date().toISOString()
@@ -57,7 +54,7 @@ export async function POST(request: NextRequest) {
     );
 
     if (!validationResult.isValid) {
-      Logger.warn('Invalid message input', {
+      logger.warn('Invalid message input', {
         reason: validationResult.reason,
         securityLevel: validationResult.securityLevel,
         clientIP,
@@ -74,10 +71,10 @@ export async function POST(request: NextRequest) {
     const sanitizedMessage = validationResult.sanitized!;
 
     // AI Chat Processing with sanitized input
-    const response = await aiChat(sanitizedMessage, conversationId);
+    const response = await generateAIResponse(sanitizedMessage, conversationId);
 
     // Log successful interaction for security monitoring
-    Logger.info('Chat API success', {
+    logger.log('Chat API success', {
       messageLength: sanitizedMessage.length,
       conversationId,
       clientIP,
@@ -89,7 +86,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const clientIP = request.headers.get('x-forwarded-for') ||
                      request.headers.get('x-real-ip') || 'unknown';
-    Logger.error('Chat API error', {
+    logger.error('Chat API error', {
       error: error instanceof Error ? error.message : String(error),
       clientIP,
       timestamp: new Date().toISOString()
