@@ -2095,49 +2095,67 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           open={showZoomedAvatarDialog}
           onOpenChange={setShowZoomedAvatarDialog}
         >
-          <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[90vw] max-w-sm h-auto translate-x-[-50%] translate-y-[-50%] bg-white border border-gray-200 shadow-2xl rounded-lg p-0 overflow-hidden sm:max-w-md [&>button]:hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white">
-              <DialogTitle className="text-gray-900 text-lg font-semibold">
-                {displayAIProfile.name}
-              </DialogTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowZoomedAvatarDialog(false)}
-                className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 h-8 w-8 rounded-full"
-              >
-                <X className="h-5 w-5" />
-              </Button>
+          <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[85vw] max-w-xs h-auto translate-x-[-50%] translate-y-[-50%] bg-[#0b141a] border-0 shadow-2xl rounded-2xl p-0 overflow-hidden sm:max-w-sm [&>button]:hidden">
+            {/* Header with gradient background like WhatsApp */}
+            <div className="relative">
+              {/* Background gradient */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#075e54] to-[#128c7e]"></div>
+              
+              {/* Header content */}
+              <div className="relative flex items-center justify-between p-4 text-white">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowZoomedAvatarDialog(false)}
+                    className="text-white hover:bg-white/20 h-10 w-10 rounded-full p-0"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                  <div>
+                    <DialogTitle className="text-white text-lg font-medium">
+                      {displayAIProfile.name}
+                    </DialogTitle>
+                    <p className="text-white/80 text-sm">{onlineStatus}</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowZoomedAvatarDialog(false)}
+                  className="text-white hover:bg-white/20 h-10 w-10 rounded-full p-0"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
 
-            {/* Profile Image Section */}
-            <div className="flex flex-col items-center py-6 px-4 bg-white">
-              {/* Profile Image */}
-              <div className="mb-4">
+            {/* Profile Image Section with WhatsApp styling */}
+            <div className="flex flex-col items-center py-8 px-6 bg-[#0b141a]">
+              {/* Large Profile Image */}
+              <div className="mb-6">
                 {displayAIProfile.avatarUrl && 
                  displayAIProfile.avatarUrl !== 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K' && 
-                 displayAIProfile.avatarUrl.startsWith('http') ? (
-                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-pink-100 shadow-xl bg-gradient-to-br from-pink-50 to-purple-50">
+                 (displayAIProfile.avatarUrl.startsWith('http') || displayAIProfile.avatarUrl.startsWith('data:')) ? (
+                  <div className="relative w-44 h-44 rounded-full overflow-hidden border-4 border-[#075e54] shadow-2xl bg-[#128c7e]">
                     <Image
                       key={`zoomed-${displayAIProfile.avatarUrl}`}
                       src={displayAIProfile.avatarUrl}
                       alt={`${displayAIProfile.name}'s profile photo`}
                       fill
                       style={{ objectFit: "cover" }}
-                      className="select-none hover:scale-105 transition-transform duration-300"
+                      className="select-none"
                       data-ai-hint="profile woman large"
                       priority={true}
                       unoptimized
                       onError={(e) => {
-                        // Fallback on error
                         const img = e.target as HTMLImageElement;
                         img.style.display = 'none';
                         const parent = img.parentElement;
                         if (parent) {
                           parent.innerHTML = `
-                            <div class="w-full h-full bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
-                              <span class="text-4xl sm:text-5xl font-light text-white">
+                            <div class="w-full h-full bg-[#128c7e] flex items-center justify-center">
+                              <span class="text-6xl font-light text-white">
                                 ${(displayAIProfile.name || "K").charAt(0).toUpperCase()}
                               </span>
                             </div>
@@ -2147,62 +2165,53 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                     />
                   </div>
                 ) : (
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-pink-200 to-purple-200 rounded-full flex items-center justify-center border-4 border-pink-100 shadow-xl">
-                    <span className="text-4xl sm:text-5xl font-light text-white">
+                  <div className="w-44 h-44 bg-[#128c7e] rounded-full flex items-center justify-center border-4 border-[#075e54] shadow-2xl">
+                    <span className="text-6xl font-light text-white">
                       {(displayAIProfile.name || "K").charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* Name and Status */}
-              <div className="text-center mb-6">
-                <h3 className="text-gray-900 text-xl font-semibold mb-1">
+              {/* Name and Info */}
+              <div className="text-center mb-8">
+                <h3 className="text-white text-2xl font-medium mb-2">
                   {displayAIProfile.name}
                 </h3>
-                <p className="text-gray-500 text-sm">{onlineStatus}</p>
-                <div className="mt-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium inline-block">
+                <p className="text-[#8696a0] text-sm mb-3">{onlineStatus}</p>
+                <div className="px-4 py-2 bg-[#075e54] text-white rounded-full text-sm font-medium inline-block">
                   AI Companion
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-center gap-3 w-full">
+              {/* WhatsApp-style Action Buttons */}
+              <div className="flex items-center justify-center gap-8 w-full">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center h-auto py-3 px-4 gap-1 rounded-xl border-gray-200 hover:bg-blue-50 hover:border-blue-300 min-w-[65px] transition-all duration-200"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-[#075e54] hover:bg-[#128c7e] transition-all duration-200 min-w-[60px] min-h-[60px]"
                   onClick={() => setShowZoomedAvatarDialog(false)}
                 >
-                  <MessageSquare className="h-5 w-5 text-blue-600" />
-                  <span className="text-xs text-blue-600 font-medium">Chat</span>
+                  <MessageSquare className="h-6 w-6 text-white" />
+                  <span className="text-xs text-white font-medium">Message</span>
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center h-auto py-3 px-4 gap-1 rounded-xl border-gray-200 hover:bg-green-50 hover:border-green-300 min-w-[65px] transition-all duration-200"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-[#075e54] hover:bg-[#128c7e] transition-all duration-200 min-w-[60px] min-h-[60px]"
                   onClick={handleCallVideoClick}
                 >
-                  <Phone className="h-5 w-5 text-green-600" />
-                  <span className="text-xs text-green-600 font-medium">Call</span>
+                  <Phone className="h-6 w-6 text-white" />
+                  <span className="text-xs text-white font-medium">Call</span>
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center h-auto py-3 px-4 gap-1 rounded-xl border-gray-200 hover:bg-purple-50 hover:border-purple-300 min-w-[65px] transition-all duration-200"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-[#075e54] hover:bg-[#128c7e] transition-all duration-200 min-w-[60px] min-h-[60px]"
                   onClick={handleCallVideoClick}
                 >
-                  <Video className="h-5 w-5 text-purple-600" />
-                  <span className="text-xs text-purple-600 font-medium">Video</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex flex-col items-center h-auto py-3 px-4 gap-1 rounded-xl border-gray-200 hover:bg-orange-50 hover:border-orange-300 min-w-[65px] transition-all duration-200"
-                  onClick={() => setShowZoomedAvatarDialog(false)}
-                >
-                  <Info className="h-5 w-5 text-orange-600" />
-                  <span className="text-xs text-orange-600 font-medium">Info</span>
+                  <Video className="h-6 w-6 text-white" />
+                  <span className="text-xs text-white font-medium">Video</span>
                 </Button>
               </div>
             </div>
