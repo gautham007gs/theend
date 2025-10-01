@@ -59,8 +59,8 @@ export async function middleware(request: NextRequest) {
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
 
-  // Apply enhanced maximum security to API routes and chat actions
-  if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
+  // Apply enhanced maximum security ONLY to API routes (not pages/assets)
+  if (pathname.startsWith('/api/')) {
     // Enhanced security check with DDoS protection, IP reputation, etc.
     const securityCheck = await MaximumSecurity.secureRequest(request);
     if (securityCheck) return securityCheck;
