@@ -93,9 +93,18 @@ export async function POST(request: NextRequest) {
     // Set secure session cookie with enhanced logging
     setSessionCookie(response, sessionId);
     
+    // Add additional headers to ensure cookie is processed
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    
     console.log(`✅ Admin login successful: ${data.user.email}`);
     console.log(`🍪 Cookie set with session: ${sessionId.substring(0, 8)}...`);
     console.log(`🔍 Response headers:`, Object.fromEntries(response.headers.entries()));
+    
+    // Verify the session was created
+    const verification = validateAdminSession(sessionId);
+    console.log(`🔍 Session verification: ${verification.valid ? 'SUCCESS' : 'FAILED'} - ${verification.reason || 'OK'}`);
 
     return response;
   } catch (error) {

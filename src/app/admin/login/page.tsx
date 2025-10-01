@@ -56,10 +56,15 @@ const AdminLoginPage: React.FC = () => {
         
         console.log('🔄 Redirecting to:', redirect);
         
-        // Force a page reload to ensure cookies are properly set
+        // Force a hard navigation to ensure cookies are properly set
         setTimeout(() => {
-          window.location.href = redirect;
-        }, 500);
+          // Use router.push with a refresh to ensure middleware re-runs
+          router.push(redirect);
+          // Also force a page reload as backup
+          setTimeout(() => {
+            window.location.href = redirect;
+          }, 100);
+        }, 1000);
       } else {
         const errorMessage = data.error || 'Invalid login credentials.';
         setError(errorMessage);

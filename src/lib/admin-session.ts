@@ -128,13 +128,14 @@ export function setSessionCookie(response: NextResponse, sessionId: string): voi
   console.log(`🍪 Setting session cookie: ${COOKIE_NAME} = ${sessionId.substring(0, 8)}...`);
   
   // Enhanced cookie settings for Replit
-  const isReplit = process.env.REPLIT_ENVIRONMENT || false;
+  const isReplit = process.env.REPLIT_ENVIRONMENT || process.env.REPL_SLUG || false;
   const cookieOptions: any = {
     httpOnly: true,
-    secure: isProduction && !isReplit, // Don't use secure flag on Replit
-    sameSite: isReplit ? 'none' : 'lax', // Use 'none' for Replit cross-origin
+    secure: false, // Always false for Replit
+    sameSite: 'lax', // Use lax for better compatibility
     maxAge: SESSION_DURATION / 1000,
-    path: '/'
+    path: '/',
+    domain: undefined // Let browser handle domain
   };
   
   console.log(`🍪 Cookie settings:`, cookieOptions);

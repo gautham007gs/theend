@@ -64,13 +64,17 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     // Extract and validate session ID
     const sessionId = extractSessionId(request);
+    const allCookies = request.headers.get('cookie') || 'No cookies';
+    const userAgent = request.headers.get('user-agent') || 'Unknown';
 
     console.log(`🔍 Admin route check: ${pathname}`);
     console.log(`🔍 Session ID found: ${sessionId ? sessionId.substring(0, 8) + '...' : 'None'}`);
-    console.log(`🔍 All cookies: ${request.headers.get('cookie')}`);
+    console.log(`🔍 All cookies: ${allCookies}`);
+    console.log(`🔍 User Agent: ${userAgent.substring(0, 100)}...`);
 
     if (!sessionId) {
       console.warn(`🔒 Admin access denied - No session ID: ${pathname}`);
+      console.warn(`🔒 Cookie header: ${allCookies}`);
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
