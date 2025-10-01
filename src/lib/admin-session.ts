@@ -126,16 +126,26 @@ export function setSessionCookie(response: NextResponse, sessionId: string): voi
   const isProduction = process.env.NODE_ENV === 'production';
   
   console.log(`🍪 Setting session cookie: ${COOKIE_NAME} = ${sessionId.substring(0, 8)}...`);
-  console.log(`🍪 Cookie settings: httpOnly=true, secure=${isProduction}, sameSite=lax, maxAge=${SESSION_DURATION / 1000}s`);
+  console.log(`🍪 Cookie settings: httpOnly=true, secure=${isProduction}, sameSite=lax, maxAge=${SESSION_DURATION / 1000}s, path=/`);
   
-  // Set secure cookie - use 'lax' instead of 'strict' for better compatibility
-  response.cookies.set(COOKIE_NAME, sessionId, {
+  // Set secure cookie with explicit domain for Replit
+  const cookieOptions: any = {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
-    maxAge: SESSION_DURATION / 1000, // Convert to seconds
+    sameSite: 'lax',
+    maxAge: SESSION_DURATION / 1000,
     path: '/'
-  });
+  };
+  
+  // For development on Replit, don't set secure flag
+  if (process.env.NODE_ENV === 'development') {
+    cookieOptions.secure = false;
+  }
+  
+  response.cookies.set(COOKIE_NAME, sessionId, cookieOptions);
+  
+  // Also set a backup header for debugging
+  response.headers.set('X-Session-Set', sessionId.substring(0, 8) + '...');
 }
 
 /**

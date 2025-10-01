@@ -42,6 +42,9 @@ const AdminLoginPage: React.FC = () => {
           description: "Welcome to the Admin Panel!" 
         });
         
+        console.log('🔑 Login successful, response data:', data);
+        console.log('🔑 Response headers:', Array.from(response.headers.entries()));
+        
         // Validate redirect parameter to prevent open redirect attacks
         const urlParams = new URLSearchParams(window.location.search);
         let redirect = urlParams.get('redirect') || '/admin/profile';
@@ -51,7 +54,12 @@ const AdminLoginPage: React.FC = () => {
           redirect = '/admin/profile';
         }
         
-        router.push(redirect);
+        console.log('🔄 Redirecting to:', redirect);
+        
+        // Force a page reload to ensure cookies are properly set
+        setTimeout(() => {
+          window.location.href = redirect;
+        }, 500);
       } else {
         const errorMessage = data.error || 'Invalid login credentials.';
         setError(errorMessage);

@@ -67,7 +67,7 @@ export async function middleware(request: NextRequest) {
     
     console.log(`🔍 Admin route check: ${pathname}`);
     console.log(`🔍 Session ID found: ${sessionId ? sessionId.substring(0, 8) + '...' : 'None'}`);
-    console.log(`🔍 Cookies: ${request.headers.get('cookie')}`);
+    console.log(`🔍 All cookies: ${request.headers.get('cookie')}`);
     
     if (!sessionId) {
       console.warn(`🔒 Admin access denied - No session ID: ${pathname}`);
@@ -90,6 +90,15 @@ export async function middleware(request: NextRequest) {
     }
     
     console.log(`✅ Admin access granted: ${validation.session?.email} to ${pathname}`);
+    
+    // Create response to continue to the admin route
+    const response = NextResponse.next();
+    
+    // Set cache headers for admin pages
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    response.headers.set('Pragma', 'no-cache');
+    
+    return response;
   }
 
   // Apply enhanced maximum security to API routes and chat actions
