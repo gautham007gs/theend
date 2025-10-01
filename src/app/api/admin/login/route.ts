@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminSession, setSessionCookie, validateAdminSession } from '@/lib/admin-session';
+import { createAdminJWT, setAdminJWTCookie } from '@/lib/admin-jwt';
 import { supabase } from '@/lib/supabaseClient';
 import MaximumSecurity, { InputSanitizer } from '@/lib/enhanced-security';
 
@@ -74,24 +74,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create secure server-side session
-    const { sessionId, session } = createAdminSession(data.user.id, data.user.email || email);
+    // Create secure JWT token
+    const token = await createAdminJWT(data.user.id, data.user.email || email);
     
-    console.log(`🔑 Session created: ${sessionId.substring(0, 8)}... for ${data.user.email}`);
+    console.log(`🔑 JWT token created for ${data.user.email}`);
 
-    // Create response with session cookie
+    // Create response with JWT cookie
     const response = NextResponse.json({
       success: true,
       user: {
         id: data.user.id,
         email: data.user.email
       },
-      message: 'Login successful',
-      sessionId: sessionId.substring(0, 8) + '...' // Debug info
+      message: 'Login successful'
     });
 
-    // Set secure session cookie with enhanced logging
-    setSessionCookie(response, sessionId);
+    // Set secure JWT cookie
+    setAdminJWTCookie(response, token);
     
     // Add additional headers to ensure cookie is processed
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -99,12 +98,7 @@ export async function POST(request: NextRequest) {
     response.headers.set('Expires', '0');
     
     console.log(`✅ Admin login successful: ${data.user.email}`);
-    console.log(`🍪 Cookie set with session: ${sessionId.substring(0, 8)}...`);
-    console.log(`🔍 Response headers:`, Object.fromEntries(response.headers.entries()));
-    
-    // Verify the session was created
-    const verification = validateAdminSession(sessionId);
-    console.log(`🔍 Session verification: ${verification.valid ? 'SUCCESS' : 'FAILED'} - ${verification.reason || 'OK'}`);
+    console.log(`🍪 JWT cookie set for admin session`);
 
     return response;
   } catch (error) {
