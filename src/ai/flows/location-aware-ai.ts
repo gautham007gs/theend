@@ -81,7 +81,7 @@ export async function generateLocationAwareResponse(input: LocationAwareInput): 
     const response = await generateAIResponse(input.userMessage, finalPrompt);
 
     // Analyze response for cultural elements used
-    const analysis = analyzeCulturalElements(response, personality);
+    const analysis = await analyzeCulturalElements(response, personality);
 
     return {
       response,
@@ -107,7 +107,7 @@ export async function generateLocationAwareResponse(input: LocationAwareInput): 
 }
 
 // Analyze cultural elements in AI response
-function analyzeCulturalElements(response: string, personality: LocalizedPersonality) {
+async function analyzeCulturalElements(response: string, personality: LocalizedPersonality) {
   const responseLower = response.toLowerCase();
   
   const culturalReferences: string[] = [];
@@ -148,7 +148,7 @@ function analyzeCulturalElements(response: string, personality: LocalizedPersona
 }
 
 // Get location-appropriate conversation starters
-export function getLocationBasedConversationStarters(personality: LocalizedPersonality): string[] {
+export async function getLocationBasedConversationStarters(personality: LocalizedPersonality): Promise<string[]> {
   const starters = [
     `How's the weather in ${personality.location} today?`,
     `Have you tried the ${personality.foodPreferences[0]} around here?`,
