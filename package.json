@@ -44,11 +44,11 @@
     "critters": "^0.0.23",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
-    "google-auth-library": "^10.3.0",
-    "lucide-react": "^0.476.0",
+    "google-auth-library": "^10.4.0",
+    "lucide-react": "^0.544.0",
     "next": "^15.5.4",
     "next-pwa": "^5.6.0",
-    "patch-package": "^8.0.0",
+    "patch-package": "^8.0.1",
     "react": "^19.0.0",
     "react-day-picker": "^9.4.2",
     "react-dom": "^19.0.0",
@@ -59,11 +59,11 @@
     "zod": "^3.25.0"
   },
   "devDependencies": {
-    "@types/node": "^22.18.6",
-    "@types/react": "^19.0.2",
+    "@types/node": "^24.6.1",
+    "@types/react": "^19.1.16",
     "@types/react-dom": "^19.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   }
 }
