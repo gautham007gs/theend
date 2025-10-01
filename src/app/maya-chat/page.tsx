@@ -2137,7 +2137,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                 {displayAIProfile.avatarUrl && 
                  displayAIProfile.avatarUrl !== 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K' && 
                  (displayAIProfile.avatarUrl.startsWith('http') || displayAIProfile.avatarUrl.startsWith('data:')) ? (
-                  <div className="relative w-44 h-44 rounded-full overflow-hidden border-4 border-[#075e54] shadow-2xl bg-[#128c7e]">
+                  <div className="relative w-44 h-44 rounded-full overflow-hidden border-4 border-[#075e54] shadow-2xl">
                     <Image
                       key={`zoomed-${displayAIProfile.avatarUrl}`}
                       src={displayAIProfile.avatarUrl}
