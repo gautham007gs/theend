@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { Users, MessageSquare, Heart, TrendingUp, Clock, Globe, Smartphone, Eye, MousePointer, UserCheck, Zap, Timer, Image, Star, RefreshCw, Database } from 'lucide-react';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { analyticsTracker } from '@/lib/analytics-tracker';
 import { RealTimeTab } from './real-time-tab';
 import ClientOnly from '@/components/ClientOnly';
+import { LogOut, Settings, ArrowLeft } from 'lucide-react';
 
 interface AnalyticsData {
   // Real-time metrics
@@ -59,7 +61,13 @@ interface RealTimeMetrics {
   topPages: Array<{ page: string; views: number }>;
 }
 
+const ADMIN_AUTH_KEY = 'isAdminLoggedIn_KruthikaChat';
+
 const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const router = useRouter();
+  
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     dailyUsers: 0,
     totalMessages: 0,
@@ -408,8 +416,26 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     });
   };
 
+  // Authentication check
+  useEffect(() => {
+    try {
+      const authStatus = sessionStorage.getItem(ADMIN_AUTH_KEY);
+      if (authStatus !== 'true') {
+        router.replace('/admin/login');
+      } else {
+        setIsAuthenticated(true);
+        setIsCheckingAuth(false);
+      }
+    } catch (error) {
+      console.error("Error accessing sessionStorage for auth:", error);
+      router.replace('/admin/login');
+    }
+  }, [router]);
+
   // Enhanced real-time data fetching with Supabase integration
   useEffect(() => {
+    if (!isAuthenticated) return;
+    
     setIsClient(true);
     // Initial fetch
     fetchRealTimeData();
@@ -417,11 +443,20 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     // Update every 30 seconds for real-time data
     const interval = setInterval(fetchRealTimeData, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isAuthenticated]);
 
   // Manual refresh function
   const handleRefresh = () => {
     fetchRealTimeData();
+  };
+
+  const handleLogout = () => {
+    try {
+      sessionStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch (error) {
+      console.error("Error removing sessionStorage item:", error);
+    }
+    router.replace('/admin/login');
   };
 
   const formatNumber = (num: number): string => {
@@ -435,6 +470,16 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     if (metric >= thresholds[0]) return 'text-yellow-500';
     return 'text-red-500';
   };
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return <div className="flex justify-center items-center h-screen bg-background text-foreground">Checking authentication...</div>;
+  }
+
+  // Show loading while not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return <div className="flex justify-center items-center h-screen bg-background text-foreground">Redirecting to login...</div>;
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -454,6 +499,15 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
             )}
           </div>
           <Button
+            onClick={() => router.push('/admin/profile')}
+            variant="outline"
+            size="sm"
+            className="flex items-center space-x-2"
+          >
+            <Settings className="w-4 h-4" />
+            <span>Admin Panel</span>
+          </Button>
+          <Button
             onClick={handleRefresh}
             variant="outline"
             size="sm"
@@ -462,6 +516,15 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
+          </Button>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            size="sm"
+            className="flex items-center space-x-2"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Logout</span>
           </Button>
         </div>
       </div>
