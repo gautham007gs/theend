@@ -2095,34 +2095,29 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           open={showZoomedAvatarDialog}
           onOpenChange={setShowZoomedAvatarDialog}
         >
-          <DialogContent className="!fixed !inset-0 !z-[60] flex !w-screen !h-screen flex-col !bg-black !p-0 !border-0 !shadow-2xl !outline-none !rounded-none !max-w-none !translate-x-0 !translate-y-0">
-            {/* Header with Back Button */}
-            <div className="absolute top-0 left-0 right-0 z-20 p-3 sm:p-4 flex items-center justify-between bg-gradient-to-b from-black/90 via-black/70 to-transparent">
+          <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[90vw] max-w-sm h-auto translate-x-[-50%] translate-y-[-50%] bg-white border border-gray-200 shadow-2xl rounded-lg p-0 overflow-hidden sm:max-w-md">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white">
+              <DialogTitle className="text-gray-900 text-lg font-semibold">
+                {displayAIProfile.name}
+              </DialogTitle>
               <DialogClose asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-white hover:text-white/80 hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 rounded-full"
+                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 h-8 w-8 rounded-full"
                 >
-                  <ArrowLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <X className="h-5 w-5" />
                 </Button>
               </DialogClose>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:text-white/80 hover:bg-white/10 h-9 w-9 sm:h-10 sm:w-10 rounded-full"
-                onClick={() => alert("More options - Not implemented")}
-              >
-                <MoreVertical className="h-5 w-5 sm:h-6 sm:w-6" />
-              </Button>
             </div>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col items-center justify-center bg-black relative overflow-hidden px-4 py-16 sm:py-20">
+            {/* Profile Image Section */}
+            <div className="flex flex-col items-center py-6 px-4 bg-white">
               {/* Profile Image */}
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4">
                 {zoomedAvatarUrl && zoomedAvatarUrl !== 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K' ? (
-                  <div className="relative w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px] rounded-full overflow-hidden border-4 border-white/10 shadow-2xl">
+                  <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-gray-100 shadow-lg">
                     <Image
                       key={`zoomed-${zoomedAvatarUrl}`}
                       src={zoomedAvatarUrl}
@@ -2136,8 +2131,8 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                     />
                   </div>
                 ) : (
-                  <div className="w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 lg:w-[400px] lg:h-[400px] bg-gray-700/80 rounded-full flex items-center justify-center border-4 border-white/10 shadow-2xl">
-                    <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light text-white/80">
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 bg-gray-200 rounded-full flex items-center justify-center border-4 border-gray-100 shadow-lg">
+                    <span className="text-4xl sm:text-5xl font-light text-gray-600">
                       {(displayAIProfile.name || "K").charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -2145,52 +2140,50 @@ const KruthikaChatPage: NextPage = React.memo(() => {
               </div>
 
               {/* Name and Status */}
-              <div className="text-center mb-8 sm:mb-12">
-                <DialogTitle className="text-white text-2xl sm:text-3xl md:text-4xl font-medium mb-2 sm:mb-3">
+              <div className="text-center mb-6">
+                <h3 className="text-gray-900 text-xl font-semibold mb-1">
                   {displayAIProfile.name}
-                </DialogTitle>
-                <p className="text-white/70 text-sm sm:text-base md:text-lg">{onlineStatus}</p>
+                </h3>
+                <p className="text-gray-500 text-sm">{onlineStatus}</p>
               </div>
-            </div>
 
-            {/* Bottom Action Bar */}
-            <div className="absolute bottom-0 left-0 right-0 z-20 p-4 sm:p-6 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-              <div className="flex justify-center items-center gap-6 sm:gap-8 md:gap-12 max-w-md mx-auto">
+              {/* Action Buttons */}
+              <div className="flex items-center justify-center gap-4 w-full">
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-3 sm:px-4 gap-1.5 sm:gap-2 rounded-xl transition-colors min-w-[60px] sm:min-w-[70px]"
+                  variant="outline"
+                  size="sm"
+                  className="flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg border-gray-200 hover:bg-gray-50 min-w-[60px]"
                   onClick={() => setShowZoomedAvatarDialog(false)}
                 >
-                  <MessageSquare className="h-6 w-6 sm:h-7 sm:w-7" />
-                  <span className="text-xs font-medium">Message</span>
+                  <MessageSquare className="h-5 w-5 text-gray-600" />
+                  <span className="text-xs text-gray-600">Message</span>
                 </Button>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-3 sm:px-4 gap-1.5 sm:gap-2 rounded-xl transition-colors min-w-[60px] sm:min-w-[70px]"
+                  variant="outline"
+                  size="sm"
+                  className="flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg border-gray-200 hover:bg-gray-50 min-w-[60px]"
                   onClick={handleCallVideoClick}
                 >
-                  <Phone className="h-6 w-6 sm:h-7 sm:w-7" />
-                  <span className="text-xs font-medium">Call</span>
+                  <Phone className="h-5 w-5 text-gray-600" />
+                  <span className="text-xs text-gray-600">Call</span>
                 </Button>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-3 sm:px-4 gap-1.5 sm:gap-2 rounded-xl transition-colors min-w-[60px] sm:min-w-[70px]"
+                  variant="outline"
+                  size="sm"
+                  className="flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg border-gray-200 hover:bg-gray-50 min-w-[60px]"
                   onClick={handleCallVideoClick}
                 >
-                  <Video className="h-6 w-6 sm:h-7 sm:w-7" />
-                  <span className="text-xs font-medium">Video</span>
+                  <Video className="h-5 w-5 text-gray-600" />
+                  <span className="text-xs text-gray-600">Video</span>
                 </Button>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white hover:text-white/80 hover:bg-white/10 flex flex-col items-center h-auto py-3 px-3 sm:px-4 gap-1.5 sm:gap-2 rounded-xl transition-colors min-w-[60px] sm:min-w-[70px]"
+                  variant="outline"
+                  size="sm"
+                  className="flex flex-col items-center h-auto py-2 px-3 gap-1 rounded-lg border-gray-200 hover:bg-gray-50 min-w-[60px]"
                   onClick={() => alert("View contact info - Not implemented")}
                 >
-                  <Info className="h-6 w-6 sm:h-7 sm:w-7" />
-                  <span className="text-xs font-medium">Info</span>
+                  <Info className="h-5 w-5 text-gray-600" />
+                  <span className="text-xs text-gray-600">Info</span>
                 </Button>
               </div>
             </div>
