@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import MaximumSecurity from './lib/enhanced-security'
-import { extractAdminJWT, verifyAdminJWT } from './lib/admin-jwt'
 
 // Advanced rate limiting for high traffic protection (keeping existing for backward compatibility)
 const rateLimitMap = new Map<string, { count: number; lastReset: number; penalties: number }>();
@@ -59,48 +58,6 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
-
-  // Protect admin routes - SECURE JWT-based authentication
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    // Extract and validate JWT token
-    const token = extractAdminJWT(request);
-    const allCookies = request.headers.get('cookie') || 'No cookies';
-    const userAgent = request.headers.get('user-agent') || 'Unknown';
-
-    console.log(`🔍 Admin route check: ${pathname}`);
-    console.log(`🔍 JWT token found: ${token ? 'Yes' : 'No'}`);
-
-    if (!token) {
-      console.warn(`🔒 Admin access denied - No JWT token: ${pathname}`);
-      const loginUrl = new URL('/admin/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    // Validate the JWT token
-    const validation = await verifyAdminJWT(token);
-
-    console.log(`🔍 JWT validation result: ${JSON.stringify({ valid: validation.valid, reason: validation.reason, email: validation.payload?.email })}`);
-
-    if (!validation.valid) {
-      console.warn(`🔒 Admin access denied - Invalid JWT: ${validation.reason} for ${pathname}`);
-      const loginUrl = new URL('/admin/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      loginUrl.searchParams.set('reason', validation.reason || 'invalid_token');
-      return NextResponse.redirect(loginUrl);
-    }
-
-    console.log(`✅ Admin access granted: ${validation.payload?.email} to ${pathname}`);
-
-    // Create response to continue to the admin route
-    const response = NextResponse.next();
-
-    // Set cache headers for admin pages
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    response.headers.set('Pragma', 'no-cache');
-
-    return response;
-  }
 
   // Apply enhanced maximum security to API routes and chat actions
   if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
@@ -187,7 +144,7 @@ export async function middleware(request: NextRequest) {
     // Construct the target URL for the meta-refresh, preserving original path and query params,
     // and adding our flag.
     const targetUrl = new URL(pathname, origin);
-    // Append existing searchParams
+    // Append existing search params
     searchParams.forEach((value, key) => {
         if (key !== 'external_redirect_attempted') { // Avoid duplicating our flag
             targetUrl.searchParams.append(key, value);

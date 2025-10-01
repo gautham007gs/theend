@@ -31,6 +31,8 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
 
+const ADMIN_AUTH_KEY = 'isAdminLoggedIn_KruthikaChat';
+
 const messagesChartConfig = { messages: { label: "Messages Sent", color: "hsl(var(--chart-2))" } } satisfies ChartConfig;
 const dauChartConfig = { active_users: { label: "Active Users", color: "hsl(var(--chart-1))" } } satisfies ChartConfig;
 
@@ -40,6 +42,7 @@ interface DailyCount {
 }
 
 const AdminProfilePage: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -69,6 +72,21 @@ const AdminProfilePage: React.FC = () => {
   const [supabaseError, setSupabaseError] = useState<string | null>(null);
 
   const combinedIsLoadingSupabaseData = isLoadingAIProfile || isLoadingGlobalStatuses || isLoadingMediaAssets;
+
+
+  useEffect(() => {
+    try {
+        const authStatus = sessionStorage.getItem(ADMIN_AUTH_KEY);
+        if (authStatus !== 'true') {
+          router.replace('/admin/login');
+        } else {
+          setIsAuthenticated(true);
+        }
+    } catch (error) {
+        console.error("Error accessing sessionStorage for auth:", error);
+        router.replace('/admin/login');
+    }
+  }, [router]);
 
   useEffect(() => {
     if (contextAIProfile) {
@@ -141,10 +159,13 @@ const AdminProfilePage: React.FC = () => {
 
 
   useEffect(() => {
-    fetchAllNonAnalyticsConfigs();
-  }, [fetchAllNonAnalyticsConfigs]);
+    if (isAuthenticated) {
+      fetchAllNonAnalyticsConfigs();
+    }
+  }, [isAuthenticated, fetchAllNonAnalyticsConfigs]);
   
    useEffect(() => {
+    if (!isAuthenticated) return;
 
     async function fetchRealAnalytics() {
       if (!supabase || typeof supabase.from !== 'function' || !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -221,10 +242,10 @@ const AdminProfilePage: React.FC = () => {
       }
     }
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && isAuthenticated) {
       fetchRealAnalytics();
     }
-  }, [toast]);
+  }, [toast, isAuthenticated]);
 
 
   const handleSaveKruthikaCoreProfile = async (updatedCoreProfileData: Partial<AIProfile>) => {
@@ -295,8 +316,8 @@ const AdminProfilePage: React.FC = () => {
     setManagedContactStatuses(prev =>
       prev.map(contact => {
         if (contact.id === id) {
-          if (field === 'statusImageUrl' && typeof value === 'string') {
-            return { ...contact, [field]: value.trim() === '' ? undefined : value };
+          if (field === 'statusImageUrl') {
+            return { ...contact, [field]: (value as string)?.trim() === '' ? undefined : value };
           }
           return { ...contact, [field]: value };
         }
@@ -433,18 +454,14 @@ const AdminProfilePage: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
-      await fetch('/api/admin/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      toast({ title: 'Logged Out', description: 'You have been logged out of the admin panel.' });
-      router.replace('/admin/login');
+        sessionStorage.removeItem(ADMIN_AUTH_KEY);
     } catch (error) {
-      console.error("Logout error:", error);
-      toast({ title: 'Error', description: 'Logout failed. Please try again.', variant: 'destructive' });
+        console.error("Error removing sessionStorage item:", error);
     }
+    toast({ title: 'Logged Out', description: 'You have been logged out of the admin panel.' });
+    router.replace('/admin/login');
   };
   
   const handleForceRefreshGlobalData = async () => {
@@ -454,7 +471,7 @@ const AdminProfilePage: React.FC = () => {
   };
 
 
-  if (combinedIsLoadingSupabaseData) {
+  if (!isAuthenticated || combinedIsLoadingSupabaseData) {
     return <div className="flex justify-center items-center h-screen bg-background text-foreground">Loading admin settings...</div>;
   }
 
@@ -891,8 +908,8 @@ const AdminProfilePage: React.FC = () => {
                     <Label htmlFor={`contactHasUpdate-${contact.id}`} className="text-xs font-medium">Show as new/unread update</Label>
                   </div>
                    <div className="flex flex-wrap gap-2 pt-1">
-                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusText')} variant="outline" size="sm" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Text</Button>
-                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusImageUrl')} variant="outline" size="sm" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Image</Button>
+                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusText')} variant="outline" size="xs" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Text</Button>
+                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusImageUrl')} variant="outline" size="xs" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Image</Button>
                   </div>
                 </div>
               ))}
