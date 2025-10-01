@@ -8,7 +8,6 @@
 import { generateAIResponse } from '@/ai/vertex-ai';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
 import { generateLocationAwareResponse, type LocationAwareInput } from './location-aware-ai';
-import { enhancedUserManager } from '@/lib/enhanced-user-manager';
 
 export interface EmotionalStateInput {
   userMessage: string;
@@ -30,6 +29,9 @@ export interface EmotionalStateInput {
   isQuickReply?: boolean; // New field to identify quick replies
   currentIgnoreUntil?: number | null; // Server-safe ignore state for persistence
   relationshipLevel?: number; // New: Relationship level (0-1)
+  // Location-based personality data (passed from client)
+  localizedPersonality?: any;
+  culturalContext?: string;
 }
 
 export interface EmotionalStateOutput {
@@ -613,9 +615,9 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
 
     const memSummary = createMemorySummary(input.recentInteractions);
 
-    // Check if we have location-based personality
-    const userProfile = enhancedUserManager.getCurrentUserProfile();
-    const localizedPersonality = userProfile.localizedPersonality;
+    // Check if we have location-based personality from input
+    const localizedPersonality = input.localizedPersonality;
+    const culturalContext = input.culturalContext || '';
 
     let systemPrompt = '';
     let shouldUseLocationAI = false;
@@ -627,7 +629,7 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
       const locationInput: LocationAwareInput = {
         userMessage: input.userMessage,
         localizedPersonality: localizedPersonality,
-        culturalContext: enhancedUserManager.getCulturalContext(),
+        culturalContext: culturalContext,
         timeOfDay: input.timeOfDay,
         recentInteractions: input.recentInteractions
       };

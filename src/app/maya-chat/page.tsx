@@ -589,13 +589,13 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const loadInitialChatState = useCallback(async () => {
     setIsLoadingChatState(true);
     const effectiveAIProfile = globalAIProfile || defaultAIProfile;
-    
+
     // Initialize location-based AI personality
     if (typeof window !== 'undefined') {
       try {
         const { getUserLocation, generateLocalizedPersonality } = await import('@/lib/geo-targeting');
         const { enhancedUserManager } = await import('@/lib/enhanced-user-manager');
-        
+
         const location = await getUserLocation();
         if (location) {
           const userProfile = enhancedUserManager.getCurrentUserProfile();
@@ -713,16 +713,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   }, [isLoadingAIProfile, globalAIProfile, loadInitialChatState]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      initialLoadComplete.current = true;
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     if (
-      initialLoadComplete.current &&
-      !isLoadingChatState &&
+      !initialLoadComplete.current ||
+      isLoadingChatState ||
       (messages.length > 1 ||
         (messages.length === 1 && messages[0].sender === "user") ||
         aiMood !== "neutral" ||
@@ -736,6 +729,14 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       );
     }
   }, [messages, aiMood, recentInteractions, isLoadingChatState]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      initialLoadComplete.current = true;
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
 
   const getISTTimeParts = (): { hour: number; minutes: number } => {
     const now = new Date();
@@ -1036,7 +1037,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     if (currentImageUri) {
       const todayStr = new Date().toDateString();
       const lastUploadDate = localStorage.getItem(
-        USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
+        USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
       );
       let currentUploadCount = parseInt(
         localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || "0",
@@ -1233,54 +1234,49 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         clearMissedMessages(); // Clear missed messages on comeback
       }
 
-      const aiInput: EmotionalStateInput = {
-        userMessage: text,
-        userImageUri: currentImageUri,
-        timeOfDay: getTimeOfDay(),
-        mood: aiMood,
-        recentInteractions: updatedRecentInteractions,
-        availableImages: availableImages,
-        availableAudio: availableAudio,
-        // Enhanced psychological data
-        userPsychologyProfile: psychProfile,
-        userAddictionLevel: addictionLevel,
-        userEmotionalState: emotionalState,
-        dailyMessageCount: dailyMsgCount,
-        // Add missed message context
-        missedMessages: shouldRespondToMissedMessages
-          ? missedMessages
-          : undefined,
-        hasBeenOffline: missedMessages.length > 0,
-        // User type data for intelligent AI behavior
-        // userTypeData: userTypeData, // Commented out - not in interface
-        isQuickReply: isQuickReply,
-        // Server-safe ignore state
-        currentIgnoreUntil: currentIgnoreTime,
-        // Goodbye comeback data
-        // lastGoodbyeTime: isComeback ? parseInt(lastGoodbyeTime) : undefined // Removed - not in EmotionalStateInput interface
-      };
+      // Helper functions for userTypeData
+      const getDailyMessageCount = () => userTypeData.dailyMessageCount;
+      const getRelationshipLevel = () => userTypeData.relationshipLevel;
+      const getTotalDaysActive = () => userTypeData.totalDaysActive;
 
-      const serverResult = await sendMessage(
+      // Get location data from enhanced user manager
+      let locationData = {};
+      try {
+        const { enhancedUserManager } = await import('@/lib/enhanced-user-manager');
+        const userProfile = enhancedUserManager.getCurrentUserProfile();
+        locationData = {
+          localizedPersonality: userProfile.localizedPersonality,
+          culturalContext: enhancedUserManager.getCulturalContext()
+        };
+      } catch (error) {
+        console.warn('Failed to get location data:', error);
+      }
+
+      // Call the server action with all relevant data
+      const result = await sendMessage(
         text,
         aiMood,
         updatedRecentInteractions,
+        {
+          dailyMessageCount: getDailyMessageCount(),
+          relationshipLevel: getRelationshipLevel(),
+          totalDaysActive: getTotalDaysActive()
+        },
+        currentIgnoreTime,
+        locationData // Pass location data here
       );
 
-      if (!serverResult.success) {
-        throw new Error(serverResult.error || "Failed to get AI response");
-      }
-
-      // Convert server result to expected format
+      // Use the result from the server action
       const aiResult: EmotionalStateOutput = {
-        response: serverResult.response || "",
-        newMood: serverResult.newMood || aiMood,
-        proactiveImageUrl: serverResult.proactiveImageUrl,
-        proactiveAudioUrl: serverResult.proactiveAudioUrl,
-        mediaCaption: serverResult.mediaCaption,
-        newIgnoreUntil: serverResult.wasIgnored
+        response: result.response || "",
+        newMood: result.newMood || aiMood,
+        proactiveImageUrl: result.proactiveImageUrl,
+        proactiveAudioUrl: result.proactiveAudioUrl,
+        mediaCaption: result.mediaCaption,
+        newIgnoreUntil: result.wasIgnored
           ? Date.now() + 10 * 60 * 1000
           : undefined, // 10 min ignore if ignored
-        multiPartResponse: serverResult.multiPartResponse, // For multi-part messages
+        multiPartResponse: result.multiPartResponse, // For multi-part messages
       };
 
       // Handle ignore/busy persistence from server response
@@ -1539,10 +1535,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         const todayStr = new Date().toDateString();
         let currentUploadCount = parseInt(
           localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || "0",
-          10,
         );
         const lastUploadDate = localStorage.getItem(
-          USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
+          USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
         );
 
         if (lastUploadDate !== todayStr) {
@@ -1554,7 +1549,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           currentUploadCount.toString(),
         );
         localStorage.setItem(
-          USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
+          USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
           todayStr,
         );
       }
@@ -2120,7 +2115,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             <div className="relative">
               {/* White background */}
               <div className="absolute inset-0 bg-white"></div>
-              
+
               {/* Header content */}
               <div className="relative flex items-center justify-between p-4 text-gray-900 border-b border-gray-100">
                 <div className="flex items-center gap-3">

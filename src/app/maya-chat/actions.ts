@@ -39,7 +39,8 @@ export async function sendMessage(
   currentMood?: string, 
   chatHistory?: string[],
   userTypeData?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number },
-  currentIgnoreUntil?: number | null
+  currentIgnoreUntil?: number | null,
+  locationData?: { localizedPersonality?: any; culturalContext?: string }
 ) {
   try {
     console.log('Server Action: Received message:', message);
@@ -113,7 +114,10 @@ export async function sendMessage(
       mood: dynamicMood,
       recentInteractions: chatHistory?.slice(-2) || [], // Only last 2 interactions for context
       availableImages: [], // Remove images from regular responses to save tokens
-      availableAudio: []
+      availableAudio: [],
+      // Pass location data if available
+      localizedPersonality: locationData?.localizedPersonality,
+      culturalContext: locationData?.culturalContext
     };
 
     // Removed artificial server delay - client handles typing delays more naturally
