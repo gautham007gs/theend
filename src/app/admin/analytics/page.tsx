@@ -13,7 +13,6 @@ import { analyticsTracker } from '@/lib/analytics-tracker';
 import { RealTimeTab } from './real-time-tab';
 import ClientOnly from '@/components/ClientOnly';
 import { LogOut, Settings, ArrowLeft } from 'lucide-react';
-import SecurityMonitoringTab from './security-tab';
 
 interface AnalyticsData {
   // Real-time metrics
@@ -68,7 +67,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
-
+  
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     dailyUsers: 0,
     totalMessages: 0,
@@ -233,7 +232,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     setIsLoading(true);
     try {
       if (process.env.NODE_ENV === 'development') console.log('🔄 Fetching analytics data...');
-
+      
       // Fetch real analytics data from API with enhanced metrics
       const [overviewData, realtimeData, enhancedMetrics] = await Promise.all([
         analyticsTracker.getAnalyticsOverview('7d').catch(err => {
@@ -250,7 +249,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
         })
       ]);
 
-      if (process.env.NODE_ENV === 'development') console.log('📊 Analytics data fetched:', {
+      if (process.env.NODE_ENV === 'development') console.log('📊 Analytics data fetched:', { 
         overviewSuccess: overviewData?.success,
         realtimeSuccess: realtimeData?.success,
         enhancedMetrics: !!enhancedMetrics
@@ -396,7 +395,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
       averageSessionDuration: 0,
       topPages: []
     });
-
+    
     setNewRealTimeStats({
       responseTimeChart: [],
       userFlowChart: [],
@@ -436,7 +435,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
   // Enhanced real-time data fetching with Supabase integration
   useEffect(() => {
     if (!isAuthenticated) return;
-
+    
     setIsClient(true);
     // Initial fetch
     fetchRealTimeData();
@@ -451,22 +450,11 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     fetchRealTimeData();
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     try {
-      // Clear sessionStorage
       sessionStorage.removeItem(ADMIN_AUTH_KEY);
-      sessionStorage.removeItem('admin_session_id');
-      sessionStorage.removeItem('admin_user_id');
-      
-      // Clear secure session cookie
-      document.cookie = 'admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-      
-      // Sign out from Supabase
-      if (supabase) {
-        await supabase.auth.signOut();
-      }
     } catch (error) {
-      console.error("Error during logout:", error);
+      console.error("Error removing sessionStorage item:", error);
     }
     router.replace('/admin/login');
   };
