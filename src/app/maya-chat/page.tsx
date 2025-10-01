@@ -2096,48 +2096,48 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           onOpenChange={setShowZoomedAvatarDialog}
         >
           <DialogContent className="fixed left-[50%] top-[50%] z-50 w-[85vw] max-w-xs h-auto translate-x-[-50%] translate-y-[-50%] bg-white border-0 shadow-2xl rounded-2xl p-0 overflow-hidden sm:max-w-sm [&>button]:hidden">
-            {/* Header with WhatsApp green gradient */}
+            {/* Header with white background */}
             <div className="relative">
-              {/* Background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[#25D366] to-[#128C7E]"></div>
+              {/* White background */}
+              <div className="absolute inset-0 bg-white"></div>
               
               {/* Header content */}
-              <div className="relative flex items-center justify-between p-4 text-white">
+              <div className="relative flex items-center justify-between p-4 text-gray-900 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setShowZoomedAvatarDialog(false)}
-                    className="text-white hover:bg-white/20 h-10 w-10 rounded-full p-0"
+                    className="text-gray-600 hover:bg-gray-100 h-10 w-10 rounded-full p-0"
                   >
                     <ArrowLeft className="h-5 w-5" />
                   </Button>
                   <div>
-                    <DialogTitle className="text-white text-lg font-medium">
+                    <DialogTitle className="text-gray-900 text-lg font-medium">
                       {displayAIProfile.name}
                     </DialogTitle>
-                    <p className="text-white/90 text-sm">{onlineStatus}</p>
+                    <p className="text-gray-500 text-sm">{onlineStatus}</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowZoomedAvatarDialog(false)}
-                  className="text-white hover:bg-white/20 h-10 w-10 rounded-full p-0"
+                  className="text-gray-600 hover:bg-gray-100 h-10 w-10 rounded-full p-0"
                 >
                   <MoreVertical className="h-5 w-5" />
                 </Button>
               </div>
             </div>
 
-            {/* Profile Image Section with WhatsApp white styling */}
+            {/* Profile Image Section with white styling */}
             <div className="flex flex-col items-center py-8 px-6 bg-white">
               {/* Large Profile Image */}
               <div className="mb-6">
                 {displayAIProfile.avatarUrl && 
                  displayAIProfile.avatarUrl !== 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K' && 
                  (displayAIProfile.avatarUrl.startsWith('http') || displayAIProfile.avatarUrl.startsWith('data:')) ? (
-                  <div className="relative w-44 h-44 rounded-full overflow-hidden border-4 border-[#25D366] shadow-2xl">
+                  <div className="relative w-44 h-44 rounded-full overflow-hidden border-4 border-gray-200 shadow-2xl">
                     <Image
                       key={`zoomed-${displayAIProfile.avatarUrl}`}
                       src={displayAIProfile.avatarUrl}
@@ -2154,7 +2154,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                         const parent = img.parentElement;
                         if (parent) {
                           parent.innerHTML = `
-                            <div class="w-full h-full bg-[#25D366] flex items-center justify-center">
+                            <div class="w-full h-full bg-gray-400 flex items-center justify-center">
                               <span class="text-6xl font-light text-white">
                                 ${(displayAIProfile.name || "K").charAt(0).toUpperCase()}
                               </span>
@@ -2165,7 +2165,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                     />
                   </div>
                 ) : (
-                  <div className="w-44 h-44 bg-[#25D366] rounded-full flex items-center justify-center border-4 border-[#25D366] shadow-2xl">
+                  <div className="w-44 h-44 bg-gray-400 rounded-full flex items-center justify-center border-4 border-gray-200 shadow-2xl">
                     <span className="text-6xl font-light text-white">
                       {(displayAIProfile.name || "K").charAt(0).toUpperCase()}
                     </span>
@@ -2178,10 +2178,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                 <h3 className="text-gray-900 text-2xl font-medium mb-2">
                   {displayAIProfile.name}
                 </h3>
-                <p className="text-gray-600 text-sm mb-3">{onlineStatus}</p>
-                <div className="px-4 py-2 bg-[#25D366] text-white rounded-full text-sm font-medium inline-block">
-                  AI Companion
-                </div>
+                <p className="text-gray-600 text-sm">{onlineStatus}</p>
               </div>
 
               {/* WhatsApp-style Action Buttons */}
@@ -2189,29 +2186,38 @@ const KruthikaChatPage: NextPage = React.memo(() => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-[#25D366] hover:bg-[#128C7E] transition-all duration-200 min-w-[60px] min-h-[60px]"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 min-w-[60px] min-h-[60px]"
                   onClick={() => setShowZoomedAvatarDialog(false)}
                 >
-                  <MessageSquare className="h-6 w-6 text-white" />
-                  <span className="text-xs text-white font-medium">Message</span>
+                  <MessageSquare className="h-6 w-6 text-gray-700" />
+                  <span className="text-xs text-gray-700 font-medium">Message</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-[#25D366] hover:bg-[#128C7E] transition-all duration-200 min-w-[60px] min-h-[60px]"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 min-w-[60px] min-h-[60px]"
                   onClick={handleCallVideoClick}
                 >
-                  <Phone className="h-6 w-6 text-white" />
-                  <span className="text-xs text-white font-medium">Call</span>
+                  <Phone className="h-6 w-6 text-gray-700" />
+                  <span className="text-xs text-gray-700 font-medium">Call</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-[#25D366] hover:bg-[#128C7E] transition-all duration-200 min-w-[60px] min-h-[60px]"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 min-w-[60px] min-h-[60px]"
                   onClick={handleCallVideoClick}
                 >
-                  <Video className="h-6 w-6 text-white" />
-                  <span className="text-xs text-white font-medium">Video</span>
+                  <Video className="h-6 w-6 text-gray-700" />
+                  <span className="text-xs text-gray-700 font-medium">Video</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex flex-col items-center h-auto py-4 px-3 gap-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200 min-w-[60px] min-h-[60px]"
+                  onClick={() => setShowZoomedAvatarDialog(false)}
+                >
+                  <Info className="h-6 w-6 text-gray-700" />
+                  <span className="text-xs text-gray-700 font-medium">Info</span>
                 </Button>
               </div>
             </div>
