@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminSession, setSessionCookie } from '@/lib/admin-session';
+import { createAdminSession, setSessionCookie, validateAdminSession } from '@/lib/admin-session';
 import { supabase } from '@/lib/supabaseClient';
 import MaximumSecurity, { InputSanitizer } from '@/lib/enhanced-security';
 
