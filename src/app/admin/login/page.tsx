@@ -34,6 +34,18 @@ const AdminLoginPage: React.FC = () => {
       return;
     }
 
+    // Check rate limiting
+    const clientIP = 'client'; // In production, this would be the actual IP
+    const { AdminSecurity } = await import('@/lib/admin-security');
+    const rateLimitCheck = AdminSecurity.checkRateLimit(clientIP);
+    
+    if (!rateLimitCheck.allowed) {
+      setError(rateLimitCheck.error || 'Rate limit exceeded');
+      setIsLoading(false);
+      toast({ title: 'Login Blocked', description: rateLimitCheck.error || 'Too many attempts', variant: 'destructive' });
+      return;
+    }
+
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
@@ -42,16 +54,35 @@ const AdminLoginPage: React.FC = () => {
     setIsLoading(false);
 
     if (signInError) {
+      // Record failed attempt for enhanced security
+      AdminSecurity.recordFailedAttempt(clientIP);
       setError(signInError.message || 'Invalid login credentials.');
       toast({ title: 'Login Failed', description: signInError.message || 'Incorrect email or password.', variant: 'destructive' });
     } else if (data.user) {
       // Successfully authenticated with Supabase
       try {
+        // Clear failed attempts on successful login
+        AdminSecurity.clearFailedAttempts(clientIP);
+        
+        // Generate device fingerprint for session security
+        const fingerprint = AdminSecurity.generateDeviceFingerprint({
+          headers: {
+            get: (name: string) => navigator.userAgent || ''
+          }
+        } as any);
+        
+        // Create secure admin session
+        const sessionId = AdminSecurity.createAdminSession(data.user.id, fingerprint);
+        
         if (typeof window !== 'undefined') {
           sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+          sessionStorage.setItem('admin_session_id', sessionId);
+          sessionStorage.setItem('admin_user_id', data.user.id);
         }
-        // Optionally, you could store the user object or a token if needed for further checks,
-        // but for basic route protection, the flag is often sufficient for client-side.
+        
+        // Set secure session cookie
+        document.cookie = `admin_session=${sessionId}; path=/; secure; samesite=strict; max-age=${4 * 60 * 60}`;
+        
         toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
         router.push('/admin/profile');
       } catch (sessionError: any) {

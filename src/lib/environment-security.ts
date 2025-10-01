@@ -6,11 +6,11 @@
 
 export class EnvironmentSecurity {
   private static readonly SENSITIVE_KEYS = [
-    'ADMIN_PASSWORD',
     'COOKIE_SECRET',
     'REQUEST_SIGNATURE_SECRET',
     'GOOGLE_CREDENTIALS_JSON',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY'
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY'
   ];
 
   // Validate environment variables are secure
@@ -22,17 +22,22 @@ export class EnvironmentSecurity {
     const warnings: string[] = [];
     const criticalIssues: string[] = [];
 
-    // Check for default/weak values
-    if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD === 'change-this-in-production') {
-      criticalIssues.push('ADMIN_PASSWORD is using default value - CRITICAL SECURITY RISK');
+    // Check for Supabase configuration
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      criticalIssues.push('NEXT_PUBLIC_SUPABASE_URL is missing - required for authentication');
     }
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      criticalIssues.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is missing - required for authentication');
+    }
+
+    // Check for optional security enhancements
     if (!process.env.COOKIE_SECRET || process.env.COOKIE_SECRET.length < 32) {
-      criticalIssues.push('COOKIE_SECRET is weak or missing');
+      warnings.push('COOKIE_SECRET should be longer for better session security');
     }
 
     if (!process.env.REQUEST_SIGNATURE_SECRET || process.env.REQUEST_SIGNATURE_SECRET.length < 32) {
-      warnings.push('REQUEST_SIGNATURE_SECRET should be longer for better security');
+      warnings.push('REQUEST_SIGNATURE_SECRET should be longer for better API security');
     }
 
     // Check for production environment
@@ -67,13 +72,12 @@ export class EnvironmentSecurity {
     return `# Secure Environment Variables Template
 # Replace all placeholder values with secure, unique values
 
-# Admin Security
-ADMIN_PASSWORD=your-ultra-secure-admin-password-here-min-20-chars
+# Supabase Configuration (Required)
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
-# Cookie Security  
+# Optional Security Enhancements
 COOKIE_SECRET=${this.generateSecureSecret(64)}
-
-# Request Signatures
 REQUEST_SIGNATURE_SECRET=${this.generateSecureSecret(64)}
 
 # Node Environment
@@ -84,11 +88,13 @@ NODE_ENV=production
   }
 
   private static generateSecureSecret(length: number = 64): string {
-    if (typeof crypto !== 'undefined' && crypto.randomBytes) {
-      return crypto.randomBytes(length / 2).toString('hex');
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const array = new Uint8Array(length / 2);
+      crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     }
     
-    // Fallback for browser environment
+    // Fallback for server environment
     const chars = 'abcdef0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {

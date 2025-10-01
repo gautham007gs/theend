@@ -451,11 +451,22 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     fetchRealTimeData();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
+      // Clear sessionStorage
       sessionStorage.removeItem(ADMIN_AUTH_KEY);
+      sessionStorage.removeItem('admin_session_id');
+      sessionStorage.removeItem('admin_user_id');
+      
+      // Clear secure session cookie
+      document.cookie = 'admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      
+      // Sign out from Supabase
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
     } catch (error) {
-      console.error("Error removing sessionStorage item:", error);
+      console.error("Error during logout:", error);
     }
     router.replace('/admin/login');
   };
