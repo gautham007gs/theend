@@ -7,7 +7,6 @@
 
 import { generateAIResponse } from '@/ai/vertex-ai';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
-import { generateLocationAwareResponse, type LocationAwareInput } from './location-aware-ai';
 
 export interface EmotionalStateInput {
   userMessage: string;
@@ -29,9 +28,6 @@ export interface EmotionalStateInput {
   isQuickReply?: boolean; // New field to identify quick replies
   currentIgnoreUntil?: number | null; // Server-safe ignore state for persistence
   relationshipLevel?: number; // New: Relationship level (0-1)
-  // Location-based personality data (passed from client)
-  localizedPersonality?: any;
-  culturalContext?: string;
 }
 
 export interface EmotionalStateOutput {
@@ -615,53 +611,8 @@ export async function generateResponse(input: EmotionalStateInput): Promise<Emot
 
     const memSummary = createMemorySummary(input.recentInteractions);
 
-    // Check if we have location-based personality from input
-    const localizedPersonality = input.localizedPersonality;
-    const culturalContext = input.culturalContext || '';
-
-    let systemPrompt = '';
-    let shouldUseLocationAI = false;
-
-    if (localizedPersonality && localizedPersonality.name !== 'Kruthika') {
-      // Use location-aware AI for non-Indian users
-      shouldUseLocationAI = true;
-      
-      const locationInput: LocationAwareInput = {
-        userMessage: input.userMessage,
-        localizedPersonality: localizedPersonality,
-        culturalContext: culturalContext,
-        timeOfDay: input.timeOfDay,
-        recentInteractions: input.recentInteractions
-      };
-
-      try {
-        const locationAwareResult = await generateLocationAwareResponse(locationInput);
-        
-        // Return location-aware response
-        return {
-          response: locationAwareResult.response,
-          newMood: 'culturally_adapted',
-          // Add cultural analytics
-          culturalReferences: locationAwareResult.culturalReferences,
-          localSlangUsed: locationAwareResult.localSlangUsed,
-          personalityAdaptation: locationAwareResult.personalityAdaptation
-        };
-      } catch (error) {
-        console.error('Location-aware AI failed, falling back to standard:', error);
-        shouldUseLocationAI = false;
-      }
-    }
-
-    if (!shouldUseLocationAI) {
-      // Standard Kruthika system prompt for Indian users or fallback
-      systemPrompt = `You're ${localizedPersonality?.name || 'Kruthika'}, ${localizedPersonality?.age || 23}, ${localizedPersonality?.location || 'Mumbai'} ${localizedPersonality?.occupation || 'psychology student'}. Text like a real girl - super casual, no punctuation much, typos ok, short msgs.
-
-${localizedPersonality ? `
-LOCATION CONTEXT: You're from ${localizedPersonality.location}
-LANGUAGE STYLE: Use ${localizedPersonality.languageStyle}
-LOCAL SLANG: ${localizedPersonality.localSlang.join(', ')}
-INTERESTS: ${localizedPersonality.interests.join(', ')}
-` : ''}
+    // Natural system prompt that lets Gemini handle language detection
+    const systemPrompt = `You're Kruthika, 23, Mumbai psychology student. Text like a real girl - super casual, no punctuation much, typos ok, short msgs.
 
 IMPORTANT: Reply in the SAME LANGUAGE as the user. If they use Hindi, reply in Hindi. If they use Kannada, reply in Kannada. If they mix languages (like Hinglish), mix naturally too. Mirror their language style completely.
 
@@ -672,14 +623,13 @@ User: "${input.userMessage}"
 Rules:
 - Max 1-8 words usually 
 - Skip periods/commas mostly
-- Use natural expressions ${localizedPersonality ? `like "${localizedPersonality.localSlang.slice(0,3).join('", "')}"` : 'like "yaar" "arre"'} naturally
+- Use natural expressions like "yaar" "arre" if chatting in Hindi/Hinglish
 - Real texting style like "kya kar rhi" not "kya kar rahi"
 - NO asterisks or formal stuff
-- Sound like ${localizedPersonality?.age || 23}yr old ${localizedPersonality?.location || 'Mumbai'} girl texting
+- Sound like 23yr old Mumbai girl texting
 - Match user's language and tone exactly
 
 Reply:`;
-    }
 
     const aiResponse = await generateAIResponse(input.userMessage, systemPrompt);
 
