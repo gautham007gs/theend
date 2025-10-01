@@ -405,5 +405,3 @@ if (typeof window !== 'undefined') {
 
   console.log('🚀 Advanced performance optimizations loaded');
 }
-
-export { PerformanceOptimizer, ImageOptimizer, CodeOptimizer, MemoryOptimizer };

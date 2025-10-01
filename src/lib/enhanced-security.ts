@@ -280,9 +280,12 @@ class CSRFProtection {
     used: boolean;
   }>();
   
-  // Generate secure CSRF token
+  // Generate secure CSRF token (Edge Runtime compatible)
   static generateToken(sessionId: string): string {
-    const token = crypto.randomBytes(32).toString('hex');
+    // Use Web Crypto API for Edge Runtime compatibility
+    const array = new Uint8Array(32);
+    crypto.getRandomValues(array);
+    const token = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     this.tokens.set(sessionId, {
       token,
       createdAt: Date.now(),
