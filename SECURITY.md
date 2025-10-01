@@ -250,6 +250,39 @@ All security tests should be blocked with appropriate error messages.
 
 ---
 
+## 11. Admin Panel Authentication
+
+### Server-Side Session Management
+- **Cryptographically Secure Sessions**: 32-byte random session IDs using crypto.getRandomValues
+- **Server-Side Validation**: All admin routes protected by middleware with session verification
+- **HttpOnly Cookies**: Prevents client-side access to session tokens
+- **Session Expiration**: 24-hour automatic expiration
+- **Automatic Cleanup**: Expired sessions removed automatically
+- **Email Allowlist**: Only authorized emails can access admin panel
+
+### Admin Authorization
+- **Email Allowlist**: Only users in ADMIN_EMAILS environment variable can access admin panel
+- **Role-Based Access**: Admin role verified on every login attempt
+- **Supabase Authentication**: Backend authentication with Supabase Auth
+- **Unauthorized Access Blocked**: Non-admin users receive 403 Forbidden
+
+### Open Redirect Protection
+- **Path Validation**: Redirect parameter validated to allow only internal paths
+- **Protocol Blocking**: External URLs and protocol-relative URLs blocked
+- **Default Fallback**: Invalid redirects default to /admin/profile
+
+### Implementation Files:
+- `src/lib/admin-session.ts` - Session management system
+- `src/app/api/admin/login/route.ts` - Secure login with allowlist verification
+- `src/app/api/admin/logout/route.ts` - Session destruction
+- `src/middleware.ts` - Admin route protection
+
+### Production Considerations:
+- **Session Store**: Currently uses in-memory storage. For production with multiple instances, implement Redis or database-backed session store
+- **Admin Emails**: Must be configured via ADMIN_EMAILS environment variable (comma-separated)
+
+---
+
 ## Environment Variables for Production
 
 Required security environment variables:
@@ -261,11 +294,17 @@ COOKIE_SECRET=your-ultra-secure-random-secret-here
 # Request Signatures
 REQUEST_SIGNATURE_SECRET=your-signature-secret-here
 
+# Admin Access Control (CRITICAL - Required for admin panel)
+ADMIN_EMAILS=admin1@example.com,admin2@example.com
+
 # Node Environment
 NODE_ENV=production
 ```
 
-**⚠️ IMPORTANT**: Change default secrets in production!
+**⚠️ CRITICAL**: 
+- Change default secrets in production!
+- **ADMIN_EMAILS must be set** or NO ONE can access the admin panel!
+- Use comma-separated list of authorized admin email addresses
 
 ---
 

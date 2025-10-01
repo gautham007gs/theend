@@ -10,12 +10,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert } from '@/components/ui/alert'; // Added import
 import { useToast } from '@/hooks/use-toast';
 import { KeyRound, ShieldAlert } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient'; // Import Supabase client
-
-const ADMIN_AUTH_KEY = 'isAdminLoggedIn_KruthikaChat';
-
 const AdminLoginPage: React.FC = () => {
-  const [email, setEmail] = useState(''); // Changed from username to email
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -27,41 +23,54 @@ const AdminLoginPage: React.FC = () => {
     setError('');
     setIsLoading(true);
 
-    if (!supabase) {
-      setError('Supabase client is not available. Please check configuration.');
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+
+      const data = await response.json();
       setIsLoading(false);
-      toast({ title: 'Login Error', description: 'Authentication service not available.', variant: 'destructive' });
-      return;
-    }
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    setIsLoading(false);
-
-    if (signInError) {
-      setError(signInError.message || 'Invalid login credentials.');
-      toast({ title: 'Login Failed', description: signInError.message || 'Incorrect email or password.', variant: 'destructive' });
-    } else if (data.user) {
-      // Successfully authenticated with Supabase
-      try {
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+      if (response.ok && data.success) {
+        toast({ 
+          title: 'Login Successful', 
+          description: "Welcome to the Admin Panel!" 
+        });
+        
+        // Validate redirect parameter to prevent open redirect attacks
+        const urlParams = new URLSearchParams(window.location.search);
+        let redirect = urlParams.get('redirect') || '/admin/profile';
+        
+        // Only allow internal paths starting with / but not // (protocol-relative URLs)
+        if (!redirect.startsWith('/') || redirect.startsWith('//') || redirect.includes('://')) {
+          redirect = '/admin/profile';
         }
-        // Optionally, you could store the user object or a token if needed for further checks,
-        // but for basic route protection, the flag is often sufficient for client-side.
-        toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
-        router.push('/admin/profile');
-      } catch (sessionError: any) {
-          console.error("Error setting sessionStorage:", sessionError);
-          setError(`Failed to initiate session. Please ensure cookies/session storage are enabled. ${sessionError.message || ''}`);
-          toast({ title: 'Session Error', description: `Could not save login state. ${sessionError.message || ''}`, variant: 'destructive' });
+        
+        router.push(redirect);
+      } else {
+        const errorMessage = data.error || 'Invalid login credentials.';
+        setError(errorMessage);
+        toast({ 
+          title: 'Login Failed', 
+          description: errorMessage, 
+          variant: 'destructive' 
+        });
       }
-    } else {
-      setError('An unknown error occurred during login.');
-      toast({ title: 'Login Error', description: 'An unexpected error occurred.', variant: 'destructive' });
+    } catch (err) {
+      setIsLoading(false);
+      const errorMessage = 'Authentication service unavailable';
+      setError(errorMessage);
+      toast({ 
+        title: 'Login Error', 
+        description: errorMessage, 
+        variant: 'destructive' 
+      });
+      console.error('Login error:', err);
     }
   };
 
@@ -79,7 +88,7 @@ const AdminLoginPage: React.FC = () => {
           <Alert variant="default" className="mb-6 bg-primary/10 border-primary/30">
             <ShieldAlert size={20} className="mr-2 shrink-0 mt-0.5 !text-primary" />
             <div>
-              <span className="font-semibold !text-primary">Admin Access:</span> Uses Supabase Authentication. Ensure your RLS policies for `app_configurations` are updated to restrict write access to authenticated admin users.
+              <span className="font-semibold !text-primary">Secure Admin Access:</span> Server-side authentication with cryptographically secure sessions and HttpOnly cookies.
             </div>
           </Alert>
           <form onSubmit={handleSubmit} className="space-y-6">

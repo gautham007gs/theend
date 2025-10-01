@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import MaximumSecurity from './lib/enhanced-security'
+import { extractSessionId, validateAdminSession } from './lib/admin-session'
 
 // Advanced rate limiting for high traffic protection (keeping existing for backward compatibility)
 const rateLimitMap = new Map<string, { count: number; lastReset: number; penalties: number }>();
@@ -58,6 +59,32 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
+
+  // Protect admin routes - SECURE server-side authentication check
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+    // Extract and validate session ID
+    const sessionId = extractSessionId(request);
+    
+    if (!sessionId) {
+      console.warn(`🔒 Admin access denied - No session ID: ${pathname}`);
+      const loginUrl = new URL('/admin/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    // Validate the session
+    const validation = validateAdminSession(sessionId);
+    
+    if (!validation.valid) {
+      console.warn(`🔒 Admin access denied - Invalid session: ${validation.reason} for ${pathname}`);
+      const loginUrl = new URL('/admin/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      loginUrl.searchParams.set('reason', validation.reason || 'invalid_session');
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    console.log(`✅ Admin access granted: ${validation.session?.email} to ${pathname}`);
+  }
 
   // Apply enhanced maximum security to API routes and chat actions
   if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
