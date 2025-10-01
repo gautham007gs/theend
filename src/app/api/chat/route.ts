@@ -7,11 +7,16 @@ import { Logger } from '@/utils/logger';
 import { PerformanceUtils } from '@/lib/performance-utils';
 import SecurityValidator from '@/lib/security-utils';
 import APISecurityManager from '@/lib/api-security';
+import MaximumSecurity from '@/lib/enhanced-security';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
-  // Apply comprehensive API security
+  // Apply MAXIMUM security protection
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
+  // Apply comprehensive API security (double layer)
   const securityCheck = await APISecurityManager.secureAPIRoute(request, {
     allowedMethods: ['POST'],
     requireCSRF: false, // Will implement custom validation
@@ -22,13 +27,29 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { message, conversationId } = body;
+    
+    // Validate and sanitize entire POST body with enhanced security
+    const postValidation = await MaximumSecurity.validatePostData(request, body);
+    if (!postValidation.valid) {
+      Logger.error('Security validation failed', {
+        error: postValidation.error,
+        ip: request.headers.get('x-forwarded-for') || 'unknown',
+        timestamp: new Date().toISOString()
+      });
+      
+      return NextResponse.json(
+        { error: postValidation.error || 'Invalid request' },
+        { status: 400 }
+      );
+    }
+    
+    const { message, conversationId } = postValidation.sanitized;
 
     // Get client IP for security tracking
     const clientIP = request.headers.get('x-forwarded-for') ||
                      request.headers.get('x-real-ip') || 'unknown';
 
-    // Comprehensive input validation
+    // Additional comprehensive input validation
     const validationResult = SecurityValidator.validateMessageInput(
       message,
       conversationId || 'anonymous',
@@ -49,7 +70,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use sanitized message
+    // Use sanitized message (triple sanitization for maximum security)
     const sanitizedMessage = validationResult.sanitized!;
 
     // AI Chat Processing with sanitized input

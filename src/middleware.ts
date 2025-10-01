@@ -1,23 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import MaximumSecurity from './lib/enhanced-security'
 
-// Split middleware logic into smaller functions
-function handleRateLimit(request: NextRequest): NextResponse | null {
-  // Rate limiting logic
-  return null;
-}
-
-function handleSecurity(request: NextRequest): NextResponse | null {
-  // Security headers and CSRF protection
-  return null;
-}
-
-function handleCaching(request: NextRequest): NextResponse | null {
-  // Caching headers logic  
-  return null;
-}
-
-// Advanced rate limiting for high traffic protection
+// Advanced rate limiting for high traffic protection (keeping existing for backward compatibility)
 const rateLimitMap = new Map<string, { count: number; lastReset: number; penalties: number }>();
 const slowClientsMap = new Map<string, number>(); // Track slow clients
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
@@ -62,41 +47,6 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-// Track slow clients for adaptive throttling
-function trackResponseTime(ip: string, responseTime: number): void {
-  if (responseTime > SLOW_CLIENT_THRESHOLD) {
-    const currentCount = slowClientsMap.get(ip) || 0;
-    slowClientsMap.set(ip, currentCount + 1);
-  }
-}
-
-// Clean up tracking maps
-function cleanupMaps(): void {
-  const now = Date.now();
-  // Clean rate limit map
-  for (const [ip, data] of rateLimitMap.entries()) {
-    if (now - data.lastReset > RATE_LIMIT_WINDOW * 3) {
-      rateLimitMap.delete(ip);
-    }
-  }
-  // Reset slow clients occasionally
-  if (Math.random() < 0.01) { // 1% chance per request
-    slowClientsMap.clear();
-  }
-}
-
-// Clean up old entries periodically (only in browser environment)
-if (typeof window !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [ip, data] of rateLimitMap.entries()) {
-      if (now - data.lastReset > RATE_LIMIT_WINDOW * 2) {
-        rateLimitMap.delete(ip);
-      }
-    }
-  }, RATE_LIMIT_WINDOW);
-}
-
 function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
   if (userAgent) {
     // Common patterns for Instagram's in-app browser user agent string
@@ -105,17 +55,22 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
   return false;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
 
-  // Apply rate limiting to API routes and chat actions
+  // Apply enhanced maximum security to API routes and chat actions
   if (pathname.startsWith('/api/') || pathname.startsWith('/maya-chat')) {
+    // Enhanced security check with DDoS protection, IP reputation, etc.
+    const securityCheck = await MaximumSecurity.secureRequest(request);
+    if (securityCheck) return securityCheck;
+
+    // Legacy rate limiting (kept for additional protection)
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     if (isRateLimited(ip)) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
+        { status: 429, headers: { 'X-Security-Block': 'legacy-rate-limit' } }
       );
     }
   }
@@ -144,19 +99,25 @@ export function middleware(request: NextRequest) {
 
       response.headers.set('Access-Control-Allow-Origin', `https://${forwardedHost}`);
       response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Forwarded-Host, X-Forwarded-Proto, X-Forwarded-For, Host, Origin, X-CSRF-Token');
     }
 
-    // Add performance headers
+    // Enhanced security headers
     response.headers.set('X-DNS-Prefetch-Control', 'on');
     response.headers.set('X-Frame-Options', 'DENY');
     response.headers.set('X-Content-Type-Options', 'nosniff');
-    response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    response.headers.set('X-XSS-Protection', '1; mode=block');
+    response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
     // Add caching headers for static assets
     if (request.nextUrl.pathname.startsWith('/_next/static/') || 
         request.nextUrl.pathname.includes('.')) {
       response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    } else {
+      // No cache for dynamic content (prevents stale data attacks)
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      response.headers.set('Pragma', 'no-cache');
     }
 
     // Add performance timing headers
