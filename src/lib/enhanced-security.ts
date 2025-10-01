@@ -2,9 +2,10 @@
  * Enhanced Security Layer - Maximum Protection Against All Cyber Attacks
  * Protects against: DDoS, SQL Injection, XSS, CSRF, Cookie Hijacking, 
  * Brute Force, Session Hijacking, and all other common attack vectors
+ * 
+ * Edge Runtime Compatible - Uses Web Crypto API
  */
 
-import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
 // IP Reputation and Blocking System
@@ -316,28 +317,45 @@ class CSRFProtection {
 }
 
 // Request Signature Validation (prevents tampering)
+// Note: This requires Node.js crypto, use only in API routes, not middleware
 class RequestSignature {
   private static secret = process.env.REQUEST_SIGNATURE_SECRET || 'ultra-secure-secret-key-change-in-production';
   
-  // Generate signature for request
-  static generate(data: string, timestamp: number): string {
+  // Generate signature for request (requires Node.js crypto)
+  static async generate(data: string, timestamp: number): Promise<string> {
     const payload = `${data}:${timestamp}`;
-    return crypto
-      .createHmac('sha256', this.secret)
-      .update(payload)
-      .digest('hex');
+    // Web Crypto API compatible
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(this.secret);
+    const payloadData = encoder.encode(payload);
+    
+    // Import key
+    const key = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    
+    // Sign
+    const signature = await crypto.subtle.sign('HMAC', key, payloadData);
+    
+    // Convert to hex
+    return Array.from(new Uint8Array(signature))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
   }
   
   // Verify signature
-  static verify(data: string, timestamp: number, signature: string): boolean {
+  static async verify(data: string, timestamp: number, signature: string): Promise<boolean> {
     // Check timestamp (must be within 5 minutes)
     if (Math.abs(Date.now() - timestamp) > 300000) return false;
     
-    const expected = this.generate(data, timestamp);
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expected)
-    );
+    const expected = await this.generate(data, timestamp);
+    
+    // Simple comparison (Edge runtime compatible)
+    return expected === signature;
   }
 }
 
