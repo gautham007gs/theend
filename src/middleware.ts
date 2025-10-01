@@ -75,6 +75,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect admin routes with authentication
+  if (pathname.startsWith('/admin/') && !pathname.startsWith('/admin/login')) {
+    const { AdminSecurity } = await import('./lib/admin-security');
+    const adminCheck = await AdminSecurity.secureAdminRoute(request);
+    if (adminCheck) return adminCheck;
+  }
+
   // For Server Actions and API routes, fix headers and continue
   if (pathname.startsWith('/api/') || request.method === 'POST') {
     const response = NextResponse.next();
