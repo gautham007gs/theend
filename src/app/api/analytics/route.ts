@@ -1,6 +1,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
+import MaximumSecurity from '@/lib/enhanced-security';
+import { APISecurityManager } from '@/lib/api-security';
 
 // Real analytics data functions using actual Supabase data only
 async function getRealDeviceBreakdown() {
@@ -271,6 +273,17 @@ async function getRealSessionMetrics() {
 }
 
 export async function GET(request: NextRequest) {
+  // Apply MAXIMUM security protection
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
+  // Apply API security with rate limiting
+  const securityCheck = await APISecurityManager.secureAPIRoute(request, {
+    allowedMethods: ['GET'],
+    rateLimit: { requests: 100, window: 60000 } // 100 requests per minute
+  });
+  if (securityCheck) return securityCheck;
+
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'overview';
@@ -560,6 +573,17 @@ async function getDetailedAnalytics(startDate: string) {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply MAXIMUM security protection
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
+  // Apply API security with rate limiting
+  const securityCheck = await APISecurityManager.secureAPIRoute(request, {
+    allowedMethods: ['POST'],
+    rateLimit: { requests: 120, window: 60000 } // 120 requests per minute
+  });
+  if (securityCheck) return securityCheck;
+
   try {
     // Check if request has body content
     const contentLength = request.headers.get('content-length');
@@ -579,7 +603,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = JSON.parse(text);
-    const { eventType, eventData, userId, sessionId } = body;
+    
+    // Validate and sanitize POST data
+    const postValidation = await MaximumSecurity.validatePostData(request, body);
+    if (!postValidation.valid) {
+      return NextResponse.json(
+        { success: false, error: postValidation.error || 'Invalid request' },
+        { status: 400 }
+      );
+    }
+
+    const { eventType, eventData, userId, sessionId } = postValidation.sanitized;
     
     // Track real events in appropriate tables
     switch (eventType) {

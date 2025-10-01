@@ -1,6 +1,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
+import MaximumSecurity from '@/lib/enhanced-security';
+import { APISecurityManager } from '@/lib/api-security';
 
 interface BatchAnalyticsEvent {
   eventType: string;
@@ -11,11 +13,38 @@ interface BatchAnalyticsEvent {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply MAXIMUM security protection
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
+  // Apply API security with rate limiting
+  const securityCheck = await APISecurityManager.secureAPIRoute(request, {
+    allowedMethods: ['POST'],
+    rateLimit: { requests: 200, window: 60000 } // 200 requests per minute for batch analytics
+  });
+  if (securityCheck) return securityCheck;
+
   try {
-    const { events, sessionId } = await request.json();
+    const body = await request.json();
+    
+    // Validate and sanitize POST data
+    const postValidation = await MaximumSecurity.validatePostData(request, body);
+    if (!postValidation.valid) {
+      return NextResponse.json(
+        { error: postValidation.error || 'Invalid request' },
+        { status: 400 }
+      );
+    }
+
+    const { events, sessionId } = postValidation.sanitized;
     
     if (!Array.isArray(events) || events.length === 0) {
       return NextResponse.json({ error: 'No events provided' }, { status: 400 });
+    }
+
+    // Limit batch size to prevent abuse
+    if (events.length > 100) {
+      return NextResponse.json({ error: 'Batch size too large. Maximum 100 events per request.' }, { status: 400 });
     }
 
     const results = await Promise.allSettled(
