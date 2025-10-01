@@ -141,13 +141,10 @@ const AdminProfilePage: React.FC = () => {
 
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchAllNonAnalyticsConfigs();
-    }
-  }, [isAuthenticated, fetchAllNonAnalyticsConfigs]);
+    fetchAllNonAnalyticsConfigs();
+  }, [fetchAllNonAnalyticsConfigs]);
   
    useEffect(() => {
-    if (!isAuthenticated) return;
 
     async function fetchRealAnalytics() {
       if (!supabase || typeof supabase.from !== 'function' || !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -224,10 +221,10 @@ const AdminProfilePage: React.FC = () => {
       }
     }
 
-    if (typeof window !== 'undefined' && isAuthenticated) {
+    if (typeof window !== 'undefined') {
       fetchRealAnalytics();
     }
-  }, [toast, isAuthenticated]);
+  }, [toast]);
 
 
   const handleSaveKruthikaCoreProfile = async (updatedCoreProfileData: Partial<AIProfile>) => {

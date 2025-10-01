@@ -126,21 +126,18 @@ export function setSessionCookie(response: NextResponse, sessionId: string): voi
   const isProduction = process.env.NODE_ENV === 'production';
   
   console.log(`🍪 Setting session cookie: ${COOKIE_NAME} = ${sessionId.substring(0, 8)}...`);
-  console.log(`🍪 Cookie settings: httpOnly=true, secure=${isProduction}, sameSite=lax, maxAge=${SESSION_DURATION / 1000}s, path=/`);
   
-  // Set secure cookie with explicit domain for Replit
+  // Enhanced cookie settings for Replit
+  const isReplit = process.env.REPLIT_ENVIRONMENT || false;
   const cookieOptions: any = {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
+    secure: isProduction && !isReplit, // Don't use secure flag on Replit
+    sameSite: isReplit ? 'none' : 'lax', // Use 'none' for Replit cross-origin
     maxAge: SESSION_DURATION / 1000,
     path: '/'
   };
   
-  // For development on Replit, don't set secure flag
-  if (process.env.NODE_ENV === 'development') {
-    cookieOptions.secure = false;
-  }
+  console.log(`🍪 Cookie settings:`, cookieOptions);
   
   response.cookies.set(COOKIE_NAME, sessionId, cookieOptions);
   

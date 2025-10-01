@@ -90,10 +90,12 @@ export async function POST(request: NextRequest) {
       sessionId: sessionId.substring(0, 8) + '...' // Debug info
     });
 
-    // Set secure session cookie
+    // Set secure session cookie with enhanced logging
     setSessionCookie(response, sessionId);
-
-    console.log(`✅ Admin login successful: ${data.user.email}, Session cookie set`);
+    
+    console.log(`✅ Admin login successful: ${data.user.email}`);
+    console.log(`🍪 Cookie set with session: ${sessionId.substring(0, 8)}...`);
+    console.log(`🔍 Response headers:`, Object.fromEntries(response.headers.entries()));
 
     return response;
   } catch (error) {

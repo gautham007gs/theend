@@ -64,23 +64,23 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     // Extract and validate session ID
     const sessionId = extractSessionId(request);
-    
+
     console.log(`🔍 Admin route check: ${pathname}`);
     console.log(`🔍 Session ID found: ${sessionId ? sessionId.substring(0, 8) + '...' : 'None'}`);
     console.log(`🔍 All cookies: ${request.headers.get('cookie')}`);
-    
+
     if (!sessionId) {
       console.warn(`🔒 Admin access denied - No session ID: ${pathname}`);
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    
+
     // Validate the session
     const validation = validateAdminSession(sessionId);
-    
+
     console.log(`🔍 Session validation result: ${JSON.stringify({ valid: validation.valid, reason: validation.reason, email: validation.session?.email })}`);
-    
+
     if (!validation.valid) {
       console.warn(`🔒 Admin access denied - Invalid session: ${validation.reason} for ${pathname}`);
       const loginUrl = new URL('/admin/login', request.url);
@@ -88,16 +88,16 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('reason', validation.reason || 'invalid_session');
       return NextResponse.redirect(loginUrl);
     }
-    
+
     console.log(`✅ Admin access granted: ${validation.session?.email} to ${pathname}`);
-    
+
     // Create response to continue to the admin route
     const response = NextResponse.next();
-    
+
     // Set cache headers for admin pages
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     response.headers.set('Pragma', 'no-cache');
-    
+
     return response;
   }
 
@@ -186,7 +186,7 @@ export async function middleware(request: NextRequest) {
     // Construct the target URL for the meta-refresh, preserving original path and query params,
     // and adding our flag.
     const targetUrl = new URL(pathname, origin);
-    // Append existing search params
+    // Append existing searchParams
     searchParams.forEach((value, key) => {
         if (key !== 'external_redirect_attempted') { // Avoid duplicating our flag
             targetUrl.searchParams.append(key, value);
