@@ -125,11 +125,14 @@ export function extractSessionId(request: NextRequest): string | null {
 export function setSessionCookie(response: NextResponse, sessionId: string): void {
   const isProduction = process.env.NODE_ENV === 'production';
   
-  // Set secure cookie
+  console.log(`🍪 Setting session cookie: ${COOKIE_NAME} = ${sessionId.substring(0, 8)}...`);
+  console.log(`🍪 Cookie settings: httpOnly=true, secure=${isProduction}, sameSite=lax, maxAge=${SESSION_DURATION / 1000}s`);
+  
+  // Set secure cookie - use 'lax' instead of 'strict' for better compatibility
   response.cookies.set(COOKIE_NAME, sessionId, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'strict',
+    sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
     maxAge: SESSION_DURATION / 1000, // Convert to seconds
     path: '/'
   });

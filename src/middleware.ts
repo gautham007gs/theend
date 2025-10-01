@@ -65,6 +65,10 @@ export async function middleware(request: NextRequest) {
     // Extract and validate session ID
     const sessionId = extractSessionId(request);
     
+    console.log(`🔍 Admin route check: ${pathname}`);
+    console.log(`🔍 Session ID found: ${sessionId ? sessionId.substring(0, 8) + '...' : 'None'}`);
+    console.log(`🔍 Cookies: ${request.headers.get('cookie')}`);
+    
     if (!sessionId) {
       console.warn(`🔒 Admin access denied - No session ID: ${pathname}`);
       const loginUrl = new URL('/admin/login', request.url);
@@ -74,6 +78,8 @@ export async function middleware(request: NextRequest) {
     
     // Validate the session
     const validation = validateAdminSession(sessionId);
+    
+    console.log(`🔍 Session validation result: ${JSON.stringify({ valid: validation.valid, reason: validation.reason, email: validation.session?.email })}`);
     
     if (!validation.valid) {
       console.warn(`🔒 Admin access denied - Invalid session: ${validation.reason} for ${pathname}`);

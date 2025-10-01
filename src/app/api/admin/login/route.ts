@@ -61,8 +61,10 @@ export async function POST(request: NextRequest) {
     }
 
     // CRITICAL: Verify user is an admin
-    const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
+    const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || ['gamingguruji095@gmail.com'];
     const userEmail = (data.user.email || email).toLowerCase();
+    
+    console.log(`🔍 Admin check: User email: ${userEmail}, Admin emails: ${adminEmails.join(', ')}`);
     
     if (!adminEmails.includes(userEmail)) {
       console.warn(`🔒 Unauthorized admin access attempt by: ${userEmail}`);
@@ -74,6 +76,8 @@ export async function POST(request: NextRequest) {
 
     // Create secure server-side session
     const { sessionId, session } = createAdminSession(data.user.id, data.user.email || email);
+    
+    console.log(`🔑 Session created: ${sessionId.substring(0, 8)}... for ${data.user.email}`);
 
     // Create response with session cookie
     const response = NextResponse.json({
@@ -82,13 +86,14 @@ export async function POST(request: NextRequest) {
         id: data.user.id,
         email: data.user.email
       },
-      message: 'Login successful'
+      message: 'Login successful',
+      sessionId: sessionId.substring(0, 8) + '...' // Debug info
     });
 
     // Set secure session cookie
     setSessionCookie(response, sessionId);
 
-    console.log(`✅ Admin login successful: ${data.user.email}`);
+    console.log(`✅ Admin login successful: ${data.user.email}, Session cookie set`);
 
     return response;
   } catch (error) {

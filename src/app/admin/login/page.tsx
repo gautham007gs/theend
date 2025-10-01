@@ -89,6 +89,11 @@ const AdminLoginPage: React.FC = () => {
             <ShieldAlert size={20} className="mr-2 shrink-0 mt-0.5 !text-primary" />
             <div>
               <span className="font-semibold !text-primary">Secure Admin Access:</span> Server-side authentication with cryptographically secure sessions and HttpOnly cookies.
+              {process.env.NODE_ENV === 'development' && (
+                <div className="text-xs mt-1 opacity-75">
+                  Debug: Check browser console and server logs for authentication details.
+                </div>
+              )}
             </div>
           </Alert>
           <form onSubmit={handleSubmit} className="space-y-6">
