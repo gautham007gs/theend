@@ -589,6 +589,26 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const loadInitialChatState = useCallback(async () => {
     setIsLoadingChatState(true);
     const effectiveAIProfile = globalAIProfile || defaultAIProfile;
+    
+    // Initialize location-based AI personality
+    if (typeof window !== 'undefined') {
+      try {
+        const { getUserLocation, generateLocalizedPersonality } = await import('@/lib/geo-targeting');
+        const { enhancedUserManager } = await import('@/lib/enhanced-user-manager');
+        
+        const location = await getUserLocation();
+        if (location) {
+          const userProfile = enhancedUserManager.getCurrentUserProfile();
+          if (!userProfile.localizedPersonality) {
+            userProfile.location = location;
+            userProfile.localizedPersonality = generateLocalizedPersonality(location);
+            console.log(`Chat: Initialized AI personality - ${userProfile.localizedPersonality.name} from ${userProfile.localizedPersonality.location}`);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to initialize location-based AI:', error);
+      }
+    }
 
     try {
       // Client-side only operations to prevent hydration mismatch
