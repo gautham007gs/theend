@@ -11,12 +11,11 @@ const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 1 hour for better cache hit rates
 const MAX_CACHE_SIZE = 2000; // Increased for high traffic
 
 // Smart model selection based on task complexity
-export function selectOptimalModel(taskType: 'simple' | 'conversation' | 'complex' | 'proactive'): string {
-  // Check daily budget before selecting model
-  const dailyCost = parseFloat(localStorage.getItem('daily_api_cost') || '0');
+export function selectOptimalModel(taskType: 'simple' | 'conversation' | 'complex' | 'proactive', dailyCost?: number): string {
+  // Check daily budget before selecting model (only if dailyCost is provided from client)
   const DAILY_BUDGET = 5.00; // $5 daily limit
   
-  if (dailyCost > DAILY_BUDGET * 0.9) {
+  if (dailyCost !== undefined && dailyCost > DAILY_BUDGET * 0.9) {
     // Use cache-only responses near budget limit
     return 'cache_only';
   }

@@ -103,7 +103,8 @@ export async function generateAIResponse(
 
   // Analyze task complexity for smart model selection
   const complexity = analyzeTaskComplexity(userMessage, !!context);
-  const optimizedModel = model || selectOptimalModel(complexity === 'simple' ? 'simple' : 'conversation');
+  // Don't pass dailyCost in server context - it's not available
+  const optimizedModel = model || selectOptimalModel(complexity === 'simple' ? 'simple' : 'conversation', undefined);
   logger.dev(`Token Optimization: Selected ${optimizedModel} for ${complexity} task`);
 
   // Optimize generation config based on expected response length
