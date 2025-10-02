@@ -31,11 +31,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://kruthika.fun'),
   title: {
-    default: 'Kruthika.fun - India\'s Most Realistic AI Girlfriend | Free Chat',
-    template: '%s | Kruthika.fun'
+    default: 'AI Girlfriend Free | Best Virtual Companion 2025 - Kruthika',
+    template: '%s | Kruthika - AI Girlfriend'
   },
-  description: 'Meet Kruthika - India\'s most authentic AI girlfriend. Free unlimited chat with emotional intelligence, cultural understanding, and genuine personality. Start chatting now!',
-  keywords: 'Kruthika.fun, AI girlfriend, AI girlfriend free, best AI girlfriend 2025, virtual girlfriend, AI companion, AI chat, virtual companion, AI girlfriend India, AI girlfriend chat, online girlfriend, chatbot girlfriend, AI relationship simulator, virtual dating, Indian AI girlfriend, Mumbai AI girlfriend, college girl AI, emotional AI, virtual relationship, AI dating simulator, companion AI, girlfriend simulator, AI chat app, virtual girlfriend online, AI girlfriend 2024, realistic AI girlfriend, authentic AI girlfriend, AI companion chat, virtual girlfriend free, AI dating app, virtual girlfriend simulator, AI girlfriend experience, Indian virtual girlfriend, psychology AI girlfriend, emotional support AI, mental health companion, loneliness solution, relationship practice AI, hindi AI girlfriend, multilingual AI chat, emotional intelligence AI, realistic conversation AI',
+  description: 'Chat with Kruthika - The world\'s most realistic AI girlfriend. Free unlimited conversations, emotional support for loneliness, mental health companionship. Available 24/7 in USA, UK, Canada, Australia. Start chatting now!',
+  keywords: 'AI girlfriend, virtual girlfriend, AI companion, AI girlfriend free, best AI girlfriend 2025, AI chatbot girlfriend, virtual companion, AI girlfriend app, AI companion for loneliness, emotional support AI, AI girlfriend chat, free AI girlfriend, realistic AI girlfriend, AI relationship simulator, virtual girlfriend online, AI dating app, AI girlfriend emotional support, best AI companion, AI girlfriend USA, AI girlfriend UK, AI girlfriend Canada, AI girlfriend Australia, virtual girlfriend app, AI companion mental health, AI girlfriend no subscription, 24/7 AI companion, AI girlfriend for anxiety, AI girlfriend for depression, Character AI alternative, Replika alternative, AI companion chat, virtual dating, girlfriend simulator, AI emotional support, loneliness solution, mental health companion, relationship practice AI, conversational AI girlfriend, authentic AI girlfriend, AI girlfriend experience, AI companion for adults, virtual girlfriend free, best virtual companion 2025',
   authors: [{ name: 'Kruthika.fun Team' }],
   creator: 'Kruthika.fun',
   publisher: 'Kruthika.fun',
@@ -55,33 +55,39 @@ export const metadata: Metadata = {
   },
   category: 'technology',
   openGraph: {
-    title: 'Kruthika.fun - #1 AI Girlfriend Chat | Best Virtual Companion 2024',
-    description: 'Meet Kruthika, India\'s most realistic AI girlfriend. Experience authentic conversations and emotional connection with the best free AI girlfriend simulator. Chat now!',
+    title: 'AI Girlfriend Free | Best Virtual Companion for Emotional Support 2025',
+    description: 'Meet Kruthika, the world\'s most realistic AI girlfriend. Free unlimited chat, emotional support for loneliness, 24/7 availability. Trusted by 500K+ users in USA, UK, Canada, Australia. Start your AI companion journey today!',
     url: 'https://kruthika.fun',
-    siteName: 'Kruthika.fun',
+    siteName: 'Kruthika - AI Girlfriend & Virtual Companion',
     images: [
       {
         url: 'https://kruthika.fun/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Kruthika.fun - AI Girlfriend Chat',
+        alt: 'Kruthika AI Girlfriend - Free Virtual Companion for Emotional Support',
       },
     ],
     locale: 'en_US',
     type: 'website',
+    countryName: 'United States',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Kruthika.fun - #1 AI Girlfriend Chat | Best Virtual Companion 2024',
-    description: 'Meet Kruthika, India\'s most realistic AI girlfriend. Free AI dating with authentic conversations and emotional connection. Chat with your virtual girlfriend now!',
+    title: 'AI Girlfriend Free | Best Virtual Companion for Emotional Support',
+    description: 'Chat with Kruthika - World\'s most realistic AI girlfriend. Free unlimited conversations, emotional support for loneliness, anxiety, depression. Available 24/7 globally. Start now!',
     images: ['https://kruthika.fun/og-image.png'],
     creator: '@kruthikafun',
+    site: '@kruthikafun',
   },
   alternates: {
     canonical: 'https://kruthika.fun',
   },
   other: {
     'google-site-verification': 'verification-for-kruthika-fun-search-console',
+    'geo.region': 'US',
+    'geo.placename': 'United States',
+    'geo.position': 'global',
+    'ICBM': 'global',
   },
 };
 

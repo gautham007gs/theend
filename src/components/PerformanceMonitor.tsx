@@ -179,9 +179,9 @@ export function PerformanceMonitor() {
   }, [isVisible]);
 
   // Prevent hydration mismatch
-  const [isClient, setIsClient] = React.useState(false);
+  const [isClient, setIsClient] = useState(false);
   
-  React.useEffect(() => {
+  useEffect(() => {
     setIsClient(true);
   }, []);
 

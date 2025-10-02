@@ -1,245 +1,75 @@
 # Maya Chat - AI Companion Application
 
 ## Overview
-
-Maya Chat is an AI-powered conversational application featuring "Kruthika," a 23-year-old Indian AI companion. The application simulates realistic chat experiences with WhatsApp-like UI, multilingual support (English, Hindi, Kannada), emotional state management, and time-based behavioral patterns. Built with Next.js 15, the app integrates Google's Gemini AI through both Genkit framework and direct Google AI SDK implementation, with Supabase for analytics and configuration management.
-
-## Recent Changes (October 2, 2025)
-
-### 🚀 MAJOR SEO & PERFORMANCE OPTIMIZATION (October 2, 2025)
-
-Implemented comprehensive SEO enhancements and performance optimizations to achieve top Google rankings:
-
-#### SEO Enhancements
-- **Enhanced Schema Markup**: Added Organization, WebSite, WebApplication, and SoftwareApplication schemas
-- **Blog Expansion**: Created new SEO-rich blog post with comprehensive content, images, and FAQ sections
-  - "AI Girlfriend for Emotional Support & Loneliness: Complete Guide 2025"
-- **FAQ Page**: Created dedicated FAQ page with 15+ comprehensive questions and FAQ schema markup
-- **Dynamic Sitemap**: Updated sitemap.xml to include all blog posts for better indexing
-- **Robots.txt**: Configured for optimal search engine crawling
-
-#### Performance Optimizations
-- **Image Optimization**: Using Next.js Image component with AVIF/WebP formats, lazy loading
-- **Code Splitting**: Enhanced webpack configuration for optimal bundle splitting
-- **Caching Strategy**: Aggressive caching headers for static assets (1-year max-age)
-- **CSS Optimization**: Enabled experimental CSS optimization in Next.js config
-- **Bundle Analysis**: Configured bundle analyzer for ongoing optimization monitoring
-
-#### Configuration Updates
-- **Deployment Ready**: Configured autoscale deployment with proper build and run commands
-- **Cross-Origin Fixed**: Updated allowedDevOrigins to use wildcard patterns for Replit domains
-- **Port Configuration**: Properly configured for port 5000 with 0.0.0.0 host for Replit environment
-
-#### Files Added/Modified
-- `src/app/blog/ai-girlfriend-emotional-support-loneliness/page.tsx` - New comprehensive blog post
-- `src/app/faq/page.tsx` - New FAQ page with schema markup
-- `src/components/StructuredData.tsx` - Enhanced with comprehensive SEO schemas
-- `src/app/sitemap.ts` - Updated with all blog posts
-- `next.config.ts` - Enhanced for better cross-origin handling
-- Stock images downloaded to `attached_assets/stock_images/` for blog posts
-
-**Site is now fully optimized for top Google rankings with lightning-fast load times!**
-
----
-
-## Recent Changes (October 1, 2025)
-
-### 🔐 ADMIN AUTHENTICATION & ROUTE PROTECTION (October 1, 2025)
-
-Implemented complete admin panel authentication with smart redirect functionality:
-
-#### Authentication Flow
-- **Protected Routes**: `/admin/analytics` and `/admin/profile` now require authentication
-- **Smart Redirects**: Unauthenticated users are redirected to login with return URL
-- **Post-Login Redirect**: After successful login, users are automatically redirected to the page they were trying to access
-- **Session Management**: Uses Supabase authentication with sessionStorage for session persistence
-
-#### Technical Implementation
-- **Login Page** (`/admin/login`): Accepts `returnUrl` query parameter for redirect after login
-- **Analytics Page**: Redirects to `/admin/login?returnUrl=/admin/analytics` when not authenticated
-- **Profile Page**: Redirects to `/admin/login?returnUrl=/admin/profile` when not authenticated
-- **Auto-Skip Login**: If already authenticated, login page auto-redirects to returnUrl destination
-
-#### Files Modified
-- `src/app/admin/login/page.tsx` - Enhanced with returnUrl parameter handling
-- `src/app/admin/analytics/page.tsx` - Added redirect with returnUrl on auth check
-- `src/app/admin/profile/page.tsx` - Added redirect with returnUrl on auth check
-
----
-
-## Recent Changes (October 1, 2025)
-
-### 🔒 MAJOR SECURITY ENHANCEMENTS - Maximum Protection (October 1, 2025)
-
-Implemented **comprehensive enterprise-grade security** to protect against all major cyber threats:
-
-#### Multi-Layer DDoS Protection
-- **Global Rate Limiting**: 10,000 requests/minute application-wide
-- **Per-IP Adaptive Limiting**: 30-120 requests/minute based on endpoint
-- **Burst Protection**: Blocks rapid-fire attacks (max 20 requests in 10 seconds)
-- **Progressive Blocking**: Escalating temporary blocks for repeat offenders
-- **IP Reputation System**: 0-100 scoring with automatic blocking at low scores
-
-#### Advanced SQL Injection Protection
-- **Pattern Detection**: Blocks SQL commands (SELECT, DROP, UNION, etc.)
-- **Comment Blocking**: Prevents SQL comment exploits (--, /*, ;)
-- **Boolean Logic Detection**: Catches OR 1=1 and AND 1=1 patterns
-- **Schema Protection**: Blocks information_schema access attempts
-- **Triple Sanitization**: Three layers of input sanitization before database operations
-
-#### Comprehensive XSS Protection
-- **Script Tag Blocking**: All <script> tags blocked
-- **Event Handler Blocking**: Blocks onclick, onload, onerror, etc.
-- **Protocol Blocking**: Blocks javascript:, vbscript:, data: protocols
-- **HTML Entity Encoding**: All user input HTML-encoded
-- **Strict CSP Headers**: Content Security Policy enforced
-
-#### CSRF Protection
-- **Cryptographic Tokens**: 256-bit random CSRF tokens
-- **One-Time Use**: Tokens expire after single use
-- **SameSite=Strict**: Strong cookie-based CSRF protection
-- **Origin Validation**: Request origin header verification
-
-#### Cookie Security
-- **HttpOnly**: Prevents JavaScript access (XSS protection)
-- **Secure**: HTTPS-only in production
-- **SameSite=Strict**: Prevents CSRF attacks
-- **Signed Cookies**: HMAC-SHA256 signatures prevent tampering
-- **Session Rotation**: Prevents session fixation attacks
-
-#### Additional Security Measures
-- **Bot Detection**: User-agent analysis and behavior patterns
-- **Honeypot Fields**: Hidden fields trap automated bots
-- **Request Signatures**: HMAC-SHA256 signed requests prevent tampering
-- **Security Headers**: Comprehensive HTTP security headers
-- **IP Blocking**: Permanent blocklist for severe violators
-- **Security Logging**: Complete audit trail of security events
-
-#### Security Files Added
-- `src/lib/enhanced-security.ts` - Maximum security implementation
-- `src/lib/secure-cookies.ts` - Secure cookie management
-- `SECURITY.md` - Complete security documentation
-
-**All API routes and middleware now use triple-layer security protection!**
-
----
-
-### Latest Updates - Anti-Spam & Cost Optimization (September 30, 2025)
-- **Anti-Spam System**: Implemented comprehensive spam detection that blocks users after 3 meaningless messages (single characters, emojis, punctuation only) within 10 seconds to reduce AI costs
-- **Rate Limiting**: Added 2-second cooldown between messages to prevent rapid spam submissions
-- **Input Validation**: Messages are now limited to 200 characters maximum to optimize token usage
-- **Emoji Optimization**: Emoji-only responses now use a local response map instead of consuming AI tokens
-- **Cost Reduction**: Smart message filtering prevents meaningless inputs from being sent to AI, significantly reducing operational costs
-
-### WhatsApp-Style UI Enhancements
-- **Avatar Zoom View**: Updated avatar zoom modal to match WhatsApp's dark theme with proper colors (#0b141a, #202c33, #00a884)
-- **Improved Modal**: Better header and footer design with X close icon instead of arrow
-- **Clickable AI Avatars**: AI avatars in chat messages are now clickable to open zoom view, just like WhatsApp
-- **Better UX**: Enhanced modal layout with improved spacing and visual hierarchy
-
-### Mobile Performance Optimizations (Enhanced)
-- **GPU Acceleration**: Added enhanced touch event optimization with hardware acceleration for smooth interactions
-- **Viewport Settings**: Improved mobile viewport configuration for better rendering
-- **Touch Responsiveness**: Eliminated tap highlighting and improved touch feedback across all device types
-- **Scrolling Performance**: Optimized scroll behavior for smoother chat experience on mobile devices
-
-### SEO Improvements (Enhanced)
-- **Enhanced Metadata**: Added metadataBase, applicationName, and category fields for better search visibility
-- **Google Bot Optimization**: Improved Google-specific settings and robots configuration
-- **Better Indexing**: Optimized metadata structure for improved search engine crawling
-
-### Critical Bug Fixes
-- **Fixed Duplicate Message ID Bug**: Implemented UUID-based message ID generation using `crypto.randomUUID()` to prevent Supabase constraint violations
-- **Fixed Analytics Tracking**: Corrected message.media reference to message.userImageUrl in ChatView.tsx to prevent TypeScript errors
-- **Fixed Next.js Configuration Issues**: Removed duplicate `compress` property in next.config.ts
-- **Migrated Turbopack Configuration**: Moved from deprecated `experimental.turbo` to stable `turbopack` configuration
-- **Fixed Cross-Origin Warnings**: Updated `allowedDevOrigins` with current Replit domain
-- **Resolved Hydration Errors**: Wrapped all Recharts ResponsiveContainer components with ClientOnly to prevent server/client HTML mismatches
-- **Fixed TypeScript Errors**: Corrected class/className issues in all blog pages
-
-### Performance Enhancements
-- **Code Splitting**: Enhanced webpack configuration for optimal code splitting with vendor and common chunk strategies
-- **CSS Optimization**: Enabled `optimizeCss` experimental flag for smaller CSS bundles
-- **Package Import Optimization**: Optimized imports for lucide-react, recharts, @supabase/supabase-js, @radix-ui packages
-- **Skeleton Loaders**: Created comprehensive skeleton components (ChatSkeleton, AnalyticsSkeleton, BlogSkeleton, ProfileSkeleton) instead of plain "Loading..." text
-- **Lazy Loading**: Added loading.tsx files with skeleton loaders for maya-chat and admin/analytics routes
-
-### Configuration Updates
-- Next.js now uses stable Turbopack with optimizeCss enabled for faster development builds
-- Cross-origin requests properly configured for Replit environment
-- Deployment ready with proper build and start commands
-- Enhanced security headers and CSRF protection already in place
-
-### Known Issues Requiring Setup
-- Supabase database tables need to be created (see SUPABASE_SETUP.md for SQL scripts)
-- Environment variables NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY need to be configured
+Maya Chat is an AI-powered conversational application featuring "Kruthika," a 23-year-old Indian AI companion. The application simulates realistic chat experiences with a WhatsApp-like UI, multilingual support (English, Hindi, Kannada), emotional state management, and time-based behavioral patterns. Built with Next.js 15, the app integrates Google's Gemini AI through both Genkit framework and direct Google AI SDK implementation, with Supabase for analytics and configuration management. The project aims for global SEO dominance and robust mobile performance, targeting a worldwide audience seeking AI companionship for emotional support and mental well-being.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: Next.js 15 with React 18, using App Router architecture
-- **UI Components**: Radix UI primitives with shadcn/ui component library
-- **Styling**: Tailwind CSS with custom WhatsApp-inspired green theme
-- **State Management**: React Context API for global state (AI Profile, Ad Settings, Media Assets, Global Status)
-- **Type Safety**: TypeScript with strict configuration
+- **Framework**: Next.js 15 with React 18, using App Router.
+- **UI Components**: Radix UI primitives with shadcn/ui.
+- **Styling**: Tailwind CSS with a WhatsApp-inspired green theme.
+- **State Management**: React Context API for global state (AI Profile, Ad Settings, Media Assets, Global Status).
+- **Type Safety**: TypeScript.
+- **UI/UX Decisions**: WhatsApp-like chat interface, avatar zoom view, enhanced mobile viewport, optimized touch responsiveness, and GPU acceleration for smooth interactions. Skeleton loaders are used for improved perceived performance.
 
 ### Backend Architecture
-- **AI Integration**: Dual approach using Google Genkit framework and direct Google AI SDK (@google/generative-ai)
-- **AI Models**: Gemini 2.0 Flash, Gemini 1.5 Pro, and Gemini 1.5 Flash 8B
-- **Server Actions**: Next.js server actions for AI communication
-- **Authentication**: Service account-based Google Cloud authentication
-- **Error Handling**: Graceful fallbacks from Genkit to direct Google AI implementation
+- **AI Integration**: Dual approach using Google Genkit framework and direct Google AI SDK (@google/generative-ai).
+- **AI Models**: Gemini 2.0 Flash, Gemini 1.5 Pro, and Gemini 1.5 Flash 8B.
+- **Server Actions**: Next.js server actions for AI communication.
+- **Authentication**: Service account-based Google Cloud authentication for AI services.
+- **Error Handling**: Graceful fallbacks from Genkit to direct Google AI implementation.
+- **Anti-Spam & Cost Optimization**: Implemented anti-spam system with message filtering, rate limiting, and input validation (200 characters max) to reduce AI token usage. Emoji-only responses use a local response map.
+- **Security**: Comprehensive enterprise-grade security including multi-layer DDoS protection, advanced SQL injection protection, XSS protection, CSRF protection, secure cookie management (HttpOnly, Secure, SameSite=Strict, Signed Cookies), bot detection, honeypot fields, and robust security logging.
+- **Admin Authentication**: Protected routes for `/admin/analytics` and `/admin/profile` with Supabase authentication, smart redirects, and session management.
 
 ### Data Storage Solutions
-- **Primary Database**: Supabase (PostgreSQL) for analytics, global configurations, and user activity tracking
-- **Local Storage**: Browser localStorage for chat messages, user preferences, and session data
-- **Configuration Management**: Centralized app configurations stored in Supabase with local fallbacks
+- **Primary Database**: Supabase (PostgreSQL) for analytics, global configurations, and user activity tracking.
+- **Local Storage**: Browser `localStorage` for chat messages, user preferences, and session data.
+- **Configuration Management**: Centralized app configurations stored in Supabase with local fallbacks.
 
 ### AI Personality System
-- **Emotional State Simulation**: Dynamic mood tracking and contextual responses
-- **Multilingual Support**: Language detection and culturally appropriate responses
-- **Behavioral Patterns**: Time-based greetings, typing delays, and proactive messaging
-- **Character Consistency**: Maintains 23-year-old Indian girl persona with Hinglish expressions
-
-### Authentication and Authorization
-- **Google Cloud**: Service account authentication for AI services
-- **Environment Variables**: Secure API key management with multiple fallback keys
-- **Client-side Security**: No authentication required for end users
+- **Emotional State Simulation**: Dynamic mood tracking and contextual responses.
+- **Multilingual Support**: Language detection and culturally appropriate responses.
+- **Behavioral Patterns**: Time-based greetings, typing delays, and proactive messaging.
+- **Character Consistency**: Maintains 23-year-old Indian girl persona with Hinglish expressions.
 
 ### Advertising Integration
-- **Ad Networks**: Adsterra and Monetag integration with configurable settings
-- **Ad Types**: Banner ads, native banners, social bars, and pop-under advertisements
-- **Smart Triggering**: Message-based, time-based, and user activity-based ad display logic
-- **Revenue Optimization**: Rotational ad display with daily and session limits
+- **Ad Networks**: Adsterra and Monetag integration.
+- **Ad Types**: Banner ads, native banners, social bars, and pop-under advertisements.
+- **Smart Triggering**: Message-based, time-based, and user activity-based ad display logic.
+- **Revenue Optimization**: Rotational ad display with daily and session limits.
+
+### System Design Choices
+- **SEO**: Implemented world-class global SEO targeting with primary and long-tail keywords, international SEO architecture (hreflang, geo-targeting metadata, localized content), and enhanced schema markup (Organization, WebSite, WebApplication, HowTo, Review).
+- **Performance**: Mobile performance optimizations include service workers for aggressive caching, Core Web Vitals targeting, resource hints, font optimization, image optimization (Next.js Image, AVIF/WebP), code splitting, CSS optimization, and bundle analysis.
+- **Deployment**: Configured for autoscale deployment on Vercel with proper build and run commands; also supports Replit environment.
 
 ## External Dependencies
 
 ### Core AI Services
-- **Google AI Platform**: Gemini models via Google AI SDK and Vertex AI
-- **Google Genkit**: AI flow orchestration framework (with fallback mechanisms)
+- **Google AI Platform**: Gemini models via Google AI SDK and Vertex AI.
+- **Google Genkit**: AI flow orchestration framework.
 
 ### Database and Analytics
-- **Supabase**: PostgreSQL database for analytics, configurations, and user tracking
-- **Real-time subscriptions**: For live configuration updates
+- **Supabase**: PostgreSQL database for analytics, configurations, and user tracking, including real-time subscriptions.
 
 ### Advertisement Networks
-- **Adsterra**: Display advertising with multiple ad formats
-- **Monetag**: Alternative ad network for revenue diversification
+- **Adsterra**: Display advertising.
+- **Monetag**: Alternative ad network.
 
 ### Development and Deployment
-- **Vercel**: Deployment platform (configured for production)
-- **Replit**: Development environment with custom server configurations
+- **Vercel**: Deployment platform.
+- **Replit**: Development environment.
 
 ### UI and Styling
-- **Radix UI**: Headless component primitives
-- **Tailwind CSS**: Utility-first styling framework
-- **Lucide React**: Icon library for consistent iconography
+- **Radix UI**: Headless component primitives.
+- **Tailwind CSS**: Utility-first styling framework.
+- **Lucide React**: Icon library.
 
 ### Utilities and Tools
-- **TanStack Query**: Data fetching and caching (configured but not actively used)
-- **date-fns**: Date manipulation and formatting
-- **clsx/twMerge**: Dynamic class name handling
+- **date-fns**: Date manipulation and formatting.
+- **clsx/twMerge**: Dynamic class name handling.
