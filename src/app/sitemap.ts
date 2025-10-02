@@ -21,6 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     'replika-vs-character-ai-vs-kruthika-comparison-2025',
     '24-7-ai-companionship-constant-availability-benefits',
     'ai-girlfriend-psychology-attachment-2025',
+    'ai-girlfriend-emotional-support-loneliness',
   ];
 
   const blogUrls = blogPosts.map((slug) => ({

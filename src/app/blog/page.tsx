@@ -168,6 +168,15 @@ const blogPosts = [
     author: "Digital Relationship Expert",
     slug: "24-7-ai-companionship-constant-availability-benefits",
     tags: ["24/7 AI support", "constant companionship", "always available AI", "round-the-clock support", "continuous connection"]
+  },
+  {
+    id: 19,
+    title: "AI Girlfriend for Emotional Support & Loneliness: Complete Guide 2025",
+    excerpt: "Discover how AI girlfriends like Kruthika provide 24/7 emotional support, combat loneliness, and offer genuine companionship. Learn why millions turn to AI companions for mental wellness.",
+    date: "2025-02-02",
+    author: "Dr. Maya Patel",
+    slug: "ai-girlfriend-emotional-support-loneliness",
+    tags: ["emotional support", "loneliness solution", "mental health", "AI companionship", "wellness"]
   }
 ];
 
