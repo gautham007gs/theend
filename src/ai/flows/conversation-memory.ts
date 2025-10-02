@@ -85,20 +85,26 @@ export function updateConversationContext(
   if (timeSpent < 60000) updated.relationshipLevel += 0.02; // Quick responses = engagement
   updated.relationshipLevel = Math.min(1, updated.relationshipLevel);
 
-  // Track topics with better weighting
+  // Track topics with better weighting and sentiment
   const topics = extractTopics(userMessage);
+  const messageSentiment = userEmotion === 'positive' || userEmotion === 'excited' ? 'positive' : 
+                          userEmotion === 'negative' || userEmotion === 'sad' ? 'negative' : 'neutral';
+  
   topics.forEach(topic => {
     const existing = updated.topics.find(t => t.topic === topic);
     if (existing) {
       existing.lastMentioned = Date.now();
       existing.userInterest = Math.min(1, existing.userInterest + 0.15);
+      // Track sentiment per topic for context-aware responses
+      (existing as any).lastSentiment = messageSentiment;
     } else {
       updated.topics.push({
         topic,
         lastMentioned: Date.now(),
         userInterest: 0.6,
-        kruthikaInterest: getKruthikaInterestInTopic(topic)
-      });
+        kruthikaInterest: getKruthikaInterestInTopic(topic),
+        ...(messageSentiment !== 'neutral' && { lastSentiment: messageSentiment })
+      } as any);
     }
   });
 

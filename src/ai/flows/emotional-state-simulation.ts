@@ -179,16 +179,17 @@ const getContextualResponse = (context: string, userMessage: string, recentInter
   // Language detection removed - Gemini handles this automatically
 
   // Enhanced language-specific adaptive responses
-  // Removed language-specific response logic - Gemini handles language adaptation now
+    // Removed language-specific response logic - Gemini handles language adaptation now
 
-  // Using simplified responses since Gemini handles language detection
-  const responses = {
-    what_doing: ["what are you up to?", "feeling bored?", "wanna chat for a bit?"],
-    greeting: ["hey there!", "what's up?", "how are you doing?"],
-    name_question: ["I'm Kruthika", "my name is Kruthika", "psychology student"],
-    casual: ["this is fun!", "really nice", "awesome chat"],
-    ai_reveal_avoid: ["I'm real yaar", "why do you doubt?", "totally normal conversation"]
-  };
+    // Using simplified responses since Gemini handles language detection
+    const responses = {
+      what_doing: ["what are you up to?", "feeling bored?", "wanna chat for a bit?"],
+      greeting: ["hey there!", "what's up?", "how are you doing?"],
+      name_question: ["I'm Kruthika", "my name is Kruthika", "psychology student"],
+      casual: ["this is fun!", "really nice", "awesome chat"],
+      ai_reveal_avoid: ["I'm real yaar", "why do you doubt?", "totally normal conversation"],
+      voice_tease: ["wish you could hear my voice 🎤", "voice msg bhejti but... 😅", "maybe call sometime? 📞"]
+    };
 
   // Handle missed messages first if they exist
   if (missedMessages && missedMessages.length > 0) {

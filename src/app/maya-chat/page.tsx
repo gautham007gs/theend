@@ -1158,8 +1158,18 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       );
     }, deliveredDelay);
 
-    // Schedule read status update when AI responds (realistic delay)
-    const scheduleReadReceipt = (messageId: string, delay: number = 2000) => {
+    // Schedule read status update when AI responds (realistic delay based on content)
+    const scheduleReadReceipt = (messageId: string, customDelay?: number) => {
+      // Longer read delays for emotional/complex messages
+      const msg = messages.find(m => m.id === messageId);
+      const isEmotional = msg?.text.toLowerCase().match(/(love|sad|happy|miss|angry)/);
+      const isQuestion = msg?.text.includes('?');
+      
+      let delay = customDelay || 2000;
+      if (isEmotional) delay += 1000; // Take longer to read emotional messages
+      if (isQuestion) delay -= 500; // Read questions faster
+      if (msg && msg.text.length > 100) delay += 1500; // Longer messages take time
+      
       setTimeout(() => {
         setMessages((prev) =>
           prev.map((msg) =>
