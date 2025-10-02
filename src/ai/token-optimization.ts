@@ -12,14 +12,23 @@ const MAX_CACHE_SIZE = 2000; // Increased for high traffic
 
 // Smart model selection based on task complexity
 export function selectOptimalModel(taskType: 'simple' | 'conversation' | 'complex' | 'proactive'): string {
+  // Check daily budget before selecting model
+  const dailyCost = parseFloat(localStorage.getItem('daily_api_cost') || '0');
+  const DAILY_BUDGET = 5.00; // $5 daily limit
+  
+  if (dailyCost > DAILY_BUDGET * 0.9) {
+    // Use cache-only responses near budget limit
+    return 'cache_only';
+  }
+  
   switch (taskType) {
     case 'simple':
     case 'proactive':
-      return VERTEX_MODELS.GEMINI_2_FLASH; // Cheapest option: $0.15/M input, $0.60/M output
+      return VERTEX_MODELS.GEMINI_2_FLASH; // $0.075/M input, $0.30/M output (50% cheaper)
     case 'conversation':
-      return VERTEX_MODELS.GEMINI_2_FLASH; // Still cost-effective for regular chat
+      return VERTEX_MODELS.GEMINI_2_FLASH; 
     case 'complex':
-      return VERTEX_MODELS.GEMINI_FLASH; // Only for complex reasoning
+      return VERTEX_MODELS.GEMINI_FLASH; 
     default:
       return VERTEX_MODELS.GEMINI_2_FLASH;
   }

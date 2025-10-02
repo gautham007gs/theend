@@ -11,8 +11,9 @@ class ConnectionPool {
   private static instance: ConnectionPool;
   private requestQueue: Array<{ fn: () => Promise<any>; priority: number }> = [];
   private activeConnections = 0;
-  private readonly maxConnections = 150; // Further increased for higher traffic
-  private readonly queueTimeout = 2000; // Further reduced timeout
+  private readonly maxConnections = 50; // Safe limit for Supabase
+  private readonly queueTimeout = 5000; // More reasonable timeout
+  private readonly warningThreshold = 40; // Alert at 80% capacity
   private batchQueue: Array<{ query: string; resolve: Function; reject: Function }> = [];
   private batchTimer: NodeJS.Timeout | null = null;
   private readonly priorityLevels = { HIGH: 1, NORMAL: 2, LOW: 3 };

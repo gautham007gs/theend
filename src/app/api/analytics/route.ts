@@ -280,7 +280,8 @@ export async function GET(request: NextRequest) {
   // Apply API security with rate limiting
   const securityCheck = await APISecurityManager.secureAPIRoute(request, {
     allowedMethods: ['GET'],
-    rateLimit: { requests: 100, window: 60000 } // 100 requests per minute
+    rateLimit: { requests: 30, window: 60000 }, // 30 requests per minute
+    requireAuth: true // Require authentication for analytics
   });
   if (securityCheck) return securityCheck;
 

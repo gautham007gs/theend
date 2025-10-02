@@ -103,9 +103,12 @@ export default function RootLayout({
       <head>
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#4F46E5" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href="https://kruthika.fun" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />

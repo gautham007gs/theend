@@ -158,10 +158,14 @@ export async function generateAIResponse(
       throw new Error('Empty response from Vertex AI');
     }
 
-    // Track token usage for cost monitoring
-    const estimatedInputTokens = Math.ceil(prompt.length / 4);
-    const estimatedOutputTokens = Math.ceil(text.length / 4);
-    trackTokenUsage(estimatedInputTokens, estimatedOutputTokens, false);
+    // Get actual token usage from Vertex AI response metadata
+    const usageMetadata = response.usageMetadata;
+    const actualInputTokens = usageMetadata?.promptTokenCount || Math.ceil(prompt.length / 4);
+    const actualOutputTokens = usageMetadata?.candidatesTokenCount || Math.ceil(text.length / 4);
+    
+    trackTokenUsage(actualInputTokens, actualOutputTokens, false);
+    
+    console.log(`Vertex AI: Actual token usage - Input: ${actualInputTokens}, Output: ${actualOutputTokens}`);
     
     // Cache the response for future use
     cacheResponse(userMessage, text, systemPrompt, contextHash);

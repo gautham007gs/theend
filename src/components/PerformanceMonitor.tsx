@@ -185,6 +185,8 @@ export function PerformanceMonitor() {
     setIsClient(true);
   }, []);
 
+  // Disable in production to save resources
+  if (process.env.NODE_ENV === 'production') return null;
   if (!isClient || !isVisible || !metrics) return null;
 
   // Performance score calculation
