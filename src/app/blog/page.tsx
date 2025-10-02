@@ -242,7 +242,7 @@ export default function BlogPage() {
               AI Girlfriend Blog - Virtual Relationships & Digital Love
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-              Welcome to the ultimate resource for AI girlfriend insights, virtual companionship guides, and digital relationship expertise. Discover the psychology, technology, and cultural impact of AI girlfriends like Kruthika. Expert articles on virtual love, emotional AI, and the future of digital relationships.
+              Welcome to the ultimate resource for AI girlfriend insights, virtual companionship guides, and digital relationship expertise. Discover the psychology, technology, and cultural impact of AI girlfriends like Kruthika. Expert articles on virtual love, emotional AI, and the future of digital relationships in USA, UK, Canada, Australia, and India.
             </p>
             
             {/* Featured CTA */}

@@ -10,7 +10,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: 'The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real',
-  description: 'Explore the psychological aspects of AI girlfriend relationships and why people form deep emotional bonds with virtual companions like Kruthika. Understand the science behind virtual love and digital intimacy.',
+  description: 'Explore the psychological aspects of AI girlfriend relationships and why people in USA, UK, Canada, Australia, and India form deep emotional bonds with virtual companions like Kruthika. Understand the science behind virtual love and digital intimacy worldwide.',
   author: {
     '@type': 'Person',
     name: 'Dr. Priya Sharma'

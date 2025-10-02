@@ -19,6 +19,7 @@ import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import MobilePerformanceOptimizer from '@/components/MobilePerformanceOptimizer';
 import MobileChatOptimizer from '@/components/chat/MobileChatOptimizer';
+import MobileLighthouseOptimizer from '@/components/MobileLighthouseOptimizer';
 
 // Optimize font loading for better performance
 const inter = Inter({
@@ -124,7 +125,7 @@ export default function RootLayout({
         <StructuredData />
 
         {/* Reduce CLS with font metrics - use CSS variables only */}
-        
+
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <ErrorBoundary>
@@ -143,6 +144,7 @@ export default function RootLayout({
                   <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
                   <MobilePerformanceOptimizer />
                   <MobileChatOptimizer />
+                  <MobileLighthouseOptimizer />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>
