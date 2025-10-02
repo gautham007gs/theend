@@ -364,11 +364,17 @@ class RequestSignature {
 
 // Honeypot Detection (catches bots)
 class HoneypotDetection {
-  private static honeypotFields = ['email_confirm', 'website', 'url', 'phone_confirm'];
+  private static honeypotFields = ['email_confirm', 'website', 'url', 'phone_confirm', 'company', 'fax'];
   
   // Check if honeypot was triggered
   static checkHoneypot(data: any): boolean {
     return this.honeypotFields.some(field => data[field] && data[field].length > 0);
+  }
+  
+  // Time-based bot detection
+  static checkSubmissionSpeed(formStartTime: number): boolean {
+    const submissionTime = Date.now() - formStartTime;
+    return submissionTime < 2000; // Submitted in less than 2 seconds = likely bot
   }
 }
 

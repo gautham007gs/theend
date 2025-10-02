@@ -178,7 +178,14 @@ export function PerformanceMonitor() {
     };
   }, [isVisible]);
 
-  if (!isVisible || !metrics) return null;
+  // Prevent hydration mismatch
+  const [isClient, setIsClient] = React.useState(false);
+  
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || !isVisible || !metrics) return null;
 
   // Performance score calculation
   const calculateScore = () => {
