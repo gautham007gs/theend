@@ -4,6 +4,32 @@ import { MetadataRoute } from 'next'
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://kruthika.fun'
   
+  const blogPosts = [
+    'psychology-ai-girlfriends',
+    'ai-girlfriends-india-dating-culture',
+    'building-perfect-ai-girlfriend-technology',
+    'benefits-ai-girlfriend-kruthika',
+    'future-ai-girlfriends-2024',
+    'kruthika-origin-story-mumbai-ai-girlfriend',
+    'best-ai-girlfriend-apps-india-2025',
+    'how-to-talk-ai-girlfriend-conversation-guide',
+    'ai-girlfriend-privacy-safety-guide',
+    'ai-girlfriend-voice-chat-technology-2025',
+    'free-ai-girlfriend-apps-vs-premium-2025',
+    'ai-companion-social-anxiety-confidence-building',
+    'ai-girlfriend-market-statistics-2025-growth-trends',
+    'replika-vs-character-ai-vs-kruthika-comparison-2025',
+    '24-7-ai-companionship-constant-availability-benefits',
+    'ai-girlfriend-psychology-attachment-2025',
+  ];
+
+  const blogUrls = blogPosts.map((slug) => ({
+    url: `${baseUrl}/blog/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
   return [
     {
       url: baseUrl,
@@ -20,45 +46,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.8,
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
-    {
-      url: `${baseUrl}/blog/ai-girlfriends-india-dating-culture`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/benefits-ai-girlfriend-kruthika`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/building-perfect-ai-girlfriend-technology`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/future-ai-girlfriends-2024`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/kruthika-origin-story-mumbai-ai-girlfriend`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog/psychology-ai-girlfriends`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
+    ...blogUrls,
     {
       url: `${baseUrl}/status`,
       lastModified: new Date(),
