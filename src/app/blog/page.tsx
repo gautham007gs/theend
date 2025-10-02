@@ -197,23 +197,26 @@ const jsonLd = {
       '@type': 'ImageObject',
       url: 'https://kruthika.fun/og-image.png'
     }
-  },
-  mainEntity: {
-    '@type': 'ItemList',
-    itemListElement: [
-      {
-        '@type': 'BlogPosting',
-        position: 1,
-        headline: 'The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real',
-        url: 'https://kruthika.fun/blog/psychology-ai-girlfriends'
-      },
-      {
-        '@type': 'BlogPosting',
-        position: 2,
-        headline: 'How AI Girlfriends Are Revolutionizing Dating Culture in India',
-        url: 'https://kruthika.fun/blog/ai-girlfriends-india-dating-culture'
-      }
-    ]
+  }
+};
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: blogPosts.map((post, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: post.title,
+    url: `https://kruthika.fun/blog/${post.slug}`
+  }))
+};
+
+const speakableSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  speakable: {
+    '@type': 'SpeakableSpecification',
+    cssSelector: ['h1', 'h2', '.blog-description']
   }
 };
 
@@ -223,6 +226,14 @@ export default function BlogPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
       />
       <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-4 py-12">
