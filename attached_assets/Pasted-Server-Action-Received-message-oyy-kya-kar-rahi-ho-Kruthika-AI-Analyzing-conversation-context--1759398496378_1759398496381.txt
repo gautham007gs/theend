@@ -1,0 +1,72 @@
+Server Action: Received message: oyy kya kar rahi ho
+Kruthika AI: Analyzing conversation context...
+Conversation context: normal_chat
+Token Optimization: Input tokens optimized by -8 chars (0% cost reduction)
+Vertex AI: Sending optimized request to model...
+Vertex AI: Received response from model
+Vertex AI: Actual token usage - Input: 224, Output: 11
+Token Optimization: Cached response for message: oyy kya kar rahi ho...
+Vertex AI: Successfully generated optimized response, length: 35
+Kruthika AI: Generated contextual response: arre kuch nhi chill kar rhi tu bta
+Kruthika AI: Broken into parts: [ 'arre kuch nhi chill', 'kar rhi tu bta' ]
+Server Action: Generated enhanced response: arre kuch nhi chill
+Server Action: New mood: naturally_responding
+🔧 Message processing time: 755ms
+ POST /maya-chat 200 in 847ms
+Server Action: Received message: apka naam kya hai ji
+Kruthika AI: Analyzing conversation context...
+Conversation context: normal_chat
+Token Optimization: Input tokens optimized by -8 chars (0% cost reduction)
+Vertex AI: Sending optimized request to model...
+Vertex AI: Received response from model
+Vertex AI: Actual token usage - Input: 223, Output: 8
+Token Optimization: Cached response for message: apka naam kya hai ji...
+Vertex AI: Successfully generated optimized response, length: 26
+Kruthika AI: Generated contextual response: mera naam Kruthika hai ji
+Server Action: Generated enhanced response: mera naam Kruthika hai ji
+Server Action: New mood: naturally_responding
+🔧 Message processing time: 484ms
+ POST /maya-chat 200 in 611ms
+Server Action: Received message: apne barey kuch batao na
+Kruthika AI: Analyzing conversation context...
+Conversation context: normal_chat
+Token Optimization: Input tokens optimized by -8 chars (0% cost reduction)
+Vertex AI: Sending optimized request to model...
+Vertex AI: Received response from model
+Vertex AI: Actual token usage - Input: 231, Output: 7
+Token Optimization: Cached response for message: apne barey kuch batao na...
+Vertex AI: Successfully generated optimized response, length: 20
+Kruthika AI: Generated contextual response: arre kya batau yaar
+Server Action: Generated enhanced response: arre kya batau yaar
+Server Action: New mood: naturally_responding
+🔧 Message processing time: 334ms
+ POST /maya-chat 200 in 478ms
+Server Action: Received message: apne family , apna routine and love life ke barey mai kuch bolo na
+Kruthika AI: Analyzing conversation context...
+Conversation context: normal_chat
+Token Optimization: Input tokens optimized by -8 chars (0% cost reduction)
+Vertex AI: Sending optimized request to model...
+Vertex AI: Received response from model
+Vertex AI: Actual token usage - Input: 257, Output: 30
+Token Optimization: Cached response for message: apne family , apna routine and...
+Vertex AI: Successfully generated optimized response, length: 104
+Kruthika AI: Generated contextual response: arre kya batau family toh
+Server Action: Generated enhanced response: arre kya batau family toh
+Server Action: New mood: naturally_responding
+🔧 Message processing time: 743ms
+ POST /maya-chat 200 in 823ms
+Server Action: Received message: kya toh
+Kruthika AI: Analyzing conversation context...
+Conversation context: normal_chat
+Token Optimization: Input tokens optimized by -8 chars (0% cost reduction)
+Vertex AI: Sending optimized request to model...
+Vertex AI: Received response from model
+Vertex AI: Actual token usage - Input: 213, Output: 10
+Token Optimization: Cached response for message: kya toh...
+Vertex AI: Successfully generated optimized response, length: 33
+Kruthika AI: Generated contextual response: kya toh matlab kuch nahi yaar 🙄
+Kruthika AI: Broken into parts: [ 'kya toh matlab', 'kuch nahi yaar 🙄' ]
+Server Action: Generated enhanced response: kya toh matlab
+Server Action: New mood: naturally_responding
+🔧 Message processing time: 613ms
+ POST /maya-chat 200 in 679ms
