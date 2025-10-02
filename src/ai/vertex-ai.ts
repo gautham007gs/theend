@@ -172,7 +172,6 @@ export async function generateAIResponse(
     cacheResponse(userMessage, text, systemPrompt, contextHash);
     
     console.log(`Vertex AI: Successfully generated optimized response, length: ${text.length}`);
-    console.log(`Token Usage: ~${estimatedInputTokens} input, ~${estimatedOutputTokens} output tokens`);
     return text;
     
   } catch (error) {
