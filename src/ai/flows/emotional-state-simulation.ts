@@ -649,7 +649,7 @@ Reply:`;
       .replace(/\bmein\b/g, 'me')
       .replace(/\brahi hu\b/g, 'rhi hu')
       .replace(/\bkahi\b/g, 'kaha')
-      .replace(/\bnahin\b/g, 'nahi')
+      .replace(/\bnahin\b/g, ' nahi')
       .replace(/\bkarte\b/g, 'kar')
       .replace(/\bhunein\b/g, 'hun')
       .replace(/\bbanaya\b/g, 'banaya')
@@ -658,20 +658,21 @@ Reply:`;
       .replace(/\s+/g, ' ')
       .trim();
 
-    // Force shorter responses - cut at natural break points
-    if (processedResponse.length > 40) {
+    // Only truncate if response is excessively long (80+ chars) and can be naturally shortened
+    if (processedResponse.length > 80) {
       const words = processedResponse.split(' ');
-      if (words.length > 6) {
-        // Find good cutting point
-        for (let i = 3; i <= 6 && i < words.length; i++) {
+      if (words.length > 12) {
+        // Find good cutting point - but keep more context
+        for (let i = 8; i <= 12 && i < words.length; i++) {
           const partial = words.slice(0, i).join(' ');
-          if (partial.length <= 35 && (partial.includes('hai') || partial.includes('hu') || partial.includes('nahi') || partial.includes('yaar'))) {
+          if (partial.length <= 70 && (partial.includes('hai') || partial.includes('hu') || partial.includes('nahi') || partial.includes('yaar'))) {
             processedResponse = partial;
             break;
           }
         }
-        if (processedResponse.length > 40) {
-          processedResponse = words.slice(0, 5).join(' ');
+        // Only truncate if still too long
+        if (processedResponse.length > 80) {
+         processedResponse = words.slice(0, 10).join(' ');
         }
       }
     }
@@ -728,7 +729,10 @@ Reply:`;
       }
     }
 
-    console.log('Kruthika AI: Generated contextual response:', finalResponse);
+    console.log('Kruthika AI: Raw AI response length:', aiResponse.length);
+    console.log('Kruthika AI: Generated contextual response:', processedResponse);
+    console.log('Kruthika AI: Final response length:', processedResponse.length);
+
     if (multiPartResponse) {
       console.log('Kruthika AI: Broken into parts:', multiPartResponse);
     }
