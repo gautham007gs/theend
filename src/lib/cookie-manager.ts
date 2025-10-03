@@ -144,7 +144,9 @@ export class CookieManager {
       supportiveness: 0.7,
       playfulness: 0.5,
       intellectualness: 0.4,
-      emotionalDepth: 0.6
+      emotionalDepth: 0.6,
+      comfortLevel: 0.3, // New: How comfortable she is with user
+      trustScore: 0.5, // New: Trust built over time
     };
   }
 
