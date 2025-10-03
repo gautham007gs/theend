@@ -447,3 +447,33 @@ SELECT * FROM public.app_configurations;
 4. Restart your Next.js application
 
 Your analytics should now work with real data tracking!
+## Secure RLS Policies for Production
+
+**CRITICAL: Run these policies in Supabase SQL Editor after creating your admin user**
+
+```sql
+-- REMOVE these insecure policies:
+DROP POLICY IF EXISTS "Allow anon inserts for app configurations - PROTOTYPE ONLY - REMOVE FOR PROD" ON public.app_configurations;
+DROP POLICY IF EXISTS "Allow anon UPDATES for app configurations - EXTREMELY DANGEROUS - REMOVE FOR PROD" ON public.app_configurations;
+
+-- ADD secure policies (I have replaced 'YOUR_ADMIN_UID' with the real admin UID):
+CREATE POLICY "Allow ADMIN to insert configurations"
+ON public.app_configurations
+FOR INSERT
+WITH CHECK (auth.uid() = 'YOUR_ADMIN_UID');
+
+CREATE POLICY "Allow ADMIN to update configurations"
+ON public.app_configurations
+FOR UPDATE
+USING (auth.uid() = 'YOUR_ADMIN_UID')
+WITH CHECK (auth.uid() = 'YOUR_ADMIN_UID');
+```
+
+**Steps to implement:**
+1. Go to Supabase Dashboard → Authentication → Users
+2. Create your admin user or find existing user
+3. Copy the UID from the user details
+4. Replace 'YOUR_ADMIN_UID' in the SQL above with the actual UID
+5. Run the SQL in Supabase SQL Editor
+
+**Note:** After implementing these policies, only the authenticated admin user will be able to modify global configurations. Anonymous users will still be able to read configurations (required for the app to function).
