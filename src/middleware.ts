@@ -69,10 +69,17 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/admin') &&
       request.nextUrl.pathname !== '/admin/login') {
 
-    const supabase = createMiddlewareClient({ req: request, res: response });
-    const { data: { session } } = await supabase.auth.getSession();
+    try {
+      const supabase = createMiddlewareClient({ req: request, res: response });
+      const { data: { session }, error } = await supabase.auth.getSession();
 
-    if (!session) {
+      if (!session || error) {
+        const loginUrl = new URL('/admin/login', request.url);
+        loginUrl.searchParams.set('returnUrl', request.nextUrl.pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch (error) {
+      console.error('Admin auth check error:', error);
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('returnUrl', request.nextUrl.pathname);
       return NextResponse.redirect(loginUrl);

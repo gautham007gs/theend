@@ -52,19 +52,24 @@ const AdminLoginPage: React.FC = () => {
       password: password,
     });
 
-    setIsLoading(false);
-
     if (signInError) {
+      setIsLoading(false);
       setError(signInError.message || 'Invalid login credentials.');
       toast({ title: 'Login Failed', description: signInError.message || 'Incorrect email or password.', variant: 'destructive' });
-    } else if (data.user) {
+      return;
+    }
+
+    if (data.user) {
       // Session is automatically managed by Supabase in cookies
       toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
       
-      // Force router refresh to trigger middleware check
-      router.refresh();
-      router.push(returnUrl);
+      // Wait a moment for session to be fully established in cookies
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Use window.location for hard navigation to ensure middleware runs with new session
+      window.location.href = returnUrl;
     } else {
+      setIsLoading(false);
       setError('An unknown error occurred during login.');
       toast({ title: 'Login Error', description: 'An unexpected error occurred.', variant: 'destructive' });
     }

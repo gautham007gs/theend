@@ -75,20 +75,35 @@ const AdminProfilePage: React.FC = () => {
 
   // Check authentication on component mount using server session
   useEffect(() => {
+    let mounted = true;
+    
     const checkAuth = async () => {
-      const supabase = createClientComponentClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      try {
+        const supabase = createClientComponentClient();
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-      if (!session) {
-        toast({ title: "Access Denied", description: "Please log in as admin.", variant: "destructive" });
-        router.push('/admin/login?returnUrl=/admin/profile');
-      } else {
-        setIsCheckingAuth(false);
+        if (!mounted) return;
+
+        if (!session || error) {
+          toast({ title: "Access Denied", description: "Please log in as admin.", variant: "destructive" });
+          router.push('/admin/login?returnUrl=/admin/profile');
+        } else {
+          setIsCheckingAuth(false);
+        }
+      } catch (err) {
+        console.error('Auth check error:', err);
+        if (mounted) {
+          router.push('/admin/login?returnUrl=/admin/profile');
+        }
       }
     };
 
     checkAuth();
-  }, [router, toast]);
+    
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleLogout = async () => {
     const supabase = createClientComponentClient();
