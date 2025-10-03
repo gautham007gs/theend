@@ -127,6 +127,15 @@ export class MultiLevelCache<T> {
   }
 
   /**
+   * Get all cache keys from both levels
+   */
+  getAllKeys(): string[] {
+    const level1Keys = Array.from(this.level1.keys());
+    const level2Keys = Array.from(this.level2.keys());
+    return [...level1Keys, ...level2Keys];
+  }
+
+  /**
    * Get cache statistics
    */
   getStats() {
@@ -303,9 +312,7 @@ export class CacheHelper {
    * Get all cache keys (for pattern matching)
    */
   private static getAllKeys(cache: MultiLevelCache<any>): string[] {
-    // This would need to be implemented in the cache class
-    // For now, return empty array
-    return [];
+    return cache.getAllKeys();
   }
 
   /**

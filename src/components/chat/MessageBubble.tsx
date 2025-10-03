@@ -452,7 +452,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               data-ai-hint={imageHint}
               key={`${message.id}-content-img-${imageToShowUrl}`} 
               onError={handleContentImageError}
-              unoptimized={true} 
+              priority={false}
+              loading="lazy"
             />
           )}
           {message.audioUrl && (
