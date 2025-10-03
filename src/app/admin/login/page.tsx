@@ -10,9 +10,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert } from '@/components/ui/alert'; // Added import
 import { useToast } from '@/hooks/use-toast';
 import { KeyRound, ShieldAlert } from 'lucide-react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/lib/supabaseClient'; // Import Supabase client
 
-// Removed client-side auth key - now using server-side sessions
+const ADMIN_AUTH_KEY = 'isAdminLoggedIn_KruthikaChat';
 
 const AdminLoginPage: React.FC = () => {
   const [email, setEmail] = useState(''); // Changed from username to email
@@ -26,66 +26,60 @@ const AdminLoginPage: React.FC = () => {
   // Get return URL from query parameters, default to /admin/profile
   const returnUrl = searchParams.get('returnUrl') || '/admin/profile';
 
-  // Check if already authenticated via server session
+  // Check if already authenticated
   useEffect(() => {
-    let mounted = true;
-    
-    const checkAuth = async () => {
-      try {
-        const supabase = createClientComponentClient();
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        // Only redirect if we have a valid session AND component is still mounted
-        // AND we're not in the middle of a login attempt
-        if (mounted && session && !error && !isLoading) {
-          // Small delay to ensure state is stable
-          await new Promise(resolve => setTimeout(resolve, 50));
-          if (mounted) {
-            window.location.href = returnUrl;
-          }
+    try {
+      if (typeof window !== 'undefined') {
+        const isAuth = sessionStorage.getItem(ADMIN_AUTH_KEY);
+        if (isAuth === 'true') {
+          // Already logged in, redirect to return URL
+          router.replace(returnUrl);
         }
-      } catch (err) {
-        console.error('Login page auth check error:', err);
       }
-    };
-    
-    checkAuth();
-    
-    return () => {
-      mounted = false;
-    };
-  }, [returnUrl, isLoading]);
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+    }
+  }, [router, returnUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    const supabase = createClientComponentClient();
+    if (!supabase) {
+      setError('Supabase client is not available. Please check configuration.');
+      setIsLoading(false);
+      toast({ title: 'Login Error', description: 'Authentication service not available.', variant: 'destructive' });
+      return;
+    }
 
     const { data, error: signInError } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
+    setIsLoading(false);
+
     if (signInError) {
-      setIsLoading(false);
       setError(signInError.message || 'Invalid login credentials.');
       toast({ title: 'Login Failed', description: signInError.message || 'Incorrect email or password.', variant: 'destructive' });
-      return;
-    }
-
-    if (data.user) {
-      // Session is automatically managed by Supabase in cookies
-      toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
-      
-      // Wait a moment for session to be fully established in cookies
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Use window.location for hard navigation to ensure middleware runs with new session
-      window.location.href = returnUrl;
+    } else if (data.user) {
+      // Successfully authenticated with Supabase
+      try {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+        }
+        // Optionally, you could store the user object or a token if needed for further checks,
+        // but for basic route protection, the flag is often sufficient for client-side.
+        toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
+        // Redirect to the return URL (the page they were trying to access)
+        router.push(returnUrl);
+      } catch (sessionError: any) {
+          console.error("Error setting sessionStorage:", sessionError);
+          setError(`Failed to initiate session. Please ensure cookies/session storage are enabled. ${sessionError.message || ''}`);
+          toast({ title: 'Session Error', description: `Could not save login state. ${sessionError.message || ''}`, variant: 'destructive' });
+      }
     } else {
-      setIsLoading(false);
       setError('An unknown error occurred during login.');
       toast({ title: 'Login Error', description: 'An unexpected error occurred.', variant: 'destructive' });
     }

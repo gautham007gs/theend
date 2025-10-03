@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -19,7 +20,6 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal, Database, Users, MessageSquare, LogOut, Link, Settings, ExternalLink, Palette, Info, UserCircle, Globe, ImagePlus, Music2, Trash2, PlusCircle, Edit3, Sparkles, BarChartHorizontalBig, Edit, FileText, RefreshCcw, RotateCcw, Newspaper, LayoutPanelLeft, TrendingUp, ShieldAlert } from "lucide-react"
 import { supabase } from '@/lib/supabaseClient';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { format, subDays, eachDayOfInterval } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,9 +42,9 @@ interface DailyCount {
 }
 
 const AdminProfilePage: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const { aiProfile: contextAIProfile, fetchAIProfile, updateAIProfile, isLoadingAIProfile } = useAIProfile();
   const { adminOwnStatus: contextAdminStatus, managedDemoContacts: contextManagedContacts, fetchGlobalStatuses, isLoadingGlobalStatuses } = useGlobalStatus();
@@ -55,7 +55,7 @@ const AdminProfilePage: React.FC = () => {
   const [managedContactStatuses, setManagedContactStatuses] = useState<ManagedContactStatus[]>(defaultManagedContactStatuses);
   const [adSettings, setAdSettings] = useState<AdSettings>(defaultAdSettings);
   const [aiMediaAssets, setAiMediaAssets] = useState<AIMediaAssetsConfig>(defaultAIMediaAssetsConfig);
-
+  
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newAudioPath, setNewAudioPath] = useState('');
 
@@ -73,58 +73,21 @@ const AdminProfilePage: React.FC = () => {
 
   const combinedIsLoadingSupabaseData = isLoadingAIProfile || isLoadingGlobalStatuses || isLoadingMediaAssets;
 
-  // Check authentication on component mount using server session
+
   useEffect(() => {
-    let mounted = true;
-    let authCheckComplete = false;
-    
-    const checkAuth = async () => {
-      try {
-        const supabase = createClientComponentClient();
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (!mounted || authCheckComplete) return;
-        authCheckComplete = true;
-
-        if (!session || error) {
-          console.log('Profile page: No valid session, redirecting to login');
-          // Use window.location for hard redirect to break any loops
-          window.location.href = '/admin/login?returnUrl=/admin/profile';
+    try {
+        const authStatus = sessionStorage.getItem(ADMIN_AUTH_KEY);
+        if (authStatus !== 'true') {
+          // Redirect to login with current path as return URL
+          router.replace('/admin/login?returnUrl=/admin/profile');
         } else {
-          console.log('Profile page: Valid session found');
-          setIsCheckingAuth(false);
+          setIsAuthenticated(true);
         }
-      } catch (err) {
-        console.error('Auth check error:', err);
-        if (mounted && !authCheckComplete) {
-          authCheckComplete = true;
-          window.location.href = '/admin/login?returnUrl=/admin/profile';
-        }
-      }
-    };
-
-    // Small delay before checking to allow any navigation to settle
-    const timer = setTimeout(checkAuth, 100);
-    
-    return () => {
-      mounted = false;
-      clearTimeout(timer);
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    const supabase = createClientComponentClient();
-    await supabase.auth.signOut();
-    toast({ title: "Logged Out", description: "You have been logged out successfully." });
-    router.push('/admin/login');
-  };
-
-  const handleSave = async () => {
-    // This function appears to be a placeholder or unused in the current context.
-    // If it's intended for saving specific settings, it needs to be implemented.
-    console.log("Save function called, but no specific action defined here.");
-  };
-
+    } catch (error) {
+        console.error("Error accessing sessionStorage for auth:", error);
+        router.replace('/admin/login?returnUrl=/admin/profile');
+    }
+  }, [router]);
 
   useEffect(() => {
     if (contextAIProfile) {
@@ -152,7 +115,7 @@ const AdminProfilePage: React.FC = () => {
   const fetchAllNonAnalyticsConfigs = useCallback(async () => {
     if (!supabase) {
       toast({ title: "Supabase Error", description: "Supabase client not available. Cannot load some global configurations.", variant: "destructive" });
-      setAdSettings(defaultAdSettings);
+      setAdSettings(defaultAdSettings); 
       setCurrentGlobalAIProfile(defaultAIProfile); // Ensure fallback
       return;
     }
@@ -169,9 +132,9 @@ const AdminProfilePage: React.FC = () => {
 
       if (adConfigError && adConfigError.code !== 'PGRST116') throw adConfigError;
       const adSettingsData = adConfigData?.settings;
-
-      const mergedAdSettings = {
-        ...defaultAdSettings,
+      
+      const mergedAdSettings = { 
+        ...defaultAdSettings, 
         ...(adSettingsData as Partial<AdSettings>),
         maxDirectLinkAdsPerDay: (adSettingsData as AdSettings)?.maxDirectLinkAdsPerDay ?? defaultAdSettings.maxDirectLinkAdsPerDay,
         maxDirectLinkAdsPerSession: (adSettingsData as AdSettings)?.maxDirectLinkAdsPerSession ?? defaultAdSettings.maxDirectLinkAdsPerSession,
@@ -185,7 +148,7 @@ const AdminProfilePage: React.FC = () => {
     } catch (error: any) {
       console.error("Failed to load some global configurations from Supabase:", error);
       toast({ title: "Error Loading Some Global Configs", description: `Could not load some global settings. Using defaults. ${error.message || ''}`, variant: "destructive" });
-      setAdSettings(defaultAdSettings);
+      setAdSettings(defaultAdSettings); 
       setCurrentGlobalAIProfile(defaultAIProfile);
       setAdminStatus(defaultAdminStatusDisplay);
       setManagedContactStatuses(defaultManagedContactStatuses);
@@ -197,106 +160,108 @@ const AdminProfilePage: React.FC = () => {
 
 
   useEffect(() => {
-    if (!isCheckingAuth) { // Only fetch configurations if authentication is confirmed
+    if (isAuthenticated) {
       fetchAllNonAnalyticsConfigs();
     }
-  }, [isCheckingAuth, fetchAllNonAnalyticsConfigs]);
-
+  }, [isAuthenticated, fetchAllNonAnalyticsConfigs]);
+  
    useEffect(() => {
-    if (!isCheckingAuth && !supabaseError) { // Proceed only if authenticated and no prior Supabase error
-      async function fetchRealAnalytics() {
-        // Ensure Supabase client and necessary environment variables are available
-        if (!supabase || typeof supabase.from !== 'function' || !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-          setSupabaseError("Supabase client is not configured or environment variables are missing. Real analytics will be unavailable. Please check environment variables and SUPABASE_SETUP.md.");
-          setAnalyticsLoading(false);
-          setRealTotalUserMessages(0);
-          setRealTotalAiMessages(0);
-          setRealMessagesSentLast7Days([]);
-          setDailyActiveUsersData([]);
-          setCurrentDAU(0);
-          return;
-        }
-        try {
-          setAnalyticsLoading(true);
-          setSupabaseError(null); // Clear previous errors if fetch is retried
+    if (!isAuthenticated) return;
 
-          const { count: userMsgCount, error: userMsgError } = await supabase
-            .from('messages_log')
-            .select('*', { count: 'exact', head: true })
-            .eq('sender_type', 'user');
-          if (userMsgError) throw userMsgError;
-          setRealTotalUserMessages(userMsgCount ?? 0);
-
-          const { count: aiMsgCount, error: aiMsgError } = await supabase
-            .from('messages_log')
-            .select('*', { count: 'exact', head: true })
-            .eq('sender_type', 'ai');
-          if (aiMsgError) throw aiMsgError;
-          setRealTotalAiMessages(aiMsgCount ?? 0);
-
-          const sevenDaysAgo = format(subDays(new Date(), 6), 'yyyy-MM-dd');
-
-          const { data: dailyMsgCountsData, error: dailyMsgCountsError } = await supabase
-            .rpc('get_daily_message_counts', { start_date: sevenDaysAgo });
-          if (dailyMsgCountsError) throw dailyMsgCountsError;
-
-          const { data: dailyDAUData, error: dailyDAUError } = await supabase
-            .rpc('get_daily_active_user_counts', { start_date: sevenDaysAgo });
-          if (dailyDAUError) throw dailyDAUError;
-
-          const todayDate = new Date();
-          const last7DaysInterval = eachDayOfInterval({ start: subDays(todayDate, 6), end: todayDate });
-
-          const formattedDailyMsgCounts: DailyCount[] = last7DaysInterval.map(day => {
-            const dayStr = format(day, 'yyyy-MM-dd');
-            const found = dailyMsgCountsData?.find((d: any) => format(new Date(d.date), 'yyyy-MM-dd') === dayStr);
-            return { date: format(day, 'EEE'), count: found ? Number(found.messages) : 0 };
-          });
-          setRealMessagesSentLast7Days(formattedDailyMsgCounts);
-
-          const formattedDAUCounts: DailyCount[] = last7DaysInterval.map(day => {
-            const dayStr = format(day, 'yyyy-MM-dd');
-            const found = dailyDAUData?.find((d: any) => format(new Date(d.date), 'yyyy-MM-dd') === dayStr);
-            return { date: format(day, 'EEE'), count: found ? Number(found.active_users) : 0 };
-          });
-          setDailyActiveUsersData(formattedDAUCounts);
-
-          const todayFormatted = format(todayDate, 'EEE');
-          const todayDAU = formattedDAUCounts.find(d => d.date === todayFormatted);
-          setCurrentDAU(todayDAU ? todayDAU.count : 0);
-
-        } catch (err: any) {
-          console.error("Error fetching real analytics from Supabase:", err);
-          const errorMessage = err.message || "Could not fetch real analytics from Supabase.";
-          setSupabaseError(errorMessage);
-          toast({ title: "Analytics Error", description: `${errorMessage} Check SUPABASE_SETUP.md and ensure SQL functions exist.`, variant: "destructive" });
-          setRealTotalUserMessages(0);
-          setRealTotalAiMessages(0);
-          setRealMessagesSentLast7Days([]);
-          setDailyActiveUsersData([]);
-          setCurrentDAU(0);
-        } finally {
-          setAnalyticsLoading(false);
-        }
+    async function fetchRealAnalytics() {
+      if (!supabase || typeof supabase.from !== 'function' || !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        setSupabaseError("Supabase client is not configured or environment variables are missing. Real analytics will be unavailable. Please check environment variables and SUPABASE_SETUP.md.");
+        setAnalyticsLoading(false);
+        setRealTotalUserMessages(0);
+        setRealTotalAiMessages(0);
+        setRealMessagesSentLast7Days([]);
+        setDailyActiveUsersData([]);
+        setCurrentDAU(0);
+        return;
       }
+      try {
+        setAnalyticsLoading(true);
+        setSupabaseError(null);
+
+        const { count: userMsgCount, error: userMsgError } = await supabase
+          .from('messages_log')
+          .select('*', { count: 'exact', head: true })
+          .eq('sender_type', 'user');
+        if (userMsgError) throw userMsgError;
+        setRealTotalUserMessages(userMsgCount ?? 0);
+
+        const { count: aiMsgCount, error: aiMsgError } = await supabase
+          .from('messages_log')
+          .select('*', { count: 'exact', head: true })
+          .eq('sender_type', 'ai');
+        if (aiMsgError) throw aiMsgError;
+        setRealTotalAiMessages(aiMsgCount ?? 0);
+
+        const sevenDaysAgo = format(subDays(new Date(), 6), 'yyyy-MM-dd');
+
+        const { data: dailyMsgCountsData, error: dailyMsgCountsError } = await supabase
+          .rpc('get_daily_message_counts', { start_date: sevenDaysAgo });
+        if (dailyMsgCountsError) throw dailyMsgCountsError;
+
+        const { data: dailyDAUData, error: dailyDAUError } = await supabase
+          .rpc('get_daily_active_user_counts', { start_date: sevenDaysAgo });
+        if (dailyDAUError) throw dailyDAUError;
+
+        const todayDate = new Date();
+        const last7DaysInterval = eachDayOfInterval({ start: subDays(todayDate, 6), end: todayDate });
+
+        const formattedDailyMsgCounts: DailyCount[] = last7DaysInterval.map(day => {
+          const dayStr = format(day, 'yyyy-MM-dd');
+          const found = dailyMsgCountsData?.find((d: any) => format(new Date(d.date), 'yyyy-MM-dd') === dayStr);
+          return { date: format(day, 'EEE'), count: found ? Number(found.messages) : 0 };
+        });
+        setRealMessagesSentLast7Days(formattedDailyMsgCounts);
+
+        const formattedDAUCounts: DailyCount[] = last7DaysInterval.map(day => {
+          const dayStr = format(day, 'yyyy-MM-dd');
+          const found = dailyDAUData?.find((d: any) => format(new Date(d.date), 'yyyy-MM-dd') === dayStr);
+          return { date: format(day, 'EEE'), count: found ? Number(found.active_users) : 0 };
+        });
+        setDailyActiveUsersData(formattedDAUCounts);
+        
+        const todayFormatted = format(todayDate, 'EEE');
+        const todayDAU = formattedDAUCounts.find(d => d.date === todayFormatted);
+        setCurrentDAU(todayDAU ? todayDAU.count : 0);
+
+      } catch (err: any) {
+        console.error("Error fetching real analytics from Supabase:", err);
+        const errorMessage = err.message || "Could not fetch real analytics from Supabase.";
+        setSupabaseError(errorMessage);
+        toast({ title: "Analytics Error", description: `${errorMessage} Check SUPABASE_SETUP.md and ensure SQL functions exist.`, variant: "destructive" });
+        setRealTotalUserMessages(0);
+        setRealTotalAiMessages(0);
+        setRealMessagesSentLast7Days([]);
+        setDailyActiveUsersData([]);
+        setCurrentDAU(0);
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    }
+
+    if (typeof window !== 'undefined' && isAuthenticated) {
       fetchRealAnalytics();
     }
-  }, [toast, isCheckingAuth, supabaseError]); // Rerun if auth status changes or error state changes
+  }, [toast, isAuthenticated]);
 
 
   const handleSaveKruthikaCoreProfile = async (updatedCoreProfileData: Partial<AIProfile>) => {
     // Construct the data to update, ensuring empty avatarUrl is treated as undefined
     const profileDataToUpdate: Partial<AIProfile> = {
-      name: updatedCoreProfileData.name,
+      name: updatedCoreProfileData.name, 
       status: updatedCoreProfileData.status,
       avatarUrl: updatedCoreProfileData.avatarUrl?.trim() === '' ? undefined : updatedCoreProfileData.avatarUrl,
     };
     console.log("[AdminProfilePage] handleSaveKruthikaCoreProfile - profileDataToUpdate before calling context update:", JSON.stringify(profileDataToUpdate, null, 2));
-    await updateAIProfile(profileDataToUpdate);
+    await updateAIProfile(profileDataToUpdate); 
     setIsProfileEditorOpen(false);
   };
 
-  const handleSaveKruthikaStory = async () => {
+  const handleSaveKruthikaStory = async () => { 
     const storyDataToUpdate: Partial<AIProfile> = {
         statusStoryText: currentGlobalAIProfile.statusStoryText,
         statusStoryImageUrl: currentGlobalAIProfile.statusStoryImageUrl?.trim() === '' ? undefined : currentGlobalAIProfile.statusStoryImageUrl,
@@ -305,7 +270,7 @@ const AdminProfilePage: React.FC = () => {
     console.log("[AdminProfilePage] handleSaveKruthikaStory - storyDataToUpdate before calling context update:", JSON.stringify(storyDataToUpdate, null, 2));
     await updateAIProfile(storyDataToUpdate);
   };
-
+  
   const handleClearKruthikaStoryField = (field: 'statusStoryText' | 'statusStoryImageUrl') => {
     setCurrentGlobalAIProfile(p => ({
       ...p,
@@ -331,7 +296,7 @@ const AdminProfilePage: React.FC = () => {
           { onConflict: 'id' }
         );
       if (error) throw error;
-      await fetchGlobalStatuses();
+      await fetchGlobalStatuses(); 
       toast({ title: "Global 'My Status' Saved!", description: "Your status for the Status Page has been updated universally." });
     } catch (error: any)
       {
@@ -339,7 +304,7 @@ const AdminProfilePage: React.FC = () => {
       toast({ title: "Error Saving 'My Status'", description: `Could not save your status globally. ${error.message || ''}`, variant: "destructive" });
     }
   };
-
+  
   const handleClearAdminStatusField = (field: 'statusText' | 'statusImageUrl') => {
     setAdminStatus(s => ({
         ...s,
@@ -385,7 +350,7 @@ const AdminProfilePage: React.FC = () => {
           { onConflict: 'id' }
         );
       if (error) throw error;
-      await fetchGlobalStatuses();
+      await fetchGlobalStatuses(); 
       toast({ title: "Global Demo Contacts Saved!", description: "Status details for demo contacts have been updated universally." });
     } catch (error: any) {
       console.error("Failed to save managed contact statuses to Supabase:", error);
@@ -447,7 +412,7 @@ const AdminProfilePage: React.FC = () => {
         return;
       }
       urlToAdd = newImageUrl.trim();
-    } else {
+    } else { 
       if (!newAudioPath.trim() || !newAudioPath.startsWith('/media/')) {
         toast({ title: "Invalid Audio Path", description: "Audio path must start with /media/ (e.g., /media/sound.mp3). Ensure file is in public/media/.", variant: "destructive" });
         return;
@@ -482,7 +447,7 @@ const AdminProfilePage: React.FC = () => {
           { onConflict: 'id' }
         );
       if (error) throw error;
-      await fetchMediaAssets();
+      await fetchMediaAssets(); 
       toast({ title: "Global AI Media Assets Saved!", description: "Kruthika's sharable images and audio have been updated universally." });
     } catch (error: any) {
       console.error("Failed to save AI Media Assets to Supabase:", error);
@@ -490,18 +455,29 @@ const AdminProfilePage: React.FC = () => {
     }
   };
 
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/30 flex items-center justify-center">
-        <Card className="p-8">
-          <p className="text-muted-foreground">Verifying authentication...</p>
-        </Card>
-      </div>
-    );
+  const handleLogout = () => {
+    try {
+        sessionStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch (error) {
+        console.error("Error removing sessionStorage item:", error);
+    }
+    toast({ title: 'Logged Out', description: 'You have been logged out of the admin panel.' });
+    router.replace('/admin/login');
+  };
+  
+  const handleForceRefreshGlobalData = async () => {
+    toast({ title: "Refreshing...", description: "Manually fetching latest global data from Supabase."});
+    await fetchAllNonAnalyticsConfigs(); 
+    toast({ title: "Refreshed!", description: "Global data updated."});
+  };
+
+
+  if (!isAuthenticated || combinedIsLoadingSupabaseData) {
+    return <div className="flex justify-center items-center h-screen bg-background text-foreground">Loading admin settings...</div>;
   }
 
   const scriptPasteInstruction = "Paste the full ad script code provided by the ad network here. Include any <!-- comments --> or <script> tags as provided.";
-
+  
   let adminPageAvatarUrlToUse = currentGlobalAIProfile.avatarUrl;
   if (!adminPageAvatarUrlToUse || typeof adminPageAvatarUrlToUse !== 'string' || adminPageAvatarUrlToUse.trim() === '' || (!adminPageAvatarUrlToUse.startsWith('http') && !adminPageAvatarUrlToUse.startsWith('data:'))) {
     adminPageAvatarUrlToUse = defaultAIProfile.avatarUrl;
@@ -559,20 +535,20 @@ const AdminProfilePage: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-5 pt-2">
               <div className="flex flex-col sm:flex-row items-center gap-4 p-3 bg-secondary/20 rounded-md">
-                <div
+                <div 
                   className={cn(
                     "relative rounded-full shrink-0",
-                    currentGlobalAIProfile.name === "Kruthika" && "border-2 border-primary p-0.5"
+                    currentGlobalAIProfile.name === "Kruthika" && "border-2 border-primary p-0.5" 
                   )}
                   key={`admin-page-avatar-wrapper-${adminPageAvatarUrlToUse || 'default_wrapper_key_admin'}`}
                 >
-                  <Avatar
-                    className="h-24 w-24 shadow-md"
+                  <Avatar 
+                    className="h-24 w-24 shadow-md" 
                     key={`admin-page-avatar-comp-${adminPageAvatarUrlToUse || 'default_avatar_comp_key_admin'}`}
                   >
-                      <AvatarImage
-                        src={adminPageAvatarUrlToUse || undefined}
-                        alt={currentGlobalAIProfile.name}
+                      <AvatarImage 
+                        src={adminPageAvatarUrlToUse || undefined} 
+                        alt={currentGlobalAIProfile.name} 
                         data-ai-hint="profile woman"
                         key={`admin-page-avatar-img-${adminPageAvatarUrlToUse || 'default_img_key_admin_final'}`}
                         onError={(e) => console.error(`Admin Page - AvatarImage load error for ${currentGlobalAIProfile.name}. URL: ${adminPageAvatarUrlToUse}`, e)}
@@ -599,7 +575,7 @@ const AdminProfilePage: React.FC = () => {
               />
             )}
           </Card>
-
+          
           <Card className="bg-card text-card-foreground mb-8 shadow-lg">
             <CardHeader className="pb-4">
                <CardTitle className="flex items-center text-xl font-semibold"><Palette className="mr-2 h-5 w-5 text-primary"/>Kruthika's Status Story (Global)</CardTitle>
@@ -627,10 +603,10 @@ const AdminProfilePage: React.FC = () => {
                   />
                   {currentGlobalAIProfile.statusStoryImageUrl && currentGlobalAIProfile.statusStoryImageUrl.trim() !== '' && (
                       <Avatar className="w-24 h-40 mt-2 border rounded-md shadow" key={`admin-story-image-${currentGlobalAIProfile.statusStoryImageUrl || 'default_story_img_key'}`}>
-                          <AvatarImage
-                            src={currentGlobalAIProfile.statusStoryImageUrl}
-                            alt="Kruthika story preview"
-                            data-ai-hint="story image content"
+                          <AvatarImage 
+                            src={currentGlobalAIProfile.statusStoryImageUrl} 
+                            alt="Kruthika story preview" 
+                            data-ai-hint="story image content" 
                             className="object-contain"
                             onError={(e) => console.error(`Admin Page - Kruthika Story Image load error. URL: ${currentGlobalAIProfile.statusStoryImageUrl}`, e)}
                           />
@@ -732,7 +708,7 @@ const AdminProfilePage: React.FC = () => {
                 <Switch id="adsEnabledGlobally" checked={adSettings.adsEnabledGlobally} onCheckedChange={(checked) => handleAdSettingChange('adsEnabledGlobally', checked)}/>
                 <Label htmlFor="adsEnabledGlobally" className="text-md font-semibold">Enable All Ads Globally</Label>
               </div>
-
+              
               <Card className="bg-secondary/10 border-border shadow-sm">
                 <CardHeader className="pb-3 pt-4">
                   <CardTitle className="text-lg font-semibold text-primary flex items-center"><TrendingUp className="mr-2 h-5 w-5"/>Direct Link Ad Frequency</CardTitle>
@@ -740,13 +716,13 @@ const AdminProfilePage: React.FC = () => {
                 <CardContent className="space-y-4 px-4 pb-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="maxDirectLinkAdsPerDay" className="font-medium text-sm">Max Direct Link Ads Per User Per Day</Label>
-                    <Input
-                      id="maxDirectLinkAdsPerDay"
-                      type="number"
-                      value={adSettings.maxDirectLinkAdsPerDay}
-                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerDay', e.target.value)}
-                      placeholder="e.g., 6"
-                      className="text-sm"
+                    <Input 
+                      id="maxDirectLinkAdsPerDay" 
+                      type="number" 
+                      value={adSettings.maxDirectLinkAdsPerDay} 
+                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerDay', e.target.value)} 
+                      placeholder="e.g., 6" 
+                      className="text-sm" 
                       disabled={!adSettings.adsEnabledGlobally}
                       min="0"
                     />
@@ -754,13 +730,13 @@ const AdminProfilePage: React.FC = () => {
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="maxDirectLinkAdsPerSession" className="font-medium text-sm">Max Direct Link Ads Per User Per Session</Label>
-                    <Input
-                      id="maxDirectLinkAdsPerSession"
-                      type="number"
-                      value={adSettings.maxDirectLinkAdsPerSession}
-                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerSession', e.target.value)}
-                      placeholder="e.g., 3"
-                      className="text-sm"
+                    <Input 
+                      id="maxDirectLinkAdsPerSession" 
+                      type="number" 
+                      value={adSettings.maxDirectLinkAdsPerSession} 
+                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerSession', e.target.value)} 
+                      placeholder="e.g., 3" 
+                      className="text-sm" 
                       disabled={!adSettings.adsEnabledGlobally}
                       min="0"
                     />
@@ -867,7 +843,7 @@ const AdminProfilePage: React.FC = () => {
             </CardFooter>
           </Card>
         </TabsContent>
-
+        
         <TabsContent value="status_content">
           <Card className="bg-card text-card-foreground mb-8 shadow-lg">
             <CardHeader className="pb-4">
@@ -951,8 +927,8 @@ const AdminProfilePage: React.FC = () => {
               <CardTitle className="flex items-center text-xl font-semibold">
                 <Database className="mr-2 h-5 w-5 text-primary"/>
                 Usage Analytics Dashboard
-                <a
-                  href="/admin/analytics"
+                <a 
+                  href="/admin/analytics" 
                   className="ml-auto text-sm bg-primary text-primary-foreground px-3 py-1 rounded-md hover:bg-primary/90 transition-colors"
                 >
                   View Full Dashboard →
@@ -1050,3 +1026,5 @@ const AdminProfilePage: React.FC = () => {
 };
 
 export default AdminProfilePage;
+
+    
