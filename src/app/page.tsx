@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import LCPOptimizer from './LCPOptimizer';
 import Image from 'next/image';
 import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -125,7 +126,9 @@ const ChatListPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
+    <>
+      <LCPOptimizer />
+      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header */}
       <div className="bg-green-500 text-white">
         <div className="px-4 py-3 flex items-center justify-between">
@@ -250,7 +253,8 @@ const ChatListPage: React.FC = () => {
           <MessageSquarePlus size={24} />
         </span>
       </Link>
-    </div>
+      </div>
+    </>
   );
 };
 

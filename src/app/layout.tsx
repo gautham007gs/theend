@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -21,12 +22,13 @@ import MobilePerformanceOptimizer from '@/components/MobilePerformanceOptimizer'
 import MobileChatOptimizer from '@/components/chat/MobileChatOptimizer';
 import MobileLighthouseOptimizer from '@/components/MobileLighthouseOptimizer';
 
-// Optimize font loading for better performance
+// Optimize font loading - use fallback font immediately
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap', // Improved font display strategy
-  preload: true
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
 });
 
 export const metadata: Metadata = {
@@ -114,21 +116,38 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical performance optimizations */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* CRITICAL: Preconnect to critical origins FIRST */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* CRITICAL: Preload hero image and background */}
+        <link rel="preload" href="/chat-bg.png" as="image" type="image/png" fetchPriority="high" />
+        <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
+        
+        {/* CRITICAL: Preload font files directly */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        
+        {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://placehold.co" />
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
-        <link rel="preload" href="/chat-bg.png" as="image" type="image/png" />
-        <link rel="modulepreload" href="/_next/static/chunks/webpack.js" />
-
-        {/* Critical CSS moved to globals.css to prevent hydration issues */}
+        
+        {/* Inline critical CSS to prevent render blocking */}
+        <style dangerouslySetInnerHTML={{__html: `
+          *{box-sizing:border-box;margin:0;padding:0}
+          body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+          .chat-container{min-height:100dvh;display:flex;flex-direction:column}
+          img{max-width:100%;height:auto;display:block}
+          button{cursor:pointer;border:none;background:none;font:inherit}
+        `}} />
 
         <ResourceHints />
         <StructuredData />
-
-        {/* Reduce CLS with font metrics - use CSS variables only */}
-
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <ErrorBoundary>
@@ -139,12 +158,11 @@ export default function RootLayout({
                   <InstagramBrowserPrompt />
                   <GlobalAdScripts />
                   <ServiceWorkerRegistration />
-                  <ResourceHints />
                   {children}
-                  <SocialBarAdDisplay /> {/* Add SocialBarAdDisplay here */}
+                  <SocialBarAdDisplay />
                   <CookieConsent />
                   <Toaster />
-                  <PerformanceMonitor /> {/* Include PerformanceMonitor here */}
+                  <PerformanceMonitor />
                   <MobilePerformanceOptimizer />
                   <MobileChatOptimizer />
                   <MobileLighthouseOptimizer />
