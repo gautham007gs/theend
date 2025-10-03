@@ -118,6 +118,19 @@ mode = "sequential"
 task = "shell.exec"
 args = "npx next dev --turbopack -p 3000 -H 0.0.0.0"
 
+[[workflows.workflow]]
+name = "Clean Production Test"
+author = 48262361
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm start"
+
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
