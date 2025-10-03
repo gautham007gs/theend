@@ -28,17 +28,33 @@ const AdminLoginPage: React.FC = () => {
 
   // Check if already authenticated via server session
   useEffect(() => {
+    let mounted = true;
+    
     const checkAuth = async () => {
-      const supabase = createClientComponentClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        router.replace(returnUrl);
+      try {
+        const supabase = createClientComponentClient();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        // Only redirect if we have a valid session AND component is still mounted
+        // AND we're not in the middle of a login attempt
+        if (mounted && session && !error && !isLoading) {
+          // Small delay to ensure state is stable
+          await new Promise(resolve => setTimeout(resolve, 50));
+          if (mounted) {
+            window.location.href = returnUrl;
+          }
+        }
+      } catch (err) {
+        console.error('Login page auth check error:', err);
       }
     };
     
     checkAuth();
-  }, [router, returnUrl]);
+    
+    return () => {
+      mounted = false;
+    };
+  }, [returnUrl, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

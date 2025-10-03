@@ -76,32 +76,39 @@ const AdminProfilePage: React.FC = () => {
   // Check authentication on component mount using server session
   useEffect(() => {
     let mounted = true;
+    let authCheckComplete = false;
     
     const checkAuth = async () => {
       try {
         const supabase = createClientComponentClient();
         const { data: { session }, error } = await supabase.auth.getSession();
 
-        if (!mounted) return;
+        if (!mounted || authCheckComplete) return;
+        authCheckComplete = true;
 
         if (!session || error) {
-          toast({ title: "Access Denied", description: "Please log in as admin.", variant: "destructive" });
-          router.push('/admin/login?returnUrl=/admin/profile');
+          console.log('Profile page: No valid session, redirecting to login');
+          // Use window.location for hard redirect to break any loops
+          window.location.href = '/admin/login?returnUrl=/admin/profile';
         } else {
+          console.log('Profile page: Valid session found');
           setIsCheckingAuth(false);
         }
       } catch (err) {
         console.error('Auth check error:', err);
-        if (mounted) {
-          router.push('/admin/login?returnUrl=/admin/profile');
+        if (mounted && !authCheckComplete) {
+          authCheckComplete = true;
+          window.location.href = '/admin/login?returnUrl=/admin/profile';
         }
       }
     };
 
-    checkAuth();
+    // Small delay before checking to allow any navigation to settle
+    const timer = setTimeout(checkAuth, 100);
     
     return () => {
       mounted = false;
+      clearTimeout(timer);
     };
   }, []);
 

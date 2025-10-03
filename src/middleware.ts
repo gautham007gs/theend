@@ -74,12 +74,15 @@ export async function middleware(request: NextRequest) {
       const { data: { session }, error } = await supabase.auth.getSession();
 
       if (!session || error) {
+        console.log(`[Middleware] No session for ${request.nextUrl.pathname}, redirecting to login`);
         const loginUrl = new URL('/admin/login', request.url);
         loginUrl.searchParams.set('returnUrl', request.nextUrl.pathname);
         return NextResponse.redirect(loginUrl);
       }
+      
+      console.log(`[Middleware] Valid session for ${request.nextUrl.pathname}`);
     } catch (error) {
-      console.error('Admin auth check error:', error);
+      console.error('[Middleware] Admin auth check error:', error);
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('returnUrl', request.nextUrl.pathname);
       return NextResponse.redirect(loginUrl);
