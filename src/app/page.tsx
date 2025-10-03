@@ -129,7 +129,7 @@ const ChatListPage: React.FC = () => {
       {/* WhatsApp-style Header */}
       <div className="bg-green-500 text-white">
         <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Free AI Girlfriend - Kruthika</h1>
+          <h1 className="text-xl font-semibold">Chats</h1>
           <div className="flex items-center space-x-3">
             <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
               <Camera size={20} className="text-white" />
