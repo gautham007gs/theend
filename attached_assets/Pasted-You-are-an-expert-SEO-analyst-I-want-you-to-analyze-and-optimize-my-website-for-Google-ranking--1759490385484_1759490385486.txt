@@ -1,0 +1,128 @@
+You are an expert SEO analyst. I want you to **analyze and optimize my website** for Google ranking. Cover **all aspects of SEO**: technical, speed, on-page, off-page, user experience, and content quality. Provide detailed suggestions, improvements, and benchmarks for each factor.
+
+
+
+1. **Technical SEO**
+
+  - Check crawlability and indexability (no broken links, correct robots.txt, no unnecessary noindex pages).
+
+  - Verify XML sitemap is submitted and accurate.
+
+  - Ensure HTTPS is active with a valid SSL certificate.
+
+  - Check canonical tags and avoid duplicate content issues.
+
+  - Validate structured data (JSON-LD schema) for relevant content types.
+
+  - Check mobile-friendliness and responsiveness.
+
+  - Evaluate URL structure: short, readable, keyword-friendly.
+
+  - Audit 404 errors and redirects (prefer 301s).
+
+  - Provide a list of all issues and fixes.
+
+
+
+2. **Website Speed & Performance**
+
+  - Check Core Web Vitals:
+
+    - LCP < 2.5s
+
+    - FID < 100ms
+
+    - CLS < 0.1
+
+  - Check Time to First Byte (TTFB < 200ms)
+
+  - Page size < 2MB
+
+  - HTTP requests < 50–60
+
+  - Image optimization (WebP/AVIF, compression)
+
+  - Lazy loading for media
+
+  - Enable caching and recommend CDN use
+
+  - Provide a detailed speed improvement plan
+
+
+
+3. **On-Page SEO**
+
+  - Optimize title tags (50–60 chars) with main keywords
+
+  - Optimize meta descriptions (150–160 chars) with keywords
+
+  - Check header structure (H1/H2/H3)
+
+  - Optimize keyword usage (primary 1–2%, LSI 5–10 related keywords)
+
+  - Evaluate content length (1200–2500+ words, depends on topic)
+
+  - Internal linking recommendations (2–5 links per page)
+
+  - Outbound links to authoritative sites (1–3 per page)
+
+  - Optimize images with alt text (keywords included naturally)
+
+  - Provide suggestions for content freshness and updates
+
+  
+
+5. **User Experience & Engagement**
+
+   - Check navigation, menus, and site structure
+
+ 
+
+6. **Content Quality & E-A-T**
+
+  - Evaluate expertise, authority, and trust of content
+
+  - Suggest author bios or credentials where needed
+
+  - Ensure content matches user intent
+
+  - Recommend structured data for FAQ, reviews, products, etc.
+
+  - Suggest ways to improve CTR via rich snippets
+
+
+
+7. **Advanced Technical SEO**
+
+  - Check lazy loading, AMP (if applicable), CDN usage
+
+  - Evaluate hreflang for multi-language sites
+
+  - Suggest best practices for pagination/infinite scroll
+
+  - Recommend any missing structured data types
+
+
+
+8. **Actionable Output**
+
+  - Provide a **detailed SEO audit report**
+
+  - Give **step-by-step action items** prioritized by impact
+
+  - Include **numerical benchmarks** wherever possible (e.g., speed, word count, link quality)
+
+
+
+**Output format:** Table or checklist style for each factor with:
+
+- Current status
+
+- Issue found
+
+- Suggested improvement
+
+- Priority (High/Medium/Low)
+
+- Ideal benchmark/range
+
