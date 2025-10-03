@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import MaximumSecurity from './lib/enhanced-security'
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 
 // Advanced rate limiting for high traffic protection (keeping existing for backward compatibility)
 const rateLimitMap = new Map<string, { count: number; lastReset: number; penalties: number }>();
@@ -56,8 +57,28 @@ function isInstagramInAppBrowserServer(userAgent: string | null): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  const response = NextResponse.next();
   const { pathname, searchParams, origin } = request.nextUrl;
   const userAgent = request.headers.get('user-agent');
+
+  // Apply maximum security to all requests
+  const securityResponse = await MaximumSecurity.secureRequest(request);
+  if (securityResponse) return securityResponse;
+
+  // Server-side admin authentication check
+  if (request.nextUrl.pathname.startsWith('/admin') &&
+      request.nextUrl.pathname !== '/admin/login') {
+
+    const supabase = createMiddlewareClient({ req: request, res: response });
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+      const loginUrl = new URL('/admin/login', request.url);
+      loginUrl.searchParams.set('returnUrl', request.nextUrl.pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
 
   // Apply enhanced maximum security ONLY to API routes (not pages/assets)
   if (pathname.startsWith('/api/')) {
@@ -77,8 +98,6 @@ export async function middleware(request: NextRequest) {
 
   // For Server Actions and API routes, fix headers and continue
   if (pathname.startsWith('/api/') || request.method === 'POST') {
-    const response = NextResponse.next();
-
     // Fix CORS and header issues for Replit
     const forwardedHost = request.headers.get('x-forwarded-host');
     const requestOrigin = request.headers.get('origin');
@@ -111,7 +130,7 @@ export async function middleware(request: NextRequest) {
     response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
     // Add caching headers for static assets
-    if (request.nextUrl.pathname.startsWith('/_next/static/') || 
+    if (request.nextUrl.pathname.startsWith('/_next/static/') ||
         request.nextUrl.pathname.includes('.')) {
       response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
     } else {
@@ -133,8 +152,8 @@ export async function middleware(request: NextRequest) {
   if (isInstagramInAppBrowserServer(userAgent) && !hasRedirectAttemptedFlag) {
 
     // More robustly ignore common asset paths and API routes
-    if (pathname.startsWith('/_next/') || 
-        pathname.startsWith('/api/') || 
+    if (pathname.startsWith('/_next/') ||
+        pathname.startsWith('/api/') ||
         pathname.startsWith('/media/') || // Assuming /media/ for local assets like audio
         pathname.includes('.') // General check for file extensions like .png, .ico, .css, .js
        ) {
@@ -144,7 +163,7 @@ export async function middleware(request: NextRequest) {
     // Construct the target URL for the meta-refresh, preserving original path and query params,
     // and adding our flag.
     const targetUrl = new URL(pathname, origin);
-    // Append existing search params
+    // Append existing searchParams
     searchParams.forEach((value, key) => {
         if (key !== 'external_redirect_attempted') { // Avoid duplicating our flag
             targetUrl.searchParams.append(key, value);
@@ -200,8 +219,6 @@ export async function middleware(request: NextRequest) {
   }
 
   // Apply performance headers to all other requests
-  const response = NextResponse.next();
-
   // Add performance headers
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('X-Frame-Options', 'DENY');
@@ -209,7 +226,7 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
 
   // Add caching headers for static assets
-  if (request.nextUrl.pathname.startsWith('/_next/static/') || 
+  if (request.nextUrl.pathname.startsWith('/_next/static/') ||
       request.nextUrl.pathname.includes('.')) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
   }
