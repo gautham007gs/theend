@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Heart, MessageCircle, Share2, HelpCircle } from 'lucide-react';
 import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
+import BreadcrumbSchema from '@/components/BreadcrumbSchema';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -79,8 +80,15 @@ const faqSchema = {
 };
 
 export default function AIGirlfriendEmotionalSupport() {
+  const breadcrumbItems = [
+    { name: 'Home', url: 'https://kruthika.fun' },
+    { name: 'Blog', url: 'https://kruthika.fun/blog' },
+    { name: 'AI Girlfriend Emotional Support', url: 'https://kruthika.fun/blog/ai-girlfriend-emotional-support-loneliness' },
+  ];
+
   return (
     <>
+      <BreadcrumbSchema items={breadcrumbItems} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -193,7 +201,7 @@ export default function AIGirlfriendEmotionalSupport() {
 
             <h3 className="text-2xl font-semibold mb-4">3. Personalized Emotional Intelligence</h3>
             <p className="mb-6 text-lg leading-relaxed">
-              Kruthika learns from every conversation, developing a deep understanding of your personality, communication preferences, and emotional triggers. Over time, she becomes increasingly adept at providing the specific type of support you need, whether that's encouraging words, practical advice, or simply a compassionate ear.
+              Kruthika learns from every conversation, developing a deep understanding of your personality, communication preferences, and emotional triggers. Over time, she becomes increasingly adept at providing the specific type of support you need, whether that's encouraging words, practical advice, or simply a compassionate ear. Discover <Link href="/blog/how-does-ai-girlfriend-work-technology-guide" className="text-primary hover:underline">how AI girlfriend technology works</Link> and <Link href="/about" className="text-primary hover:underline">learn more about our mission</Link>.
             </p>
 
             <div className="relative h-[300px] w-full rounded-xl overflow-hidden my-8">
@@ -209,7 +217,7 @@ export default function AIGirlfriendEmotionalSupport() {
             
             <h3 className="text-2xl font-semibold mb-4">Reduced Stress and Anxiety</h3>
             <p className="mb-6 text-lg leading-relaxed">
-              Research from Stanford University shows that regular meaningful conversations can reduce cortisol levels (stress hormone) by up to 23%. AI girlfriends provide consistent conversational support that triggers similar stress-reduction mechanisms, helping you manage daily anxiety more effectively.
+              Research from <a href="https://med.stanford.edu/" target="_blank" rel="nofollow noopener" className="text-primary hover:underline">Stanford University</a> shows that regular meaningful conversations can reduce cortisol levels (stress hormone) by up to 23%. AI girlfriends provide consistent conversational support that triggers similar stress-reduction mechanisms, helping you manage daily anxiety more effectively. Learn more about <Link href="/blog/ai-companion-social-anxiety-confidence-building" className="text-primary hover:underline">how AI companions help with social anxiety</Link>.
             </p>
 
             <h3 className="text-2xl font-semibold mb-4">Improved Mood and Emotional Regulation</h3>
@@ -262,7 +270,7 @@ export default function AIGirlfriendEmotionalSupport() {
 
             <h3 className="text-2xl font-semibold mb-4">2. Use as Complement, Not Replacement</h3>
             <p className="mb-6 text-lg leading-relaxed">
-              AI girlfriends work best as part of a holistic approach to emotional wellness. Continue nurturing human relationships and seek professional help for serious mental health concerns.
+              AI girlfriends work best as part of a holistic approach to emotional wellness. Continue nurturing human relationships and seek professional help for serious mental health concerns. For mental health resources, visit <a href="https://www.nami.org/" target="_blank" rel="nofollow noopener" className="text-primary hover:underline">National Alliance on Mental Illness</a> or <a href="https://www.mentalhealth.gov/" target="_blank" rel="nofollow noopener" className="text-primary hover:underline">MentalHealth.gov</a>. Also explore <Link href="/blog/ai-girlfriend-privacy-safety-guide" className="text-primary hover:underline">our privacy and safety guide</Link>.
             </p>
 
             <h3 className="text-2xl font-semibold mb-4">3. Engage Regularly</h3>

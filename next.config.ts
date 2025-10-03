@@ -79,11 +79,7 @@ const securityHeaders = [
     key: 'X-Permitted-Cross-Domain-Policies',
     value: 'none',
   },
-  // Cache Control for security
-  {
-    key: 'Cache-Control',
-    value: 'public, max-age=31536000, immutable',
-  },
+  // Cache Control moved to specific paths (see headers function below)
 ];
 
 const nextConfig: NextConfig = {
@@ -241,10 +237,54 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        // Apply these headers to all routes in your application.
+        // Next.js static files - long cache
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // Static image assets - long cache
+        source: '/(.*)\\.(jpg|jpeg|png|gif|ico|svg|webp|avif)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // CSS/JS files - long cache
+        source: '/(.*)\\.(css|js)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        // API routes - no cache
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate',
+          },
+        ],
+      },
+      {
+        // All other routes (HTML pages) - short cache with revalidation
         source: '/:path*',
         headers: [
-          ...securityHeaders,
+          ...securityHeaders.filter(h => h.key !== 'Cache-Control'),
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate',
+          },
           {
             key: 'Access-Control-Allow-Origin',
             value: '*',

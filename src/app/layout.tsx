@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     default: 'AI Girlfriend Free | Best Virtual Companion 2025 - Kruthika',
     template: '%s | Kruthika - AI Girlfriend'
   },
-  description: 'Chat with Kruthika - The world\'s most realistic AI girlfriend. Free unlimited conversations, emotional support for loneliness, mental health companionship. Available 24/7 in USA, UK, Canada, Australia. Start chatting now!',
+  description: 'Chat with Kruthika - Most realistic AI girlfriend. Free unlimited conversations, 24/7 emotional support for loneliness & anxiety. Start now!',
   keywords: 'AI girlfriend, virtual girlfriend, AI companion, AI girlfriend free, best AI girlfriend 2025, AI chatbot girlfriend, virtual companion, AI girlfriend app, AI companion for loneliness, emotional support AI, AI girlfriend chat, free AI girlfriend, realistic AI girlfriend, AI relationship simulator, virtual girlfriend online, AI dating app, AI girlfriend emotional support, best AI companion, AI girlfriend USA, AI girlfriend UK, AI girlfriend Canada, AI girlfriend Australia, virtual girlfriend app, AI companion mental health, AI girlfriend no subscription, 24/7 AI companion, AI girlfriend for anxiety, AI girlfriend for depression, Character AI alternative, Replika alternative, AI companion chat, virtual dating, girlfriend simulator, AI emotional support, loneliness solution, mental health companion, relationship practice AI, conversational AI girlfriend, authentic AI girlfriend, AI girlfriend experience, AI companion for adults, virtual girlfriend free, best virtual companion 2025',
   authors: [{ name: 'Kruthika.fun Team' }],
   creator: 'Kruthika.fun',
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     siteName: 'Kruthika - AI Girlfriend & Virtual Companion',
     images: [
       {
-        url: 'https://kruthika.fun/og-image.png',
+        url: 'https://kruthika.fun/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'Kruthika AI Girlfriend - Free Virtual Companion for Emotional Support',
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'AI Girlfriend Free | Best Virtual Companion for Emotional Support',
     description: 'Chat with Kruthika - World\'s most realistic AI girlfriend. Free unlimited conversations, emotional support for loneliness, anxiety, depression. Available 24/7 globally. Start now!',
-    images: ['https://kruthika.fun/og-image.png'],
+    images: ['https://kruthika.fun/og-image.jpg'],
     creator: '@kruthikafun',
     site: '@kruthikafun',
   },
