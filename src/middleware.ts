@@ -238,14 +238,11 @@ export async function middleware(request: NextRequest) {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
   
-  // Ensure search engines can index the site
-  // Only add X-Robots-Tag for admin and API routes
-  if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
-    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
-  } else {
-    // Allow indexing for public pages
-    response.headers.set('X-Robots-Tag', 'index, follow');
-  }
+  // DO NOT set X-Robots-Tag headers here to avoid conflicts
+  // Robots directives are handled via:
+  // 1. robots.ts file for crawlers
+  // 2. Meta tags in layout.tsx for pages
+  // 3. Admin routes can handle their own robots meta tags if needed
 
   // Add caching headers for static assets
   if (request.nextUrl.pathname.startsWith('/_next/static/') || 

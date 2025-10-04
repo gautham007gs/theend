@@ -115,15 +115,20 @@ export default function RootLayout({
         {/* CRITICAL: Preload LCP image FIRST - highest priority */}
         <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
         
-        {/* Critical preconnects */}
-        <link rel="preconnect" href="https://placehold.co" />
-        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
+        {/* Critical preconnects - reduce DNS lookup time */}
+        <link rel="preconnect" href="https://placehold.co" crossOrigin="" />
+        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         
-        {/* DNS prefetch for external resources */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        <link rel="dns-prefetch" href="https://i.imghippo.com" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        {/* Preload critical fonts to reduce render delay */}
+        <link 
+          rel="preload" 
+          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" 
+          as="font" 
+          type="font/woff2" 
+          crossOrigin="" 
+        />
 
         {/* Inline critical CSS for instant render */}
         <style dangerouslySetInnerHTML={{
