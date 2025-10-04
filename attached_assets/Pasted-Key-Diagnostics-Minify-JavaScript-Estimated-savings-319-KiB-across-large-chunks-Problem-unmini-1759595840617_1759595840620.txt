@@ -1,0 +1,119 @@
+Key Diagnostics
+
+Minify JavaScript
+
+Estimated savings: 319 KiB across large chunks.
+
+Problem: unminified JS slows down download + parse → delays LCP/FCP.
+
+Largest offenders:
+
+next-devtools (~114 KiB)
+
+React DOM (~42 KiB)
+
+next_dist_client (~34 KiB)
+
+Reduce unused JS
+
+Estimated savings: 424 KiB.
+
+Problem: code that’s loaded but not used blocks main thread.
+
+Offenders overlap with minify list — mostly Next.js internal chunks.
+
+Reduce unused CSS
+
+Estimated savings: 16 KiB. Minor, but every bit helps.
+
+CSS that isn’t used for above-the-fold content should be deferred.
+
+Minify CSS
+
+Savings: ~7 KiB. Small but contributes to faster parsing.
+
+Avoid legacy JS for modern browsers
+
+Savings: ~8 KiB. Polyfills like Array.prototype.flat etc. are unnecessary if targeting modern browsers.
+
+Long main-thread tasks
+
+JS chunks cause blocking tasks of 50–194ms, adding to TBT and delaying LCP.
+
+🟢 Fix Strategy (Step by Step)
+1. Minify JS
+
+Next.js production build automatically minifies JS, but Replit may serve dev builds.
+
+Solution:
+
+# Build for production
+next build && next export
+
+
+Ensure NODE_ENV=production when serving.
+
+Optional: use Terser plugin if customizing Webpack:
+
+// next.config.js
+const TerserPlugin = require("terser-webpack-plugin");
+module.exports = {
+  webpack(config, { dev }) {
+    if (!dev) {
+      config.optimization.minimizer.push(
+        new TerserPlugin({ terserOptions: { compress: true } })
+      );
+    }
+    return config;
+  },
+};
+
+2. Reduce unused JS
+
+Use dynamic imports for components not needed above the fold:
+
+import dynamic from 'next/dynamic';
+const ChatBox = dynamic(() => import('./ChatBox'), { ssr: false });
+
+
+Lazy-load third-party scripts like analytics/tracking:
+
+<script src="https://judicialphilosophical.com/af/119eafa.js" strategy="lazyOnload"></script>
+
+3. Reduce unused CSS
+
+Extract critical CSS for above-the-fold content using @next/css or third-party tools like critters.
+
+Defer non-critical CSS:
+
+<link rel="preload" href="/_next/static/css/main.css" as="style">
+<link rel="stylesheet" href="/_next/static/css/main.css" media="print" onload="this.media='all'">
+
+4. Minify CSS
+
+Ensure PostCSS or Next.js autoprefixer runs in production.
+
+Example (next.config.js):
+
+const withCSS = require('@next/css')({ /* options */ });
+module.exports = withCSS;
+
+5. Avoid legacy JS
+
+Target only modern browsers → remove unnecessary polyfills.
+
+Example:
+
+module.exports = {
+  experimental: { legacyBrowsers: false },
+};
+
+6. Break long main-thread tasks
+
+Split large JS bundles → smaller chunks.
+
+Dynamic imports + code-splitting for heavy components.
+
+Use React.lazy for UI heavy parts:
+
+const ProfileCard = React.lazy(() => import('./ProfileCard'));
