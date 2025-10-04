@@ -123,7 +123,24 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
       bodySizeLimit: '2mb',
     },
-    optimizePackageImports: ['lucide-react', 'recharts', '@supabase/supabase-js', '@radix-ui/react-dialog', '@radix-ui/react-tabs'],
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts', 
+      '@supabase/supabase-js',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select',
+      '@radix-ui/react-tooltip',
+      '@radix-ui/react-toast',
+      '@tanstack/react-query',
+      'date-fns',
+      'react-hook-form',
+      '@hookform/resolvers',
+      'zod'
+    ],
     optimizeCss: true,
   },
 
@@ -140,6 +157,7 @@ const nextConfig: NextConfig = {
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
+      // Enhanced bundle splitting for production
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
@@ -149,15 +167,48 @@ const nextConfig: NextConfig = {
             name: 'vendor',
             chunks: 'all',
             test: /node_modules/,
+            priority: 20,
           },
           common: {
             name: 'common',
             chunks: 'all',
             minChunks: 2,
+            priority: 10,
             enforce: true,
+          },
+          lib: {
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+            name: 'react-vendor',
+            priority: 30,
           },
         },
       };
+
+      // Enhanced minification with Terser
+      config.optimization.minimize = true;
+      if (config.optimization.minimizer) {
+        config.optimization.minimizer.forEach((minimizer: any) => {
+          if (minimizer.constructor.name === 'TerserPlugin') {
+            minimizer.options = {
+              ...minimizer.options,
+              terserOptions: {
+                ...minimizer.options?.terserOptions,
+                compress: {
+                  drop_console: true,
+                  drop_debugger: true,
+                  pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+                  passes: 2,
+                },
+                mangle: true,
+                format: {
+                  comments: false,
+                },
+              },
+              extractComments: false,
+            };
+          }
+        });
+      }
     }
     return config;
   },
