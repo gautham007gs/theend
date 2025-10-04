@@ -57,7 +57,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           e.preventDefault();
           router.push('/');
         }} 
-        className="text-inherit hover:bg-accent/10 mr-2" 
+        className="text-inherit hover:bg-accent/10 mr-2 w-12 h-12" 
         aria-label="Go back"
       >
         <ArrowLeft className="h-6 w-6" />
@@ -69,6 +69,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             aiName === "Kruthika" && "border-2 border-primary p-0.5" 
         )}
         key={`avatar-header-wrapper-${aiName}-${avatarUrlToUse || 'default_wrapper_key_ch'}`}
+        aria-label={`View ${aiName}'s profile`}
       >
         <Avatar 
             className="h-10 w-10 cursor-pointer" 
@@ -91,16 +92,16 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <p className="text-xs text-chat-header-text/70">{onlineStatus}</p>
       </div >
 
-      <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10" aria-label="Video call (simulated ad)" onClick={onVideoClick}>
+      <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10 w-12 h-12" aria-label={`Video call with ${aiName}`} onClick={onVideoClick}>
         <Video className="h-5 w-5" />
       </Button>
-      <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10 mr-1" aria-label="Call (simulated ad)" onClick={onCallClick}>
+      <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10 mr-1 w-12 h-12" aria-label={`Call ${aiName}`} onClick={onCallClick}>
         <Phone className="h-5 w-5" />
       </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10" aria-label="More options">
+          <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10 w-12 h-12" aria-label="More options">
             <MoreVertical className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>

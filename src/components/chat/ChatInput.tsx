@@ -182,7 +182,13 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
       onSubmit={handleSubmit}
       className="flex items-end p-2 sm:p-3 bg-chat-input-bg border-t border-border gap-2"
     >
-      <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-foreground/80 self-end shrink-0">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        type="button" 
+        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 w-12 h-12"
+        aria-label="Add emoji"
+      >
         <Smile className="h-5 w-5" />
       </Button>
       <Textarea
@@ -191,15 +197,28 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Type a message..."
+        aria-label="Message input"
         className="flex-grow resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-card rounded-lg shadow-sm custom-scrollbar py-2 px-3 text-sm leading-tight max-h-[6rem] min-h-[2.5rem]" 
         rows={1}
       />
       {inputValue.trim() || selectedImage ? (
-        <Button type="submit" variant="default" size="icon" className="bg-primary hover:bg-primary/90 self-end shrink-0">
+        <Button 
+          type="submit" 
+          variant="default" 
+          size="icon" 
+          className="bg-primary hover:bg-primary/90 self-end shrink-0 w-12 h-12"
+          aria-label="Send message"
+        >
           <Send className="h-5 w-5 text-primary-foreground" />
         </Button>
       ) : (
-        <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-foreground/80 self-end shrink-0">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          type="button" 
+          className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 w-12 h-12"
+          aria-label="Record voice message"
+        >
           <Mic className="h-5 w-5" />
         </Button>
       )}
@@ -208,14 +227,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         ref={fileInputRef} 
         onChange={handleImageChange} 
         accept="image/jpeg,image/png,image/webp,image/gif" 
-        className="hidden" 
+        className="hidden"
+        aria-label="Upload image" 
       />
       <Button 
         variant="ghost" 
         size="icon" 
         type="button" 
-        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
+        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 w-12 h-12"
         onClick={() => fileInputRef.current?.click()}
+        aria-label="Attach file"
       >
         <Paperclip className="h-5 w-5" />
       </Button>

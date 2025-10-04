@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../styles/accessibility.css';
+
 /* Critical CSS for font optimization and CLS reduction */
 :root { 
   --font-inter: 'Inter', 'Inter Fallback', system-ui, sans-serif; 
