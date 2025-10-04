@@ -131,9 +131,9 @@ const ChatListPage: React.FC = () => {
     <>
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header */}
-      <header className="bg-green-500 text-white">
+      <header className="bg-green-500">
         <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Chats</h1>
+          <h1 className="text-xl font-semibold text-white">Chats</h1>
           <nav className="flex items-center space-x-3" aria-label="Main navigation">
             <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center" aria-label="Open camera">
               <Camera size={20} className="text-white" />
@@ -182,13 +182,13 @@ const ChatListPage: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="flex bg-green-500">
           <div className="flex-1">
-            <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white">
+            <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white text-white">
               CHATS
             </button>
           </div>
           <div className="flex-1">
             <Link href="/status" className="block w-full">
-              <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300">
+              <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300 text-white opacity-75 hover:opacity-100">
                 STATUS
               </button>
             </Link>

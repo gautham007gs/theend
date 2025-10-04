@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Check, CheckCheck, Reply, Heart, ThumbsUp, Smile } from 'lucide-react';
@@ -6,7 +5,7 @@ import type { Message, MessageStatus, MessageReaction } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { defaultAIProfile } from '@/config/ai'; 
+import { defaultAIProfile } from '@/config/ai';
 
 interface MessageBubbleProps {
   message: Message;
@@ -26,7 +25,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const isUser = message.sender === 'user';
   const isAd = message.sender === 'ad' || message.isNativeAd;
   const timestamp = new Date(message.timestamp);
-  
+
   // Swipe gesture state
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [showQuickReplies, setShowQuickReplies] = useState(false);
@@ -46,9 +45,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   // Quick reply options based on message content and sender
   const getQuickReplies = () => {
     if (isUser) return []; // No quick replies for user's own messages
-    
+
     const msgLower = message.text.toLowerCase();
-    
+
     // Context-aware quick replies
     if (msgLower.includes('good morning') || msgLower.includes('good night')) {
       return ['❤️', '😘', 'Good night! 🌙'];
@@ -62,19 +61,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     if (msgLower.includes('love') || msgLower.includes('miss')) {
       return ['❤️', 'Miss you too', '😘'];
     }
-    
+
     // Default quick replies
     return ['👍', '😂', 'Ok', 'Really?', '❤️', 'Cool'];
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isUser || isAd) return; // Only allow swiping on AI messages (not user or ad messages)
-    
+
     // Prevent starting swipe if another message is already being swiped
     if (currentlySwipingMessageId && currentlySwipingMessageId !== message.id) {
       return;
     }
-    
+
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
     setIsDragging(false);
@@ -82,39 +81,39 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (isUser) return;
-    
+
     // Prevent moving if another message is being swiped
     if (currentlySwipingMessageId && currentlySwipingMessageId !== message.id) {
       return;
     }
-    
+
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
     const deltaX = touchX - touchStartX.current;
     const deltaY = touchY - touchStartY.current;
-    
+
     // More strict threshold for horizontal swipes (WhatsApp-like)
     if (Math.abs(deltaY) > 30 || Math.abs(deltaX) < 15) return;
-    
+
     // Swipe right to reply with enhanced feedback
     if (deltaX > 15) {
       // Notify parent that this message is being swiped
       if (!isDragging && onSwipeStart) {
         onSwipeStart(message.id);
       }
-      
+
       setIsDragging(true);
       // Smooth resistance curve like WhatsApp with better easing
       const progress = Math.min(deltaX / maxSwipeDistance, 1);
       const easedProgress = 1 - Math.pow(1 - progress, 2); // Easing out quad
       const clampedOffset = easedProgress * maxSwipeDistance;
       setSwipeOffset(clampedOffset);
-      
+
       // Haptic feedback at threshold points
       if (deltaX > swipeThreshold && !showQuickReplies) {
         if (navigator.vibrate) navigator.vibrate(10); // Subtle feedback
       }
-      
+
       // Prevent scrolling while swiping
       e.preventDefault();
     }
@@ -122,7 +121,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
   const handleTouchEnd = () => {
     if (isUser) return;
-    
+
     if (swipeOffset > swipeThreshold && !showQuickReplies) {
       setShowQuickReplies(true);
       // Stronger haptic feedback for action completion
@@ -133,7 +132,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         onSwipeEnd();
       }
     }
-    
+
     // Smooth animation back to position
     setSwipeOffset(0);
     setIsDragging(false);
@@ -144,7 +143,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       onQuickReply(replyText, message);
     }
     setShowQuickReplies(false);
-    
+
     // Notify parent that swiping is done
     if (onSwipeEnd) {
       onSwipeEnd();
@@ -158,7 +157,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       setShowHeartAnimation(true);
       // Add haptic feedback
       if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
-      
+
       // Hide heart animation after 2 seconds
       setTimeout(() => setShowHeartAnimation(false), 2000);
     }
@@ -167,7 +166,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const handleTap = () => {
     const now = Date.now();
     const timeSinceLastTap = now - lastTapRef.current;
-    
+
     if (timeSinceLastTap < DOUBLE_TAP_DELAY) {
       // This is a double tap
       if (tapTimeoutRef.current) {
@@ -214,14 +213,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
   const renderTicks = (status: MessageStatus) => {
     if (!isUser) return null;
-    
+
     // Use readAt timestamp if available, otherwise fall back to timestamp
     const readTime = message.readAt ? new Date(message.readAt) : timestamp;
     const now = new Date();
-    
+
     if (status === 'read') {
       const timeSinceRead = now.getTime() - readTime.getTime();
-      
+
       // More realistic timing - show online indicator based on when actually read
       let tickClass = 'text-blue-500'; // Default read (blue)
       if (timeSinceRead < 30 * 1000) {
@@ -229,7 +228,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       } else if (timeSinceRead < 2 * 60 * 1000) {
         tickClass = 'text-blue-400'; // Recent read
       }
-      
+
       return <CheckCheck className={`h-4 w-4 ${tickClass} ml-1`} />;
     }
     if (status === 'delivered') {
@@ -247,7 +246,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       if (imageToShowUrl.startsWith('data:image')) {
         isValidImageSrc = true;
       } else {
-        new URL(imageToShowUrl); 
+        new URL(imageToShowUrl);
         isValidImageSrc = true;
       }
     } catch (e) {
@@ -263,7 +262,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const handleAIAvatarError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     console.error(`MessageBubble - AI AvatarImage load error for ${aiName}. URL: ${aiAvatarUrlToUse}`, e);
   };
-  
+
   const handleContentImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     console.error(`MessageBubble - Content Image load error for message ${message.id}. URL: ${imageToShowUrl}`, e);
   };
@@ -288,7 +287,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         try {
           // Clear any existing content first
           adRef.current.innerHTML = '';
-          
+
           // Small delay to ensure cleanup
           setTimeout(() => {
             if (adRef.current && message.nativeAdCode) {
@@ -296,8 +295,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               const fragment = document.createRange().createContextualFragment(message.nativeAdCode);
               adRef.current.appendChild(fragment);
               setAdInjected(true);
-              
-              console.log('Native ad content updated in bubble:', message.id, 
+
+              console.log('Native ad content updated in bubble:', message.id,
                          'Ad ID:', message.nativeAdId);
             }
           }, 50);
@@ -325,7 +324,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
-        <div 
+        <div
           ref={adRef}
           className="native-ad-content min-h-[80px]"
           id={message.nativeAdId}
@@ -386,7 +385,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             className="h-8 w-8 mr-2 self-end shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded-full"
             aria-label={`View ${aiName}'s profile`}
           >
-            <Avatar 
+            <Avatar
               className="h-8 w-8"
               key={`ai-msg-avatar-comp-${message.id}-${aiAvatarUrlToUse || 'default_avatar_comp_key_mb'}`}
               style={{ width: '32px', height: '32px' }}
@@ -399,6 +398,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
                 onError={handleAIAvatarError}
                 width={32}
                 height={32}
+                style={{ width: '32px', height: '32px' }}
               />
               <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -411,9 +411,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         )}
         {/* Enhanced WhatsApp-like reply icon that appears during swipe */}
         {!isUser && swipeOffset > 15 && (
-          <div 
+          <div
             className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 z-10 transition-all duration-100"
-            style={{ 
+            style={{
               opacity: Math.min(swipeOffset / swipeThreshold, 1),
               transform: `translateY(-50%) scale(${Math.min(0.8 + (swipeOffset / swipeThreshold) * 0.4, 1.2)})`,
             }}
@@ -426,7 +426,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             </div>
           </div>
         )}
-        
+
         <div
           className={cn(
             'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
@@ -436,7 +436,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
               : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
           )}
-          style={{ 
+          style={{
             transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
             transition: isDragging ? 'none' : 'transform 0.2s ease-out'
           }}
@@ -453,7 +453,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               height={200}
               className="rounded-md mb-1 max-w-full h-auto"
               data-ai-hint={imageHint}
-              key={`${message.id}-content-img-${imageToShowUrl}`} 
+              key={`${message.id}-content-img-${imageToShowUrl}`}
               onError={handleContentImageError}
               priority={false}
               loading="lazy"
@@ -485,12 +485,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               </span>
             </div>
           )}
-          
+
           {/* Heart animation overlay for double-tap */}
           {showHeartAnimation && !isUser && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <Heart 
-                className="h-8 w-8 text-red-500 fill-current animate-ping" 
+              <Heart
+                className="h-8 w-8 text-red-500 fill-current animate-ping"
                 style={{
                   animationDuration: '0.5s',
                   animationIterationCount: '4'
@@ -499,7 +499,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             </div>
           )}
         </div>
-        
+
         {/* Enhanced Quick Reply Options with WhatsApp-like styling */}
         {showQuickReplies && !isUser && !isAd && (
           <div className="absolute top-full left-0 mt-2 flex flex-wrap gap-2 bg-background/98 backdrop-blur-md rounded-2xl p-3 shadow-xl border border-border/50 z-20 max-w-[300px] animate-in slide-in-from-left-2 fade-in-0 duration-200">

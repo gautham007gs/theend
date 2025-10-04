@@ -1,15 +1,8 @@
-
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstagramBrowserPrompt from '@/components/InstagramBrowserPrompt';
-import GlobalAdScripts from '@/components/GlobalAdScripts';
-import SocialBarAdDisplay from '@/components/SocialBarAdDisplay';
-import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
-import ResourceHints from '@/components/ResourceHints';
 import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
@@ -17,14 +10,51 @@ import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
-import PerformanceOptimizer from '@/components/PerformanceOptimizer';
-import CookieConsent from '@/components/CookieConsent';
+import dynamic from 'next/dynamic';
+
+// Lazy load non-critical components to improve LCP
+const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+  ssr: false,
+  loading: () => null
+});
+const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  ssr: false,
+  loading: () => null
+});
+const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  ssr: false,
+  loading: () => null
+});
+const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  ssr: false,
+  loading: () => null
+});
+const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  ssr: false,
+  loading: () => null
+});
+const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  ssr: false,
+  loading: () => null
+});
+const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  ssr: false,
+  loading: () => null
+});
+const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  ssr: false,
+  loading: () => null
+});
+const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  ssr: false,
+  loading: () => null
+});
 
 // Optimize font loading - use fallback font immediately
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap',
+  display: 'swap', // Prevent invisible text flash
   preload: true,
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
 });
@@ -114,37 +144,37 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* CRITICAL: Preconnect to critical origins FIRST */}
+        {/* Critical preconnects - MUST come first for LCP optimization */}
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://placehold.co" />
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        
-        {/* CRITICAL: Preload font files directly */}
+
+        {/* Preload critical fonts */}
         <link
           rel="preload"
-          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-          fetchPriority="high"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          as="style"
+          onLoad={(e: any) => { e.target.onload = null; e.target.rel = 'stylesheet'; }}
         />
-        
+        <noscript>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        </noscript>
+
         {/* CRITICAL: Preload LCP image */}
         <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
-        
-        {/* Inline critical CSS to prevent render blocking */}
-        <style dangerouslySetInnerHTML={{__html: `
-          *{box-sizing:border-box;margin:0;padding:0}
-          body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
-          .chat-container{min-height:100dvh;display:flex;flex-direction:column}
-          img{max-width:100%;height:auto;display:block}
-          button{cursor:pointer;border:none;background:none;font:inherit}
-        `}} />
+
+        {/* Inline critical CSS hint */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            body { margin: 0; padding: 0; }
+            * { box-sizing: border-box; }
+          `
+        }} />
 
         <ResourceHints />
         <StructuredData />

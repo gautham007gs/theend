@@ -96,12 +96,12 @@ const nextConfig: NextConfig = {
   // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
-  compress: true,
+  compress: true, // Enable Gzip/Brotli compression
   poweredByHeader: false,
   generateEtags: true,
   reactStrictMode: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production'
   },
 
   // Performance optimizations for large scale

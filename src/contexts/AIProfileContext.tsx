@@ -61,7 +61,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
       if (error && error.code !== 'PGRST116') {
         console.error('[AIProfileContext] fetchAIProfile: Error fetching AI profile from Supabase:', error);
         toast({ title: "Error Loading AI Profile", description: `Could not load AI profile. Using defaults. ${error.message}`, variant: "destructive" });
-        
+
         // Try to get profile from localStorage as fallback
         try {
           const localProfile = localStorage.getItem('ai_profile_backup');
@@ -108,7 +108,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
     } catch (e: any) {
       console.error('[AIProfileContext] fetchAIProfile: Unexpected error fetching AI profile:', e);
       toast({ title: "Error Loading AI Profile", description: `Unexpected error. Using defaults. ${e.message}`, variant: "destructive" });
-      
+
       // Try to get profile from localStorage as fallback
       try {
         const localProfile = localStorage.getItem('ai_profile_backup');

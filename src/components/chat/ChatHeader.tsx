@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -35,12 +34,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onVideoClick,
 }) => {
   const router = useRouter();
-  
+
   let avatarUrlToUse = aiAvatarUrl; 
   if (!avatarUrlToUse || typeof avatarUrlToUse !== 'string' || avatarUrlToUse.trim() === '' || (!avatarUrlToUse.startsWith('http') && !avatarUrlToUse.startsWith('data:'))) {
     avatarUrlToUse = defaultAIProfile.avatarUrl;
   }
-  
+
   // if (aiName === "Kruthika") {
     // console.log(`ChatHeader - Kruthika's final aiAvatarUrlToUse: ${avatarUrlToUse}`);
   // }
@@ -85,6 +84,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             onError={handleAvatarError}
             width={40}
             height={40}
+            style={{ width: '40px', height: '40px' }}
           />
           <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
@@ -93,7 +93,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <h1 className="font-semibold text-lg text-chat-header-text">{aiName}</h1>
         <p className="text-xs text-chat-header-text/70">{onlineStatus}</p>
       </div >
-      
+
       <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10" aria-label="Video call (simulated ad)" onClick={onVideoClick}>
         <Video className="h-5 w-5" />
       </Button>
