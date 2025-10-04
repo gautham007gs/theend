@@ -92,6 +92,7 @@ const nextConfig: NextConfig = {
   },
   // Vercel-specific optimizations
   output: 'standalone', // Optimal for serverless deployment
+  // swcMinify is deprecated in Next.js 14+, SWC is default now
   // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
@@ -99,23 +100,14 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   reactStrictMode: true,
-  
-  // Modern browser targeting - removes legacy polyfills (~8KB saved)
-  swcMinify: true, // Explicit for clarity, though default in Next.js 14+
-  
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
-    // Remove React DevTools in production
-    reactRemoveProperties: process.env.NODE_ENV === 'production' ? { properties: ['^data-testid$'] } : false,
   },
   
-  // Enhanced compression and modern browser optimizations
+  // Enhanced compression
   experimental: {
     optimizeCss: true,
     gzipSize: true,
-    // Target modern browsers only - removes legacy polyfills
-    browsersListForSwc: true,
-    legacyBrowsers: false,
   },
 
   // Performance optimizations for large scale
@@ -151,7 +143,7 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // Enhanced bundle optimization with aggressive code splitting
+  // Bundle optimization
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
@@ -159,52 +151,20 @@ const nextConfig: NextConfig = {
         cacheGroups: {
           default: false,
           vendors: false,
-          // Separate vendor chunks
           vendor: {
             name: 'vendor',
             chunks: 'all',
             test: /node_modules/,
-            priority: 10,
           },
-          // React/Next.js core bundle
-          framework: {
-            name: 'framework',
-            chunks: 'all',
-            test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
-            priority: 40,
-            enforce: true,
-          },
-          // UI library bundle (Radix UI)
-          ui: {
-            name: 'ui',
-            chunks: 'all',
-            test: /[\\/]node_modules[\\/](@radix-ui)[\\/]/,
-            priority: 30,
-          },
-          // Common shared code
           common: {
             name: 'common',
             chunks: 'all',
             minChunks: 2,
-            priority: 20,
-            reuseExistingChunk: true,
             enforce: true,
           },
         },
       };
-      
-      // Minimize bundle size
-      config.optimization.minimize = true;
     }
-    
-    // Exclude devtools from production
-    if (!dev) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@next/dev-overlay': false,
-      };
-    }
-    
     return config;
   },
 

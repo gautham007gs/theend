@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import '../styles/accessibility.css';
-
 /* Critical CSS for font optimization and CLS reduction */
 :root { 
   --font-inter: 'Inter', 'Inter Fallback', system-ui, sans-serif; 
@@ -229,16 +227,6 @@ body {
   background-color: rgba(155, 155, 155, 0.5);
   border-radius: 20px;
   border: transparent;
-}
-
-/* Lazy loading utilities */
-.lazy-load {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 500px;
-}
-
-.will-change-auto {
-  will-change: auto;
 }
 
 /* Native ad styling in chat */

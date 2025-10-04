@@ -6,30 +6,6 @@ export default function PerformanceOptimizer() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Enhanced task scheduler with chunking for long tasks
-    const scheduleTask = (task: () => void, priority: 'high' | 'low' = 'low') => {
-      if (priority === 'high') {
-        requestAnimationFrame(task);
-      } else if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(task, { timeout: 2000 });
-      } else {
-        setTimeout(task, 1);
-      }
-    };
-
-    // Break up long tasks into smaller chunks
-    const executeInChunks = async <T,>(items: T[], processor: (item: T) => void, chunkSize = 10) => {
-      for (let i = 0; i < items.length; i += chunkSize) {
-        const chunk = items.slice(i, i + chunkSize);
-        await new Promise<void>(resolve => {
-          scheduleTask(() => {
-            chunk.forEach(processor);
-            resolve();
-          }, 'low');
-        });
-      }
-    };
-
     const optimizations = {
       preloadCriticalResources() {
         const critical = [
@@ -51,55 +27,24 @@ export default function PerformanceOptimizer() {
       },
 
       optimizeImages() {
-        // Critical images - load immediately
         const heroImages = document.querySelectorAll('img[data-hero], img[alt*="Kruthika"]');
         heroImages.forEach(img => {
           (img as HTMLImageElement).setAttribute('fetchpriority', 'high');
           (img as HTMLImageElement).loading = 'eager';
         });
 
-        // Lazy load all non-critical images with Intersection Observer
-        const lazyImages = Array.from(document.querySelectorAll('img:not([data-hero]):not([alt*="Kruthika"])'));
-        
-        if ('IntersectionObserver' in window) {
-          const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting) {
-                const img = entry.target as HTMLImageElement;
-                img.loading = 'lazy';
-                img.setAttribute('fetchpriority', 'low');
-                img.decoding = 'async';
-                
-                if (!img.width && img.naturalWidth) {
-                  img.width = img.naturalWidth;
-                  img.height = img.naturalHeight;
-                }
-                imageObserver.unobserve(img);
-              }
-            });
-          }, { rootMargin: '50px' });
-
-          // Process images in chunks to avoid blocking
-          executeInChunks(lazyImages, (img) => imageObserver.observe(img as HTMLImageElement), 20);
-        } else {
-          // Fallback for older browsers
-          lazyImages.forEach(img => {
-            const image = img as HTMLImageElement;
-            image.loading = 'lazy';
-            image.setAttribute('fetchpriority', 'low');
-            image.decoding = 'async';
-          });
-        }
-      },
-
-      // Lazy load emojis and avatars
-      lazyLoadEmojis() {
-        scheduleTask(() => {
-          const emojiContainers = document.querySelectorAll('[data-emoji-container]');
-          emojiContainers.forEach(container => {
-            container.setAttribute('style', 'font-display: swap');
-          });
-        }, 'low');
+        const lazyImages = document.querySelectorAll('img:not([data-hero]):not([alt*="Kruthika"])');
+        lazyImages.forEach(img => {
+          const image = img as HTMLImageElement;
+          image.loading = 'lazy';
+          image.setAttribute('fetchpriority', 'low');
+          image.decoding = 'async';
+          
+          if (!image.width && image.naturalWidth) {
+            image.width = image.naturalWidth;
+            image.height = image.naturalHeight;
+          }
+        });
       },
 
       optimizeFonts() {
@@ -181,25 +126,20 @@ export default function PerformanceOptimizer() {
       }
     };
 
-    // Critical optimizations - run immediately (minimal main thread blocking)
     optimizations.preloadCriticalResources();
     optimizations.addResourceHints();
-    
-    // Defer ALL non-critical optimizations to reduce TBT
-    scheduleTask(() => optimizations.optimizeFonts(), 'low');
-    scheduleTask(() => optimizations.optimizeMobile(), 'low');
-    scheduleTask(() => optimizations.monitorLCP(), 'low');
-    scheduleTask(() => optimizations.lazyLoadEmojis(), 'low');
+    optimizations.optimizeFonts();
+    optimizations.optimizeMobile();
+    optimizations.monitorLCP();
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        // Stagger tasks to avoid long blocking
-        scheduleTask(() => optimizations.optimizeImages(), 'high');
-        setTimeout(() => scheduleTask(() => optimizations.deferNonCriticalCSS(), 'low'), 100);
+        optimizations.optimizeImages();
+        optimizations.deferNonCriticalCSS();
       });
     } else {
-      scheduleTask(() => optimizations.optimizeImages(), 'high');
-      setTimeout(() => scheduleTask(() => optimizations.deferNonCriticalCSS(), 'low'), 100);
+      optimizations.optimizeImages();
+      optimizations.deferNonCriticalCSS();
     }
 
   }, []);
