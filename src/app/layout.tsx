@@ -17,7 +17,7 @@ const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap', // Prevent invisible text flash
-  preload: true,
+  preload: false, // Don't block initial render
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
 });
 
@@ -106,39 +106,28 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical preconnects - MUST come first for LCP optimization */}
+        {/* CRITICAL: Preload LCP image FIRST - highest priority */}
+        <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
+        
+        {/* Critical preconnects */}
+        <link rel="preconnect" href="https://placehold.co" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
+        
         {/* DNS prefetch for external resources */}
-        <link rel="dns-prefetch" href="https://placehold.co" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
-        {/* Preload critical fonts */}
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          as="style"
-          onLoad={(e: any) => { e.target.onload = null; e.target.rel = 'stylesheet'; }}
-        />
-        <noscript>
-          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        </noscript>
-
-        {/* CRITICAL: Preload LCP image */}
-        <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
-
-        {/* Inline critical CSS hint */}
+        {/* Inline critical CSS for instant render */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            body { margin: 0; padding: 0; }
+            body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
             * { box-sizing: border-box; }
+            img { content-visibility: auto; }
           `
         }} />
 
-        <ResourceHints />
         <StructuredData />
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
