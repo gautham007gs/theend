@@ -21,8 +21,14 @@ const inter = Inter({
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
 });
 
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
+  if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  return 'https://kruthika.fun';
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://kruthika.fun'),
+  metadataBase: new URL(getBaseUrl()),
   title: {
     default: 'AI Girlfriend Free | Best Virtual Companion 2025 - Kruthika',
     template: '%s | Kruthika - AI Girlfriend'
