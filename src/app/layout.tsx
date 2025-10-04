@@ -18,9 +18,7 @@ import CookieConsent from '@/components/CookieConsent';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
-import MobilePerformanceOptimizer from '@/components/MobilePerformanceOptimizer';
-import MobileChatOptimizer from '@/components/chat/MobileChatOptimizer';
-import MobileLighthouseOptimizer from '@/components/MobileLighthouseOptimizer';
+import PerformanceOptimizer from '@/components/PerformanceOptimizer';
 
 // Optimize font loading - use fallback font immediately
 const inter = Inter({
@@ -163,9 +161,7 @@ export default function RootLayout({
                   <CookieConsent />
                   <Toaster />
                   <PerformanceMonitor />
-                  <MobilePerformanceOptimizer />
-                  <MobileChatOptimizer />
-                  <MobileLighthouseOptimizer />
+                  <PerformanceOptimizer />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>
