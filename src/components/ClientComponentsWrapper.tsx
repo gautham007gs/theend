@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -33,6 +34,11 @@ const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptim
   loading: () => null
 });
 
+const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  ssr: false,
+  loading: () => null
+});
+
 const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
   ssr: false,
   loading: () => null
@@ -43,9 +49,15 @@ const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay
   loading: () => null
 });
 
+const ResourceHintsComponent = dynamic(() => import('@/components/ResourceHints'), {
+  ssr: false,
+  loading: () => null
+});
+
 export default function ClientComponentsWrapper() {
   return (
     <>
+      <ResourceHintsComponent />
       <InstagramBrowserPrompt />
       <GlobalAdScripts />
       <ServiceWorkerRegistration />

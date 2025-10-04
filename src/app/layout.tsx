@@ -76,14 +76,14 @@ export const metadata: Metadata = {
     canonical: 'https://kruthika.fun',
   },
   other: {
+    'google-site-verification': 'your-verification-code-here', // Add your verification code
+  },
+  other: {
     'google-site-verification': 'verification-for-kruthika-fun-search-console',
     'geo.region': 'US',
     'geo.placename': 'United States',
     'geo.position': 'global',
     'ICBM': 'global',
-  },
-  verification: {
-    google: 'verification-for-kruthika-fun-search-console',
   },
 };
 
