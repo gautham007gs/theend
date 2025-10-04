@@ -18,12 +18,7 @@ import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import PerformanceOptimizer from '@/components/PerformanceOptimizer';
-import dynamic from 'next/dynamic';
-
-const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
-  ssr: false,
-  loading: () => null
-});
+import CookieConsent from '@/components/CookieConsent';
 
 // Optimize font loading - use fallback font immediately
 const inter = Inter({

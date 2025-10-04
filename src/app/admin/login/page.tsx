@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { KeyRound, ShieldAlert } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient'; // Import Supabase client
 
+export const dynamic = 'force-dynamic';
+
 const ADMIN_AUTH_KEY = 'isAdminLoggedIn_KruthikaChat';
 
 const AdminLoginPage: React.FC = () => {

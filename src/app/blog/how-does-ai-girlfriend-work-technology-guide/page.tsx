@@ -1,6 +1,4 @@
 
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { Calendar, User, ArrowRight, Heart, MessageCircle, Cpu, Brain, Database } from 'lucide-react';
