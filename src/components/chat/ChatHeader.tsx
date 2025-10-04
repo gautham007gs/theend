@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -34,12 +35,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onVideoClick,
 }) => {
   const router = useRouter();
-
+  
   let avatarUrlToUse = aiAvatarUrl; 
   if (!avatarUrlToUse || typeof avatarUrlToUse !== 'string' || avatarUrlToUse.trim() === '' || (!avatarUrlToUse.startsWith('http') && !avatarUrlToUse.startsWith('data:'))) {
     avatarUrlToUse = defaultAIProfile.avatarUrl;
   }
-
+  
   // if (aiName === "Kruthika") {
     // console.log(`ChatHeader - Kruthika's final aiAvatarUrlToUse: ${avatarUrlToUse}`);
   // }
@@ -73,15 +74,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <Avatar 
             className="h-10 w-10 cursor-pointer" 
             key={`avatar-comp-header-${aiName}-${avatarUrlToUse || 'default_avatar_comp_key_ch'}`}
-            style={{ width: '40px', height: '40px', flexShrink: 0 }} // Explicit dimensions to prevent CLS
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 
             alt={aiName} 
             data-ai-hint="profile woman" 
             key={`chat-header-avatar-img-${aiName}-${avatarUrlToUse || 'no_avatar_fallback_img_ch'}`}
-            onError={handleAvatarError}
-            style={{ width: '40px', height: '40px', aspectRatio: '1/1' }} // Prevent CLS
+            onError={handleAvatarError} 
           />
           <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
@@ -90,7 +89,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <h1 className="font-semibold text-lg text-chat-header-text">{aiName}</h1>
         <p className="text-xs text-chat-header-text/70">{onlineStatus}</p>
       </div >
-
+      
       <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10" aria-label="Video call (simulated ad)" onClick={onVideoClick}>
         <Video className="h-5 w-5" />
       </Button>

@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -19,14 +20,13 @@ import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import PerformanceOptimizer from '@/components/PerformanceOptimizer';
 
-// Optimize font loading - use fallback font immediately with swap
+// Optimize font loading - use fallback font immediately
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap', // Prevents FOUT
+  display: 'swap',
   preload: true,
-  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-  adjustFontFallback: 'Arial', // Better fallback matching
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
 });
 
 export const metadata: Metadata = {
@@ -114,18 +114,14 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* CRITICAL: Preconnect to Supabase FIRST - fixes 300ms delay */}
-        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
-
-        {/* CRITICAL: Preconnect to critical origins */}
+        {/* CRITICAL: Preconnect to critical origins FIRST */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* CRITICAL: Preload hero image and background for LCP */}
+        
+        {/* CRITICAL: Preload hero image and background */}
         <link rel="preload" href="/chat-bg.png" as="image" type="image/png" fetchPriority="high" />
         <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
-
+        
         {/* CRITICAL: Preload font files directly */}
         <link
           rel="preload"
@@ -134,35 +130,18 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-
+        
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://placehold.co" />
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
-
-        {/* Inline critical CSS to prevent render blocking and CLS */}
+        
+        {/* Inline critical CSS to prevent render blocking */}
         <style dangerouslySetInnerHTML={{__html: `
-          *,::before,::after{box-sizing:border-box;border:0 solid}
-          *{margin:0;padding:0}
-          body{font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;background-color:#F2EDE4}
-          img{display:block;max-width:100%;height:auto}
-          button,input,textarea,select{font:inherit}
+          *{box-sizing:border-box;margin:0;padding:0}
+          body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
           .chat-container{min-height:100dvh;display:flex;flex-direction:column}
-          
-          /* Prevent CLS - Reserve space for header */
-          header{height:64px;display:flex;align-items:center;padding:0.75rem;background-color:#FAFAFA;border-bottom:1px solid #E5E7EB}
-          
-          /* Prevent CLS - Avatar dimensions */
-          .avatar,.avatar>img{width:40px;height:40px;border-radius:50%;aspect-ratio:1/1}
-          
-          /* Prevent CLS - Chat input area */
-          .chat-input-wrapper{min-height:60px;padding:0.5rem;background-color:#F5F5F5}
-          
-          /* Prevent CLS - Message bubbles */
-          .message-bubble{min-height:40px;padding:0.5rem 0.75rem;border-radius:0.5rem}
-          
-          /* Font loading optimization */
-          @font-face{font-family:'Inter Fallback';src:local('Arial');ascent-override:90%;descent-override:22%;line-gap-override:0%;size-adjust:107%}
-          body{font-family:'Inter','Inter Fallback',system-ui,sans-serif}
+          img{max-width:100%;height:auto;display:block}
+          button{cursor:pointer;border:none;background:none;font:inherit}
         `}} />
 
         <ResourceHints />

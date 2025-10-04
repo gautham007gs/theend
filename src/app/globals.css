@@ -7,15 +7,6 @@
   --font-inter: 'Inter', 'Inter Fallback', system-ui, sans-serif; 
 }
 
-/* Font loading with swap to prevent FOUT */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
-}
-
 html { 
   font-family: var(--font-inter); 
 }
