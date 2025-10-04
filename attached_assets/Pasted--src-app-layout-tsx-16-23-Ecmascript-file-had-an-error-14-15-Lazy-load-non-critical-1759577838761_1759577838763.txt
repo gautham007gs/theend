@@ -1,0 +1,1087 @@
+⨯ ./src/app/layout.tsx:16:23
+Ecmascript file had an error
+  14 |
+  15 | // Lazy load non-critical components to improve LCP
+> 16 | const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 18 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 19 | });
+     | ^^^
+  20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  21 |   ssr: false,
+  22 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |   loading: () => null
+  19 | });
+> 20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 22 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 23 | });
+     | ^^^
+  24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  25 |   ssr: false,
+  26 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:24:35
+Ecmascript file had an error
+  22 |   loading: () => null
+  23 | });
+> 24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 26 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 27 | });
+     | ^^^
+  28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  29 |   ssr: false,
+  30 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:28:25
+Ecmascript file had an error
+  26 |   loading: () => null
+  27 | });
+> 28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 30 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 31 | });
+     | ^^^
+  32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  33 |   ssr: false,
+  34 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:32:28
+Ecmascript file had an error
+  30 |   loading: () => null
+  31 | });
+> 32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 34 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 35 | });
+     | ^^^
+  36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  37 |   ssr: false,
+  38 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:36:30
+Ecmascript file had an error
+  34 |   loading: () => null
+  35 | });
+> 36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 38 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 39 | });
+     | ^^^
+  40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  41 |   ssr: false,
+  42 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:23
+Ecmascript file had an error
+  38 |   loading: () => null
+  39 | });
+> 40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 42 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 43 | });
+     | ^^^
+  44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  45 |   ssr: false,
+  46 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:44:25
+Ecmascript file had an error
+  42 |   loading: () => null
+  43 | });
+> 44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 46 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 47 | });
+     | ^^^
+  48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  49 |   ssr: false,
+  50 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:48:28
+Ecmascript file had an error
+  46 |   loading: () => null
+  47 | });
+> 48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 50 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 51 | });
+     | ^^^
+  52 |
+  53 | // Optimize font loading - use fallback font immediately
+  54 | const inter = Inter({
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+ ⨯ ./src/app/layout.tsx:16:23
+Ecmascript file had an error
+  14 |
+  15 | // Lazy load non-critical components to improve LCP
+> 16 | const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 18 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 19 | });
+     | ^^^
+  20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  21 |   ssr: false,
+  22 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |   loading: () => null
+  19 | });
+> 20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 22 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 23 | });
+     | ^^^
+  24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  25 |   ssr: false,
+  26 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:24:35
+Ecmascript file had an error
+  22 |   loading: () => null
+  23 | });
+> 24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 26 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 27 | });
+     | ^^^
+  28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  29 |   ssr: false,
+  30 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:28:25
+Ecmascript file had an error
+  26 |   loading: () => null
+  27 | });
+> 28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 30 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 31 | });
+     | ^^^
+  32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  33 |   ssr: false,
+  34 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:32:28
+Ecmascript file had an error
+  30 |   loading: () => null
+  31 | });
+> 32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 34 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 35 | });
+     | ^^^
+  36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  37 |   ssr: false,
+  38 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:36:30
+Ecmascript file had an error
+  34 |   loading: () => null
+  35 | });
+> 36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 38 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 39 | });
+     | ^^^
+  40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  41 |   ssr: false,
+  42 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:23
+Ecmascript file had an error
+  38 |   loading: () => null
+  39 | });
+> 40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 42 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 43 | });
+     | ^^^
+  44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  45 |   ssr: false,
+  46 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:44:25
+Ecmascript file had an error
+  42 |   loading: () => null
+  43 | });
+> 44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 46 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 47 | });
+     | ^^^
+  48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  49 |   ssr: false,
+  50 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:48:28
+Ecmascript file had an error
+  46 |   loading: () => null
+  47 | });
+> 48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 50 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 51 | });
+     | ^^^
+  52 |
+  53 | // Optimize font loading - use fallback font immediately
+  54 | const inter = Inter({
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+ ⨯ ./src/app/layout.tsx:16:23
+Ecmascript file had an error
+  14 |
+  15 | // Lazy load non-critical components to improve LCP
+> 16 | const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 18 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 19 | });
+     | ^^^
+  20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  21 |   ssr: false,
+  22 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |   loading: () => null
+  19 | });
+> 20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 22 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 23 | });
+     | ^^^
+  24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  25 |   ssr: false,
+  26 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:24:35
+Ecmascript file had an error
+  22 |   loading: () => null
+  23 | });
+> 24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 26 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 27 | });
+     | ^^^
+  28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  29 |   ssr: false,
+  30 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:28:25
+Ecmascript file had an error
+  26 |   loading: () => null
+  27 | });
+> 28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 30 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 31 | });
+     | ^^^
+  32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  33 |   ssr: false,
+  34 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:32:28
+Ecmascript file had an error
+  30 |   loading: () => null
+  31 | });
+> 32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 34 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 35 | });
+     | ^^^
+  36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  37 |   ssr: false,
+  38 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:36:30
+Ecmascript file had an error
+  34 |   loading: () => null
+  35 | });
+> 36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 38 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 39 | });
+     | ^^^
+  40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  41 |   ssr: false,
+  42 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:23
+Ecmascript file had an error
+  38 |   loading: () => null
+  39 | });
+> 40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 42 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 43 | });
+     | ^^^
+  44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  45 |   ssr: false,
+  46 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:44:25
+Ecmascript file had an error
+  42 |   loading: () => null
+  43 | });
+> 44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 46 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 47 | });
+     | ^^^
+  48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  49 |   ssr: false,
+  50 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:48:28
+Ecmascript file had an error
+  46 |   loading: () => null
+  47 | });
+> 48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 50 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 51 | });
+     | ^^^
+  52 |
+  53 | // Optimize font loading - use fallback font immediately
+  54 | const inter = Inter({
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+ ⨯ ./src/app/layout.tsx:16:23
+Ecmascript file had an error
+  14 |
+  15 | // Lazy load non-critical components to improve LCP
+> 16 | const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 18 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 19 | });
+     | ^^^
+  20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  21 |   ssr: false,
+  22 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |   loading: () => null
+  19 | });
+> 20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 22 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 23 | });
+     | ^^^
+  24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  25 |   ssr: false,
+  26 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:24:35
+Ecmascript file had an error
+  22 |   loading: () => null
+  23 | });
+> 24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 26 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 27 | });
+     | ^^^
+  28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  29 |   ssr: false,
+  30 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:28:25
+Ecmascript file had an error
+  26 |   loading: () => null
+  27 | });
+> 28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 30 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 31 | });
+     | ^^^
+  32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  33 |   ssr: false,
+  34 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:32:28
+Ecmascript file had an error
+  30 |   loading: () => null
+  31 | });
+> 32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 34 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 35 | });
+     | ^^^
+  36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  37 |   ssr: false,
+  38 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:36:30
+Ecmascript file had an error
+  34 |   loading: () => null
+  35 | });
+> 36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 38 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 39 | });
+     | ^^^
+  40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  41 |   ssr: false,
+  42 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:23
+Ecmascript file had an error
+  38 |   loading: () => null
+  39 | });
+> 40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 42 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 43 | });
+     | ^^^
+  44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  45 |   ssr: false,
+  46 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:44:25
+Ecmascript file had an error
+  42 |   loading: () => null
+  43 | });
+> 44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 46 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 47 | });
+     | ^^^
+  48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  49 |   ssr: false,
+  50 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:48:28
+Ecmascript file had an error
+  46 |   loading: () => null
+  47 | });
+> 48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 50 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 51 | });
+     | ^^^
+  52 |
+  53 | // Optimize font loading - use fallback font immediately
+  54 | const inter = Inter({
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+ ⨯ ./src/app/layout.tsx:16:23
+Ecmascript file had an error
+  14 |
+  15 | // Lazy load non-critical components to improve LCP
+> 16 | const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 18 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 19 | });
+     | ^^^
+  20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  21 |   ssr: false,
+  22 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |   loading: () => null
+  19 | });
+> 20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 22 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 23 | });
+     | ^^^
+  24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  25 |   ssr: false,
+  26 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:24:35
+Ecmascript file had an error
+  22 |   loading: () => null
+  23 | });
+> 24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 26 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 27 | });
+     | ^^^
+  28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  29 |   ssr: false,
+  30 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:28:25
+Ecmascript file had an error
+  26 |   loading: () => null
+  27 | });
+> 28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 30 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 31 | });
+     | ^^^
+  32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  33 |   ssr: false,
+  34 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:32:28
+Ecmascript file had an error
+  30 |   loading: () => null
+  31 | });
+> 32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 34 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 35 | });
+     | ^^^
+  36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  37 |   ssr: false,
+  38 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:36:30
+Ecmascript file had an error
+  34 |   loading: () => null
+  35 | });
+> 36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 38 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 39 | });
+     | ^^^
+  40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  41 |   ssr: false,
+  42 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:23
+Ecmascript file had an error
+  38 |   loading: () => null
+  39 | });
+> 40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 42 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 43 | });
+     | ^^^
+  44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  45 |   ssr: false,
+  46 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:44:25
+Ecmascript file had an error
+  42 |   loading: () => null
+  43 | });
+> 44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 46 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 47 | });
+     | ^^^
+  48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  49 |   ssr: false,
+  50 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:48:28
+Ecmascript file had an error
+  46 |   loading: () => null
+  47 | });
+> 48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 50 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 51 | });
+     | ^^^
+  52 |
+  53 | // Optimize font loading - use fallback font immediately
+  54 | const inter = Inter({
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+ ✓ Compiled / in 28.3s
+Time 14.08736
+Time 5.53529
+Time 4.11785
+Time 2.95776
+Time 2.23463
+ GET /blog 500 in 22265ms
+ GET / 500 in 28720ms
+ GET / 500 in 23791ms
+ GET /maya-chat 500 in 22569ms
+ GET /maya-chat 500 in 5338ms
+ ⨯ ./src/app/layout.tsx:16:23
+Ecmascript file had an error
+  14 |
+  15 | // Lazy load non-critical components to improve LCP
+> 16 | const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 18 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 19 | });
+     | ^^^
+  20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+  21 |   ssr: false,
+  22 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |   loading: () => null
+  19 | });
+> 20 | const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 22 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 23 | });
+     | ^^^
+  24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+  25 |   ssr: false,
+  26 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:24:35
+Ecmascript file had an error
+  22 |   loading: () => null
+  23 | });
+> 24 | const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
+     |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 26 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 27 | });
+     | ^^^
+  28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+  29 |   ssr: false,
+  30 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:28:25
+Ecmascript file had an error
+  26 |   loading: () => null
+  27 | });
+> 28 | const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 30 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 31 | });
+     | ^^^
+  32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  33 |   ssr: false,
+  34 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:32:28
+Ecmascript file had an error
+  30 |   loading: () => null
+  31 | });
+> 32 | const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 34 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 35 | });
+     | ^^^
+  36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+  37 |   ssr: false,
+  38 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:36:30
+Ecmascript file had an error
+  34 |   loading: () => null
+  35 | });
+> 36 | const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 38 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 39 | });
+     | ^^^
+  40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+  41 |   ssr: false,
+  42 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:23
+Ecmascript file had an error
+  38 |   loading: () => null
+  39 | });
+> 40 | const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
+     |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 42 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 43 | });
+     | ^^^
+  44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+  45 |   ssr: false,
+  46 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:44:25
+Ecmascript file had an error
+  42 |   loading: () => null
+  43 | });
+> 44 | const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 46 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 47 | });
+     | ^^^
+  48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+  49 |   ssr: false,
+  50 |   loading: () => null
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:48:28
+Ecmascript file had an error
+  46 |   loading: () => null
+  47 | });
+> 48 | const SocialBarAdDisplay = dynamic(() => import('@/components/SocialBarAdDisplay'), {
+     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |   ssr: false,
+     | ^^^^^^^^^^^^^
+> 50 |   loading: () => null
+     | ^^^^^^^^^^^^^
+> 51 | });
+     | ^^^
+  52 |
+  53 | // Optimize font loading - use fallback font immediately
+  54 | const inter = Inter({
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+Time 2.012141
+ GET /maya-chat 500 in 110ms
