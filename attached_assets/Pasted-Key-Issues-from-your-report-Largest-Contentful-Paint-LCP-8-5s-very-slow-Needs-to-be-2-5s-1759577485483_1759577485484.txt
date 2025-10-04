@@ -1,0 +1,123 @@
+Key Issues (from your report)
+
+Largest Contentful Paint (LCP) = 8.5s (very slow)
+
+Needs to be < 2.5s for good.
+
+Causes: slow server response, render-blocking CSS, no preconnect, long critical request chain, unoptimized assets.
+
+First Contentful Paint (FCP) = 1.1s (good)
+
+Your first paint is fine, but LCP (main content load) is very delayed.
+
+Cumulative Layout Shift (CLS) = 0.369 (bad)
+
+Needs to be < 0.1.
+
+Caused by dynamic elements (e.g., "Loading Kruthika’s profile…" div, missing image dimensions).
+
+Server response time = 1475ms (too slow)
+
+Needs to be < 500ms.
+
+Render-blocking CSS = 18.6 KiB, 180ms
+
+Next.js adds _root.css blocking render.
+
+No preconnects set up
+
+Especially to supabase.co.
+
+Critical request chain = 2823ms
+
+CSS and JS chaining delays LCP.
+
+Legacy JS Polyfills (9 KiB wasted)
+
+Next.js polyfills modern features unnecessarily.
+
+🟢 Fixes (Step by Step)
+1. Speed up server response (TTFB)
+
+Enable compression:
+Add Gzip/Brotli in your Next.js config (next.config.js):
+
+const nextConfig = {
+  compress: true,
+}
+module.exports = nextConfig
+
+
+Edge deployment: Deploy to Vercel/Netlify edge instead of Replit (Replit hosting is slower).
+
+2. Preconnect to important origins
+
+Add this to your <Head> in _document.js:
+
+<link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+⚡ This saves ~300ms on Supabase requests.
+
+3. Fix CLS (layout shifts)
+
+Add explicit width/height to all images:
+
+<Image src="/profile.png" width={200} height={200} alt="profile" />
+
+
+For text placeholders like "Loading Kruthika’s profile...", set a fixed container height so when real data loads, it doesn’t push layout.
+
+4. Reduce Render-Blocking CSS
+
+Inline critical CSS:
+In _document.js:
+
+import { Html, Head, Main, NextScript } from "next/document"
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <link rel="preload" href="/_next/static/css/app.css" as="style" />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  )
+}
+
+
+Use next/script with strategy="beforeInteractive" or strategy="lazyOnload" for non-critical JS.
+
+5. Optimize LCP element
+
+Likely your profile image or hero section is the LCP.
+
+Serve it in WebP/AVIF.
+
+Use <Image priority /> in Next.js to preload it:
+
+<Image src="/hero.jpg" width={1200} height={600} priority alt="Hero" />
+
+6. Cut down Critical Request Chain
+
+Bundle and minify CSS/JS (Next.js does by default, but avoid importing CSS from many chunks).
+
+Use dynamic import for components not above-the-fold:
+
+const ChatBox = dynamic(() => import("./ChatBox"), { ssr: false })
+
+7. Remove legacy JS
+
+In next.config.js disable polyfills:
+
+module.exports = {
+  experimental: {
+    esmExternals: true,
+    legacyBrowsers: false,
+  },
+}
