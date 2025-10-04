@@ -202,16 +202,29 @@ export async function middleware(request: NextRequest) {
   // Apply performance headers to all other requests
   const response = NextResponse.next();
 
-  // Add performance headers
+  // Add performance and security headers (SEO-friendly)
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+  
+  // Ensure search engines can index the site
+  // Only add X-Robots-Tag for admin and API routes
+  const pathname = request.nextUrl.pathname;
+  if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  } else {
+    // Allow indexing for public pages
+    response.headers.set('X-Robots-Tag', 'index, follow');
+  }
 
   // Add caching headers for static assets
   if (request.nextUrl.pathname.startsWith('/_next/static/') || 
-      request.nextUrl.pathname.includes('.')) {
+      request.nextUrl.pathname.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$/)) {
     response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
+    // Cache public pages for 1 hour for better SEO
+    response.headers.set('Cache-Control', 'public, max-age=3600, must-revalidate');
   }
 
   // Add performance timing headers

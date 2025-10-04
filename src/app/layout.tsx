@@ -76,6 +76,9 @@ export const metadata: Metadata = {
     canonical: 'https://kruthika.fun',
   },
   other: {
+    'google-site-verification': 'your-verification-code-here', // Add your verification code
+  },
+  other: {
     'google-site-verification': 'verification-for-kruthika-fun-search-console',
     'geo.region': 'US',
     'geo.placename': 'United States',
@@ -134,6 +137,13 @@ export default function RootLayout({
         <ErrorBoundary>
           <AdSettingsProvider>
             <AIProfileProvider>
+
+        {/* Critical Resource Preloads for LCP Optimization */}
+        <link rel="preload" href="/chat-bg.png" as="image" fetchPriority="high" />
+        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
                   <ClientComponentsWrapper />
