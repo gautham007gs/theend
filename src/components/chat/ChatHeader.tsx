@@ -70,17 +70,21 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             aiName === "Kruthika" && "border-2 border-primary p-0.5" 
         )}
         key={`avatar-header-wrapper-${aiName}-${avatarUrlToUse || 'default_wrapper_key_ch'}`}
+        aria-label={`View ${aiName}'s profile`}
       >
         <Avatar 
             className="h-10 w-10 cursor-pointer" 
             key={`avatar-comp-header-${aiName}-${avatarUrlToUse || 'default_avatar_comp_key_ch'}`}
+            style={{ width: '40px', height: '40px' }}
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 
-            alt={aiName} 
+            alt={`${aiName} - AI girlfriend profile picture`} 
             data-ai-hint="profile woman" 
             key={`chat-header-avatar-img-${aiName}-${avatarUrlToUse || 'no_avatar_fallback_img_ch'}`}
-            onError={handleAvatarError} 
+            onError={handleAvatarError}
+            width={40}
+            height={40}
           />
           <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>

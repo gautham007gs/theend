@@ -389,13 +389,16 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             <Avatar 
               className="h-8 w-8"
               key={`ai-msg-avatar-comp-${message.id}-${aiAvatarUrlToUse || 'default_avatar_comp_key_mb'}`}
+              style={{ width: '32px', height: '32px' }}
             >
               <AvatarImage
                 src={aiAvatarUrlToUse || undefined}
-                alt={aiName}
+                alt={`${aiName} - AI girlfriend`}
                 data-ai-hint="profile woman"
                 key={`ai-msg-avatar-img-${message.id}-${aiAvatarUrlToUse || 'no_avatar_fallback_img_mb'}`}
                 onError={handleAIAvatarError}
+                width={32}
+                height={32}
               />
               <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
