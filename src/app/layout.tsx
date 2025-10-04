@@ -14,11 +14,16 @@ import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
-import CookieConsent from '@/components/CookieConsent';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import PerformanceOptimizer from '@/components/PerformanceOptimizer';
+import dynamic from 'next/dynamic';
+
+const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
+  ssr: false,
+  loading: () => null
+});
 
 // Optimize font loading - use fallback font immediately
 const inter = Inter({
@@ -115,12 +120,14 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
         {/* CRITICAL: Preconnect to critical origins FIRST */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
-        {/* CRITICAL: Preload hero image and background */}
-        <link rel="preload" href="/chat-bg.png" as="image" type="image/png" fetchPriority="high" />
-        <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://placehold.co" />
+        <link rel="dns-prefetch" href="https://i.imghippo.com" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
         
         {/* CRITICAL: Preload font files directly */}
         <link
@@ -129,11 +136,11 @@ export default function RootLayout({
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
+          fetchPriority="high"
         />
         
-        {/* DNS prefetch for external resources */}
-        <link rel="dns-prefetch" href="https://placehold.co" />
-        <link rel="dns-prefetch" href="https://i.imghippo.com" />
+        {/* CRITICAL: Preload LCP image */}
+        <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
         
         {/* Inline critical CSS to prevent render blocking */}
         <style dangerouslySetInnerHTML={{__html: `

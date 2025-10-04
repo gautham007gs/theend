@@ -45,6 +45,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
         <Avatar 
           className="h-12 w-12" 
           key={`avatar-comp-${profile.name}-${avatarUrlToUse || 'default_avatar_comp_key_cli'}`}
+          style={{ width: '48px', height: '48px' }}
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 
@@ -52,6 +53,8 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
             data-ai-hint="profile woman" 
             key={`chat-list-item-avatar-img-${profile.name}-${avatarUrlToUse || 'no_avatar_fallback_img_cli'}`}
             onError={handleAvatarError}
+            width={48}
+            height={48}
           />
           <AvatarFallback>{(profile.name || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
@@ -128,35 +131,38 @@ const ChatListPage: React.FC = () => {
     <>
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header */}
-      <div className="bg-green-500 text-white">
+      <header className="bg-green-500 text-white">
         <div className="px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold">Chats</h1>
-          <div className="flex items-center space-x-3">
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+          <nav className="flex items-center space-x-3" aria-label="Main navigation">
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center" aria-label="Open camera">
               <Camera size={20} className="text-white" />
             </button>
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center" aria-label="Search chats">
               <Search size={20} className="text-white" />
             </button>
             <div className="relative">
               <button 
-                className="hover:bg-green-400 rounded-full p-1.5 transition-colors"
+                className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center"
                 onClick={() => setShowDropdown(!showDropdown)}
+                aria-label="Open menu"
+                aria-expanded={showDropdown}
+                aria-haspopup="true"
               >
                 <MoreVertical size={20} className="text-white" />
               </button>
 
               {showDropdown && (
-                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50" role="menu">
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 min-h-[48px]" role="menuitem">
                     <Info size={16} />
                     New group
                   </button>
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 min-h-[48px]" role="menuitem">
                     <Star size={16} />
                     Starred messages
                   </button>
-                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                  <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 min-h-[48px]" role="menuitem">
                     <Settings size={16} />
                     Settings
                   </button>
@@ -170,7 +176,7 @@ const ChatListPage: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
+          </nav>
         </div>
 
         {/* Navigation Tabs */}
@@ -188,9 +194,9 @@ const ChatListPage: React.FC = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="flex-grow overflow-y-auto custom-scrollbar relative bg-gray-50">
+      <main className="flex-grow overflow-y-auto custom-scrollbar relative bg-gray-50">
         {/* Chat Item showing AI profile */}
         <div className="bg-white">
           <Link href="/maya-chat" className="block">
@@ -217,7 +223,7 @@ const ChatListPage: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex flex-col space-y-3 w-full max-w-sm">
             <Link href="/maya-chat">
-              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="Start chatting with Kruthika">
                 <MessageSquarePlus size={20} />
                 <span>Start Chatting</span>
               </button>
@@ -225,12 +231,12 @@ const ChatListPage: React.FC = () => {
 
             <div className="flex space-x-3">
               <Link href="/status" className="flex-1">
-                <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="View status updates">
                   <span>👁️</span>
                   <span>View Status</span>
                 </button>
               </Link>
-              <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center min-w-[48px] min-h-[48px]" aria-label="Share with friends">
                 <Share2 size={20} />
               </button>
             </div>
@@ -239,7 +245,7 @@ const ChatListPage: React.FC = () => {
         </div>
 
         <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md mt-2 mb-1" />
-      </div>
+      </main>
 
       {/* Floating Action Button */}
       <Link
