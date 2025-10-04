@@ -50,18 +50,24 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
 
     try {
-      const { data, error } = await supabase
-        .from('app_configurations')
-        .select('settings')
-        .eq('id', AI_PROFILE_CONFIG_KEY)
-        .single();
+      // Use API route instead of direct Supabase call to avoid client blocking
+      const response = await fetch('/api/ai-profile', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-      logger.dev("[AIProfileContext] fetchAIProfile: Fetched from Supabase - raw data:", JSON.stringify(data, null, 2), "error:", error);
+      if (!response.ok) {
+        throw new Error('Failed to fetch AI profile from API');
+      }
+
+      const { data, error } = await response.json();
+
+      console.log('[AIProfileContext] fetchAIProfile: Fetched from API - raw data:', JSON.stringify(data, null, 2), 'error:', error);
 
       if (error && error.code !== 'PGRST116') {
-        console.error('[AIProfileContext] fetchAIProfile: Error fetching AI profile from Supabase:', error);
+        console.error('[AIProfileContext] fetchAIProfile: Error fetching AI profile from API:', error);
         toast({ title: "Error Loading AI Profile", description: `Could not load AI profile. Using defaults. ${error.message}`, variant: "destructive" });
-        
+
         // Try to get profile from localStorage as fallback
         try {
           const localProfile = localStorage.getItem('ai_profile_backup');
@@ -76,10 +82,10 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
 
         setAIProfile(defaultAIProfile);
-        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (Supabase error):", JSON.stringify(defaultAIProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (API error):", JSON.stringify(defaultAIProfile, null, 2));
       } else if (data && data.settings) {
         let fetchedProfile = data.settings as Partial<AIProfile>; 
-        logger.dev("[AIProfileContext] fetchAIProfile: Raw profile settings from Supabase:", JSON.stringify(fetchedProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Raw profile settings from API:", JSON.stringify(fetchedProfile, null, 2));
 
         if (!fetchedProfile.avatarUrl || typeof fetchedProfile.avatarUrl !== 'string' || fetchedProfile.avatarUrl.trim() === '' || (!fetchedProfile.avatarUrl.startsWith('http') && !fetchedProfile.avatarUrl.startsWith('data:'))) {
             console.warn(`[AIProfileContext] fetchAIProfile: Fetched avatarUrl ('${fetchedProfile.avatarUrl}') is invalid or empty. Falling back to default AI avatarUrl: ${defaultAIProfile.avatarUrl}`);
@@ -92,7 +98,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         };
 
         setAIProfile(mergedProfile);
-        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile from Supabase (merged with defaults):", JSON.stringify(mergedProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile from API (merged with defaults):", JSON.stringify(mergedProfile, null, 2));
         // Backup to local storage after successful fetch
         try {
           localStorage.setItem('ai_profile_backup', JSON.stringify(mergedProfile));
@@ -101,14 +107,14 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
           console.warn('[AIProfileContext] Failed to back up AI profile to local storage:', backupError);
         }
       } else {
-        logger.dev("[AIProfileContext] fetchAIProfile: No AI profile found in Supabase (error code PGRST116 or no data.settings). Using default values.");
+        logger.dev("[AIProfileContext] fetchAIProfile: No AI profile found in API (error or no data.settings). Using default values.");
         setAIProfile(defaultAIProfile);
-        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (no data in Supabase):", JSON.stringify(defaultAIProfile, null, 2));
+        logger.dev("[AIProfileContext] fetchAIProfile: Set AI profile to default (no data from API):", JSON.stringify(defaultAIProfile, null, 2));
       }
     } catch (e: any) {
       console.error('[AIProfileContext] fetchAIProfile: Unexpected error fetching AI profile:', e);
       toast({ title: "Error Loading AI Profile", description: `Unexpected error. Using defaults. ${e.message}`, variant: "destructive" });
-      
+
       // Try to get profile from localStorage as fallback
       try {
         const localProfile = localStorage.getItem('ai_profile_backup');

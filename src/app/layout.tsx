@@ -18,6 +18,7 @@ import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import PerformanceOptimizer from '@/components/PerformanceOptimizer';
+import LazyAnimations from '@/components/LazyAnimations';
 
 // Optimize font loading - use fallback font immediately with swap
 const inter = Inter({
@@ -160,6 +161,7 @@ export default function RootLayout({
                   <Toaster />
                   <PerformanceMonitor />
                   <PerformanceOptimizer />
+                  <LazyAnimations />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AIProfileProvider>
