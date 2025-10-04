@@ -162,12 +162,13 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Fix cross-origin warnings for Replit
+  // Fix cross-origin warnings for Replit and allow all dev origins
   allowedDevOrigins: [
-    '*.replit.dev',
-    '*.replit.app',
-    '127.0.0.1',
-    'localhost'
+    'https://*.replit.dev',
+    'https://*.replit.app',
+    'http://localhost:*',
+    'http://127.0.0.1:*',
+    'http://0.0.0.0:*'
   ],
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first for better compression

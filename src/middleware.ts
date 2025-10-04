@@ -22,6 +22,10 @@ function isRateLimited(ip: string): boolean {
 
   // Reset if window has passed
   if (now - userRate.lastReset > RATE_LIMIT_WINDOW) {
+    // Log if penalties exist (for monitoring)
+    if (userRate.penalties > 0) {
+      console.info(`[RATE-LIMIT] IP ${ip} window reset - Previous penalties: ${userRate.penalties}`);
+    }
     rateLimitMap.set(ip, { count: 1, lastReset: now, penalties: userRate.penalties });
     return false;
   }
@@ -33,17 +37,25 @@ function isRateLimited(ip: string): boolean {
   const recentWindow = 10 * 1000;
   if (userRate.count > MAX_REQUESTS_BURST && (now - userRate.lastReset) < recentWindow) {
     userRate.penalties++;
+    console.warn(`[RATE-LIMIT] Burst protection triggered for IP ${ip} - Count: ${userRate.count}, Penalties: ${userRate.penalties}`);
     return true;
   }
 
   // Check if limit exceeded
   if (userRate.count >= effectiveLimit) {
     userRate.penalties++;
+    console.warn(`[RATE-LIMIT] Limit exceeded for IP ${ip} - Count: ${userRate.count}, Effective Limit: ${effectiveLimit}, Penalties: ${userRate.penalties}`);
     return true;
   }
 
   // Increment count
   userRate.count++;
+  
+  // Warning when approaching limit
+  if (userRate.count >= effectiveLimit * 0.8) {
+    console.info(`[RATE-LIMIT] IP ${ip} approaching limit - Count: ${userRate.count}/${effectiveLimit}`);
+  }
+  
   return false;
 }
 
@@ -68,9 +80,16 @@ export async function middleware(request: NextRequest) {
     // Legacy rate limiting (kept for additional protection)
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     if (isRateLimited(ip)) {
+      // Log rate limit violation for monitoring
+      console.warn(`[RATE-LIMIT] IP ${ip} exceeded rate limit on ${pathname}`);
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429, headers: { 'X-Security-Block': 'legacy-rate-limit' } }
+        { status: 429, headers: { 
+          'X-Security-Block': 'legacy-rate-limit',
+          'Retry-After': '60',
+          'X-RateLimit-Limit': '100',
+          'X-RateLimit-Remaining': '0'
+        } }
       );
     }
   }
@@ -202,15 +221,25 @@ export async function middleware(request: NextRequest) {
   // Apply performance headers to all other requests
   const response = NextResponse.next();
 
-  // Add performance and security headers (SEO-friendly)
+  // Add comprehensive Helmet.js-style security headers (SEO-friendly)
   response.headers.set('X-DNS-Prefetch-Control', 'on');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'origin-when-cross-origin');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=()');
+  
+  // Additional Helmet.js style headers
+  response.headers.set('X-Download-Options', 'noopen');
+  response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
+  
+  // Only add HSTS in production
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
   
   // Ensure search engines can index the site
   // Only add X-Robots-Tag for admin and API routes
-  const pathname = request.nextUrl.pathname;
   if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
   } else {
