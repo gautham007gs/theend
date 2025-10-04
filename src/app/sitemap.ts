@@ -2,7 +2,8 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://kruthika.fun'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+                  (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://kruthika.fun')
   
   const blogPosts = [
     'psychology-ai-girlfriends',

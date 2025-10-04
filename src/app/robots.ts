@@ -2,6 +2,9 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+                  (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://kruthika.fun')
+  
   return {
     rules: [
       {
@@ -24,7 +27,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin/', '/api/', '/_next/', '/tmp/'],
       }
     ],
-    sitemap: 'https://kruthika.fun/sitemap.xml',
-    host: 'https://kruthika.fun'
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl
   }
 }
