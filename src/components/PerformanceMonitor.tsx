@@ -252,3 +252,4 @@ export function PerformanceMonitor() {
     </div>
   );
 }
+export default PerformanceMonitor;
