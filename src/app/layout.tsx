@@ -140,30 +140,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
 
         {/* Inline critical CSS to prevent render blocking and CLS */}
-        <style dangerouslySetInnerHTML={{__html: `
-          *,::before,::after{box-sizing:border-box;border:0 solid}
-          *{margin:0;padding:0}
-          body{font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;background-color:#F2EDE4}
-          img{display:block;max-width:100%;height:auto}
-          button,input,textarea,select{font:inherit}
-          .chat-container{min-height:100dvh;display:flex;flex-direction:column}
-          
-          /* Prevent CLS - Reserve space for header */
-          header{height:64px;display:flex;align-items:center;padding:0.75rem;background-color:#FAFAFA;border-bottom:1px solid #E5E7EB}
-          
-          /* Prevent CLS - Avatar dimensions */
-          .avatar,.avatar>img{width:40px;height:40px;border-radius:50%;aspect-ratio:1/1}
-          
-          /* Prevent CLS - Chat input area */
-          .chat-input-wrapper{min-height:60px;padding:0.5rem;background-color:#F5F5F5}
-          
-          /* Prevent CLS - Message bubbles */
-          .message-bubble{min-height:40px;padding:0.5rem 0.75rem;border-radius:0.5rem}
-          
-          /* Font loading optimization */
-          @font-face{font-family:'Inter Fallback';src:local('Arial');ascent-override:90%;descent-override:22%;line-gap-override:0%;size-adjust:107%}
-          body{font-family:'Inter','Inter Fallback',system-ui,sans-serif}
-        `}} />
+        <style dangerouslySetInnerHTML={{__html: `*,::before,::after{box-sizing:border-box;border:0 solid;margin:0;padding:0}body{font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;background-color:#F2EDE4;overflow-x:hidden}img{display:block;max-width:100%;height:auto}button,input,textarea,select{font:inherit}.chat-container{min-height:100dvh;display:flex;flex-direction:column}header{height:64px;display:flex;align-items:center;padding:.75rem;background-color:#FAFAFA;border-bottom:1px solid #E5E7EB}.avatar,.avatar>img{width:40px;height:40px;border-radius:50%;aspect-ratio:1/1}.chat-input-wrapper{min-height:60px;padding:.5rem;background-color:#F5F5F5}.message-bubble{min-height:40px;padding:.5rem .75rem;border-radius:.5rem}@font-face{font-family:'Inter Fallback';src:local('Arial');ascent-override:90%;descent-override:22%;line-gap-override:0%;size-adjust:107%}body{font-family:'Inter','Inter Fallback',system-ui,sans-serif}`}} />
 
         <ResourceHints />
         <StructuredData />

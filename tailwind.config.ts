@@ -6,6 +6,15 @@ export default {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/ai/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/contexts/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  safelist: [
+    // Keep critical classes that may be dynamically generated
+    'chat-bg-user',
+    'chat-bg-ai',
+    'chat-text-user',
+    'chat-text-ai',
   ],
   theme: {
   	extend: {

@@ -229,6 +229,16 @@ body {
   border: transparent;
 }
 
+/* Lazy loading utilities */
+.lazy-load {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
 /* Native ad styling in chat */
 .native-ad-container {
   min-height: 80px;

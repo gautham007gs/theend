@@ -6,6 +6,17 @@ export default function PerformanceOptimizer() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    // Helper to defer non-critical tasks
+    const scheduleTask = (task: () => void, priority: 'high' | 'low' = 'low') => {
+      if (priority === 'high') {
+        requestAnimationFrame(task);
+      } else if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(task, { timeout: 2000 });
+      } else {
+        setTimeout(task, 1);
+      }
+    };
+
     const optimizations = {
       preloadCriticalResources() {
         const critical = [
@@ -126,20 +137,23 @@ export default function PerformanceOptimizer() {
       }
     };
 
+    // Critical optimizations - run immediately
     optimizations.preloadCriticalResources();
     optimizations.addResourceHints();
-    optimizations.optimizeFonts();
-    optimizations.optimizeMobile();
-    optimizations.monitorLCP();
+    
+    // Defer non-critical optimizations to reduce TBT
+    scheduleTask(() => optimizations.optimizeFonts(), 'low');
+    scheduleTask(() => optimizations.optimizeMobile(), 'low');
+    scheduleTask(() => optimizations.monitorLCP(), 'low');
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        optimizations.optimizeImages();
-        optimizations.deferNonCriticalCSS();
+        scheduleTask(() => optimizations.optimizeImages(), 'high');
+        scheduleTask(() => optimizations.deferNonCriticalCSS(), 'low');
       });
     } else {
-      optimizations.optimizeImages();
-      optimizations.deferNonCriticalCSS();
+      scheduleTask(() => optimizations.optimizeImages(), 'high');
+      scheduleTask(() => optimizations.deferNonCriticalCSS(), 'low');
     }
 
   }, []);
