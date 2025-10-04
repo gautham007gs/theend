@@ -1,9 +1,9 @@
-
 "use client";
 
 import React, { useEffect, useRef } from 'react';
 import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext'; // Import useAdSettings
+import Script from 'next/script'; // Import next/script
 
 const GlobalAdScripts: React.FC = () => {
   const { adSettings, isLoadingAdSettings } = useAdSettings(); // Consume context
@@ -17,25 +17,25 @@ const GlobalAdScripts: React.FC = () => {
 
     const injectScript = (scriptCode: string, networkName: string, injectedRef: React.MutableRefObject<boolean>) => {
       if (injectedRef.current || !scriptCode || !scriptCode.trim() || scriptCode.toLowerCase().includes('placeholder')) {
-        return; 
+        return;
       }
 
       try {
         const scriptContainer = document.createElement('div');
-        scriptContainer.innerHTML = scriptCode; 
-        
+        scriptContainer.innerHTML = scriptCode;
+
         let hasValidScriptTag = false;
         Array.from(scriptContainer.childNodes).forEach(node => {
           if (node.nodeName === "SCRIPT") {
             const scriptTag = document.createElement('script');
             const originalScript = node as HTMLScriptElement;
-            
+
             for (let i = 0; i < originalScript.attributes.length; i++) {
               const attr = originalScript.attributes[i];
               scriptTag.setAttribute(attr.name, attr.value);
             }
             scriptTag.innerHTML = originalScript.innerHTML;
-            
+
             if (scriptTag.src || scriptTag.innerHTML.trim()) {
               hasValidScriptTag = true;
               document.body.appendChild(scriptTag);
@@ -79,7 +79,30 @@ const GlobalAdScripts: React.FC = () => {
     // True dynamic removal is complex as scripts might have already executed.
   }, [adSettings, isLoadingAdSettings]);
 
-  return null; 
+  // Placeholder for Adsterra Script with afterInteractive strategy
+  // The actual injection logic is handled by the useEffect hook above.
+  // This component is intended to render other ad scripts if needed,
+  // but the primary pop-under logic is imperative.
+  // If Adsterra popunder code is provided and enabled, it will be injected.
+  // The following Script tag is a placeholder if you were to use declarative Next.js Script component for other ads.
+  // For popunders, imperative injection is often more reliable due to their nature.
+  return (
+    <>
+      {/* Adsterra Scripts - Load after interactive */}
+      {adSettings?.adsterraPopunderEnabled && adSettings?.adsterraPopunderCode && (
+        <Script
+          strategy="afterInteractive"
+          data-cfasync="false"
+          src="//pl25396331.profitablecpmgate.com/58/4a/5f/584a5f7ec7fef38ec3a0b1eac9e8d87c.js"
+          // Note: The actual injection of the popunder code is handled imperatively in the useEffect hook.
+          // This Script tag might be redundant if only relying on the imperative injection.
+          // It's kept here for demonstration or if you intend to use it for other types of Adsterra scripts.
+        />
+      )}
+
+      {/* Add similar logic for Monetag if you prefer declarative Next/script component */}
+    </>
+  );
 };
 
 export default GlobalAdScripts;

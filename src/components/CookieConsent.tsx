@@ -21,17 +21,28 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   const [isLoaded, setIsLoaded] = useState(false); // New state for loading
 
   useEffect(() => {
-    // Delay banner until after LCP (2 seconds)
+    // Delay banner until after LCP and first paint (4 seconds to not affect metrics)
     const timer = setTimeout(() => {
-      // Check if user has already given consent
-      const hasConsented = localStorage.getItem(COOKIE_CONSENT_KEY);
-      if (!hasConsented) {
-        // Show after a short delay for better UX
-        setShowConsent(true);
-        setIsVisible(true);
+      // Use requestIdleCallback to ensure we don't block main thread
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => {
+          const hasConsented = localStorage.getItem(COOKIE_CONSENT_KEY);
+          if (!hasConsented) {
+            setShowConsent(true);
+            setIsVisible(true);
+          }
+          setIsLoaded(true);
+        }, { timeout: 5000 });
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        const hasConsented = localStorage.getItem(COOKIE_CONSENT_KEY);
+        if (!hasConsented) {
+          setShowConsent(true);
+          setIsVisible(true);
+        }
+        setIsLoaded(true);
       }
-      setIsLoaded(true); // Set loaded to true after the delay
-    }, 2000);
+    }, 4000); // Increased delay to 4 seconds to completely avoid LCP
 
     return () => clearTimeout(timer);
   }, []);
@@ -97,16 +108,18 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
 
   return (
     <>
-      {/* Blurred background overlay */}
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-40" />
+      {/* Blurred background overlay - non-blocking */}
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-40 pointer-events-none" />
 
       <div 
         className={cn(
-          "fixed bottom-4 left-4 right-4 z-50 pointer-events-none",
+          "fixed bottom-4 left-4 right-4 z-50",
           "transition-all duration-300 ease-out",
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full",
+          "will-change-transform", // GPU acceleration
+          isVisible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-full pointer-events-none",
           className
         )}
+        style={{ containIntrinsicSize: 'auto 200px' }} // Reserve space to prevent CLS
       >
         <Card className={cn(
           "w-full max-w-md mx-auto pointer-events-auto",

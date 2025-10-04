@@ -454,6 +454,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               onError={handleContentImageError}
               priority={false}
               loading="lazy"
+              style={{ aspectRatio: '1/1', width: '200px', height: 'auto' }} // Prevent CLS
             />
           )}
           {message.audioUrl && (

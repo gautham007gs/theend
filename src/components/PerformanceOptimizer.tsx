@@ -62,8 +62,18 @@ export default function PerformanceOptimizer() {
         const stylesheets = document.querySelectorAll('link[rel="stylesheet"]:not([data-critical])');
         stylesheets.forEach(link => {
           const stylesheet = link as HTMLLinkElement;
+          // Defer loading with print media trick
           stylesheet.media = 'print';
-          stylesheet.onload = function() { stylesheet.media = 'all'; };
+          stylesheet.onload = function() { 
+            stylesheet.media = 'all'; 
+            stylesheet.onload = null; // Cleanup
+          };
+          // Fallback for older browsers
+          setTimeout(() => {
+            if (stylesheet.media === 'print') {
+              stylesheet.media = 'all';
+            }
+          }, 100);
         });
       },
 

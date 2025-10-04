@@ -73,13 +73,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <Avatar 
             className="h-10 w-10 cursor-pointer" 
             key={`avatar-comp-header-${aiName}-${avatarUrlToUse || 'default_avatar_comp_key_ch'}`}
+            style={{ width: '40px', height: '40px', flexShrink: 0 }} // Explicit dimensions to prevent CLS
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 
             alt={aiName} 
             data-ai-hint="profile woman" 
             key={`chat-header-avatar-img-${aiName}-${avatarUrlToUse || 'no_avatar_fallback_img_ch'}`}
-            onError={handleAvatarError} 
+            onError={handleAvatarError}
+            style={{ width: '40px', height: '40px', aspectRatio: '1/1' }} // Prevent CLS
           />
           <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
