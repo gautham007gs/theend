@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -117,11 +116,11 @@ export default function RootLayout({
         {/* CRITICAL: Preconnect to critical origins FIRST */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* CRITICAL: Preload hero image and background */}
         <link rel="preload" href="/chat-bg.png" as="image" type="image/png" fetchPriority="high" />
         <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
-        
+
         {/* CRITICAL: Preload font files directly */}
         <link
           rel="preload"
@@ -130,18 +129,19 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        
+
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://placehold.co" />
         <link rel="dns-prefetch" href="https://i.imghippo.com" />
-        
+
         {/* Inline critical CSS to prevent render blocking */}
         <style dangerouslySetInnerHTML={{__html: `
-          *{box-sizing:border-box;margin:0;padding:0}
-          body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+          *,::before,::after{box-sizing:border-box;border:0 solid}
+          *{margin:0;padding:0}
+          body{font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+          img{display:block;max-width:100%}
+          button,input,textarea,select{font:inherit}
           .chat-container{min-height:100dvh;display:flex;flex-direction:column}
-          img{max-width:100%;height:auto;display:block}
-          button{cursor:pointer;border:none;background:none;font:inherit}
         `}} />
 
         <ResourceHints />

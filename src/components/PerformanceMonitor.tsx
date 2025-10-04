@@ -26,10 +26,12 @@ export function PerformanceMonitor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Import performance optimizer
-    import('@/utils/performance-optimization').then(({ PerformanceOptimizer }) => {
-      PerformanceOptimizer.getInstance();
-    });
+    // Defer performance optimizer to reduce TBT
+    setTimeout(() => {
+      import('@/utils/performance-optimization').then(({ PerformanceOptimizer }) => {
+        PerformanceOptimizer.getInstance();
+      });
+    }, 3000);
 
     // Send performance data to analytics
     const sendPerformanceData = (metrics: PerformanceMetrics) => {

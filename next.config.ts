@@ -103,6 +103,12 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  
+  // Enhanced compression
+  experimental: {
+    optimizeCss: true,
+    gzipSize: true,
+  },
 
   // Performance optimizations for large scale
   onDemandEntries: {
