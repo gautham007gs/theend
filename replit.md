@@ -56,6 +56,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 2025)
 
+### Production Optimization & Build Configuration (Latest)
+- **Production Minification**: Enhanced Terser configuration with aggressive minification (drops console, debugger, pure functions)
+- **Bundle Optimization**: Improved code splitting with React vendor chunks, priority-based cache groups
+- **Tree Shaking**: Expanded `optimizePackageImports` to 16 packages (Radix UI, date-fns, react-hook-form, zod, etc.)
+- **Dynamic URLs**: Updated robots.ts, sitemap.ts, and layout.tsx to use environment-based URLs (supports Replit testing + production)
+- **Code Cleanup**: 
+  - Removed duplicate ResourceHints component in ClientComponentsWrapper
+  - Fixed duplicate `other` property in metadata
+  - Fixed PerformanceMonitor default export for dynamic imports
+- **Deployment**: Configured autoscale deployment with proper build/run commands for production minification
+- **Scripts**: Updated package.json with NODE_ENV=production for build and start commands
+- **SEO**: Dynamic base URL configuration ensures crawlers can index both Replit (testing) and production (kruthika.fun) URLs
+
 ### Performance Audit & Optimization
 - **Critical Bug Fixes**: Fixed invalid manifest.json (had duplicate JSON objects), corrected PWA configuration
 - **Code Cleanup**: Removed 4 duplicate performance optimizer files (347 lines of redundant code, 65% reduction)
