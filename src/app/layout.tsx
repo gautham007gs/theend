@@ -12,7 +12,7 @@ import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 
-// Optimize font loading - use fallback font immediately
+// Optimize font loading - use fallback font immediately with aggressive caching
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -20,6 +20,7 @@ const inter = Inter({
   preload: true,
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
   adjustFontFallback: true,
+  weight: ['400', '500', '600', '700'],
 });
 
 const getBaseUrl = () => {
@@ -120,17 +121,31 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://adsterranet.com" />
         
         {/* Preload critical avatar image for LCP */}
-        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" />
+        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
+        
+        {/* Preload critical CSS with high priority */}
+        <link rel="preload" as="style" href="/_next/static/css/1036b3cffeab4737.css" fetchPriority="high" />
+        <link rel="preload" as="style" href="/_next/static/css/b42b844f302050e4.css" fetchPriority="high" />
+        
+        {/* Prefetch next page for instant navigation */}
+        <link rel="prefetch" href="/maya-chat" as="document" />
+        
+        {/* Early hints for faster connections */}
+        <link rel="preconnect" href="/_next/static" crossOrigin="" />
 
         {/* Inline critical CSS for instant render and prevent CLS */}
         <style dangerouslySetInnerHTML={{
           __html: `
             *,*::before,*::after{box-sizing:border-box}
-            body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+            body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;background-color:#F2EDE4}
             img,video{max-width:100%;height:auto;content-visibility:auto}
             .avatar-placeholder{width:48px;height:48px;border-radius:50%;background:#e5e7eb}
             .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}
             @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
+            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb}
+            .chat-container{min-height:100vh;display:flex;flex-direction:column}
+            .message-bubble{transform:translateZ(0);will-change:transform}
+            .cookie-banner{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:16px;border-top:1px solid #e5e7eb;z-index:9999}
           `
         }} />
 
