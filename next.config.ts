@@ -332,10 +332,14 @@ const nextConfig: NextConfig = {
         // All other routes (HTML pages) - short cache with revalidation
         source: '/:path*',
         headers: [
-          ...securityHeaders.filter(h => h.key !== 'Cache-Control'),
+          ...securityHeaders.filter(h => h.key !== 'Cache-Control' && h.key !== 'X-Robots-Tag'),
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600, must-revalidate',
+          },
+          {
+            key: 'X-Robots-Tag',
+            value: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
           },
           {
             key: 'Access-Control-Allow-Origin',

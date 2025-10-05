@@ -182,13 +182,13 @@ const ChatListPage: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="flex bg-green-500">
           <div className="flex-1">
-            <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white text-white">
+            <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
               CHATS
             </button>
           </div>
           <div className="flex-1">
             <Link href="/status" className="block w-full">
-              <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300 text-white opacity-75 hover:opacity-100">
+              <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300 text-white opacity-75 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
                 STATUS
               </button>
             </Link>
@@ -199,7 +199,7 @@ const ChatListPage: React.FC = () => {
       <main className="flex-grow overflow-y-auto custom-scrollbar relative bg-gray-50">
         {/* Chat Item showing AI profile */}
         <div className="bg-white">
-          <Link href="/maya-chat" className="block">
+          <Link href="/maya-chat" className="block" aria-label={`Chat with ${effectiveAIProfile.name}, ${unreadCount ? `${unreadCount} unread message` : 'online now'}`}>
             <ChatListItem
               profile={effectiveAIProfile} 
               lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}

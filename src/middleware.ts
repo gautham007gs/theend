@@ -50,12 +50,12 @@ function isRateLimited(ip: string): boolean {
 
   // Increment count
   userRate.count++;
-  
+
   // Warning when approaching limit
   if (userRate.count >= effectiveLimit * 0.8) {
     console.info(`[RATE-LIMIT] IP ${ip} approaching limit - Count: ${userRate.count}/${effectiveLimit}`);
   }
-  
+
   return false;
 }
 
@@ -228,21 +228,26 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=(), usb=()');
-  
+
   // Additional Helmet.js style headers
   response.headers.set('X-Download-Options', 'noopen');
   response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
-  
+
   // Only add HSTS in production
   if (process.env.NODE_ENV === 'production') {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
-  
-  // DO NOT set X-Robots-Tag headers here to avoid conflicts
-  // Robots directives are handled via:
-  // 1. robots.ts file for crawlers
-  // 2. Meta tags in layout.tsx for pages
-  // 3. Admin routes can handle their own robots meta tags if needed
+
+  // Add security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+
+  // Allow indexing in production for SEO
+  // Only block in development if explicitly needed
+  if (process.env.NODE_ENV !== 'production' && process.env.BLOCK_INDEXING === 'true') {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow');
+  }
 
   // Add caching headers for static assets
   if (request.nextUrl.pathname.startsWith('/_next/static/') || 

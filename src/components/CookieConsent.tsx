@@ -163,14 +163,16 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
               <div className="flex gap-2">
                 <Button
                   onClick={handleAcceptAll}
-                  className="flex-1 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-sm py-2 h-9 font-medium shadow-sm"
+                  className="flex-1 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-sm py-2 h-10 font-medium shadow-sm"
+                  aria-label="Accept all cookies and tracking"
                 >
                   Accept All
                 </Button>
                 <Button
                   onClick={toggleCustomize}
                   variant="outline"
-                  className="flex-shrink-0 border-gray-300 text-gray-600 hover:bg-gray-50 text-sm py-2 h-9 px-3"
+                  className="flex-shrink-0 border-gray-300 text-gray-600 hover:bg-gray-50 text-sm py-2 h-10 px-3"
+                  aria-label="Customize cookie preferences"
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -180,14 +182,16 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                 <Button
                   onClick={handleAcceptNecessary}
                   variant="ghost"
-                  className="flex-1 text-gray-600 hover:bg-gray-100 text-xs py-1.5 h-7"
+                  className="flex-1 text-gray-600 hover:bg-gray-100 text-xs py-2 h-9"
+                  aria-label="Accept essential cookies only"
                 >
                   Essential Only
                 </Button>
                 {showCustomize && (
                   <Button
                     onClick={handleAcceptAll}
-                    className="flex-1 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-xs py-1.5 h-7"
+                    className="flex-1 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-xs py-2 h-9"
+                    aria-label="Save cookie preferences"
                   >
                     Save Preferences
                   </Button>
