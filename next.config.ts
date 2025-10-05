@@ -126,7 +126,6 @@ const nextConfig: NextConfig = {
     },
     optimizePackageImports: [
       'lucide-react',
-      'recharts', 
       '@supabase/supabase-js',
       '@radix-ui/react-dialog',
       '@radix-ui/react-tabs',
@@ -177,6 +176,13 @@ const nextConfig: NextConfig = {
         cacheGroups: {
           default: false,
           vendors: false,
+          // Separate recharts (only used in admin pages)
+          recharts: {
+            test: /[\\/]node_modules[\\/](recharts)[\\/]/,
+            name: 'recharts',
+            priority: 50,
+            chunks: 'async',
+          },
           // Separate large icon library
           icons: {
             test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,

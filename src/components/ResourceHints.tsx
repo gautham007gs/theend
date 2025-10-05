@@ -5,10 +5,22 @@ import { useEffect } from 'react';
 
 export default function ResourceHints() {
   useEffect(() => {
-    // Preload critical resources
+    const preconnectOrigins = [
+      { href: 'https://wubzdjzosbbbghdlfcgc.supabase.co', crossOrigin: true },
+      { href: 'https://judicialphilosophical.com', crossOrigin: false },
+      { href: 'https://adsterranet.com', crossOrigin: false },
+    ];
+
+    preconnectOrigins.forEach(origin => {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = origin.href;
+      if (origin.crossOrigin) link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    });
+
     const criticalResources = [
       { href: '/chat-bg.png', as: 'image' },
-      { href: '/og-image.png', as: 'image' }
     ];
 
     criticalResources.forEach(resource => {
@@ -19,8 +31,7 @@ export default function ResourceHints() {
       document.head.appendChild(link);
     });
 
-    // Prefetch likely navigation targets
-    const prefetchRoutes = ['/maya-chat', '/blog'];
+    const prefetchRoutes = ['/maya-chat'];
     prefetchRoutes.forEach(route => {
       const link = document.createElement('link');
       link.rel = 'prefetch';

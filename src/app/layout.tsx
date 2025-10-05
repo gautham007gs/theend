@@ -113,9 +113,11 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical preconnects - only for resources actually used */}
+        {/* Critical preconnects for mobile performance */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
+        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://judicialphilosophical.com" />
+        <link rel="dns-prefetch" href="https://adsterranet.com" />
 
         {/* Inline critical CSS for instant render and prevent CLS */}
         <style dangerouslySetInnerHTML={{
