@@ -1,0 +1,50 @@
+~/workspace$ npm run perf
+
+> nextn@0.1.0 perf
+> npm run build:prod && npm run start:prod
+
+
+> nextn@0.1.0 build:prod
+> NODE_ENV=production SKIP_ENV_VALIDATION=true next build
+
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'turbotrace' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+   ▲ Next.js 15.5.4
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · turbotrace
+     ✓ optimizeCss
+     · cssChunking: "strict"
+     · serverActions
+     ✓ webpackBuildWorker
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ⚠ Compiled with warnings in 34.7s
+
+./src/app/maya-chat/page.tsx
+Attempted import error: '@/components/LoadingSkeleton' does not contain a default export (imported as 'LoadingSkeleton').
+
+Import trace for requested module:
+./src/app/maya-chat/page.tsx
+
+/home/runner/workspace/next.config.compiled.js:458
+                            var packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+                                                                                                          ^
+
+TypeError: Cannot read properties of null (reading '1')
+    at Object.name [as getName] (/home/runner/workspace/next.config.compiled.js:458:107)
+    at addModuleToChunksInfoMap (/home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:29:1176827)
+    at /home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:29:1179207
+    at Hook.eval [as call] (eval at create (/home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:37:16)
+    at Compilation.seal (/home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:29:103824)
+    at /home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:29:149508
+    at /home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:29:99758
+    at _next4 (eval at create (/home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:16:1)
+    at eval (eval at create (/home/runner/workspace/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:34:1)
+    at /home/runner/workspace/node_modules/next/dist/build/webpack/plugins/telemetry-plugin/telemetry-plugin.js:160:17
+
+Node.js v20.19.3
+Next.js build worker exited with code: 1 and signal: null
+~/workspace$ 
