@@ -8,10 +8,6 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-
-// Server Action runtime configuration
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
 import Image from "next/image";
 import ChatHeader from "@/components/chat/ChatHeader";
 // Lazy loading ChatView, StructuredData, and AnalyticsIntegration
