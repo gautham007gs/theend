@@ -1,6 +1,7 @@
 'use server';
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
+import { revalidatePath } from 'next/cache';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
 
 const isEmojiOnlyMessage = (text: string): boolean => {
@@ -41,6 +42,8 @@ export async function sendMessage(
   userTypeData?: { dailyMessageCount: number; relationshipLevel: number; totalDaysActive: number },
   currentIgnoreUntil?: number | null
 ) {
+  'use server'; // Explicit server action marker
+  
   try {
     console.log('Server Action: Received message:', message);
 
@@ -141,7 +144,7 @@ export async function sendMessage(
     console.log(`🔧 Message processing time: ${processingTime}ms`);
 
     // Return response with mood and media for persistence
-    return { 
+    const result = { 
       success: true, 
       response,
       multiPartResponse: aiResponse.multiPartResponse, // Pass multi-part responses to client
@@ -151,8 +154,14 @@ export async function sendMessage(
       proactiveAudioUrl: aiResponse.proactiveAudioUrl,
       mediaCaption: aiResponse.mediaCaption
     };
+    
+    // Revalidate to prevent stale action IDs
+    revalidatePath('/maya-chat');
+    
+    return result;
   } catch (error) {
     console.error('Server Action: Error generating response:', error);
+    revalidatePath('/maya-chat'); // Revalidate even on error
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error occurred' 

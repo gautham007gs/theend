@@ -270,13 +270,14 @@ const nextConfig: NextConfig = {
           if (minimizer.constructor.name === 'TerserPlugin') {
             minimizer.options = {
               ...minimizer.options,
+              parallel: true, // Enable parallel processing
               terserOptions: {
                 ...minimizer.options?.terserOptions,
                 compress: {
                   drop_console: true,
                   drop_debugger: true,
                   pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-                  passes: 3, // More passes for better optimization
+                  passes: 4, // Increased from 3 to 4 for better optimization
                   dead_code: true,
                   unused: true,
                   toplevel: true,
@@ -286,14 +287,26 @@ const nextConfig: NextConfig = {
                   keep_infinity: true,
                   arrows: true,
                   booleans_as_integers: true,
+                  // Additional aggressive optimizations
+                  inline: 3,
+                  conditionals: true,
+                  evaluate: true,
+                  join_vars: true,
+                  sequences: true,
+                  properties: true,
+                  warnings: false,
                 },
                 mangle: {
                   toplevel: true,
                   safari10: true,
+                  properties: {
+                    regex: /^_/, // Mangle properties starting with _
+                  },
                 },
                 format: {
                   comments: false,
                   ecma: 2020,
+                  ascii_only: true, // Better compression
                 },
               },
               extractComments: false,
