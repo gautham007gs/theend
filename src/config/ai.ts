@@ -6,7 +6,7 @@ import type { AIProfile, AvatarOption, AdminStatusDisplay, ManagedContactStatus,
 
 export const defaultAIProfile: AIProfile = {
   name: 'Kruthika',
-  avatarUrl: 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K',
+  avatarUrl: '/kruthika-avatar.svg',
   status: '🌸 Living my best life! Let\'s chat! 🌸',
   statusStoryText: 'Ask me anything! 💬',
   statusStoryImageUrl: undefined,
@@ -16,7 +16,7 @@ export const defaultAIProfile: AIProfile = {
 export const defaultAdminStatusDisplay: AdminStatusDisplay = {
   id: "admin-own-status",
   name: "My Status",
-  avatarUrl: "https://placehold.co/100x100.png/757575/FFFFFF?text=A",
+  avatarUrl: "/kruthika-avatar.svg",
   statusText: "Tap to update from Admin Panel!",
   statusImageUrl: undefined,
   hasUpdate: false,

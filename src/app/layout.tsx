@@ -118,6 +118,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="" />
         <link rel="dns-prefetch" href="https://judicialphilosophical.com" />
         <link rel="dns-prefetch" href="https://adsterranet.com" />
+        
+        {/* Preload critical avatar image for LCP */}
+        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" />
 
         {/* Inline critical CSS for instant render and prevent CLS */}
         <style dangerouslySetInnerHTML={{

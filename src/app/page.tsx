@@ -7,18 +7,9 @@ import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
+import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, Star, Zap } from 'lucide-react';
 import { useAIProfile } from '@/contexts/AIProfileContext'; 
 import { cn } from '@/lib/utils';
-
-const MessageSquarePlus = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MessageSquarePlus })));
-const Camera = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Camera })));
-const Search = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Search })));
-const MoreVertical = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MoreVertical })));
-const Share2 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Share2 })));
-const Settings = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Settings })));
-const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })));
-const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })));
-const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })));
 
 const BannerAdDisplay = dynamic(() => import('@/components/chat/BannerAdDisplay'), {
   ssr: false,
@@ -115,13 +106,19 @@ const ChatListPage: React.FC = () => {
           } else {
              setLastMessageTime(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
           }
+        } else if (!lastMessageTime) {
+          setLastMessageTime("9:15 AM");
         }
-      } catch (e) { console.warn("Could not parse last message time from localStorage", e); }
+      } catch (e) { 
+        console.warn("Could not parse last message time from localStorage", e);
+        if (!lastMessageTime) {
+          setLastMessageTime("9:15 AM");
+        }
+      }
+    } else if (!lastMessageTime) {
+      setLastMessageTime("9:15 AM");
     }
-    if (!lastMessageTime && Math.random() > 0.5) { 
-        setLastMessageTime("9:15 AM");
-    }
-  }, [lastMessageTime]); 
+  }, []); 
 
   const effectiveAIProfile = globalAIProfile || defaultAIProfile;
 
