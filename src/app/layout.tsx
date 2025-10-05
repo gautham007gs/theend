@@ -135,17 +135,17 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
         <ErrorBoundary>
-          <AdSettingsProvider>
-            <AIProfileProvider>
+          <AIProfileProvider>
+            <AdSettingsProvider>
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
-                  <ClientComponentsWrapper />
                   {children}
                   <Toaster />
+                  <ClientComponentsWrapper />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
-            </AIProfileProvider>
-          </AdSettingsProvider>
+            </AdSettingsProvider>
+          </AIProfileProvider>
         </ErrorBoundary>
       </body>
     </html>

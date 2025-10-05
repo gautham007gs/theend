@@ -2,15 +2,28 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
-import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, HelpCircle, Star, Zap } from 'lucide-react';
-import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
 import { useAIProfile } from '@/contexts/AIProfileContext'; 
 import { cn } from '@/lib/utils';
+
+const MessageSquarePlus = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MessageSquarePlus })));
+const Camera = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Camera })));
+const Search = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Search })));
+const MoreVertical = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MoreVertical })));
+const Share2 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Share2 })));
+const Settings = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Settings })));
+const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })));
+const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })));
+const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })));
+
+const BannerAdDisplay = dynamic(() => import('@/components/chat/BannerAdDisplay'), {
+  ssr: false,
+  loading: () => <div className="h-24" />
+});
 
 const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timestamp?: string; unreadCount?: number; }> = ({
   profile,
@@ -55,6 +68,8 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
             onError={handleAvatarError}
             width={48}
             height={48}
+            loading="eager"
+            fetchPriority="high"
           />
           <AvatarFallback>{(profile.name || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>

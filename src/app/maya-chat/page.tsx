@@ -49,9 +49,21 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Phone, Video, Info, X, ArrowLeft, MoreVertical } from "lucide-react";
-import SimulatedAdPlaceholder from "@/components/chat/SimulatedAdPlaceholder";
-import BannerAdDisplay from "@/components/chat/BannerAdDisplay";
+import dynamic from "next/dynamic";
+
+const MessageSquare = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MessageSquare })), { ssr: false });
+const Phone = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Phone })), { ssr: false });
+const Video = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Video })), { ssr: false });
+const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })), { ssr: false });
+const X = dynamic(() => import('lucide-react').then(mod => ({ default: mod.X })), { ssr: false });
+const ArrowLeft = dynamic(() => import('lucide-react').then(mod => ({ default: mod.ArrowLeft })), { ssr: false });
+const MoreVertical = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MoreVertical })), { ssr: false });
+
+const SimulatedAdPlaceholder = dynamic(() => import("@/components/chat/SimulatedAdPlaceholder"), { ssr: false });
+const BannerAdDisplay = dynamic(() => import("@/components/chat/BannerAdDisplay"), { 
+  ssr: false,
+  loading: () => <div className="h-24" />
+});
 import { supabase } from "@/lib/supabaseClient";
 import { format, isToday } from "date-fns";
 import { useAdSettings } from "@/contexts/AdSettingsContext";
