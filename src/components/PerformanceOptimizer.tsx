@@ -27,19 +27,30 @@ export default function PerformanceOptimizer() {
       },
 
       optimizeImages() {
-        const heroImages = document.querySelectorAll('img[data-hero], img[alt*="Kruthika"]');
+        // Prioritize LCP images
+        const heroImages = document.querySelectorAll('img[data-hero], img[alt*="Kruthika"], header img');
         heroImages.forEach(img => {
-          (img as HTMLImageElement).setAttribute('fetchpriority', 'high');
-          (img as HTMLImageElement).loading = 'eager';
+          const image = img as HTMLImageElement;
+          image.setAttribute('fetchpriority', 'high');
+          image.loading = 'eager';
+          image.decoding = 'sync';
+          
+          // Set explicit dimensions to prevent CLS
+          if (!image.width && image.naturalWidth) {
+            image.width = image.naturalWidth;
+            image.height = image.naturalHeight;
+          }
         });
 
-        const lazyImages = document.querySelectorAll('img:not([data-hero]):not([alt*="Kruthika"])');
+        // Lazy load non-critical images
+        const lazyImages = document.querySelectorAll('img:not([data-hero]):not([alt*="Kruthika"]):not(header img)');
         lazyImages.forEach(img => {
           const image = img as HTMLImageElement;
           image.loading = 'lazy';
           image.setAttribute('fetchpriority', 'low');
           image.decoding = 'async';
           
+          // Set explicit dimensions
           if (!image.width && image.naturalWidth) {
             image.width = image.naturalWidth;
             image.height = image.naturalHeight;

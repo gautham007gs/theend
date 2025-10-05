@@ -76,7 +76,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <Avatar 
             className="h-10 w-10 cursor-pointer" 
             key={`avatar-comp-header-${aiName}-${avatarUrlToUse || 'default_avatar_comp_key_ch'}`}
-            style={{ width: '40px', height: '40px', flexShrink: 0 }}
+            style={{ width: '40px', height: '40px', flexShrink: 0, contain: 'layout size style' }}
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 
@@ -86,9 +86,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             onError={handleAvatarError}
             width={40}
             height={40}
-            style={{ width: '40px', height: '40px' }}
+            loading="eager"
+            fetchPriority="high"
+            decoding="sync"
+            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
           />
-          <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback style={{ width: '40px', height: '40px' }}>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
       </button>
       <div className="flex-grow cursor-pointer" onClick={onAvatarClick}>

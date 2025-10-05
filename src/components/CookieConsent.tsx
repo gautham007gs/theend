@@ -102,9 +102,12 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
           className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg z-[9999]"
           style={{ 
             height: '160px',
+            minHeight: '160px',
+            maxHeight: '160px',
             transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
             transition: 'transform 0.3s ease-out',
-            willChange: 'transform'
+            willChange: 'transform',
+            contain: 'layout size style'
           }}
         >
           <div 

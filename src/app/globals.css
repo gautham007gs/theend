@@ -39,6 +39,10 @@ img {
   content-visibility: auto;
 }
 
+img[loading="eager"] {
+  content-visibility: visible;
+}
+
 /* Reduce layout shift for images */
 .avatar-placeholder { 
   background-color: #f3f4f6; 
@@ -46,25 +50,34 @@ img {
   display: inline-block;
   width: 48px;
   height: 48px;
+  flex-shrink: 0;
 }
 
-/* Prevent CLS from cookie banner */
-.cookie-consent-spacer {
-  height: 0;
-  transition: height 0.3s ease-in-out;
+/* Reserve space for cookie banner to prevent CLS */
+body {
+  padding-bottom: 160px;
 }
 
-.cookie-consent-spacer.active {
-  height: 160px;
+body:has(.cookie-consent-hidden) {
+  padding-bottom: 0;
 }
 
 /* Optimize rendering performance */
 .message-bubble {
   contain: layout style paint;
-  will-change: transform;
+  will-change: auto;
 }
 
 .chat-container {
+  contain: layout size;
+}
+
+.chat-header {
+  contain: layout size style;
+}
+
+/* Prevent layout shift on dynamic content */
+[data-radix-popper-content-wrapper] {
   contain: layout;
 }
 

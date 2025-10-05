@@ -438,7 +438,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           )}
           style={{
             transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
-            transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+            transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+            contain: 'layout style paint',
+            willChange: isDragging ? 'transform' : 'auto'
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
