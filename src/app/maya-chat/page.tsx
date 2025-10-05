@@ -10,8 +10,24 @@ import React, {
 } from "react";
 import Image from "next/image";
 import ChatHeader from "@/components/chat/ChatHeader";
-import ChatView from "@/components/chat/ChatView";
-import ChatInput from "@/components/chat/ChatInput";
+// Lazy loading ChatView, StructuredData, and AnalyticsIntegration
+import dynamic from 'next/dynamic';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+
+const ChatView = dynamic(() => import('@/components/chat/ChatView'), {
+  ssr: false,
+  loading: () => <LoadingSkeleton />
+});
+
+const ChatStructuredData = dynamic(() => import('./structured-data'), {
+  ssr: false
+});
+
+const AnalyticsIntegration = dynamic(() => import('./analytics-integration'), {
+  ssr: false
+});
+
+// Removed unused imports: Suspense, Metadata
 import type {
   Message,
   AIProfile,
@@ -57,13 +73,6 @@ import { format, isToday } from "date-fns";
 import { useAdSettings } from "@/contexts/AdSettingsContext";
 import { useAIProfile } from "@/contexts/AIProfileContext";
 import { useAIMediaAssets } from "@/contexts/AIMediaAssetsContext";
-import {
-  AnalyticsProvider,
-  useAnalyticsTracking,
-} from "./analytics-integration";
-import { analyticsTracker } from "@/lib/analytics-tracker";
-import { tryShowRotatedAd } from "@/lib/ad-utils";
-import { ChatStructuredData } from "./structured-data";
 import {
   useMobileOptimization,
   useMessageCleanup,
@@ -693,10 +702,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   }, [isLoadingAIProfile, globalAIProfile, loadInitialChatState]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      initialLoadComplete.current = true;
-    }, 500);
-    return () => clearTimeout(timer);
+    if (typeof window !== "undefined") { // Ensure this runs only on the client
+      const timer = setTimeout(() => {
+        initialLoadComplete.current = true;
+      }, 500);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   useEffect(() => {
@@ -1016,7 +1027,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     if (currentImageUri) {
       const todayStr = new Date().toDateString();
       const lastUploadDate = localStorage.getItem(
-        USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
+        USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
       );
       let currentUploadCount = parseInt(
         localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || "0",
@@ -1164,12 +1175,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       const msg = messages.find(m => m.id === messageId);
       const isEmotional = msg?.text.toLowerCase().match(/(love|sad|happy|miss|angry)/);
       const isQuestion = msg?.text.includes('?');
-      
+
       let delay = customDelay || 2000;
       if (isEmotional) delay += 1000; // Take longer to read emotional messages
       if (isQuestion) delay -= 500; // Read questions faster
       if (msg && msg.text.length > 100) delay += 1500; // Longer messages take time
-      
+
       setTimeout(() => {
         setMessages((prev) =>
           prev.map((msg) =>
@@ -1419,7 +1430,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         const newAiMediaMessageId =
           (Date.now() + Math.random()).toString() + `_${mediaType}`;
         const newAiMediaMessage: Message = {
-          id: newAiMediaMessageId,
+          id: newAiMediaMessageMessageId,
           text: caption || "",
           sender: "ai",
           timestamp: new Date(),
@@ -1529,10 +1540,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         const todayStr = new Date().toDateString();
         let currentUploadCount = parseInt(
           localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || "0",
-          10,
         );
         const lastUploadDate = localStorage.getItem(
-          USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
+          USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
         );
 
         if (lastUploadDate !== todayStr) {
@@ -1544,7 +1554,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           currentUploadCount.toString(),
         );
         localStorage.setItem(
-          USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
+          USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
           todayStr,
         );
       }
@@ -2110,7 +2120,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             <div className="relative">
               {/* White background */}
               <div className="absolute inset-0 bg-white"></div>
-              
+
               {/* Header content */}
               <div className="relative flex items-center justify-between p-4 text-gray-900 border-b border-gray-100">
                 <div className="flex items-center gap-3">

@@ -139,11 +139,17 @@ const nextConfig: NextConfig = {
       'date-fns',
       'react-hook-form',
       '@hookform/resolvers',
-      'zod'
+      'zod',
+      'recharts',
+      'framer-motion'
     ],
     optimizeCss: true,
     webpackBuildWorker: true,
     cssChunking: 'strict',
+    // Enable more aggressive tree shaking
+    turbotrace: {
+      logLevel: 'error',
+    },
   },
 
   // Turbopack configuration (migrated from experimental.turbo)
@@ -162,6 +168,12 @@ const nextConfig: NextConfig = {
       // Enhanced bundle splitting for production with modern target
       config.target = ['web', 'es2022'];
       
+      // Aggressive tree-shaking configuration
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = true;
+      config.optimization.providedExports = true;
+      config.optimization.concatenateModules = true;
+      
       // Tree-shake lucide-react and date-fns properly
       config.resolve = config.resolve || {};
       config.resolve.alias = {
@@ -169,10 +181,19 @@ const nextConfig: NextConfig = {
         'lucide-react': 'lucide-react/dist/esm/lucide-react.js',
       };
       
+      // Mark packages as side-effect free for better tree-shaking
+      config.module = config.module || {};
+      config.module.rules = config.module.rules || [];
+      config.module.rules.push({
+        test: /node_modules[\\/](lucide-react|date-fns|lodash-es)[\\/]/,
+        sideEffects: false,
+      });
+      
       config.optimization.splitChunks = {
         chunks: 'all',
         maxInitialRequests: 25,
         minSize: 20000,
+        maxSize: 244000, // 244KB max chunk size
         cacheGroups: {
           default: false,
           vendors: false,
@@ -182,12 +203,22 @@ const nextConfig: NextConfig = {
             name: 'recharts',
             priority: 50,
             chunks: 'async',
+            enforce: true,
           },
           // Separate large icon library
           icons: {
             test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
             name: 'icons',
             priority: 40,
+            chunks: 'async',
+            enforce: true,
+          },
+          // Supabase client
+          supabase: {
+            test: /[\\/]node_modules[\\/](@supabase)[\\/]/,
+            name: 'supabase',
+            priority: 35,
+            chunks: 'async',
           },
           // React libraries
           react: {
@@ -195,23 +226,35 @@ const nextConfig: NextConfig = {
             name: 'react-vendor',
             priority: 30,
           },
-          // All other vendor code
+          // UI libraries (Radix)
+          ui: {
+            test: /[\\/]node_modules[\\/](@radix-ui)[\\/]/,
+            name: 'ui-vendor',
+            priority: 25,
+            chunks: 'async',
+          },
+          // All other vendor code (smaller chunks)
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendor',
+            name(module) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+              return `vendor.${packageName.replace('@', '')}`;
+            },
             priority: 20,
+            minChunks: 1,
+            maxSize: 100000, // 100KB max
           },
           // Common code used across pages
           common: {
             name: 'common',
-            minChunks: 2,
+            minChunks: 3, // Only bundle if used in 3+ places
             priority: 10,
-            enforce: true,
+            reuseExistingChunk: true,
           },
         },
       };
 
-      // Enhanced minification with Terser
+      // Enhanced minification with Terser for aggressive dead code elimination
       config.optimization.minimize = true;
       if (config.optimization.minimizer) {
         config.optimization.minimizer.forEach((minimizer: any) => {
@@ -224,11 +267,24 @@ const nextConfig: NextConfig = {
                   drop_console: true,
                   drop_debugger: true,
                   pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-                  passes: 2,
+                  passes: 3, // More passes for better optimization
+                  dead_code: true,
+                  unused: true,
+                  toplevel: true,
+                  collapse_vars: true,
+                  reduce_vars: true,
+                  keep_fargs: false,
+                  keep_infinity: true,
+                  arrows: true,
+                  booleans_as_integers: true,
                 },
-                mangle: true,
+                mangle: {
+                  toplevel: true,
+                  safari10: true,
+                },
                 format: {
                   comments: false,
+                  ecma: 2020,
                 },
               },
               extractComments: false,
