@@ -89,7 +89,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             loading="eager"
             fetchPriority="high"
             decoding="sync"
-            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+            style={{ width: '40px', height: '40px', objectFit: 'cover', aspectRatio: '1/1' }}
           />
           <AvatarFallback style={{ width: '40px', height: '40px' }}>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>

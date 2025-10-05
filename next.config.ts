@@ -254,9 +254,10 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year for better caching
-    dangerouslyAllowSVG: false,
+    dangerouslyAllowSVG: true, // Allow SVG avatars
     loader: 'default',
     unoptimized: false,
+    contentDispositionType: 'inline',
     remotePatterns: [
       {
         protocol: 'https',

@@ -94,18 +94,15 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
     setShowCustomize(!showCustomize);
   };
 
-  // Fixed CLS implementation with proper space reservation
+  // Fixed CLS implementation - no body padding, smooth slide-in
   return (
     <>
-      {!hasConsent && (
+      {showConsent && (
         <div 
           className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg z-[9999]"
           style={{ 
-            height: '160px',
-            minHeight: '160px',
-            maxHeight: '160px',
             transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
-            transition: 'transform 0.3s ease-out',
+            transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             willChange: 'transform',
             contain: 'layout size style'
           }}

@@ -53,14 +53,7 @@ img[loading="eager"] {
   flex-shrink: 0;
 }
 
-/* Reserve space for cookie banner to prevent CLS */
-body {
-  padding-bottom: 160px;
-}
-
-body:has(.cookie-consent-hidden) {
-  padding-bottom: 0;
-}
+/* No padding - cookie banner uses fixed position without layout impact */
 
 /* Optimize rendering performance */
 .message-bubble {

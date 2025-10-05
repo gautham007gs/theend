@@ -398,7 +398,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
                 onError={handleAIAvatarError}
                 width={32}
                 height={32}
-                style={{ width: '32px', height: '32px' }}
+                style={{ width: '32px', height: '32px', aspectRatio: '1/1' }}
               />
               <AvatarFallback>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>

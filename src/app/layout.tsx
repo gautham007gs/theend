@@ -118,8 +118,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="dns-prefetch" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
         
-        {/* Preload critical LCP image with highest priority */}
-        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" imagesrcset="/kruthika-avatar.svg" imagesizes="100vw" />
+        {/* Preload critical LCP images with highest priority */}
+        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
+        <link rel="preload" as="image" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" fetchPriority="high" />
         
         {/* Defer non-critical preloads */}
         <link rel="dns-prefetch" href="https://judicialphilosophical.com" />
@@ -138,28 +139,22 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-        {/* Inline critical CSS for instant render and prevent CLS */}
+        {/* Inline critical CSS and fonts for instant render */}
         <style dangerouslySetInnerHTML={{
           __html: `
+            @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2')}
+            @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2')}
             *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-            html{font-size:16px;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-            body{margin:0;padding:0 0 160px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;background-color:#F2EDE4;min-height:100vh;overflow-x:hidden}
-            img,video{max-width:100%;height:auto;display:block;content-visibility:auto}
-            img[fetchpriority="high"]{content-visibility:visible;will-change:auto}
+            html{font-size:16px;-webkit-text-size-adjust:100%}
+            body{margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;background-color:#F2EDE4;min-height:100vh;overflow-x:hidden}
+            img,video{max-width:100%;height:auto;display:block}
+            img[fetchpriority="high"]{content-visibility:visible}
             .avatar-placeholder{width:48px;height:48px;border-radius:50%;background:#e5e7eb;flex-shrink:0}
-            .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}
-            @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
-            .chat-header{height:64px;min-height:64px;max-height:64px;background:#fff;border-bottom:1px solid #e5e7eb;contain:layout size;will-change:auto}
+            .chat-header{height:64px;min-height:64px;max-height:64px;background:#fff;border-bottom:1px solid #e5e7eb;contain:layout size style}
             .chat-container{min-height:100vh;display:flex;flex-direction:column;contain:layout size}
-            .message-bubble{transform:translateZ(0);contain:layout style paint;will-change:auto}
+            .message-bubble{transform:translateZ(0);contain:layout style paint}
             button,input,textarea{font-family:inherit;font-size:100%;touch-action:manipulation}
             [hidden]{display:none!important}
-            .fixed{position:fixed!important}
-            .bottom-0{bottom:0!important}
-            .left-0{left:0!important}
-            .right-0{right:0!important}
-            .h-\\[160px\\]{height:160px!important;min-height:160px!important}
-            .z-\\[9999\\]{z-index:9999!important}
           `
         }} />
 

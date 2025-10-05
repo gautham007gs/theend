@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import '@/lib/cls-optimizer';
 
 export default function PerformanceOptimizer() {
   useEffect(() => {
@@ -9,7 +10,7 @@ export default function PerformanceOptimizer() {
     const optimizations = {
       preloadCriticalResources() {
         const critical = [
-          { href: '/chat-bg.png', as: 'image', type: 'image/png', priority: 'high' },
+          { href: '/kruthika-avatar.svg', as: 'image', type: 'image/svg+xml', priority: 'high' },
           { href: 'https://placehold.co/100x100.png/E91E63/FFFFFF?text=K', as: 'image', priority: 'high' }
         ];
 
@@ -24,22 +25,32 @@ export default function PerformanceOptimizer() {
             document.head.appendChild(link);
           }
         });
+        
+        // Force immediate decode of critical images
+        const criticalImages = ['/kruthika-avatar.svg'];
+        criticalImages.forEach(src => {
+          const img = new Image();
+          img.src = src;
+          img.decoding = 'sync';
+        });
       },
 
       optimizeImages() {
         // Prioritize LCP images
-        const heroImages = document.querySelectorAll('img[data-hero], img[alt*="Kruthika"], header img');
+        const heroImages = document.querySelectorAll('img[data-hero], img[alt*="Kruthika"], header img, img[alt*="AI girlfriend"]');
         heroImages.forEach(img => {
           const image = img as HTMLImageElement;
           image.setAttribute('fetchpriority', 'high');
           image.loading = 'eager';
           image.decoding = 'sync';
           
-          // Set explicit dimensions to prevent CLS
+          // Set explicit dimensions and aspect ratio to prevent CLS
           if (!image.width && image.naturalWidth) {
             image.width = image.naturalWidth;
             image.height = image.naturalHeight;
           }
+          image.style.aspectRatio = '1/1';
+          image.style.objectFit = 'cover';
         });
 
         // Lazy load non-critical images
