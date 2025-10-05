@@ -124,6 +124,10 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
       bodySizeLimit: '2mb',
     },
+    staleTimes: {
+      dynamic: 0,
+      static: 180,
+    },
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',

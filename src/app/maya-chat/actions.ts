@@ -1,6 +1,10 @@
 'use server';
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
+
+// Explicit export configuration for stable action IDs
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 import { revalidatePath } from 'next/cache';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';
 
