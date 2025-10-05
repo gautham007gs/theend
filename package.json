@@ -13,12 +13,6 @@
     "typecheck": "tsc --noEmit",
     "perf": "npm run build:prod && npm run start:prod"
   },
-  "browserslist": [
-    "> 0.2%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ],
   "dependencies": {
     "@floating-ui/react-dom": "^2.1.6",
     "@google-cloud/vertexai": "^1.10.0",
