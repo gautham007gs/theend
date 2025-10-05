@@ -117,7 +117,7 @@ const nextConfig: NextConfig = {
   },
   // Configure for Replit environment
   // External packages for server-side rendering
-  serverExternalPackages: ['@google-cloud/vertexai'],
+  serverExternalPackages: ['@google-cloud/vertexai', 'google-auth-library'],
 
   experimental: {
     serverActions: {
