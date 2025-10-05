@@ -15,6 +15,29 @@ const GlobalAdScripts: React.FC = () => {
       return;
     }
 
+    // Delay ad script injection until page is fully interactive to avoid blocking main thread
+    const delayAdScripts = () => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => injectAdScripts(), { timeout: 3000 });
+      } else {
+        setTimeout(() => injectAdScripts(), 3000);
+      }
+    };
+
+    const injectAdScripts = () => {
+      if (adSettings.adsEnabledGlobally) {
+        // Adsterra Pop-under
+        if (adSettings.adsterraPopunderEnabled && !adsterraPopunderInjected.current) {
+          injectScript(adSettings.adsterraPopunderCode, "Adsterra", adsterraPopunderInjected);
+        }
+
+        // Monetag Pop-under
+        if (adSettings.monetagPopunderEnabled && !monetagPopunderInjected.current) {
+          injectScript(adSettings.monetagPopunderCode, "Monetag", monetagPopunderInjected);
+        }
+      }
+    };
+
     const injectScript = (scriptCode: string, networkName: string, injectedRef: React.MutableRefObject<boolean>) => {
       if (injectedRef.current || !scriptCode || !scriptCode.trim() || scriptCode.toLowerCase().includes('placeholder')) {
         return; 
@@ -63,17 +86,9 @@ const GlobalAdScripts: React.FC = () => {
       }
     };
 
-    if (adSettings.adsEnabledGlobally) {
-      // Adsterra Pop-under
-      if (adSettings.adsterraPopunderEnabled && !adsterraPopunderInjected.current) {
-        injectScript(adSettings.adsterraPopunderCode, "Adsterra", adsterraPopunderInjected);
-      }
+    // Start delayed ad script injection
+    delayAdScripts();
 
-      // Monetag Pop-under
-      if (adSettings.monetagPopunderEnabled && !monetagPopunderInjected.current) {
-        injectScript(adSettings.monetagPopunderCode, "Monetag", monetagPopunderInjected);
-      }
-    }
     // Clean up: Potentially remove scripts if settings change to disabled during session?
     // For simplicity, current approach injects if enabled on load and doesn't remove.
     // True dynamic removal is complex as scripts might have already executed.

@@ -113,10 +113,8 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical preconnects - reduce DNS lookup time */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        {/* Critical preconnects - only for resources actually used */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="preconnect" href="https://placehold.co" />
         <link rel="dns-prefetch" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
 
         {/* Inline critical CSS for instant render and prevent CLS */}
