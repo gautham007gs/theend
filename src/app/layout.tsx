@@ -16,9 +16,10 @@ import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap', // Prevent invisible text flash
-  preload: false, // Don't block initial render
-  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif']
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+  adjustFontFallback: true,
 });
 
 const getBaseUrl = () => {
@@ -112,30 +113,21 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* CRITICAL: Preload LCP image FIRST - highest priority */}
-        <link rel="preload" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" as="image" fetchPriority="high" />
-        
         {/* Critical preconnects - reduce DNS lookup time */}
-        <link rel="preconnect" href="https://placehold.co" crossOrigin="" />
-        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        
-        {/* Preload critical fonts to reduce render delay */}
-        <link 
-          rel="preload" 
-          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" 
-          as="font" 
-          type="font/woff2" 
-          crossOrigin="" 
-        />
+        <link rel="preconnect" href="https://placehold.co" />
+        <link rel="dns-prefetch" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
 
-        {/* Inline critical CSS for instant render */}
+        {/* Inline critical CSS for instant render and prevent CLS */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-            * { box-sizing: border-box; }
-            img { content-visibility: auto; }
+            *,*::before,*::after{box-sizing:border-box}
+            body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5}
+            img,video{max-width:100%;height:auto;content-visibility:auto}
+            .avatar-placeholder{width:48px;height:48px;border-radius:50%;background:#e5e7eb}
+            .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}
+            @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
           `
         }} />
 
@@ -145,13 +137,6 @@ export default function RootLayout({
         <ErrorBoundary>
           <AdSettingsProvider>
             <AIProfileProvider>
-
-        {/* Critical Resource Preloads for LCP Optimization */}
-        <link rel="preload" href="/chat-bg.png" as="image" fetchPriority="high" />
-        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
                   <ClientComponentsWrapper />

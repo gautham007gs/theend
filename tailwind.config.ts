@@ -10,6 +10,9 @@ export default {
     "./src/hooks/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
         extend: {
                 colors: {

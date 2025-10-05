@@ -1,0 +1,294 @@
+Metrics
+Expand view
+First Contentful Paint
+1.1 s
+Largest Contentful Paint
+8.7 s
+Total Blocking Time
+370 ms
+Cumulative Layout Shift
+0.373
+Speed Index
+6.8 s
+Captured at Oct 5, 2025, 12:18 PM GMT+5:30
+Emulated Moto G Power with Lighthouse 12.8.2
+Single page session
+Initial page load
+Slow 4G throttling
+Using HeadlessChromium 137.0.7151.119 with lr
+View Treemap
+Screenshot
+Screenshot
+Screenshot
+Screenshot
+Screenshot
+Screenshot
+Screenshot
+Screenshot
+Later this year, insights will replace performance audits. Learn more and provide feedback here.
+Go back to audits
+Show audits relevant to:
+
+All
+
+FCP
+
+LCP
+
+TBT
+
+CLS
+Insights
+Document request latency Est savings of 1,390 ms
+Your first network request is the most important. Reduce its latency by avoiding redirects, ensuring a fast server response, and enabling text compression.LCPFCP
+Avoids redirects
+Server responded slowly (observed 1494 ms)
+Applies text compression
+Render blocking requests Est savings of 150 ms
+Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.LCPFCP
+URL
+Transfer Size
+Duration
+replit.dev 1st party
+18.8 KiB	180 ms
+…chunks/%5Broot-of…%5D__7df3c8e6._.css(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+18.8 KiB
+180 ms
+Legacy JavaScript Est savings of 9 KiB
+Polyfills and transforms enable older browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile Baseline features, unless you know you must support older browsers. Learn why most sites can deploy ES6+ code without transpilingLCPFCP
+URL
+Wasted bytes
+replit.dev 1st party
+8.8 KiB
+…chunks/node_modules_next_dist_b0daae9a._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+8.8 KiB
+…chunks/node_modules_next_dist_b0daae9a._.js:36:27(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Array.prototype.at
+…chunks/node_modules_next_dist_b0daae9a._.js:16:29(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Array.prototype.flat
+…chunks/node_modules_next_dist_b0daae9a._.js:18:3(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Array.prototype.flatMap
+…chunks/node_modules_next_dist_b0daae9a._.js:32:27(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Object.fromEntries
+…chunks/node_modules_next_dist_b0daae9a._.js:39:22(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Object.hasOwn
+…chunks/node_modules_next_dist_b0daae9a._.js:10:127(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+String.prototype.trimEnd
+…chunks/node_modules_next_dist_b0daae9a._.js:10:36(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+String.prototype.trimStart
+Layout shift culprits
+Layout shifts occur when elements move absent any user interaction. Investigate the causes of layout shifts, such as elements being added, removed, or their fonts changing as the page loads.CLS
+Element
+Layout shift score
+Total
+0.373
+0.369
+body.inter_2c03fb7e-module__OLyZXa__variable
+<body class="inter_2c03fb7e-module__OLyZXa__variable font-sans antialiased">
+0.004
+Forced reflow
+A forced reflow occurs when JavaScript queries geometric properties (such as offsetWidth) after styles have been invalidated by a change to the DOM state. This can result in poor performance. Learn more about forced reflows and possible mitigations.
+Source
+Total reflow time
+[unattributed]
+33 ms
+Network dependency tree
+Avoid chaining critical requests by reducing the length of chains, reducing the download size of resources, or deferring the download of unnecessary resources to improve page load.LCP
+Maximum critical path latency: 2,528 ms
+Initial Navigation
+https://4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev - 1,558 ms, 16.13 KiB
+…chunks/%5Broot-of…%5D__7df3c8e6._.css(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev) - 2,528 ms, 18.75 KiB
+Preconnected origins
+preconnect hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.
+Origin
+Source
+/
+</>; rel=preconnect; crossorigin=""
+Unused preconnect. Only use preconnect for origins that the page is likely to request.
+Preconnect candidates
+Add preconnect hints to your most important origins, but try to use no more than 4.
+Origin
+Est LCP savings
+https://placehold.co
+50 ms
+LCP breakdown
+Each subpart has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.LCP
+Subpart
+Duration
+Time to first byte
+0 ms
+Element render delay
+4,470 ms
+Something went wrong
+<h2 class="text-xl font-semibold text-gray-800 mb-4">
+3rd parties
+3rd party code can significantly impact load performance. Reduce and defer loading of 3rd party code to prioritize your page's content.
+3rd party
+Transfer size
+Main thread time
+Google Fonts cdn 
+17 KiB	0 ms
+…v12/UcCO3FwrK….woff2(fonts.gstatic.com)
+17 KiB
+0 ms
+placehold.co
+1 KiB	0 ms
+…E91E63/FFFFFF?text=K(placehold.co)
+1 KiB
+0 ms
+supabase.co
+7 KiB	0 ms
+…v1/app_configurations?select=…(wubzdjzosbbbghdlfcgc.supabase.co)
+2 KiB
+0 ms
+…v1/app_configurations?select=…(wubzdjzosbbbghdlfcgc.supabase.co)
+1 KiB
+0 ms
+…v1/app_configurations?select=…(wubzdjzosbbbghdlfcgc.supabase.co)
+1 KiB
+0 ms
+…v1/app_configurations?select=…(wubzdjzosbbbghdlfcgc.supabase.co)
+1 KiB
+0 ms
+…v1/app_configurations?select=…(wubzdjzosbbbghdlfcgc.supabase.co)
+1 KiB
+0 ms
+These insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.
+Diagnostics
+Minify JavaScript Est savings of 320 KiB
+Minifying JavaScript files can reduce payload sizes and script parse time. Learn how to minify JavaScript.LCPFCP
+URL
+Transfer Size
+Est Savings
+replit.dev 1st party
+869.5 KiB	319.7 KiB
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+261.3 KiB
+114.4 KiB
+…chunks/node_modules_041e5ebf._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+151.1 KiB
+61.0 KiB
+…chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+153.0 KiB
+42.0 KiB
+…chunks/node_modules_next_dist_client_cf1d9188._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+89.2 KiB
+34.2 KiB
+…chunks/node_modules_next_dist_compiled_5150ccfd._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+48.6 KiB
+18.8 KiB
+…chunks/node_modules_62b2a909._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+70.5 KiB
+17.0 KiB
+…chunks/node_modules_next_dist_b0daae9a._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+31.6 KiB
+10.2 KiB
+…chunks/turbopack-_cdba956c._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+17.7 KiB
+8.7 KiB
+…chunks/_31cec7cb._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+14.4 KiB
+4.8 KiB
+…chunks/src_830996d6._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+15.7 KiB
+4.7 KiB
+…chunks/src_fdbd1b96._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+16.4 KiB
+4.0 KiB
+Reduce unused JavaScript Est savings of 411 KiB
+Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. Learn how to reduce unused JavaScript.LCPFCP
+URL
+Transfer Size
+Est Savings
+replit.dev 1st party
+773.7 KiB	410.8 KiB
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+261.3 KiB
+178.8 KiB
+…chunks/node_modules_041e5ebf._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+151.1 KiB
+80.5 KiB
+…chunks/node_modules_62b2a909._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+70.5 KiB
+46.4 KiB
+…chunks/node_modules_next_dist_client_cf1d9188._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+89.2 KiB
+43.0 KiB
+…chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+153.0 KiB
+40.1 KiB
+…chunks/node_modules_next_dist_compiled_5150ccfd._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+48.6 KiB
+22.0 KiB
+Reduce unused CSS Est savings of 16 KiB
+Reduce unused rules from stylesheets and defer CSS not used for above-the-fold content to decrease bytes consumed by network activity. Learn how to reduce unused CSS.LCPFCP
+URL
+Transfer Size
+Est Savings
+replit.dev 1st party
+15.9 KiB	15.9 KiB
+…chunks/%5Broot-of…%5D__7df3c8e6._.css(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+15.9 KiB
+15.9 KiB
+Minify CSS Est savings of 7 KiB
+Minifying CSS files can reduce network payload sizes. Learn how to minify CSS.LCPFCP
+URL
+Transfer Size
+Est Savings
+:host(.dark) { --color-font: white; --color-backdrop: rgba(0, 0, 0, 0.8); --color-border-shad…
+3.7 KiB
+2.7 KiB
+:host { /* * Although the style applied to the shadow host is isolated, * the element that a…
+3.2 KiB
+2.3 KiB
+:host { all: initial; /* the direction property is not reset by 'all' */ direction: ltr; } …
+3.0 KiB
+2.2 KiB
+Avoid serving legacy JavaScript to modern browsers Est savings of 8 KiB
+Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile Baseline features, unless you know you must support legacy browsers. Learn why most sites can deploy ES6+ code without transpilingLCPFCP
+URL
+Est Savings
+replit.dev 1st party
+8.5 KiB
+…chunks/node_modules_next_dist_b0daae9a._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+8.1 KiB
+…chunks/node_modules_next_dist_b0daae9a._.js:36:27(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Array.prototype.at
+…chunks/node_modules_next_dist_b0daae9a._.js:16:29(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Array.prototype.flat
+…chunks/node_modules_next_dist_b0daae9a._.js:18:3(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Array.prototype.flatMap
+…chunks/node_modules_next_dist_b0daae9a._.js:32:27(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Object.fromEntries
+…chunks/node_modules_next_dist_b0daae9a._.js:39:22(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+Object.hasOwn
+…chunks/node_modules_next_dist_b0daae9a._.js:10:127(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+String.prototype.trimEnd
+…chunks/node_modules_next_dist_b0daae9a._.js:10:36(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+String.prototype.trimStart
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+0.4 KiB
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js:566:71(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+@babel/plugin-transform-classes
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js:17522:29(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+@babel/plugin-transform-spread
+Avoid long main-thread tasks 4 long tasks found
+Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasksTBT
+URL
+Start Time
+Duration
+replit.dev 1st party
+567 ms
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+7,238 ms
+299 ms
+…chunks/node_modules_next_dist_compiled_5150ccfd._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+7,537 ms
+128 ms
+…chunks/node_modules_041e5ebf._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+6,640 ms
+77 ms
+…chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js(4ce8af64-ad3c-428a-9ea8-0c5df9f2e0ab-00-2v4pgvnb3vzf2.pike.replit.dev)
+6,037 ms
+63 ms
+More information about the performance of your application. These numbers don't directly affect the Performance score.

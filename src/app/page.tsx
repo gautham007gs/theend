@@ -84,6 +84,7 @@ const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile(); 
   const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const unreadCount = 1;
 
   useEffect(() => {
     const lastInteraction = localStorage.getItem('messages_kruthika');
@@ -135,15 +136,15 @@ const ChatListPage: React.FC = () => {
         <div className="px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">Chats</h1>
           <nav className="flex items-center space-x-3" aria-label="Main navigation">
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center" aria-label="Open camera">
+            <button className="hover:bg-green-400 rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Open camera">
               <Camera size={20} className="text-white" />
             </button>
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center" aria-label="Search chats">
+            <button className="hover:bg-green-400 rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Search chats">
               <Search size={20} className="text-white" />
             </button>
             <div className="relative">
               <button 
-                className="hover:bg-green-400 rounded-full p-1.5 transition-colors w-10 h-10 flex items-center justify-center"
+                className="hover:bg-green-400 rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center"
                 onClick={() => setShowDropdown(!showDropdown)}
                 aria-label="Open menu"
                 aria-expanded={showDropdown}
@@ -166,7 +167,7 @@ const ChatListPage: React.FC = () => {
                     <Settings size={16} />
                     Settings
                   </button>
-                  <Link href="/blog" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3">
+                  <Link href="/blog" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 min-h-[48px]">
                     <Zap size={16} />
                     Blog
                   </Link>
@@ -182,13 +183,13 @@ const ChatListPage: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="flex bg-green-500">
           <div className="flex-1">
-            <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
+            <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
               CHATS
             </button>
           </div>
           <div className="flex-1">
             <Link href="/status" className="block w-full">
-              <button className="w-full py-3 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300 text-white opacity-75 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
+              <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-transparent hover:border-green-300 text-white opacity-75 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
                 STATUS
               </button>
             </Link>
@@ -251,7 +252,7 @@ const ChatListPage: React.FC = () => {
       <Link
         href="/maya-chat"
         aria-label={`New chat with ${effectiveAIProfile.name}`}
-        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-10 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-10 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 min-w-[56px] min-h-[56px] flex items-center justify-center"
       >
         <span>
           <MessageSquarePlus size={24} />

@@ -71,23 +71,23 @@ class ErrorBoundary extends React.Component<
             <p className="text-gray-600 mb-4">
               The application encountered an unexpected error.
             </p>
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col items-center">
               <button
                 onClick={() => window.location.reload()}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2"
+                className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[48px] min-w-[120px]"
               >
                 Reload Page
               </button>
               <button
                 onClick={this.attemptRecovery}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 min-h-[48px] min-w-[120px]"
               >
                 Auto Recovery
               </button>
             </div>
             {this.state.error && (
               <details className="mt-4 text-left">
-                <summary className="cursor-pointer text-gray-700">Error Details</summary>
+                <summary className="cursor-pointer text-gray-700 min-h-[48px] flex items-center justify-center py-3">Error Details</summary>
                 <pre className="text-xs text-red-600 mt-2 bg-gray-100 p-2 rounded">
                   {this.state.error.toString()}
                 </pre>

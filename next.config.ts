@@ -101,7 +101,8 @@ const nextConfig: NextConfig = {
   generateEtags: true,
   reactStrictMode: true,
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production'
+    removeConsole: process.env.NODE_ENV === 'production',
+    reactRemoveProperties: process.env.NODE_ENV === 'production' ? { properties: ['^data-test'] } : false,
   },
 
   // Performance optimizations for large scale
@@ -142,6 +143,8 @@ const nextConfig: NextConfig = {
       'zod'
     ],
     optimizeCss: true,
+    webpackBuildWorker: true,
+    cssChunking: 'strict',
   },
 
   // Turbopack configuration (migrated from experimental.turbo)
@@ -288,6 +291,16 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp|avif)',
+        locale: false,
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ],
+      },
       {
         // Next.js static files - long cache
         source: '/_next/static/:path*',
