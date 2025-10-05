@@ -142,6 +142,15 @@ const nextConfig: NextConfig = {
       '@hookform/resolvers',
       'zod'
     ],
+    modularizeImports: {
+      'lucide-react': {
+        transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+        skipDefaultConversion: true
+      },
+      'date-fns': {
+        transform: 'date-fns/{{member}}'
+      }
+    },
     optimizeCss: true,
     webpackBuildWorker: true,
     cssChunking: 'strict',
@@ -160,9 +169,13 @@ const nextConfig: NextConfig = {
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
-      // Enhanced bundle splitting for production
+      // Enhanced bundle splitting for production with modern target
+      config.target = ['web', 'es2020'];
+      
       config.optimization.splitChunks = {
         chunks: 'all',
+        maxInitialRequests: 25,
+        minSize: 20000,
         cacheGroups: {
           default: false,
           vendors: false,

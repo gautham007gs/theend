@@ -10,8 +10,14 @@ export default {
     "./src/hooks/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   safelist: [],
+  important: false,
   future: {
     hoverOnlyWhenSupported: true,
+    respectDefaultRingColorOpacity: true,
+    disableColorOpacityUtilitiesByDefault: true,
+  },
+  corePlugins: {
+    preflight: true,
   },
   theme: {
         extend: {
