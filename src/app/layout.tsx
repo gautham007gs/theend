@@ -10,7 +10,12 @@ import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
-import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
+import dynamic from 'next/dynamic';
+
+const ClientComponentsWrapper = dynamic(() => import('@/components/ClientComponentsWrapper'), {
+  ssr: false,
+  loading: () => null
+});
 
 // Optimize font loading - use fallback font immediately
 const inter = Inter({

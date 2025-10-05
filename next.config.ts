@@ -135,6 +135,16 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-select',
       '@radix-ui/react-tooltip',
       '@radix-ui/react-toast',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-label',
+      '@radix-ui/react-menubar',
+      '@radix-ui/react-progress',
+      '@radix-ui/react-radio-group',
+      '@radix-ui/react-scroll-area',
+      '@radix-ui/react-separator',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-switch',
       '@tanstack/react-query',
       'date-fns',
       'react-hook-form',
@@ -146,10 +156,6 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
     webpackBuildWorker: true,
     cssChunking: 'strict',
-    // Enable more aggressive tree shaking
-    turbotrace: {
-      logLevel: 'error',
-    },
   },
 
   // Turbopack configuration (migrated from experimental.turbo)
@@ -237,7 +243,10 @@ const nextConfig: NextConfig = {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name(module) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+              if (!module.context) return 'vendor';
+              const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
+              if (!match) return 'vendor';
+              const packageName = match[1];
               return `vendor.${packageName.replace('@', '')}`;
             },
             priority: 20,
