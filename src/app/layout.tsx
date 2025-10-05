@@ -122,6 +122,7 @@ export default function RootLayout({
         
         {/* Preload critical avatar image for LCP */}
         <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
+        <link rel="preload" as="image" href="https://placehold.co/100x100.png/E91E63/FFFFFF?text=K" fetchPriority="high" />
         
         {/* Preload critical CSS with high priority */}
         <link rel="preload" as="style" href="/_next/static/css/1036b3cffeab4737.css" fetchPriority="high" />
@@ -132,20 +133,30 @@ export default function RootLayout({
         
         {/* Early hints for faster connections */}
         <link rel="preconnect" href="/_next/static" crossOrigin="" />
+        
+        {/* Reduce render blocking with modulepreload */}
+        <link rel="modulepreload" href="/_next/static/chunks/main-app.js" />
+        
+        {/* DNS prefetch for ad networks (non-critical) */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
         {/* Inline critical CSS for instant render and prevent CLS */}
         <style dangerouslySetInnerHTML={{
           __html: `
-            *,*::before,*::after{box-sizing:border-box}
-            body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;background-color:#F2EDE4}
-            img,video{max-width:100%;height:auto;content-visibility:auto}
-            .avatar-placeholder{width:48px;height:48px;border-radius:50%;background:#e5e7eb}
+            *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+            html{font-size:16px;-webkit-text-size-adjust:100%}
+            body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;background-color:#F2EDE4;min-height:100vh}
+            img,video{max-width:100%;height:auto;display:block;content-visibility:auto}
+            img[fetchpriority="high"]{content-visibility:visible}
+            .avatar-placeholder{width:48px;height:48px;border-radius:50%;background:#e5e7eb;flex-shrink:0}
             .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}
             @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
-            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb}
-            .chat-container{min-height:100vh;display:flex;flex-direction:column}
-            .message-bubble{transform:translateZ(0);will-change:transform}
-            .cookie-banner{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:16px;border-top:1px solid #e5e7eb;z-index:9999}
+            .chat-header{height:64px;min-height:64px;background:#fff;border-bottom:1px solid #e5e7eb;contain:layout}
+            .chat-container{min-height:100vh;display:flex;flex-direction:column;contain:layout}
+            .message-bubble{transform:translateZ(0);contain:layout style paint}
+            button,input,textarea{font-family:inherit;font-size:100%}
+            [hidden]{display:none!important}
           `
         }} />
 

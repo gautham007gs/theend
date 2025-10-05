@@ -49,7 +49,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center p-3 bg-chat-header-bg border-b border-border shadow-sm">
+    <header className="flex items-center p-3 bg-chat-header-bg border-b border-border shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
@@ -58,6 +58,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           router.push('/');
         }} 
         className="text-inherit hover:bg-accent/10 mr-2" 
+        style={{ width: '40px', height: '40px', flexShrink: 0 }}
         aria-label="Go back"
       >
         <ArrowLeft className="h-6 w-6" />
@@ -68,13 +69,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             "flex items-center focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-chat-header-bg rounded-full p-1 mr-3",
             aiName === "Kruthika" && "border-2 border-primary p-0.5" 
         )}
+        style={{ width: '48px', height: '48px', flexShrink: 0 }}
         key={`avatar-header-wrapper-${aiName}-${avatarUrlToUse || 'default_wrapper_key_ch'}`}
         aria-label={`View ${aiName}'s profile`}
       >
         <Avatar 
             className="h-10 w-10 cursor-pointer" 
             key={`avatar-comp-header-${aiName}-${avatarUrlToUse || 'default_avatar_comp_key_ch'}`}
-            style={{ width: '40px', height: '40px' }}
+            style={{ width: '40px', height: '40px', flexShrink: 0 }}
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 

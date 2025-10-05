@@ -94,19 +94,22 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
     setShowCustomize(!showCustomize);
   };
 
-  // This return block is the one being modified to fix CLS
+  // Fixed CLS implementation with proper space reservation
   return (
     <>
-      {/* Reserve space to prevent CLS */}
-      <div style={{ height: hasConsent ? '0' : '160px' }} />
-
       {!hasConsent && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg z-[9999] animate-slide-up" style={{ height: '160px' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+        <div 
+          className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg z-[9999]"
+          style={{ 
+            height: '160px',
+            transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
+            transition: 'transform 0.3s ease-out',
+            willChange: 'transform'
+          }}
+        >
+          <div 
             className={cn(
-              "w-full pointer-events-none", // Keep pointer-events-none on parent for background
-              "transition-all duration-300 ease-out",
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-full",
+              "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 h-full pointer-events-auto",
               className
             )}
           >

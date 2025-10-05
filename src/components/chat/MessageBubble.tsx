@@ -388,7 +388,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             <Avatar
               className="h-8 w-8"
               key={`ai-msg-avatar-comp-${message.id}-${aiAvatarUrlToUse || 'default_avatar_comp_key_mb'}`}
-              style={{ width: '32px', height: '32px' }}
+              style={{ width: '32px', height: '32px', flexShrink: 0 }}
             >
               <AvatarImage
                 src={aiAvatarUrlToUse || undefined}
