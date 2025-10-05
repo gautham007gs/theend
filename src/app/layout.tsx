@@ -10,7 +10,7 @@ import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
-import ClientProviders from '@/components/ClientProviders';
+import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 
 // Optimize font loading - use fallback font immediately
 const inter = Inter({
@@ -139,7 +139,7 @@ export default function RootLayout({
             <AIProfileProvider>
               <GlobalStatusProvider>
                 <AIMediaAssetsProvider>
-                  <ClientProviders />
+                  <ClientComponentsWrapper />
                   {children}
                   <Toaster />
                 </AIMediaAssetsProvider>

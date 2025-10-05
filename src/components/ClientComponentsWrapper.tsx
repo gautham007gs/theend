@@ -3,43 +3,43 @@
 
 import dynamic from 'next/dynamic';
 
-// Lazy load non-critical components with interaction-based loading
-const CookieConsent = dynamic(() => import('@/components/CookieConsent').then(mod => ({ default: mod.default })), {
+// Lazy load non-critical components to improve LCP
+const CookieConsent = dynamic(() => import('@/components/CookieConsent'), {
   ssr: false,
   loading: () => null
 });
 
-const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt').then(mod => ({ default: mod.default })), {
+const InstagramBrowserPrompt = dynamic(() => import('@/components/InstagramBrowserPrompt'), {
   ssr: false,
   loading: () => null
 });
 
-const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration').then(mod => ({ default: mod.default })), {
+const ServiceWorkerRegistration = dynamic(() => import('@/components/ServiceWorkerRegistration'), {
   ssr: false,
   loading: () => null
 });
 
-const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer').then(mod => ({ default: mod.default })), {
+const MobileOptimizer = dynamic(() => import('@/components/MobileOptimizer'), {
   ssr: false,
   loading: () => null
 });
 
-const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor').then(mod => ({ default: mod.default })), {
+const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
   ssr: false,
   loading: () => null
 });
 
-const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer').then(mod => ({ default: mod.default })), {
+const PerformanceOptimizer = dynamic(() => import('@/components/PerformanceOptimizer'), {
   ssr: false,
   loading: () => null
 });
 
-const ResourceHints = dynamic(() => import('@/components/ResourceHints').then(mod => ({ default: mod.default })), {
+const ResourceHints = dynamic(() => import('@/components/ResourceHints'), {
   ssr: false,
   loading: () => null
 });
 
-const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts').then(mod => ({ default: mod.default })), {
+const GlobalAdScripts = dynamic(() => import('@/components/GlobalAdScripts'), {
   ssr: false,
   loading: () => null
 });

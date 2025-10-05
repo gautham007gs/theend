@@ -124,10 +124,6 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
       bodySizeLimit: '2mb',
     },
-    staleTimes: {
-      dynamic: 0,
-      static: 180,
-    },
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',
@@ -139,23 +135,11 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-select',
       '@radix-ui/react-tooltip',
       '@radix-ui/react-toast',
-      '@radix-ui/react-avatar',
-      '@radix-ui/react-checkbox',
-      '@radix-ui/react-label',
-      '@radix-ui/react-menubar',
-      '@radix-ui/react-progress',
-      '@radix-ui/react-radio-group',
-      '@radix-ui/react-scroll-area',
-      '@radix-ui/react-separator',
-      '@radix-ui/react-slider',
-      '@radix-ui/react-switch',
       '@tanstack/react-query',
       'date-fns',
       'react-hook-form',
       '@hookform/resolvers',
-      'zod',
-      'recharts',
-      'framer-motion'
+      'zod'
     ],
     optimizeCss: true,
     webpackBuildWorker: true,
@@ -178,12 +162,6 @@ const nextConfig: NextConfig = {
       // Enhanced bundle splitting for production with modern target
       config.target = ['web', 'es2022'];
       
-      // Aggressive tree-shaking configuration
-      config.optimization.usedExports = true;
-      config.optimization.sideEffects = true;
-      config.optimization.providedExports = true;
-      config.optimization.concatenateModules = true;
-      
       // Tree-shake lucide-react and date-fns properly
       config.resolve = config.resolve || {};
       config.resolve.alias = {
@@ -191,19 +169,10 @@ const nextConfig: NextConfig = {
         'lucide-react': 'lucide-react/dist/esm/lucide-react.js',
       };
       
-      // Mark packages as side-effect free for better tree-shaking
-      config.module = config.module || {};
-      config.module.rules = config.module.rules || [];
-      config.module.rules.push({
-        test: /node_modules[\\/](lucide-react|date-fns|lodash-es)[\\/]/,
-        sideEffects: false,
-      });
-      
       config.optimization.splitChunks = {
         chunks: 'all',
         maxInitialRequests: 25,
         minSize: 20000,
-        maxSize: 244000, // 244KB max chunk size
         cacheGroups: {
           default: false,
           vendors: false,
@@ -213,22 +182,12 @@ const nextConfig: NextConfig = {
             name: 'recharts',
             priority: 50,
             chunks: 'async',
-            enforce: true,
           },
           // Separate large icon library
           icons: {
             test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
             name: 'icons',
             priority: 40,
-            chunks: 'async',
-            enforce: true,
-          },
-          // Supabase client
-          supabase: {
-            test: /[\\/]node_modules[\\/](@supabase)[\\/]/,
-            name: 'supabase',
-            priority: 35,
-            chunks: 'async',
           },
           // React libraries
           react: {
@@ -236,81 +195,40 @@ const nextConfig: NextConfig = {
             name: 'react-vendor',
             priority: 30,
           },
-          // UI libraries (Radix)
-          ui: {
-            test: /[\\/]node_modules[\\/](@radix-ui)[\\/]/,
-            name: 'ui-vendor',
-            priority: 25,
-            chunks: 'async',
-          },
-          // All other vendor code (smaller chunks)
+          // All other vendor code
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              if (!module.context) return 'vendor';
-              const match = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
-              if (!match) return 'vendor';
-              const packageName = match[1];
-              return `vendor.${packageName.replace('@', '')}`;
-            },
+            name: 'vendor',
             priority: 20,
-            minChunks: 1,
-            maxSize: 100000, // 100KB max
           },
           // Common code used across pages
           common: {
             name: 'common',
-            minChunks: 3, // Only bundle if used in 3+ places
+            minChunks: 2,
             priority: 10,
-            reuseExistingChunk: true,
+            enforce: true,
           },
         },
       };
 
-      // Enhanced minification with Terser for aggressive dead code elimination
+      // Enhanced minification with Terser
       config.optimization.minimize = true;
       if (config.optimization.minimizer) {
         config.optimization.minimizer.forEach((minimizer: any) => {
           if (minimizer.constructor.name === 'TerserPlugin') {
             minimizer.options = {
               ...minimizer.options,
-              parallel: true, // Enable parallel processing
               terserOptions: {
                 ...minimizer.options?.terserOptions,
                 compress: {
                   drop_console: true,
                   drop_debugger: true,
                   pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-                  passes: 4, // Increased from 3 to 4 for better optimization
-                  dead_code: true,
-                  unused: true,
-                  toplevel: true,
-                  collapse_vars: true,
-                  reduce_vars: true,
-                  keep_fargs: false,
-                  keep_infinity: true,
-                  arrows: true,
-                  booleans_as_integers: true,
-                  // Additional aggressive optimizations
-                  inline: 3,
-                  conditionals: true,
-                  evaluate: true,
-                  join_vars: true,
-                  sequences: true,
-                  properties: true,
-                  warnings: false,
+                  passes: 2,
                 },
-                mangle: {
-                  toplevel: true,
-                  safari10: true,
-                  properties: {
-                    regex: /^_/, // Mangle properties starting with _
-                  },
-                },
+                mangle: true,
                 format: {
                   comments: false,
-                  ecma: 2020,
-                  ascii_only: true, // Better compression
                 },
               },
               extractComments: false,
