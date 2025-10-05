@@ -142,15 +142,6 @@ const nextConfig: NextConfig = {
       '@hookform/resolvers',
       'zod'
     ],
-    modularizeImports: {
-      'lucide-react': {
-        transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
-        skipDefaultConversion: true
-      },
-      'date-fns': {
-        transform: 'date-fns/{{member}}'
-      }
-    },
     optimizeCss: true,
     webpackBuildWorker: true,
     cssChunking: 'strict',
@@ -170,7 +161,14 @@ const nextConfig: NextConfig = {
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
       // Enhanced bundle splitting for production with modern target
-      config.target = ['web', 'es2020'];
+      config.target = ['web', 'es2022'];
+      
+      // Tree-shake lucide-react and date-fns properly
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'lucide-react': 'lucide-react/dist/esm/lucide-react.js',
+      };
       
       config.optimization.splitChunks = {
         chunks: 'all',
@@ -179,23 +177,30 @@ const nextConfig: NextConfig = {
         cacheGroups: {
           default: false,
           vendors: false,
-          vendor: {
-            name: 'vendor',
-            chunks: 'all',
-            test: /node_modules/,
-            priority: 20,
+          // Separate large icon library
+          icons: {
+            test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
+            name: 'icons',
+            priority: 40,
           },
-          common: {
-            name: 'common',
-            chunks: 'all',
-            minChunks: 2,
-            priority: 10,
-            enforce: true,
-          },
-          lib: {
+          // React libraries
+          react: {
             test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
             name: 'react-vendor',
             priority: 30,
+          },
+          // All other vendor code
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendor',
+            priority: 20,
+          },
+          // Common code used across pages
+          common: {
+            name: 'common',
+            minChunks: 2,
+            priority: 10,
+            enforce: true,
           },
         },
       };
