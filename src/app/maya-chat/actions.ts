@@ -1,4 +1,4 @@
-'use server'
+'use server';
 
 import { generateResponse, type EmotionalStateInput } from '@/ai/flows/emotional-state-simulation';
 import { shouldAIBeBusyServerSafe } from '@/ai/ignore-utils';

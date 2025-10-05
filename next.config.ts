@@ -91,7 +91,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true, // Skip during build to reduce memory usage (checked in dev)
   },
   // Vercel-specific optimizations
-  output: 'standalone', // Optimal for serverless deployment
+  // output: 'standalone', // Disabled for development - only enable for production deployment
   // swcMinify is deprecated in Next.js 14+, SWC is default now
   // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
