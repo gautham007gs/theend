@@ -1,0 +1,178 @@
+Summary of What the Lighthouse Treemap Shows
+
+The Lighthouse Treemap visualizes your app’s JavaScript bundle composition and how much each script contributes to page weight.
+
+Key Observation:
+Chunk	Size	%	Description
+/vendor-a73ea64a52fb6b9c.js	358.2 KiB (84%)	🔴 Main problem — too large, contains all vendor libraries	
+/app/maya-chat/page-27e24508dde16530.js	15 KiB	Page-specific logic	
+/common-c63b96db2f5f50af.js	14.7 KiB	Shared utilities	
+/icons-3627e1e15990c264.js	6.6 KiB	Icon assets	
+Others	Small	Minor impact	
+
+👉 84% of all JS weight is from one “vendor” bundle — that’s your biggest performance bottleneck.
+
+⚡ Performance Metrics (from Lighthouse)
+Metric	Value	Ideal	Status
+FCP (First Contentful Paint)	1.4 s	< 1.0 s	🟡 OK
+LCP (Largest Contentful Paint)	5.7 s	< 2.5 s	🔴 Slow
+TBT (Total Blocking Time)	210 ms	< 150 ms	🟡 Slightly high
+CLS (Cumulative Layout Shift)	0.433	< 0.1	🔴 Poor layout stability
+Speed Index	5.8 s	< 3 s	🔴 Slow
+🔍 Detailed Issues and Fixes
+1️⃣ Reduce Unused JavaScript (Est. savings: 260 KiB)
+
+Most bloat comes from /vendor-a73ea64a52fb6b9c.js.
+
+🔧 Fixes:
+
+Code Split Aggressively:
+In next.config.js, enable:
+
+experimental: {
+  optimizeCss: true,
+  optimizePackageImports: ['react', 'lucide-react', 'framer-motion'],
+}
+
+
+Dynamic Imports:
+Load large dependencies only when needed:
+
+const Chat = dynamic(() => import('@/components/Chat'), { ssr: false });
+
+
+Tree-shake libraries (don’t import entire packages):
+
+// ❌
+import * as Icons from 'lucide-react'
+// ✅
+import { Send } from 'lucide-react'
+
+
+Remove Unused Polyfills:
+Set your target browsers to modern ones only in package.json:
+
+"browserslist": [
+  "defaults",
+  "not IE 11",
+  "maintained node versions"
+]
+
+
+and disable transpilation for modern browsers:
+
+next build --no-lint --no-mangle
+
+2️⃣ Avoid Legacy JavaScript (Est. savings: 13 KiB)
+
+Your Babel is still adding polyfills for things like Array.flat, Object.fromEntries, etc.
+
+🔧 Fixes:
+
+In .babelrc or next.config.js:
+
+{
+  "presets": [
+    ["next/babel", { "preset-env": { "targets": "defaults" } }]
+  ]
+}
+
+
+This prevents unnecessary transformations for modern browsers.
+
+3️⃣ Reduce Render-Blocking Requests (Est. savings: 1.4 s)
+
+Two main CSS files delay LCP:
+
+/45eb1a524493a903.css (16.8 KiB)
+
+/b42b844f302050e4.css (3.6 KiB)
+
+🔧 Fixes:
+
+Inline critical CSS:
+Use next-critical
+ or next/script with strategy="beforeInteractive".
+
+Defer non-critical CSS:
+
+<link rel="preload" href="/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+
+Use Tailwind’s content optimization:
+
+// tailwind.config.js
+content: [
+  './app/**/*.{js,ts,jsx,tsx}',
+  './components/**/*.{js,ts,jsx,tsx}'
+],
+
+
+This ensures unused CSS is purged.
+
+4️⃣ Preconnect Important Origins
+
+Lighthouse suggests adding preconnect for:
+
+https://wubzdjzosbbbghdlfcgc.supabase.co
+
+https://judicialphilosophical.com
+
+https://placehold.co
+
+🔧 Fix:
+
+Add these inside your <Head> tag:
+
+<link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossorigin>
+<link rel="preconnect" href="https://judicialphilosophical.com">
+<link rel="preconnect" href="https://placehold.co">
+
+5️⃣ Reduce Layout Shifts (CLS 0.433 → < 0.1)
+
+CLS is poor because elements (like text, buttons, or chat messages) move as they load.
+
+🔧 Fix:
+
+Set fixed width/height for all images and iframes.
+
+Reserve space for dynamically loaded components.
+
+Use CSS aspect ratios:
+
+img { aspect-ratio: 1 / 1; }
+
+
+Avoid injecting banners or “remember you” cookie messages above the fold.
+
+6️⃣ Optimize Fonts (Critical Path: 3.1 s)
+
+The font from fonts.gstatic.com delayed LCP.
+
+🔧 Fix:
+
+Preload your main font:
+
+<link rel="preload" href="https://fonts.gstatic.com/s/poppins/v12/UcCO3FwrK.woff2" as="font" type="font/woff2" crossorigin>
+
+
+Use font-display: swap; to render fallback text immediately.
+
+7️⃣ Reduce Document Request Latency (713 ms)
+
+Your initial response from Replit is slow.
+
+🔧 Fix:
+
+Enable text compression:
+
+npm install compression
+
+
+and in your server setup:
+
+import compression from 'compression'
+app.use(compression())
+
+
+Add a CDN or deploy on Vercel or Cloudflare Pages for faster edge delivery.
