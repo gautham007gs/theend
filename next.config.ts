@@ -47,7 +47,7 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
   },
-  // Content Security Policy - Comprehensive protection against XSS and data injection
+  // Content Security Policy - Balanced security without breaking Next.js
   {
     key: 'Content-Security-Policy',
     value: [
@@ -100,7 +100,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   generateEtags: true,
   reactStrictMode: true,
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true, // Enable source maps for better debugging
+  typedRoutes: true, // Enable typed routes for better type safety
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
     reactRemoveProperties: process.env.NODE_ENV === 'production' ? { properties: ['^data-test'] } : false,
@@ -140,7 +141,8 @@ const nextConfig: NextConfig = {
       'date-fns',
       'react-hook-form',
       '@hookform/resolvers',
-      'zod'
+      'zod',
+      'recharts'
     ],
     optimizeCss: true,
     webpackBuildWorker: true,

@@ -322,7 +322,7 @@ const AdminProfilePage: React.FC = () => {
       prev.map(contact => {
         if (contact.id === id) {
           if (field === 'statusImageUrl') {
-            return { ...contact, [field]: (value as string)?.trim() === '' ? undefined : value };
+            return { ...contact, [field]: typeof value === 'string' && value.trim() === '' ? undefined : (value as string) };
           }
           return { ...contact, [field]: value };
         }
@@ -714,13 +714,41 @@ const AdminProfilePage: React.FC = () => {
             <CardContent className="space-y-6 pt-2">
               <div className="space-y-4 p-4 border rounded-md shadow-sm bg-secondary/20">
                 <h4 className="text-lg font-semibold text-primary flex items-center"><ImagePlus className="mr-2 h-4 w-4"/>Images</h4>
-                <div className="space-y-1.5">
-                  <Label htmlFor="newImageUrl" className="text-sm font-medium">New Image URL (Publicly Accessible)</Label>
-                  <div className="flex gap-2">
-                    <Input id="newImageUrl" type="url" value={newImageUrl} onChange={(e) => setNewImageUrl(e.target.value)} placeholder="https://example.com/image.png" className="flex-grow text-sm"/>
-                    <Button onClick={() => handleAddMediaAsset('image')} variant="outline" size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Upload Image File</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, 'image');
+                        }}
+                        className="flex-grow text-sm"
+                        disabled={uploadingFile}
+                      />
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-secondary/20 px-2 text-muted-foreground">Or add URL</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="newImageUrl" className="text-sm font-medium">Image URL (Publicly Accessible)</Label>
+                    <div className="flex gap-2">
+                      <Input id="newImageUrl" type="url" value={newImageUrl} onChange={(e) => setNewImageUrl(e.target.value)} placeholder="https://example.com/image.png" className="flex-grow text-sm"/>
+                      <Button onClick={() => handleAddMediaAsset('image')} variant="outline" size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                    </div>
                   </div>
                 </div>
+                {uploadingFile && uploadProgress && (
+                  <div className="text-xs text-muted-foreground animate-pulse">{uploadProgress}</div>
+                )}
                 {aiMediaAssets.assets.filter(asset => asset.type === 'image').length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-background rounded border">
                     {aiMediaAssets.assets.filter(asset => asset.type === 'image').map(asset => (
@@ -737,17 +765,45 @@ const AdminProfilePage: React.FC = () => {
               </div>
               <div className="space-y-4 p-4 border rounded-md shadow-sm bg-secondary/20">
                 <h4 className="text-lg font-semibold text-primary flex items-center"><Music2 className="mr-2 h-4 w-4"/>Audio Clips</h4>
-                <div className="space-y-1.5">
-                  <Label htmlFor="newAudioPath" className="text-sm font-medium">New Audio File Path (from `public/media/`)</Label>
-                  <div className="flex gap-2">
-                    <Input id="newAudioPath" type="text" value={newAudioPath} onChange={(e) => setNewAudioPath(e.target.value)} placeholder="/media/sound.mp3" className="flex-grow text-sm"/>
-                    <Button onClick={() => handleAddMediaAsset('audio')} variant="outline" size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Upload Audio File</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        type="file" 
+                        accept="audio/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, 'audio');
+                        }}
+                        className="flex-grow text-sm"
+                        disabled={uploadingFile}
+                      />
+                    </div>
                   </div>
-                  <Alert variant="default" className="mt-2 py-2 px-3 text-xs bg-background/70 border-border">
-                    <Info size={14} className="mr-1 !text-muted-foreground" />
-                    <AlertDescription className="!text-muted-foreground">Audio files must be placed in the `public/media/` folder of your project first. Then, add the path here (e.g., `/media/your_clip.mp3`).</AlertDescription>
-                  </Alert>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-secondary/20 px-2 text-muted-foreground">Or add path</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="newAudioPath" className="text-sm font-medium">Audio File Path (from `public/media/`)</Label>
+                    <div className="flex gap-2">
+                      <Input id="newAudioPath" type="text" value={newAudioPath} onChange={(e) => setNewAudioPath(e.target.value)} placeholder="/media/sound.mp3" className="flex-grow text-sm"/>
+                      <Button onClick={() => handleAddMediaAsset('audio')} variant="outline" size="icon"><PlusCircle className="h-4 w-4" /></Button>
+                    </div>
+                    <Alert variant="default" className="mt-2 py-2 px-3 text-xs bg-background/70 border-border">
+                      <Info size={14} className="mr-1 !text-muted-foreground" />
+                      <AlertDescription className="!text-muted-foreground">Audio files must be placed in the `public/media/` folder of your project first. Then, add the path here (e.g., `/media/your_clip.mp3`).</AlertDescription>
+                    </Alert>
+                  </div>
                 </div>
+                {uploadingFile && uploadProgress && (
+                  <div className="text-xs text-muted-foreground animate-pulse">{uploadProgress}</div>
+                )}
                  {aiMediaAssets.assets.filter(asset => asset.type === 'audio').length > 0 ? (
                   <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar p-2 bg-background rounded border">
                     {aiMediaAssets.assets.filter(asset => asset.type === 'audio').map(asset => (
@@ -983,8 +1039,8 @@ const AdminProfilePage: React.FC = () => {
                     <Label htmlFor={`contactHasUpdate-${contact.id}`} className="text-xs font-medium">Show as new/unread update</Label>
                   </div>
                    <div className="flex flex-wrap gap-2 pt-1">
-                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusText')} variant="outline" size="xs" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Text</Button>
-                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusImageUrl')} variant="outline" size="xs" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Image</Button>
+                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusText')} variant="outline" size="sm" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Text</Button>
+                    <Button onClick={() => handleClearManagedContactField(contact.id, 'statusImageUrl')} variant="outline" size="sm" className="text-xs px-2 py-1 h-auto"><Trash2 className="mr-1 h-3 w-3"/>Clear Image</Button>
                   </div>
                 </div>
               ))}
@@ -1004,6 +1060,7 @@ const AdminProfilePage: React.FC = () => {
                 <a 
                   href="/admin/analytics" 
                   className="ml-auto text-sm bg-primary text-primary-foreground px-3 py-1 rounded-md hover:bg-primary/90 transition-colors"
+                  aria-label="View full analytics dashboard with detailed metrics and insights"
                 >
                   View Full Dashboard →
                 </a>
