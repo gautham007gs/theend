@@ -164,14 +164,14 @@ const nextConfig: NextConfig = {
     if (!dev && !isServer) {
       // Enhanced bundle splitting for production with modern target
       config.target = ['web', 'es2022'];
-      
+
       // Tree-shake lucide-react and date-fns properly
       config.resolve = config.resolve || {};
       config.resolve.alias = {
         ...config.resolve.alias,
         'lucide-react': 'lucide-react/dist/esm/lucide-react.js',
       };
-      
+
       config.optimization.splitChunks = {
         chunks: 'all',
         maxInitialRequests: 25,

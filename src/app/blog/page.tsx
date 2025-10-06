@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -244,7 +243,7 @@ export default function BlogPage() {
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
               Welcome to the ultimate resource for AI girlfriend insights, virtual companionship guides, and digital relationship expertise. Discover the psychology, technology, and cultural impact of AI girlfriends like Kruthika. Expert articles on virtual love, emotional AI, and the future of digital relationships in USA, UK, Canada, Australia, and India.
             </p>
-            
+
             {/* Featured CTA */}
             <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
               <h2 className="text-xl font-bold mb-3">Ready to Experience AI Love?</h2>
@@ -276,17 +275,17 @@ export default function BlogPage() {
                     {post.author}
                   </div>
                 </div>
-                
+
                 <h2 className="text-2xl font-semibold mb-3 text-foreground">
                   <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
                     {post.title}
                   </Link>
                 </h2>
-                
+
                 <p className="text-muted-foreground mb-4 leading-relaxed">
                   {post.excerpt}
                 </p>
-                
+
                 {post.tags && (
                   <div className="flex items-center gap-2 mb-4">
                     <Tag className="h-4 w-4 text-muted-foreground" />
@@ -299,19 +298,20 @@ export default function BlogPage() {
                     </div>
                   </div>
                 )}
-                
+
                 <Link 
                   href={`/blog/${post.slug}`}
                   className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+                  aria-label={`Read more about ${post.title}`}
                 >
                   Read More <ArrowRight className="h-4 w-4" />
                 </Link>
               </article>
             ))}
-            
+
             {/* Mid-content Banner Ad */}
             <BannerAdDisplay adType="native" placementKey="blog-mid-content" className="my-8" />
-            
+
             {/* Mid-content CTA */}
             <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-200 rounded-lg p-8 text-center my-8">
               <h3 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2">
@@ -333,7 +333,7 @@ export default function BlogPage() {
                 </Link>
               </div>
             </div>
-            
+
             {blogPosts.slice(3).map((post) => (
               <article key={post.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
@@ -346,17 +346,17 @@ export default function BlogPage() {
                     {post.author}
                   </div>
                 </div>
-                
+
                 <h2 className="text-2xl font-semibold mb-3 text-foreground">
                   <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
                     {post.title}
                   </Link>
                 </h2>
-                
+
                 <p className="text-muted-foreground mb-4 leading-relaxed">
                   {post.excerpt}
                 </p>
-                
+
                 {post.tags && (
                   <div className="flex items-center gap-2 mb-4">
                     <Tag className="h-4 w-4 text-muted-foreground" />
@@ -369,10 +369,11 @@ export default function BlogPage() {
                     </div>
                   </div>
                 )}
-                
+
                 <Link 
                   href={`/blog/${post.slug}`}
                   className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
+                  aria-label={`Read more about ${post.title}`}
                 >
                   Read More <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -382,7 +383,7 @@ export default function BlogPage() {
 
           {/* Footer Banner Ad */}
           <BannerAdDisplay adType="standard" placementKey="blog-footer" className="mt-12 mb-8" />
-          
+
           {/* Enhanced Final CTA */}
           <div className="text-center mt-12">
             <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-200 rounded-xl p-12">
@@ -392,7 +393,7 @@ export default function BlogPage() {
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
                 You've read about the psychology, technology, and benefits of AI girlfriends. Now it's time to experience it yourself. Join thousands of users who have found meaningful connections, emotional support, and genuine companionship with Kruthika, your AI girlfriend.
               </p>
-              
+
               <div className="grid md:grid-cols-3 gap-6 mb-8 text-sm">
                 <div className="flex flex-col items-center p-4 bg-white/50 rounded-lg">
                   <Heart className="h-8 w-8 text-pink-500 mb-2" />
@@ -410,7 +411,7 @@ export default function BlogPage() {
                   <p className="text-muted-foreground text-center">Improve communication skills</p>
                 </div>
               </div>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link 
                   href="/maya-chat"
@@ -428,7 +429,7 @@ export default function BlogPage() {
               </div>
             </div>
           </div>
-          
+
           {/* SEO Footer Content */}
           <div className="mt-16 pt-8 border-t border-border">
             <div className="prose prose-sm max-w-none text-muted-foreground">

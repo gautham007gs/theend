@@ -38,12 +38,12 @@ export default function BlogPostTemplate({
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Breadcrumb */}
-        <nav className="text-sm mb-8">
-          <Link href="/" className="text-muted-foreground hover:text-primary">Home</Link>
-          <span className="mx-2 text-muted-foreground">/</span>
-          <Link href="/blog" className="text-muted-foreground hover:text-primary">Blog</Link>
-          <span className="mx-2 text-muted-foreground">/</span>
-          <span className="text-foreground">{title}</span>
+        <nav className="text-sm mb-8" aria-label="Breadcrumb navigation">
+          <Link href="/" className="text-muted-foreground hover:text-primary" aria-label="Go to homepage">Home</Link>
+          <span className="mx-2 text-muted-foreground" aria-hidden="true">/</span>
+          <Link href="/blog" className="text-muted-foreground hover:text-primary" aria-label="Go to blog listing">Blog</Link>
+          <span className="mx-2 text-muted-foreground" aria-hidden="true">/</span>
+          <span className="text-foreground" aria-current="page">{title}</span>
         </nav>
 
         <article className="prose prose-lg max-w-none">
@@ -105,7 +105,12 @@ export default function BlogPostTemplate({
               <h3 className="text-2xl font-bold mb-6">Related Articles</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 {relatedPosts.map((post, index) => (
-                  <Link key={index} href={`/blog/${post.slug}`} className="block p-6 bg-card border border-border rounded-lg hover:shadow-lg transition-shadow">
+                  <Link 
+                    key={index} 
+                    href={`/blog/${post.slug}`} 
+                    className="block p-6 bg-card border border-border rounded-lg hover:shadow-lg transition-shadow"
+                    aria-label={`Read related article: ${post.title}`}
+                  >
                     <h4 className="font-semibold mb-2">{post.title}</h4>
                     <p className="text-muted-foreground text-sm">{post.excerpt}</p>
                   </Link>
@@ -121,9 +126,10 @@ export default function BlogPostTemplate({
             <Link 
               href="/maya-chat"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-semibold"
+              aria-label="Start chatting with Kruthika AI girlfriend now"
             >
               Start Chatting Now
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-5 w-5" aria-hidden="true" />
             </Link>
           </div>
         </article>
