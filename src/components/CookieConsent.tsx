@@ -127,7 +127,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                     <Cookie className="h-5 w-5 text-[#25D366]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">Cookie Settings</h3>
+                    <h2 className="font-semibold text-gray-900 text-sm mb-1">Cookie Settings</h2>
                     <p className="text-xs text-gray-600 leading-relaxed">
                       We use cookies to make Kruthika remember you better and show relevant content. 
                       <span className="font-medium text-green-700">Accept all for the best experience!</span>

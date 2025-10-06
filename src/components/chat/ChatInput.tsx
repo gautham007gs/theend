@@ -1,6 +1,5 @@
-
 import React, { useState, useRef, useCallback } from 'react';
-import { Send, Paperclip, Smile, Mic } from 'lucide-react';
+import { Send, Paperclip, Smile, Mic, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
@@ -21,18 +20,18 @@ const isMessageMeaningless = (text: string): boolean => {
   const trimmed = text.trim();
   if (!trimmed) return true;
   if (trimmed.length > 2) return false;
-  
+
   const emojiRegex = /^[\p{Emoji}\p{Emoji_Component}]+$/u;
   const punctuationRegex = /^[.,!?;:'"()\-_+={}[\]|\\/<>@#$%^&*~`]+$/;
   const singleCharRegex = /^[a-zA-Z0-9]$/;
-  
+
   return emojiRegex.test(trimmed) || punctuationRegex.test(trimmed) || singleCharRegex.test(trimmed);
 };
 
 const checkSpamRate = (): { isSpam: boolean; message?: string } => {
   const lastMessageTime = localStorage.getItem(LAST_MESSAGE_TIME_KEY);
   const now = Date.now();
-  
+
   if (lastMessageTime) {
     const timeSinceLastMessage = now - parseInt(lastMessageTime);
     if (timeSinceLastMessage < MESSAGE_COOLDOWN_MS) {
@@ -42,17 +41,17 @@ const checkSpamRate = (): { isSpam: boolean; message?: string } => {
       };
     }
   }
-  
+
   return { isSpam: false };
 };
 
 const checkShortMessageSpam = (text: string): { isSpam: boolean; message?: string } => {
   if (!isMessageMeaningless(text)) return { isSpam: false };
-  
+
   const now = Date.now();
   const spamCount = parseInt(localStorage.getItem(SHORT_MESSAGE_SPAM_KEY) || '0');
   const spamTime = parseInt(localStorage.getItem(SHORT_MESSAGE_SPAM_TIME_KEY) || '0');
-  
+
   if (now - spamTime > SHORT_MESSAGE_SPAM_WINDOW_MS) {
     localStorage.setItem(SHORT_MESSAGE_SPAM_KEY, '1');
     localStorage.setItem(SHORT_MESSAGE_SPAM_TIME_KEY, now.toString());
@@ -60,23 +59,26 @@ const checkShortMessageSpam = (text: string): { isSpam: boolean; message?: strin
       isSpam: false
     };
   }
-  
+
   const newCount = spamCount + 1;
   localStorage.setItem(SHORT_MESSAGE_SPAM_KEY, newCount.toString());
-  
+
   if (newCount >= SHORT_MESSAGE_SPAM_THRESHOLD) {
     return {
       isSpam: true,
       message: 'Please send a proper message instead of single characters or emojis. This helps reduce costs! 💰'
     };
   }
-  
+
   return { isSpam: false };
 };
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
   const [inputValue, setInputValue] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State for emoji picker visibility
+  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -150,6 +152,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
     localStorage.setItem(LAST_MESSAGE_TIME_KEY, Date.now().toString());
 
     if (textToSend || imageToSend) {
+      setIsLoading(true); // Set loading state
       onSendMessage(textToSend, imageToSend || undefined);
       setInputValue('');
       setSelectedImage(null);
@@ -158,6 +161,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
       }
       if(fileInputRef.current) fileInputRef.current.value = "";
       textareaRef.current?.focus();
+      setIsLoading(false); // Reset loading state after sending
     }
   }, [inputValue, selectedImage, onSendMessage, toast]);
 
@@ -167,7 +171,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
       handleSubmit();
     }
   };
-  
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
     if (textareaRef.current) {
@@ -182,7 +186,14 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
       onSubmit={handleSubmit}
       className="flex items-end p-2 sm:p-3 bg-chat-input-bg border-t border-border gap-2"
     >
-      <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-foreground/80 self-end shrink-0">
+      <Button 
+        type="button" 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => setShowEmojiPicker(!showEmojiPicker)} 
+        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
+        aria-label={showEmojiPicker ? "Close emoji picker" : "Open emoji picker"}
+      >
         <Smile className="h-5 w-5" />
       </Button>
       <Textarea
@@ -195,20 +206,33 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         rows={1}
       />
       {inputValue.trim() || selectedImage ? (
-        <Button type="submit" variant="default" size="icon" className="bg-primary hover:bg-primary/90 self-end shrink-0">
-          <Send className="h-5 w-5 text-primary-foreground" />
+        <Button 
+          type="submit" 
+          size="icon" 
+          className="bg-primary hover:bg-primary/90 self-end shrink-0"
+          aria-label={isLoading ? "Sending message" : "Send message"}
+        >
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 text-primary-foreground" />}
         </Button>
       ) : (
-        <Button variant="ghost" size="icon" type="button" className="text-muted-foreground hover:text-foreground/80 self-end shrink-0">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          type="button" 
+          className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
+          aria-label="Open microphone input"
+        >
           <Mic className="h-5 w-5" />
         </Button>
       )}
        <input 
-        type="file" 
         ref={fileInputRef} 
-        onChange={handleImageChange} 
+        type="file" 
         accept="image/jpeg,image/png,image/webp,image/gif" 
         className="hidden" 
+        onChange={handleImageChange} 
+        id="file-upload-input"
+        aria-label="Upload image file"
       />
       <Button 
         variant="ghost" 
@@ -216,6 +240,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         type="button" 
         className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
         onClick={() => fileInputRef.current?.click()}
+        aria-label="Attach image to message"
       >
         <Paperclip className="h-5 w-5" />
       </Button>
@@ -224,4 +249,3 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
 };
 
 export default ChatInput;
-

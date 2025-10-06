@@ -219,6 +219,52 @@ FOR UPDATE
 USING (true)
 WITH CHECK (true); -- DANGER: REMOVE/REPLACE.
 
+-- =============================================
+-- STORAGE BUCKET POLICIES FOR FILE UPLOADS
+-- =============================================
+-- These policies allow file uploads to storage buckets.
+-- ⚠️ WARNING: These are PROTOTYPE policies allowing anonymous uploads.
+-- For production, implement proper authentication and restrict by user ID.
+
+-- Policy for media-images bucket
+CREATE POLICY "Allow anon uploads to media-images - PROTOTYPE ONLY"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'media-images');
+
+CREATE POLICY "Allow public read from media-images"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'media-images');
+
+CREATE POLICY "Allow anon delete from media-images - PROTOTYPE ONLY"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'media-images');
+
+-- Policy for media-audio bucket
+CREATE POLICY "Allow anon uploads to media-audio - PROTOTYPE ONLY"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'media-audio');
+
+CREATE POLICY "Allow public read from media-audio"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'media-audio');
+
+CREATE POLICY "Allow anon delete from media-audio - PROTOTYPE ONLY"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'media-audio');
+
+-- Policy for media-videos bucket
+CREATE POLICY "Allow anon uploads to media-videos - PROTOTYPE ONLY"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'media-videos');
+
+CREATE POLICY "Allow public read from media-videos"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'media-videos');
+
+CREATE POLICY "Allow anon delete from media-videos - PROTOTYPE ONLY"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'media-videos');
+
 
 -- Example: To insert initial ad_settings (can be done from Admin Panel save, or run this manually once after table creation)
 -- Make sure the RLS policies allow your admin user to perform this insert.
