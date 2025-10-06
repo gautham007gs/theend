@@ -1,0 +1,34 @@
+Contrast
+Background and foreground colors do not have a sufficient contrast ratio.
+Low-contrast text is difficult or impossible for many users to read. Learn how to provide sufficient color contrast.
+Failing Elements
+10:13 AM
+<span class="text-xs text-muted-foreground/90">
+Hi! I'm Kruthika. Kaise ho aap? 😊 Let's chat! 10:13 AM
+<div class="px-3 py-2 shadow-md break-words transition-transform duration-100 relative…" style="transform: translateX(0px); transition: transform 0.2s ease-out;">
+Learn more
+<a class="text-[#25D366] hover:underline ml-1" href="/legal/privacy">
+Cookie Settings We use cookies to make Kruthika remember you better and show r…
+<div class="text-card-foreground w-full max-w-md mx-auto pointer-events-auto bg-white/…">
+Accept All
+<button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md…" aria-label="Accept all cookies and tracking">
+Terms
+<a class="text-[#25D366] hover:underline" href="/legal/terms">
+Cookie Settings We use cookies to make Kruthika remember you better and show r…
+<div class="text-card-foreground w-full max-w-md mx-auto pointer-events-auto bg-white/…">
+Privacy Policy
+<a class="text-[#25D366] hover:underline" href="/legal/privacy">
+Cookie Settings We use cookies to make Kruthika remember you better and show r…
+<div class="text-card-foreground w-full max-w-md mx-auto pointer-events-auto bg-white/…">
+Links rely on color to be distinguishable.
+Low-contrast text is difficult or impossible for many users to read. Link text that is discernible improves the experience for users with low vision. Learn how to make links distinguishable.
+Failing Elements
+Terms
+<a class="text-[#25D366] hover:underline" href="/legal/terms">
+By continuing, you agree to our Terms and Privacy Policy
+<p class="text-xs text-gray-500">
+Privacy Policy
+<a class="text-[#25D366] hover:underline" href="/legal/privacy">
+By continuing, you agree to our Terms and Privacy Policy
+<p class="text-xs text-gray-500">
+These are opportunities to improve the legibility of your content.
