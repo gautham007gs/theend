@@ -100,8 +100,48 @@ export const throttle = <T extends (...args: any[]) => any>(
   };
 };
 
+// Lazy image loading observer
+export const lazyLoadImages = () => {
+  if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
+
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const img = entry.target as HTMLImageElement;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+          imageObserver.unobserve(img);
+        }
+      }
+    });
+  });
+
+  document.querySelectorAll('img[data-src]').forEach((img) => {
+    imageObserver.observe(img);
+  });
+};
+
+// Resource prefetching
+export const prefetchResource = (url: string, as: 'script' | 'style' | 'image' | 'fetch' = 'fetch') => {
+  if (typeof document === 'undefined') return;
+  
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = url;
+  link.as = as;
+  document.head.appendChild(link);
+};
+
 // Auto-initialize
 if (typeof window !== 'undefined') {
   const optimizer = PerformanceOptimizer.getInstance();
   window.addEventListener('beforeunload', () => optimizer.cleanup());
+  
+  // Initialize lazy loading after page load
+  if (document.readyState === 'complete') {
+    lazyLoadImages();
+  } else {
+    window.addEventListener('load', lazyLoadImages);
+  }
 }

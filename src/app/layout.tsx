@@ -113,15 +113,15 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical preconnects - OPTIMIZED */}
+        {/* Critical preconnects */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="" />
+        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
         
         {/* Preload critical LCP image */}
         <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
         
-        {/* Prefetch next page */}
-        <link rel="prefetch" href="/maya-chat" as="document" />
+        {/* Prefetch chat page */}
+        <link rel="prefetch" href="/maya-chat" />
 
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{
@@ -129,14 +129,15 @@ export default function RootLayout({
             @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2')}
             @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2')}
             *{box-sizing:border-box;margin:0;padding:0}
-            html{-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
-            body{font-family:Inter,-apple-system,sans-serif;line-height:1.5;background:#F2EDE4;min-height:100vh;overflow-x:hidden}
+            html{-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+            body{font-family:Inter,-apple-system,sans-serif;line-height:1.5;background:#F2EDE4;min-height:100vh;overflow-x:hidden;position:relative}
             img{max-width:100%;height:auto;display:block}
             .avatar-placeholder,[class*="avatar"]{width:48px;height:48px;border-radius:50%;flex-shrink:0}
-            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb}
+            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:10}
             button,input,textarea{font:inherit;touch-action:manipulation}
             [hidden]{display:none!important}
-            @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
+            main{min-height:calc(100vh - 64px);contain:layout style paint}
+            @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}}
           `
         }} />
 
