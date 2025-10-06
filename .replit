@@ -43,10 +43,6 @@ localPort = 36453
 externalPort = 6000
 
 [[ports]]
-localPort = 40123
-externalPort = 5000
-
-[[ports]]
 localPort = 43797
 externalPort = 3000
 
@@ -136,13 +132,22 @@ args = "Next.js Server"
 name = "Next.js Server"
 author = "agent"
 
-[workflows.workflow.metadata]
-outputType = "webview"
-
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow]]
+name = "Production Build"
+author = 48372326
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "NODE_ENV=production npm run build"
 
 [deployment]
 deploymentTarget = "autoscale"

@@ -8,9 +8,6 @@ import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
-import ClientOnly from '@/components/ClientOnly';
-import '@/lib/critical-performance-boost';
-import '@/lib/performance-boost-mobile';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 import { criticalCSS } from '@/lib/critical-css';
 

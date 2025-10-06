@@ -103,8 +103,12 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true, // Enable source maps for better debugging
   typedRoutes: true, // Enable typed routes for better type safety
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-    reactRemoveProperties: process.env.NODE_ENV === 'production' ? { properties: ['^data-test'] } : false,
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+    reactRemoveProperties: process.env.NODE_ENV === 'production' ? { 
+      properties: ['^data-test', '^data-testid'] 
+    } : false,
   },
 
   // Performance optimizations for large scale
@@ -175,41 +179,63 @@ const nextConfig: NextConfig = {
 
       config.optimization.splitChunks = {
         chunks: 'all',
-        maxInitialRequests: 25,
-        minSize: 20000,
+        maxInitialRequests: 30,
+        minSize: 15000,
+        maxSize: 244000,
         cacheGroups: {
+          defaultVendors: false,
           default: false,
-          vendors: false,
-          // Separate recharts (only used in admin pages)
-          recharts: {
-            test: /[\\/]node_modules[\\/](recharts)[\\/]/,
-            name: 'recharts',
+          // Framework chunks
+          framework: {
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|next)[\\/]/,
+            name: 'framework',
             priority: 50,
-            chunks: 'async',
+            enforce: true,
           },
-          // Separate large icon library
+          // Recharts (admin only - async)
+          recharts: {
+            test: /[\\/]node_modules[\\/](recharts|d3-)[\\/]/,
+            name: 'recharts',
+            priority: 45,
+            chunks: 'async',
+            enforce: true,
+          },
+          // Icons split by usage
           icons: {
             test: /[\\/]node_modules[\\/](lucide-react)[\\/]/,
             name: 'icons',
             priority: 40,
+            maxSize: 50000,
           },
-          // React libraries
-          react: {
-            test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
-            name: 'react-vendor',
+          // Radix UI components
+          radix: {
+            test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
+            name: 'radix',
+            priority: 35,
+          },
+          // Supabase
+          supabase: {
+            test: /[\\/]node_modules[\\/]@supabase[\\/]/,
+            name: 'supabase',
             priority: 30,
           },
-          // All other vendor code
+          // Other vendors
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendor',
+            name(module) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1];
+              return `vendor.${packageName?.replace('@', '')}`;
+            },
             priority: 20,
+            minChunks: 1,
+            maxSize: 100000,
           },
-          // Common code used across pages
+          // Common chunks
           common: {
             name: 'common',
             minChunks: 2,
             priority: 10,
+            reuseExistingChunk: true,
             enforce: true,
           },
         },

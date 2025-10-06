@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
 import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, Star, Zap } from 'lucide-react';
-import { useAIProfile } from '@/contexts/AIProfileContext'; 
+import { useAIProfile } from '@/contexts/AIProfileContext';
 import { cn } from '@/lib/utils';
 
 const BannerAdDisplay = dynamic(() => import('@/components/chat/BannerAdDisplay'), {
@@ -42,19 +42,19 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
       <div
         className={cn(
           "relative rounded-full mr-4 shrink-0",
-          profile.name === "Kruthika" && "border-2 border-primary p-0.5" 
+          profile.name === "Kruthika" && "border-2 border-primary p-0.5"
         )}
          key={`avatar-wrapper-${profile.name}-${avatarUrlToUse || 'default_wrapper_key_cli'}`}
       >
-        <Avatar 
-          className="h-12 w-12" 
+        <Avatar
+          className="h-12 w-12"
           key={`avatar-comp-${profile.name}-${avatarUrlToUse || 'default_avatar_comp_key_cli'}`}
           style={{ width: '48px', height: '48px' }}
         >
-          <AvatarImage 
-            src={avatarUrlToUse || undefined} 
+          <AvatarImage
+            src={avatarUrlToUse || undefined}
             alt={`${profile.name} - AI girlfriend virtual companion profile picture for emotional support chat`}
-            data-ai-hint="profile woman" 
+            data-ai-hint="profile woman"
             key={`chat-list-item-avatar-img-${profile.name}-${avatarUrlToUse || 'no_avatar_fallback_img_cli'}`}
             onError={handleAvatarError}
             width={48}
@@ -87,7 +87,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
 
 
 const ChatListPage: React.FC = () => {
-  const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile(); 
+  const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const unreadCount = 1;
@@ -109,7 +109,7 @@ const ChatListPage: React.FC = () => {
         } else if (!lastMessageTime) {
           setLastMessageTime("9:15 AM");
         }
-      } catch (e) { 
+      } catch (e) {
         console.warn("Could not parse last message time from localStorage", e);
         if (!lastMessageTime) {
           setLastMessageTime("9:15 AM");
@@ -118,18 +118,18 @@ const ChatListPage: React.FC = () => {
     } else if (!lastMessageTime) {
       setLastMessageTime("9:15 AM");
     }
-  }, []); 
+  }, []);
 
   const effectiveAIProfile = globalAIProfile || defaultAIProfile;
 
   // if (globalAIProfile) {
     // console.log("[ChatListPage] Using AIProfile from context:", JSON.stringify(globalAIProfile, null, 2));
-  // } else if (!isLoadingAIProfile) { 
+  // } else if (!isLoadingAIProfile) {
     // console.log("[ChatListPage] AIProfile from context is null (and not loading), using defaultAIProfile:", JSON.stringify(defaultAIProfile, null, 2));
   // }
 
 
-  if (isLoadingAIProfile) { 
+  if (isLoadingAIProfile) {
     return (
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
         <AppHeader title="Chats" />
@@ -155,7 +155,7 @@ const ChatListPage: React.FC = () => {
               <Search size={20} className="text-white" />
             </button>
             <div className="relative">
-              <button 
+              <button
                 className="hover:bg-green-400 rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center"
                 onClick={() => setShowDropdown(!showDropdown)}
                 aria-label="Open menu"
@@ -214,7 +214,7 @@ const ChatListPage: React.FC = () => {
         <div className="bg-white">
           <Link href="/maya-chat" className="block" aria-label={`Chat with ${effectiveAIProfile.name}, ${unreadCount ? `${unreadCount} unread message` : 'online now'}`}>
             <ChatListItem
-              profile={effectiveAIProfile} 
+              profile={effectiveAIProfile}
               lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
               timestamp={lastMessageTime || "07:21 PM"}
               unreadCount={1}
