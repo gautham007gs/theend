@@ -145,7 +145,7 @@ const ChatListPage: React.FC = () => {
     <>
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header */}
-      <header className="bg-green-600">
+      <header className="bg-[#1a7a3e] shadow-sm sticky top-0 z-10">
         <div className="px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">Chats</h1>
           <nav className="flex items-center space-x-3" aria-label="Main navigation">
@@ -194,7 +194,7 @@ const ChatListPage: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex bg-green-600">
+        <div className="flex bg-[#1a7a3e]">
           <div className="flex-1">
             <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
               CHATS
@@ -237,7 +237,7 @@ const ChatListPage: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex flex-col space-y-3 w-full max-w-sm">
             <Link href="/maya-chat">
-              <button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="Start chatting with Kruthika">
+              <button className="w-full bg-[#1a7a3e] hover:bg-[#156030] text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="Start chatting with Kruthika">
                 <MessageSquarePlus size={20} />
                 <span>Start Chatting</span>
               </button>
@@ -245,7 +245,7 @@ const ChatListPage: React.FC = () => {
 
             <div className="flex space-x-3">
               <Link href="/status" className="flex-1">
-                <button className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="View status updates">
+                <button className="w-full bg-[#0d5f5f] hover:bg-[#0a4a4a] text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="View status updates">
                   <span>👁️</span>
                   <span>View Status</span>
                 </button>
@@ -265,7 +265,7 @@ const ChatListPage: React.FC = () => {
       <Link
         href="/maya-chat"
         aria-label={`New chat with ${effectiveAIProfile.name}`}
-        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-10 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 min-w-[56px] min-h-[56px] flex items-center justify-center"
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:bottom-10 lg:right-10 z-10 bg-[#1a7a3e] hover:bg-[#156030] text-white p-4 rounded-full shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 min-w-[56px] min-h-[56px] flex items-center justify-center"
       >
         <span>
           <MessageSquarePlus size={24} />
