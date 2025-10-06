@@ -1,0 +1,72 @@
+
+Missing source maps for large first-party JavaScript
+Source maps translate minified code to the original source code. This helps developers debug in production. In addition, Lighthouse is able to provide further insights. Consider deploying source maps to take advantage of these benefits. Learn more about source maps.
+URL
+Map URL
+replit.dev 1st party
+…chunks/node_modules_next_dist_compiled_react-dom_1e674e59._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_next_dist_compiled_react-dom_1e674e59.….map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Large JavaScript file is missing a source map
+Error: Map has no `mappings` field
+…chunks/node_modules_next_dist_compiled_next-devtools_index_….js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_next_dist_compiled_next-devtools_index….map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Large JavaScript file is missing a source map
+Error: Map has no `mappings` field
+…chunks/node_modules_15345fb1._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_15345fb1._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Large JavaScript file is missing a source map
+Error: Map has no `mappings` field
+…chunks/turbopack-_900dbc97._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/_900dbc97._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_utils_performance-optimization_ts_1b337a4c._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_utils_performance-optimization_ts_1b337a4c._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_fdbd1b96._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_fdbd1b96._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_compo…._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_compo…._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_compo…._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_compo…._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_compo…._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_compo…._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_compo…._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_compo…._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_compo…._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_compo…._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_compo…._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_compo…._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/src_c00cf54f._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/src_c00cf54f._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/node_modules_next_dist_compiled_5150ccfd._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_next_dist_compiled_5150ccfd._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/node_modules_next_dist_client_cf1d9188._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_next_dist_client_cf1d9188._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/node_modules_next_dist_b0daae9a._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_next_dist_b0daae9a._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/node_modules_%40swc_helpers_cjs_a8804bf6._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/node_modules_%40swc_helpers_cjs_a8804bf6._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_ts….js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/%5Bturbopack%5D_browser_dev_hmr-client_hmr-client_t….map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/_e4ba1b43._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/_e4ba1b43._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/_31cec7cb._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/_31cec7cb._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
+…chunks/_04fe12a7._.js(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+…chunks/_04fe12a7._.js.map(df3a3170-6765-4ca7-884d-ee889336bb9a-00-e3ok0d9f6ijo.kirk.replit.dev)
+Error: Map has no `mappings` field
