@@ -128,11 +128,11 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="font-semibold text-gray-900 text-sm mb-1">Cookie Settings</h2>
-                    <p className="text-xs text-gray-600 leading-relaxed">
+                    <p className="text-xs text-gray-700 leading-relaxed">
                       We use cookies to make Kruthika remember you better and show relevant content.
-                      <span className="font-medium text-green-700">Accept all for the best experience!</span>
-                      <Link href="/legal/privacy" className="text-green-700 hover:underline ml-1 font-medium">
-                        Learn more
+                      <span className="font-medium text-green-800">Accept all for the best experience!</span>
+                      <Link href="/legal/privacy" className="text-green-800 hover:underline ml-1 font-semibold underline">
+                        Privacy Policy details
                       </Link>
                     </p>
                   </div>
@@ -211,13 +211,13 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
 
                 {/* Legal Links */}
                 <div className="text-center">
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700">
                     By continuing, you agree to our{' '}
-                    <Link href="/legal/terms" className="text-green-700 hover:underline font-medium">
-                      Terms
+                    <Link href="/legal/terms" className="text-green-800 hover:underline font-semibold underline">
+                      Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/legal/privacy" className="text-green-700 hover:underline font-medium">
+                    <Link href="/legal/privacy" className="text-green-800 hover:underline font-semibold underline">
                       Privacy Policy
                     </Link>
                   </p>

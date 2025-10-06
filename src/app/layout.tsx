@@ -9,6 +9,7 @@ import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
+import '@/lib/reduce-lcp-delay';
 
 
 // Optimize font loading - use fallback font immediately with aggressive caching
@@ -138,17 +139,20 @@ export default function RootLayout({
             @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2')}
             *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
             html{font-size:16px;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-            body{margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;background-color:#F2EDE4;min-height:100vh;overflow-x:hidden}
-            img,video{max-width:100%;height:auto;display:block}
+            body{margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;background-color:#F2EDE4;min-height:100vh;overflow-x:hidden;contain:layout style}
+            img,video{max-width:100%;height:auto;display:block;aspect-ratio:attr(width)/attr(height)}
             img[fetchpriority="high"]{content-visibility:auto}
             img[loading="lazy"]{content-visibility:auto}
-            .avatar-placeholder{width:48px;height:48px;border-radius:50%;background:#e5e7eb;flex-shrink:0;will-change:auto}
+            .avatar-placeholder{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:50%;background:#e5e7eb;flex-shrink:0;will-change:auto;contain:strict}
+            [class*="avatar"]{width:48px;height:48px;min-width:48px;min-height:48px;aspect-ratio:1/1;contain:strict}
             .chat-header{height:64px;min-height:64px;max-height:64px;background:#fff;border-bottom:1px solid #e5e7eb;contain:layout style paint}
             .chat-container{min-height:100vh;display:flex;flex-direction:column;contain:layout style}
             .message-bubble{transform:translateZ(0);contain:layout style paint;will-change:auto}
             button,input,textarea{font-family:inherit;font-size:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
             button:focus-visible,a:focus-visible{outline:2px solid #4F46E5;outline-offset:2px}
             [hidden]{display:none!important}
+            [class*="grid"],[class*="flex"]{contain:layout}
+            article{contain:layout style;will-change:auto}
             @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}
             
           `

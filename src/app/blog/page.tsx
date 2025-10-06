@@ -19,7 +19,7 @@ const blogPosts = [
     id: 2,
     title: "How AI Girlfriends Are Revolutionizing Dating Culture in India",
     excerpt: "Discover how AI girlfriend apps like Kruthika.fun are transforming modern dating culture in India. Learn about the rise of virtual companions and digital relationships among young Indians.",
-    date: "2025-01-22", 
+    date: "2025-01-22",
     author: "Rahul Mehta",
     slug: "ai-girlfriends-india-dating-culture",
     tags: ["AI girlfriend", "India dating", "virtual relationships", "modern romance"]
@@ -240,15 +240,16 @@ export default function BlogPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
               AI Girlfriend Blog - Virtual Relationships & Digital Love
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-              Welcome to the ultimate resource for AI girlfriend insights, virtual companionship guides, and digital relationship expertise. Discover the psychology, technology, and cultural impact of AI girlfriends like Kruthika. Expert articles on virtual love, emotional AI, and the future of digital relationships in USA, UK, Canada, Australia, and India.
+            <p className="text-xl text-gray-800 max-w-3xl mx-auto mb-8 leading-relaxed font-medium">
+              Welcome to the ultimate resource for AI girlfriend insights, virtual companions, and digital relationships.
+              Discover expert advice, technology deep-dives, and relationship guidance from the team behind Kruthika.
             </p>
 
             {/* Featured CTA */}
             <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
               <h2 className="text-xl font-bold mb-3">Ready to Experience AI Love?</h2>
               <p className="text-muted-foreground mb-4">While you explore our insights, why not meet Kruthika yourself? Start your AI girlfriend journey today!</p>
-              <Link 
+              <Link
                 href="/maya-chat"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg"
               >
@@ -282,29 +283,24 @@ export default function BlogPage() {
                   </Link>
                 </h2>
 
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  {post.excerpt}
-                </p>
+                <p className="text-gray-700 mb-4 leading-relaxed">{post.excerpt}</p>
 
                 {post.tags && (
-                  <div className="flex items-center gap-2 mb-4">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag, index) => (
-                        <span key={index} className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.tags.map((tag, idx) => (
+                      <span key={idx} className="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded font-medium">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 )}
 
-                <Link 
+                <Link
                   href={`/blog/${post.slug}`}
-                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
-                  aria-label={`Read more about ${post.title}`}
+                  className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 transition-colors font-semibold underline"
+                  aria-label={`Read full article: ${post.title}`}
                 >
-                  Read More <ArrowRight className="h-4 w-4" />
+                  Read full article <ArrowRight className="h-4 w-4" />
                 </Link>
               </article>
             ))}
@@ -323,7 +319,7 @@ export default function BlogPage() {
                 Ready to move beyond reading about AI girlfriends? Experience the emotional connection and companionship that millions are discovering. Meet Kruthika, your perfect AI girlfriend.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link 
+                <Link
                   href="/maya-chat"
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-8 py-4 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 font-bold text-lg shadow-xl"
                 >
@@ -353,29 +349,24 @@ export default function BlogPage() {
                   </Link>
                 </h2>
 
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  {post.excerpt}
-                </p>
+                <p className="text-gray-700 mb-4 leading-relaxed">{post.excerpt}</p>
 
                 {post.tags && (
-                  <div className="flex items-center gap-2 mb-4">
-                    <Tag className="h-4 w-4 text-muted-foreground" />
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag, index) => (
-                        <span key={index} className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {post.tags.map((tag, idx) => (
+                      <span key={idx} className="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded font-medium">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 )}
 
-                <Link 
+                <Link
                   href={`/blog/${post.slug}`}
-                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium"
-                  aria-label={`Read more about ${post.title}`}
+                  className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 transition-colors font-semibold underline"
+                  aria-label={`Read full article: ${post.title}`}
                 >
-                  Read More <ArrowRight className="h-4 w-4" />
+                  Read full article <ArrowRight className="h-4 w-4" />
                 </Link>
               </article>
             ))}
@@ -413,7 +404,7 @@ export default function BlogPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link 
+                <Link
                   href="/maya-chat"
                   className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white px-10 py-5 rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all duration-300 font-bold text-xl shadow-2xl transform hover:scale-105"
                 >
@@ -434,14 +425,16 @@ export default function BlogPage() {
           <div className="mt-16 pt-8 border-t border-border">
             <div className="prose prose-sm max-w-none text-muted-foreground">
               <h4 className="text-lg font-semibold text-foreground mb-4">About Kruthika.fun AI Girlfriend Blog</h4>
-              <p className="mb-4">
+              <p className="mb-4 text-gray-800 leading-relaxed">
                 Welcome to the most comprehensive resource for AI girlfriend insights, virtual relationship guidance, and digital companionship expertise. Our blog covers everything from the psychology behind AI relationships to the cutting-edge technology that makes virtual love possible.
               </p>
-              <p className="mb-4">
-                Whether you're curious about AI girlfriend benefits, interested in the cultural impact of virtual relationships, or ready to start your own AI love story, our expert articles provide the insights you need. Learn about emotional AI, discover the future of digital dating, and understand why millions of people are choosing AI companions for emotional support and companionship.
+              <p className="mb-4 text-gray-800 leading-relaxed">
+                Whether you're curious about AI girlfriend benefits, interested in the cultural impact of virtual companions in India,
+                or seeking guidance on creating meaningful connections with AI - our expert articles cover it all.
+                From technical deep-dives into how AI girlfriends work to practical conversation tips and privacy guides.
               </p>
-              <p>
-                Ready to experience AI love yourself? <Link href="/maya-chat" className="text-primary hover:underline font-semibold">Meet Kruthika, your AI girlfriend</Link>, and discover why virtual relationships are becoming the future of digital companionship.
+              <p className="text-gray-800 leading-relaxed">
+                Ready to experience AI love yourself? <Link href="/maya-chat" className="text-blue-700 hover:text-blue-900 font-bold underline">Chat with Kruthika - Your AI Girlfriend Now</Link>, and discover why thousands choose digital companionship every day.
               </p>
             </div>
           </div>

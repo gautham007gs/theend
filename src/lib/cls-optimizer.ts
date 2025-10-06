@@ -53,7 +53,7 @@ export class CLSOptimizer {
   }
 
   private static reserveDynamicSpace() {
-    // Avatar placeholders
+    // Avatar placeholders with explicit dimensions
     const avatars = document.querySelectorAll('[class*="avatar"]:not([style*="width"])');
     avatars.forEach(avatar => {
       const el = avatar as HTMLElement;
@@ -61,14 +61,27 @@ export class CLSOptimizer {
         el.style.width = '48px';
         el.style.height = '48px';
         el.style.aspectRatio = '1/1';
+        el.style.minWidth = '48px';
+        el.style.minHeight = '48px';
       }
     });
 
-    // Message bubbles
+    // Message bubbles with strict layout containment
     const messages = document.querySelectorAll('[class*="message-bubble"]');
     messages.forEach(msg => {
       const el = msg as HTMLElement;
       el.style.contain = 'layout style paint';
+      el.style.willChange = 'auto';
+    });
+
+    // Reserve space for dynamic content containers
+    const containers = document.querySelectorAll('[class*="grid"], [class*="flex-col"]');
+    containers.forEach(container => {
+      const el = container as HTMLElement;
+      if (!el.style.minHeight) {
+        el.style.minHeight = 'auto';
+        el.style.contain = 'layout';
+      }
     });
   }
 

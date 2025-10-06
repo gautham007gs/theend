@@ -49,7 +49,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
         <Avatar
           className="h-12 w-12"
           key={`avatar-comp-${profile.name}-${avatarUrlToUse || 'default_avatar_comp_key_cli'}`}
-          style={{ width: '48px', height: '48px' }}
+          style={{ width: '48px', height: '48px', minWidth: '48px', minHeight: '48px', aspectRatio: '1/1', contain: 'strict' }}
         >
           <AvatarImage
             src={avatarUrlToUse || undefined}
@@ -61,6 +61,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
             height={48}
             loading="eager"
             fetchPriority="high"
+            style={{ width: '48px', height: '48px', aspectRatio: '1/1' }}
           />
           <AvatarFallback>{(profile.name || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
