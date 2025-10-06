@@ -123,15 +123,15 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
               <CardContent className="p-4 space-y-3 sm:p-5 sm:space-y-4">
                 {/* Compact Header */}
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 p-2 bg-[#25D366]/10 rounded-lg">
-                    <Cookie className="h-5 w-5 text-[#25D366]" />
+                  <div className="flex-shrink-0 p-2 bg-[#0d8043]/10 rounded-lg">
+                    <Cookie className="h-5 w-5 text-[#0d8043]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className="font-semibold text-gray-900 text-sm mb-1">Cookie Settings</h2>
                     <p className="text-xs text-gray-700 leading-relaxed">
                       We use cookies to make Kruthika remember you better and show relevant content.
-                      <span className="font-medium text-green-800">Accept all for the best experience!</span>
-                      <Link href="/legal/privacy" className="text-green-800 hover:underline ml-1 font-semibold underline">
+                      <span className="font-medium text-[#0d8043]">Accept all for the best experience!</span>
+                      <Link href="/legal/privacy" className="text-[#0d8043] hover:underline ml-1 font-semibold underline">
                         Privacy Policy details
                       </Link>
                     </p>
@@ -154,11 +154,11 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                             <p className="text-xs text-gray-500">{item.desc}</p>
                           </div>
                           {item.required ? (
-                            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                            <span className="text-xs bg-[#0d8043]/10 text-[#0d8043] px-2 py-1 rounded-full">
                               Required
                             </span>
                           ) : (
-                            <div className="w-8 h-4 bg-[#25D366] rounded-full relative">
+                            <div className="w-8 h-4 bg-[#0d8043] rounded-full relative">
                               <div className="w-3 h-3 bg-white rounded-full absolute top-0.5 right-0.5"></div>
                             </div>
                           )}
@@ -173,7 +173,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                   <div className="flex gap-2">
                     <Button
                       onClick={handleAcceptAll}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm py-2 h-10 font-medium shadow-sm"
+                      className="flex-1 bg-[#0d8043] hover:bg-[#0a6634] text-white text-sm py-2 h-10 font-medium shadow-sm"
                       aria-label="Accept all cookies and tracking"
                     >
                       Accept All
@@ -200,7 +200,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                     {showCustomize && (
                       <Button
                         onClick={handleAcceptAll}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 h-9"
+                        className="flex-1 bg-[#0d8043] hover:bg-[#0a6634] text-white text-xs py-2 h-9"
                         aria-label="Save cookie preferences"
                       >
                         Save Preferences
@@ -213,11 +213,11 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                 <div className="text-center">
                   <p className="text-xs text-gray-700">
                     By continuing, you agree to our{' '}
-                    <Link href="/legal/terms" className="text-green-800 hover:underline font-semibold underline">
+                    <Link href="/legal/terms" className="text-[#0d8043] hover:underline font-semibold underline">
                       Terms of Service
                     </Link>{' '}
                     and{' '}
-                    <Link href="/legal/privacy" className="text-green-800 hover:underline font-semibold underline">
+                    <Link href="/legal/privacy" className="text-[#0d8043] hover:underline font-semibold underline">
                       Privacy Policy
                     </Link>
                   </p>

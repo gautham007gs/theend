@@ -101,7 +101,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="your-google-verification-code" />
-        <meta name="theme-color" content="#4F46E5" />
+        <meta name="theme-color" content="#0d8043" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -116,10 +116,10 @@ export default function RootLayout({
         {/* Critical preconnects */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
-        
+
         {/* Preload critical LCP image */}
         <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
-        
+
         {/* Prefetch chat page */}
         <link rel="prefetch" href="/maya-chat" />
 
