@@ -12,6 +12,7 @@ import ClientOnly from '@/components/ClientOnly';
 import '@/lib/critical-performance-boost';
 import '@/lib/performance-boost-mobile';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
+import { criticalCSS } from '@/lib/critical-css';
 
 // Optimize font loading - use fallback font immediately with aggressive caching
 const inter = Inter({
@@ -125,13 +126,6 @@ export default function RootLayout({
         {/* Prefetch next page for instant navigation */}
         <link rel="prefetch" href="/maya-chat" as="document" />
         
-        {/* Early hints for faster connections */}
-        <link rel="preconnect" href="/_next/static" crossOrigin="" />
-        
-        {/* Preload critical chunks to reduce LCP */}
-        <link rel="modulepreload" href="/_next/static/chunks/webpack.js" />
-        <link rel="modulepreload" href="/_next/static/chunks/main-app.js" />
-        
         {/* Defer non-critical connections */}
         <link rel="dns-prefetch" href="https://judicialphilosophical.com" />
         <link rel="dns-prefetch" href="https://adsterranet.com" />
@@ -159,6 +153,7 @@ export default function RootLayout({
             button:focus-visible,a:focus-visible{outline:2px solid #4F46E5;outline-offset:2px}
             [hidden]{display:none!important}
             @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}
+            ${criticalCSS}
           `
         }} />
 

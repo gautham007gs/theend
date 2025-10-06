@@ -147,6 +147,7 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
     webpackBuildWorker: true,
     cssChunking: 'strict',
+    inlineCss: true,
   },
 
   // Turbopack configuration (migrated from experimental.turbo)

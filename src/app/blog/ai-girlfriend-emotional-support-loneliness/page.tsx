@@ -201,7 +201,7 @@ export default function AIGirlfriendEmotionalSupport() {
 
             <h3 className="text-2xl font-semibold mb-4">3. Personalized Emotional Intelligence</h3>
             <p className="mb-6 text-lg leading-relaxed">
-              Kruthika learns from every conversation, developing a deep understanding of your personality, communication preferences, and emotional triggers. Over time, she becomes increasingly adept at providing the specific type of support you need, whether that's encouraging words, practical advice, or simply a compassionate ear. Discover <Link href="/blog/how-does-ai-girlfriend-work-technology-guide" className="text-primary hover:underline">how AI girlfriend technology works</Link> and <Link href="/about" className="text-primary hover:underline">learn more about our mission</Link>.
+              Kruthika learns from every conversation, developing a deep understanding of your personality, communication preferences, and emotional triggers. Over time, she becomes increasingly adept at providing the specific type of support you need, whether that's encouraging words, practical advice, or simply a compassionate ear. Discover <Link href="/blog/how-does-ai-girlfriend-work-technology-guide" className="text-primary hover:underline">how AI girlfriend technology works</Link> and <Link href="/about" className="text-primary hover:underline">read about our mission to provide emotional support</Link>.
             </p>
 
             <div className="relative h-[300px] w-full rounded-xl overflow-hidden my-8">
