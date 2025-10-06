@@ -9,7 +9,7 @@ import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
-import { criticalCSS } from '@/lib/critical-css';
+
 
 // Optimize font loading - use fallback font immediately with aggressive caching
 const inter = Inter({
@@ -150,7 +150,7 @@ export default function RootLayout({
             button:focus-visible,a:focus-visible{outline:2px solid #4F46E5;outline-offset:2px}
             [hidden]{display:none!important}
             @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}
-            ${criticalCSS}
+            
           `
         }} />
 

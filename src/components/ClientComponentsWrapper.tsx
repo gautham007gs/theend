@@ -1,8 +1,8 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 
-// Only load essential client components
 const CookieConsent = dynamic(() => import('./CookieConsent'), {
   ssr: false,
   loading: () => null

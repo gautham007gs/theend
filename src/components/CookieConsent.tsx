@@ -98,16 +98,16 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   return (
     <>
       {showConsent && (
-        <div 
+        <div
           className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 shadow-lg z-[9999]"
-          style={{ 
+          style={{
             transform: isVisible ? 'translateY(0)' : 'translateY(100%)',
             transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             willChange: 'transform',
             contain: 'layout size style'
           }}
         >
-          <div 
+          <div
             className={cn(
               "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 h-full pointer-events-auto",
               className
@@ -129,9 +129,9 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                   <div className="flex-1 min-w-0">
                     <h2 className="font-semibold text-gray-900 text-sm mb-1">Cookie Settings</h2>
                     <p className="text-xs text-gray-600 leading-relaxed">
-                      We use cookies to make Kruthika remember you better and show relevant content. 
+                      We use cookies to make Kruthika remember you better and show relevant content.
                       <span className="font-medium text-green-700">Accept all for the best experience!</span>
-                      <Link href="/legal/privacy" className="text-[#25D366] hover:underline ml-1">
+                      <Link href="/legal/privacy" className="text-green-700 hover:underline ml-1 font-medium">
                         Learn more
                       </Link>
                     </p>
@@ -173,7 +173,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                   <div className="flex gap-2">
                     <Button
                       onClick={handleAcceptAll}
-                      className="flex-1 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-sm py-2 h-10 font-medium shadow-sm"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm py-2 h-10 font-medium shadow-sm"
                       aria-label="Accept all cookies and tracking"
                     >
                       Accept All
@@ -200,7 +200,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                     {showCustomize && (
                       <Button
                         onClick={handleAcceptAll}
-                        className="flex-1 bg-[#25D366] hover:bg-[#25D366]/90 text-white text-xs py-2 h-9"
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 h-9"
                         aria-label="Save cookie preferences"
                       >
                         Save Preferences
@@ -213,11 +213,11 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
                 <div className="text-center">
                   <p className="text-xs text-gray-500">
                     By continuing, you agree to our{' '}
-                    <Link href="/legal/terms" className="text-[#25D366] hover:underline">
+                    <Link href="/legal/terms" className="text-green-700 hover:underline font-medium">
                       Terms
                     </Link>{' '}
                     and{' '}
-                    <Link href="/legal/privacy" className="text-[#25D366] hover:underline">
+                    <Link href="/legal/privacy" className="text-green-700 hover:underline font-medium">
                       Privacy Policy
                     </Link>
                   </p>
