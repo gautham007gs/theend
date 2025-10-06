@@ -274,37 +274,14 @@ export class ImageOptimizer {
     return src;
   }
 
-  static createLazyImage(src: string, alt: string, className?: string): HTMLImageElement {
-    const img = document.createElement('img');
-    img.dataset.src = src;
-    img.alt = alt;
-    img.className = `lazy ${className || ''}`;
-    img.style.opacity = '0';
-    img.style.transition = 'opacity 0.3s';
-
-    img.onload = () => {
-      img.style.opacity = '1';
-    };
-
-    return img;
-  }
-}
-
-// Bundle splitting and code optimization
-export class CodeOptimizer {
-  static async loadComponentLazily<T>(
-    importFn: () => Promise<{ default: T }>
-  ): Promise<T> {
-    const module = await importFn();
-    return module.default;
-  }
-
   static preloadRoute(route: string) {
+    if (typeof window === 'undefined') return;
     const link = document.createElement('link');
     link.rel = 'prefetch';
     link.href = route;
     document.head.appendChild(link);
   }
+}
 
   static async executeWithScheduler(task: () => void | Promise<void>, priority: 'user-blocking' | 'user-visible' | 'background' = 'background') {
     if ('scheduler' in window && (window as any).scheduler.postTask) {

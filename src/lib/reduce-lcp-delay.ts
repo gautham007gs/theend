@@ -1,62 +1,19 @@
-
-// Reduce LCP element render delay from 2680ms to under 1000ms
-
-export class LCPOptimizer {
-  private static initialized = false;
+class LCPOptimizer {
+  private static isInitialized = false;
 
   static init() {
-    if (typeof window === 'undefined' || this.initialized) return;
-    this.initialized = true;
+    if (this.isInitialized || typeof window === 'undefined') return;
+    this.isInitialized = true;
 
-    // Immediate critical resource loading
-    this.preloadCriticalFonts();
-    this.optimizeImageDecoding();
-    this.reduceRenderBlocking();
-    this.prioritizeLCPElement();
-  }
-
-  private static preloadCriticalFonts() {
-    // Font already loaded, ensure no blocking
-    const fontFace = new FontFace(
-      'Inter',
-      'url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2)',
-      { weight: '400', display: 'swap' }
-    );
-    
-    fontFace.load().then(() => {
-      (document.fonts as any).add(fontFace);
-    }).catch(() => {});
-  }
-
-  private static optimizeImageDecoding() {
-    // Decode LCP images immediately
-    const lcpImages = document.querySelectorAll('img[fetchpriority="high"], img[loading="eager"]');
-    lcpImages.forEach(img => {
-      const image = img as HTMLImageElement;
-      if (image.decode) {
-        image.decode().catch(() => {});
-      }
-    });
-  }
-
-  private static reduceRenderBlocking() {
-    // Remove render-blocking resources
-    const observer = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (entry.entryType === 'resource' && (entry as any).renderBlockingStatus === 'blocking') {
-          console.warn('Render-blocking resource:', entry.name);
-        }
-      }
-    });
-
-    try {
-      observer.observe({ entryTypes: ['resource'] });
-    } catch (e) {
-      // Not supported
+    // Prioritize LCP element immediately
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.optimizeLCP());
+    } else {
+      this.optimizeLCP();
     }
   }
 
-  private static prioritizeLCPElement() {
+  private static optimizeLCP() {
     // Force immediate render of LCP candidates
     const lcpCandidates = document.querySelectorAll('p.text-xl, h1, img[fetchpriority="high"]');
     lcpCandidates.forEach(el => {
@@ -64,14 +21,26 @@ export class LCPOptimizer {
       element.style.contentVisibility = 'auto';
       element.style.contain = 'layout';
     });
+
+    // Preconnect to critical origins
+    const criticalOrigins = [
+      'https://fonts.gstatic.com',
+      'https://wubzdjzosbbbghdlfcgc.supabase.co'
+    ];
+
+    criticalOrigins.forEach(origin => {
+      if (!document.querySelector(`link[href="${origin}"]`)) {
+        const link = document.createElement('link');
+        link.rel = 'preconnect';
+        link.href = origin;
+        link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+      }
+    });
   }
 }
 
 // Auto-initialize
-if (typeof window !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => LCPOptimizer.init());
-  } else {
-    LCPOptimizer.init();
-  }
-}
+LCPOptimizer.init();
+
+export default LCPOptimizer;

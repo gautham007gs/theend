@@ -114,47 +114,30 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical preconnects for mobile performance - OPTIMIZED */}
+        {/* Critical preconnects - OPTIMIZED */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="" />
         
-        {/* Preload critical LCP images with highest priority - Avatar is critical for FCP/LCP */}
-        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" imageSrcSet="/kruthika-avatar.svg 1x" />
+        {/* Preload critical LCP image */}
+        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
         
-        {/* Prefetch next page for instant navigation */}
+        {/* Prefetch next page */}
         <link rel="prefetch" href="/maya-chat" as="document" />
-        
-        {/* Defer non-critical connections */}
-        <link rel="dns-prefetch" href="https://judicialphilosophical.com" />
-        <link rel="dns-prefetch" href="https://adsterranet.com" />
-        
-        {/* DNS prefetch for ad networks (non-critical) */}
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-        {/* Inline critical CSS for instant render - CLS prevention */}
+        {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{
           __html: `
             @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2')}
             @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2')}
-            *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-            html{font-size:16px;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-            body{margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.5;background-color:#F2EDE4;min-height:100vh;overflow-x:hidden;contain:layout style}
-            img,video{max-width:100%;height:auto;display:block;aspect-ratio:attr(width)/attr(height)}
-            img[fetchpriority="high"]{content-visibility:auto}
-            img[loading="lazy"]{content-visibility:auto}
-            .avatar-placeholder{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:50%;background:#e5e7eb;flex-shrink:0;will-change:auto;contain:strict}
-            [class*="avatar"]{width:48px;height:48px;min-width:48px;min-height:48px;aspect-ratio:1/1;contain:strict}
-            .chat-header{height:64px;min-height:64px;max-height:64px;background:#fff;border-bottom:1px solid #e5e7eb;contain:layout style paint}
-            .chat-container{min-height:100vh;display:flex;flex-direction:column;contain:layout style}
-            .message-bubble{transform:translateZ(0);contain:layout style paint;will-change:auto}
-            button,input,textarea{font-family:inherit;font-size:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-            button:focus-visible,a:focus-visible{outline:2px solid #4F46E5;outline-offset:2px}
+            *{box-sizing:border-box;margin:0;padding:0}
+            html{-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+            body{font-family:Inter,-apple-system,sans-serif;line-height:1.5;background:#F2EDE4;min-height:100vh;overflow-x:hidden}
+            img{max-width:100%;height:auto;display:block}
+            .avatar-placeholder,[class*="avatar"]{width:48px;height:48px;border-radius:50%;flex-shrink:0}
+            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb}
+            button,input,textarea{font:inherit;touch-action:manipulation}
             [hidden]{display:none!important}
-            [class*="grid"],[class*="flex"]{contain:layout}
-            article{contain:layout style;will-change:auto}
-            @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}
-            
+            @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
           `
         }} />
 
