@@ -1,0 +1,54 @@
+
+Background and foreground colors do not have a sufficient contrast ratio.
+Low-contrast text is difficult or impossible for many users to read. Learn how to provide sufficient color contrast.
+Failing Elements
+Chats
+<h1 class="text-xl font-semibold text-white">
+Chats CHATS STATUS
+<header class="bg-green-500">
+CHATS
+<button class="w-full py-4 px-4 text-center font-medium border-b-2 border-white text-whit…" aria-label="View chats" aria-current="page">
+CHATS STATUS
+<div class="flex bg-green-500">
+STATUS
+<button class="w-full py-4 px-4 text-center font-medium border-b-2 border-transparent hov…" aria-label="View status updates">
+CHATS STATUS
+<div class="flex bg-green-500">
+Online
+<span class="text-xs text-green-600 font-medium">
+Kruthika 🌸 Living my best life! Let's chat!🌸 Online 9:15 AM 1
+<div class="bg-white">
+Start Chatting
+<span>
+Start Chatting
+<button class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-6 ro…" aria-label="Start chatting with Kruthika">
+View Status
+<span>
+👁️ View Status
+<button class="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 px-6 roun…" aria-label="View status updates">
+Learn more
+<a class="text-[#25D366] hover:underline ml-1" href="/legal/privacy">
+Cookie Settings We use cookies to make Kruthika remember you better and show r…
+<div class="text-card-foreground w-full max-w-md mx-auto pointer-events-auto bg-white/…">
+Accept All
+<button class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md…" aria-label="Accept all cookies and tracking">
+Terms
+<a class="text-[#25D366] hover:underline" href="/legal/terms">
+Cookie Settings We use cookies to make Kruthika remember you better and show r…
+<div class="text-card-foreground w-full max-w-md mx-auto pointer-events-auto bg-white/…">
+Privacy Policy
+<a class="text-[#25D366] hover:underline" href="/legal/privacy">
+Cookie Settings We use cookies to make Kruthika remember you better and show r…
+<div class="text-card-foreground w-full max-w-md mx-auto pointer-events-auto bg-white/…">
+Links rely on color to be distinguishable.
+Low-contrast text is difficult or impossible for many users to read. Link text that is discernible improves the experience for users with low vision. Learn how to make links distinguishable.
+Failing Elements
+Terms
+<a class="text-[#25D366] hover:underline" href="/legal/terms">
+By continuing, you agree to our Terms and Privacy Policy
+<p class="text-xs text-gray-500">
+Privacy Policy
+<a class="text-[#25D366] hover:underline" href="/legal/privacy">
+By continuing, you agree to our Terms and Privacy Policy
+<p class="text-xs text-gray-500">
+These are opportunities to improve the legibility of your content
