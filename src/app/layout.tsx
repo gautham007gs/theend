@@ -9,7 +9,6 @@ import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
-import '@/lib/reduce-lcp-delay';
 
 
 // Optimize font loading - use fallback font immediately with aggressive caching
