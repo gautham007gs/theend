@@ -60,6 +60,8 @@ const AdminProfilePage: React.FC = () => {
   
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newAudioPath, setNewAudioPath] = useState('');
+  const [uploadingFile, setUploadingFile] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<string>('');
 
   const [isProfileEditorOpen, setIsProfileEditorOpen] = useState(false);
 
@@ -432,8 +434,78 @@ const AdminProfilePage: React.FC = () => {
     else setNewAudioPath('');
   };
 
-  const handleDeleteMediaAsset = (assetId: string) => {
+  const handleDeleteMediaAsset = async (assetId: string) => {
+    const asset = aiMediaAssets.assets.find(a => a.id === assetId);
+    
+    // If asset has storage metadata, delete from Supabase Storage first
+    if (asset?.storagePath && asset?.storageBucket) {
+      try {
+        const response = await fetch(`/api/upload?path=${encodeURIComponent(asset.storagePath)}&bucket=${encodeURIComponent(asset.storageBucket)}`, {
+          method: 'DELETE',
+        });
+        
+        if (!response.ok) {
+          const error = await response.json();
+          toast({ title: "Storage Delete Error", description: `Failed to delete file from storage: ${error.error || 'Unknown error'}`, variant: "destructive" });
+          return;
+        }
+      } catch (error: any) {
+        console.error("Error deleting file from storage:", error);
+        toast({ title: "Storage Delete Error", description: `Failed to delete file from storage: ${error.message || 'Unknown error'}`, variant: "destructive" });
+        return;
+      }
+    }
+    
+    // Remove from local state
     setAiMediaAssets(prev => ({ assets: prev.assets.filter(asset => asset.id !== assetId) }));
+    toast({ title: "Asset Removed", description: "Media asset removed from list. Remember to 'Save Global AI Media Assets' to persist changes." });
+  };
+
+  const handleFileUpload = async (file: File, type: 'image' | 'audio' | 'video') => {
+    if (!file) return;
+
+    setUploadingFile(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', type);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Upload failed');
+      }
+
+      const result = await response.json();
+
+      // Create new media asset with storage metadata
+      const newAsset: AIMediaAsset = {
+        id: `${type}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        type,
+        url: result.url,
+        storagePath: result.path,
+        storageBucket: result.bucket,
+        uploadedAt: new Date().toISOString(),
+        description: file.name,
+      };
+
+      setAiMediaAssets(prev => ({ assets: [...prev.assets, newAsset] }));
+      
+      setUploadProgress('');
+      toast({ title: "File Uploaded!", description: `${file.name} uploaded successfully. Remember to 'Save Global AI Media Assets' to persist.` });
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      toast({ title: "Upload Failed", description: error.message || 'Failed to upload file', variant: "destructive" });
+      setUploadProgress('');
+    } finally {
+      setUploadingFile(false);
+    }
   };
 
   const handleSaveAIMediaAssets = async () => {

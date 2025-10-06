@@ -92,9 +92,12 @@ export interface AdSettings {
 
 export interface AIMediaAsset {
   id: string; 
-  type: 'image' | 'audio';
-  url: string; // Full public URL for images, or path like '/media/sound.mp3' for audio
+  type: 'image' | 'audio' | 'video';
+  url: string; // Full public URL for uploaded files or external URLs
   description?: string; // Optional description for admin reference
+  storagePath?: string; // Path in Supabase Storage (for uploaded files)
+  storageBucket?: string; // Bucket name in Supabase Storage (for uploaded files)
+  uploadedAt?: string; // Timestamp when file was uploaded
 }
 export interface AIMediaAssetsConfig {
   assets: AIMediaAsset[];
