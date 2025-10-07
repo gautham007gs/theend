@@ -2062,7 +2062,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   return (
     <>
       <ChatStructuredData />
-      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-chat-bg-default shadow-2xl">
+      <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden">
         <ChatHeader
           aiName={displayAIProfile.name}
           aiAvatarUrl={displayAIProfile.avatarUrl}
@@ -2097,13 +2097,17 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         )}
 
         {/* Normal Banner Ad above input */}
-        <BannerAdDisplay
-          adType="standard"
-          placementKey="chat-bottom"
-          className="mb-2"
-        />
+        <div className="flex-shrink-0">
+          <BannerAdDisplay
+            adType="standard"
+            placementKey="chat-bottom"
+            className="mb-1"
+          />
+        </div>
 
-        <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
+        <div className="flex-shrink-0">
+          <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
+        </div>
 
         <Dialog
           open={showZoomedAvatarDialog}

@@ -57,8 +57,9 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
 
   return (
     <div 
-      className="flex-grow overflow-y-auto p-4 space-y-4 bg-chat-bg-default custom-scrollbar"
+      className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-chat-bg-default custom-scrollbar"
       data-chat-container="true"
+      style={{ minHeight: 0 }}
     >
       {messages.map((msg) => (
         <MessageBubble 

@@ -277,13 +277,13 @@ export default function BlogPage() {
                   </div>
                 </div>
 
-                <h2 className="text-2xl font-semibold mb-3 text-foreground">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 text-foreground">
                   <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
                     {post.title}
                   </Link>
                 </h2>
 
-                <p className="text-gray-700 mb-4 leading-relaxed">{post.excerpt}</p>
+                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{post.excerpt}</p>
 
                 {post.tags && (
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -343,13 +343,13 @@ export default function BlogPage() {
                   </div>
                 </div>
 
-                <h2 className="text-2xl font-semibold mb-3 text-foreground">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 text-foreground">
                   <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
                     {post.title}
                   </Link>
                 </h2>
 
-                <p className="text-gray-700 mb-4 leading-relaxed">{post.excerpt}</p>
+                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{post.excerpt}</p>
 
                 {post.tags && (
                   <div className="flex flex-wrap gap-2 mb-4">

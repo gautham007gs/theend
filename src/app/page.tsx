@@ -143,9 +143,9 @@ const ChatListPage: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
+      <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-background shadow-2xl overflow-hidden">
       {/* WhatsApp-style Header */}
-      <header className="bg-[#25d366] shadow-sm sticky top-0 z-10">
+      <header className="bg-[#25d366] shadow-sm sticky top-0 z-10 flex-shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">Chats</h1>
           <nav className="flex items-center space-x-3" aria-label="Main navigation">
@@ -210,7 +210,7 @@ const ChatListPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-grow overflow-y-auto custom-scrollbar relative bg-gray-50">
+      <main className="flex-1 overflow-y-auto custom-scrollbar relative bg-gray-50" style={{ minHeight: 0 }}>
         {/* Chat Item showing AI profile */}
         <div className="bg-white">
           <Link href="/maya-chat" className="block" aria-label={`Chat with ${effectiveAIProfile.name}, ${unreadCount ? `${unreadCount} unread message` : 'online now'}`}>

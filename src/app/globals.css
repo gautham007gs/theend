@@ -133,18 +133,33 @@ img[loading="eager"]{content-visibility:visible}
   * {
     @apply border-border;
   }
-  body {
-    background-color: hsl(var(--chat-bg-default)); /* Uses the chat area background for the whole page */
-    @apply text-foreground;
+  
+  html {
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
   }
+  
+  body {
+    background-color: hsl(var(--chat-bg-default));
+    @apply text-foreground;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    position: relative;
+  }
+  
   /* Ensure header text color is applied */
   header {
     color: hsl(var(--chat-header-text)); 
   }
-  header .text-muted-foreground { /* For online status in header */
+  header .text-muted-foreground {
     color: hsl(var(--chat-header-text) / 0.7); 
   }
-   header .lucide-more-vertical, header .lucide-phone, header .lucide-video, header .lucide-arrow-left { /* For icons in header */
+  header .lucide-more-vertical, header .lucide-phone, header .lucide-video, header .lucide-arrow-left {
     color: hsl(var(--chat-header-text) / 0.85); 
   }
 }

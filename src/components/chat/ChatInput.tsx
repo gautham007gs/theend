@@ -184,17 +184,17 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-end p-2 sm:p-3 bg-chat-input-bg border-t border-border gap-2"
+      className="flex items-end p-2 sm:p-3 bg-chat-input-bg border-t border-border gap-1 sm:gap-2"
     >
       <Button 
         type="button" 
         variant="ghost" 
         size="icon" 
         onClick={() => setShowEmojiPicker(!showEmojiPicker)} 
-        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
+        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
         aria-label={showEmojiPicker ? "Close emoji picker" : "Open emoji picker"}
       >
-        <Smile className="h-5 w-5" />
+        <Smile className="h-4 w-4 sm:h-5 sm:w-5" />
       </Button>
       <Textarea
         ref={textareaRef}
@@ -202,27 +202,27 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         placeholder="Type a message..."
-        className="flex-grow resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-card rounded-lg shadow-sm custom-scrollbar py-2 px-3 text-sm leading-tight max-h-[6rem] min-h-[2.5rem]" 
+        className="flex-1 resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-card rounded-lg shadow-sm custom-scrollbar py-2 px-3 text-sm leading-tight max-h-20 sm:max-h-24 min-h-[2.25rem]" 
         rows={1}
       />
       {inputValue.trim() || selectedImage ? (
         <Button 
           type="submit" 
           size="icon" 
-          className="bg-primary hover:bg-primary/90 self-end shrink-0"
+          className="bg-primary hover:bg-primary/90 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
           aria-label={isLoading ? "Sending message" : "Send message"}
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5 text-primary-foreground" />}
+          {isLoading ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" /> : <Send className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />}
         </Button>
       ) : (
         <Button 
           variant="ghost" 
           size="icon" 
           type="button" 
-          className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
+          className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
           aria-label="Open microphone input"
         >
-          <Mic className="h-5 w-5" />
+          <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       )}
        <input 
@@ -238,11 +238,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         variant="ghost" 
         size="icon" 
         type="button" 
-        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0"
+        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
         onClick={() => fileInputRef.current?.click()}
         aria-label="Attach image to message"
       >
-        <Paperclip className="h-5 w-5" />
+        <Paperclip className="h-4 w-4 sm:h-5 sm:w-5" />
       </Button>
     </form>
   );
