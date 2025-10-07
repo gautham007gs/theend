@@ -269,6 +269,8 @@ const AdminProfilePage: React.FC = () => {
     const storyDataToUpdate: Partial<AIProfile> = {
         statusStoryText: currentGlobalAIProfile.statusStoryText,
         statusStoryImageUrl: currentGlobalAIProfile.statusStoryImageUrl?.trim() === '' ? undefined : currentGlobalAIProfile.statusStoryImageUrl,
+        statusStoryMediaUrl: currentGlobalAIProfile.statusStoryMediaUrl?.trim() === '' ? undefined : currentGlobalAIProfile.statusStoryMediaUrl,
+        statusStoryMediaType: currentGlobalAIProfile.statusStoryMediaType,
         statusStoryHasUpdate: currentGlobalAIProfile.statusStoryHasUpdate,
     };
     console.log("[AdminProfilePage] handleSaveKruthikaStory - storyDataToUpdate before calling context update:", JSON.stringify(storyDataToUpdate, null, 2));
@@ -653,7 +655,7 @@ const AdminProfilePage: React.FC = () => {
           <Card className="bg-card text-card-foreground mb-8 shadow-lg">
             <CardHeader className="pb-4">
                <CardTitle className="flex items-center text-xl font-semibold"><Palette className="mr-2 h-5 w-5 text-primary"/>Kruthika's Status Story (Global)</CardTitle>
-               <CardDescription className="text-sm">Set the ephemeral story (text and image) that appears for Kruthika on the Status page for all users.</CardDescription>
+               <CardDescription className="text-sm">Set the ephemeral story (text and media) that appears for Kruthika on the Status page for all users.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-5 pt-2">
                 <div className="space-y-1.5">
@@ -666,28 +668,105 @@ const AdminProfilePage: React.FC = () => {
                     className="min-h-[70px]"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="kruthikaStoryImageUrl" className="font-medium text-sm">Story Image URL (Optional, Publicly Accessible)</Label>
-                  <Input
-                    id="kruthikaStoryImageUrl"
-                    type="url"
-                    value={currentGlobalAIProfile.statusStoryImageUrl || ""}
-                    onChange={(e) => setCurrentGlobalAIProfile(p => ({ ...p, statusStoryImageUrl: e.target.value }))}
-                    placeholder="https://placehold.co/300x500.png"
-                  />
-                  {currentGlobalAIProfile.statusStoryImageUrl && currentGlobalAIProfile.statusStoryImageUrl.trim() !== '' && (
-                      <Avatar className="w-24 h-40 mt-2 border rounded-md shadow" key={`admin-story-image-${currentGlobalAIProfile.statusStoryImageUrl || 'default_story_img_key'}`}>
+                
+                <div className="space-y-3">
+                  <Label className="font-medium text-sm">Story Media (Image, Video, or Audio)</Label>
+                  
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Upload Media File</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        type="file" 
+                        accept="image/*,video/*,audio/*" 
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            let type: 'image' | 'audio' | 'video' = 'image';
+                            if (file.type.startsWith('video/')) type = 'video';
+                            else if (file.type.startsWith('audio/')) type = 'audio';
+                            
+                            setUploadingFile(true);
+                            setUploadProgress(`Uploading ${file.name}...`);
+                            
+                            try {
+                              const formData = new FormData();
+                              formData.append('file', file);
+                              formData.append('type', type);
+                              
+                              const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                              if (!response.ok) throw new Error((await response.json()).error || 'Upload failed');
+                              
+                              const result = await response.json();
+                              setCurrentGlobalAIProfile(p => ({ 
+                                ...p, 
+                                statusStoryMediaUrl: result.url,
+                                statusStoryMediaType: type,
+                                statusStoryImageUrl: type === 'image' ? result.url : p.statusStoryImageUrl
+                              }));
+                              
+                              toast({ title: "File Uploaded!", description: `${file.name} uploaded successfully for story.` });
+                            } catch (error: any) {
+                              toast({ title: "Upload Failed", description: error.message || 'Failed to upload file', variant: "destructive" });
+                            } finally {
+                              setUploadingFile(false);
+                              setUploadProgress('');
+                            }
+                          }
+                        }}
+                        className="flex-grow text-sm"
+                        disabled={uploadingFile}
+                      />
+                    </div>
+                    {uploadingFile && uploadProgress && (
+                      <div className="text-xs text-muted-foreground animate-pulse">{uploadProgress}</div>
+                    )}
+                  </div>
+                  
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-card px-2 text-muted-foreground">Or add URL</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-1.5">
+                    <Label htmlFor="kruthikaStoryMediaUrl" className="font-medium text-sm">Media URL (Image/Video/Audio)</Label>
+                    <Input
+                      id="kruthikaStoryMediaUrl"
+                      type="url"
+                      value={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl || ""}
+                      onChange={(e) => setCurrentGlobalAIProfile(p => ({ 
+                        ...p, 
+                        statusStoryMediaUrl: e.target.value,
+                        statusStoryImageUrl: e.target.value
+                      }))}
+                      placeholder="https://example.com/media.jpg or .mp4 or .mp3"
+                    />
+                  </div>
+                  
+                  {(currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl) && (
+                    <div className="mt-2">
+                      <Label className="text-xs text-muted-foreground mb-2 block">Preview:</Label>
+                      {currentGlobalAIProfile.statusStoryMediaType === 'video' ? (
+                        <video src={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl} controls className="w-40 h-56 border rounded-md shadow object-cover" />
+                      ) : currentGlobalAIProfile.statusStoryMediaType === 'audio' ? (
+                        <audio src={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl} controls className="w-full mt-1" />
+                      ) : (
+                        <Avatar className="w-24 h-40 border rounded-md shadow">
                           <AvatarImage 
-                            src={currentGlobalAIProfile.statusStoryImageUrl} 
-                            alt="Kruthika story preview" 
-                            data-ai-hint="story image content" 
+                            src={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl} 
+                            alt="Story preview" 
                             className="object-contain"
-                            onError={(e) => console.error(`Admin Page - Kruthika Story Image load error. URL: ${currentGlobalAIProfile.statusStoryImageUrl}`, e)}
                           />
                           <AvatarFallback>Preview</AvatarFallback>
-                      </Avatar>
+                        </Avatar>
+                      )}
+                    </div>
                   )}
                 </div>
+                
                 <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="kruthikaStoryHasUpdate"
@@ -698,7 +777,7 @@ const AdminProfilePage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-2 pt-2">
                     <Button onClick={() => handleClearKruthikaStoryField('statusStoryText')} variant="outline" size="sm"><Trash2 className="mr-1 h-3 w-3"/>Clear Story Text</Button>
-                    <Button onClick={() => handleClearKruthikaStoryField('statusStoryImageUrl')} variant="outline" size="sm"><Trash2 className="mr-1 h-3 w-3"/>Clear Story Image</Button>
+                    <Button onClick={() => setCurrentGlobalAIProfile(p => ({ ...p, statusStoryMediaUrl: undefined, statusStoryImageUrl: undefined, statusStoryMediaType: undefined }))} variant="outline" size="sm"><Trash2 className="mr-1 h-3 w-3"/>Clear Story Media</Button>
                 </div>
             </CardContent>
             <CardFooter className="mt-2">

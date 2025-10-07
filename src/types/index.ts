@@ -31,7 +31,9 @@ export interface AIProfile {
   avatarUrl: string;
   status: string; // Main status line for ChatHeader
   statusStoryText?: string; // Text for the Status Page story
-  statusStoryImageUrl?: string; // Image URL for the Status Page story
+  statusStoryImageUrl?: string; // Image URL for the Status Page story (legacy, use statusStoryMediaUrl)
+  statusStoryMediaUrl?: string; // Media URL for story (images, videos, audio)
+  statusStoryMediaType?: 'image' | 'video' | 'audio'; // Type of story media
   statusStoryHasUpdate?: boolean; // Ring indicator for new story on Status Page
 }
 
