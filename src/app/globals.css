@@ -26,45 +26,45 @@ img[loading="eager"]{content-visibility:visible}
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 15%;
 
-    --primary: 142 71% 35%; /* Darker WhatsApp Green for better contrast (#1a7a3e) */
+    --primary: 142 70% 30%; /* WhatsApp Green darkened to meet WCAG AA (4.5:1) contrast with white text */
     --primary-foreground: 0 0% 100%; /* White text on primary green */
 
-    --secondary: 120 20% 90%; /* Lighter shade for less prominent elements (e.g., #E1E8E0) */
-    --secondary-foreground: 0 0% 20%;
+    --secondary: 142 50% 95%; /* Very light WhatsApp green tint for secondary elements */
+    --secondary-foreground: 142 70% 25%;
 
-    --muted: 0 0% 96%; 
+    --muted: 142 20% 96%; 
     --muted-foreground: 0 0% 45%; /* Grey for timestamps, non-read ticks */
 
-    --accent: 30 90% 60%; /* A distinct accent color, e.g. an orange/yellow if not blue */
-    --accent-foreground: 0 0% 100%;
+    --accent: 142 70% 50%; /* WhatsApp signature green #25D366 */
+    --accent-foreground: 0 0% 10%; /* Dark text for better contrast */
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 120 15% 80%; /* (e.g., #C4CEC8) */
-    --input: 0 0% 98%; /* Lighter input background */
-    --ring: 130 50% 45%; /* Primary green for rings */
+    --border: 142 20% 85%; /* Subtle green-tinted border */
+    --input: 142 30% 98%; /* Very light green-tinted input background */
+    --ring: 142 70% 50%; /* WhatsApp signature green for focus rings */
 
-    --chart-1: 130 50% 50%; /* Green for charts */
-    --chart-2: 150 45% 45%; /* Teal/Darker Green */
+    --chart-1: 142 70% 50%; /* WhatsApp signature green #25D366 for charts */
+    --chart-2: 142 70% 30%; /* Darker WhatsApp Green variant */
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
     /* Sidebar (adjust if used, keeping WhatsApp feel) */
-    --sidebar-background: 120 25% 92%; /* (e.g., #E6EBE5) */
+    --sidebar-background: 142 40% 96%; /* Very light WhatsApp green tint */
     --sidebar-foreground: 0 0% 15%;
-    --sidebar-primary: 130 50% 45%;
+    --sidebar-primary: 142 70% 30%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 120 20% 88%;
-    --sidebar-accent-foreground: 0 0% 15%;
-    --sidebar-border: 120 15% 80%;
-    --sidebar-ring: 130 50% 45%;
+    --sidebar-accent: 142 50% 95%;
+    --sidebar-accent-foreground: 142 70% 25%;
+    --sidebar-border: 142 20% 85%;
+    --sidebar-ring: 142 70% 50%;
 
     /* Chat specific variables reflecting the new theme */
-    --chat-bg-user: 98 55% 88%; /* Light green for user messages e.g. #DDF7C7 (hsl(98, 55%, 88%)) */
-    --chat-text-user: 0 0% 10%; /* Dark Grey/Black text on user messages */
+    --chat-bg-user: 142 55% 92%; /* Light WhatsApp green for user messages */
+    --chat-text-user: 142 70% 20%; /* Dark green text on user messages for better contrast */
 
     --chat-bg-ai: 0 0% 97%; /* WhatsApp AI/other person bubble: Very light grey/off-white (e.g. #F7F7F7) */
     --chat-text-ai: 0 0% 15%; /* Dark text for AI messages on light background */
@@ -90,31 +90,31 @@ img[loading="eager"]{content-visibility:visible}
     --popover: 220 13% 10%;
     --popover-foreground: 120 10% 85%;
 
-    --primary: 130 50% 55%; /* WhatsApp Green (brighter for dark mode) */
+    --primary: 142 70% 55%; /* WhatsApp Green (brighter for dark mode) #3CE87D */
     --primary-foreground: 0 0% 10%; /* Dark text on primary green */
 
-    --secondary: 220 13% 25%;
-    --secondary-foreground: 120 10% 85%;
+    --secondary: 142 30% 25%;
+    --secondary-foreground: 142 20% 90%;
 
     --muted: 220 13% 22%; 
-    --muted-foreground: 120 10% 65%;
+    --muted-foreground: 142 15% 65%;
 
-    --accent: 30 80% 65%; /* Brighter accent for dark mode */
+    --accent: 142 70% 60%; /* Lighter WhatsApp green accent for dark mode */
     --accent-foreground: 0 0% 10%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 30%;
+    --border: 142 15% 30%;
     --input: 220 13% 22%; /* Darker input field */
-    --ring: 130 50% 55%;
+    --ring: 142 70% 55%;
 
-    --chart-1: 130 50% 60%;
-    --chart-2: 150 45% 55%;
+    --chart-1: 142 70% 60%;
+    --chart-2: 142 60% 50%;
 
     /* Chat specific variables - Dark Mode */
-    --chat-bg-user: 130 40% 28%; /* Darker shade of user message green for dark mode (e.g. #2E4B2E) */
-    --chat-text-user: 120 15% 90%; /* Light text for user messages in dark mode */
+    --chat-bg-user: 142 45% 30%; /* WhatsApp green shade for user messages in dark mode */
+    --chat-text-user: 0 0% 95%; /* Light text for user messages in dark mode */
 
     --chat-bg-ai: 220 10% 20%; /* WhatsApp AI/other person bubble: Dark grey (e.g. #2E3033) */
     --chat-text-ai: 0 0% 90%; /* Light text for AI messages on dark background */
