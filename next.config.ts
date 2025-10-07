@@ -144,7 +144,6 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-select',
       '@radix-ui/react-tooltip',
       '@radix-ui/react-toast',
-      '@tanstack/react-query',
       'date-fns',
       'react-hook-form',
       '@hookform/resolvers',
@@ -225,7 +224,7 @@ const nextConfig: NextConfig = {
           // Other vendors
           vendor: {
             test: /[\\/]node_modules[\\/]/,
-            name(module) {
+            name(module: any) {
               const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1];
               return `vendor.${packageName?.replace('@', '')}`;
             },
