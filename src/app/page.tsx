@@ -147,13 +147,13 @@ const ChatListPage: React.FC = () => {
       {/* WhatsApp-style Header */}
       <header className="bg-[#25d366] shadow-sm sticky top-0 z-10 flex-shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900 drop-shadow-sm">Chats</h1>
+          <h1 className="text-xl font-semibold text-white">Chats</h1>
           <nav className="flex items-center space-x-3" aria-label="Main navigation">
             <button className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Open camera">
-              <Camera size={20} className="text-gray-900" />
+              <Camera size={20} className="text-white" />
             </button>
             <button className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Search chats">
-              <Search size={20} className="text-gray-900" />
+              <Search size={20} className="text-white" />
             </button>
             <div className="relative">
               <button
@@ -163,7 +163,7 @@ const ChatListPage: React.FC = () => {
                 aria-expanded={showDropdown}
                 aria-haspopup="true"
               >
-                <MoreVertical size={20} className="text-gray-900" />
+                <MoreVertical size={20} className="text-white" />
               </button>
 
               {showDropdown && (
@@ -196,13 +196,13 @@ const ChatListPage: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="flex bg-[#25d366]">
           <div className="flex-1">
-            <button className="w-full py-4 px-4 text-center font-bold border-b-2 border-gray-900 text-gray-900 min-h-[48px]" aria-label="View chats" aria-current="page">
+            <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
               CHATS
             </button>
           </div>
           <div className="flex-1">
             <Link href="/status" className="block w-full">
-              <button className="w-full py-4 px-4 text-center font-bold border-b-2 border-transparent hover:border-gray-900/50 text-gray-900 opacity-80 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
+              <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-transparent hover:border-white/50 text-white opacity-90 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
                 STATUS
               </button>
             </Link>
@@ -237,7 +237,7 @@ const ChatListPage: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex flex-col space-y-3 w-full max-w-sm">
             <Link href="/maya-chat">
-              <button className="w-full bg-[#25d366] hover:bg-[#1faa55] text-gray-900 font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px] shadow-md" aria-label="Start chatting with Kruthika">
+              <button className="w-full bg-[#25d366] hover:bg-[#1faa55] text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2 min-h-[48px]" aria-label="Start chatting with Kruthika">
                 <MessageSquarePlus size={20} />
                 <span>Start Chatting</span>
               </button>
