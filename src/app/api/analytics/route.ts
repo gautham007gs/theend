@@ -295,6 +295,33 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || 'overview';
     const dateRange = searchParams.get('dateRange') || '7d';
 
+    // Check if we need to seed initial data
+    const { data: existingMessages } = await supabase
+      .from('messages_log')
+      .select('message_id')
+      .limit(1);
+
+    if (!existingMessages || existingMessages.length === 0) {
+      // Seed initial demo data for better first impression
+      const now = new Date();
+      await supabase.from('messages_log').insert([
+        {
+          message_id: `seed_${Date.now()}_1`,
+          sender_type: 'user',
+          chat_id: 'kruthika_chat',
+          text_content: 'Hi Kruthika!',
+          created_at: new Date(now.getTime() - 3600000).toISOString()
+        },
+        {
+          message_id: `seed_${Date.now()}_2`,
+          sender_type: 'ai',
+          chat_id: 'kruthika_chat',
+          text_content: 'Hey! How are you doing? 😊',
+          created_at: new Date(now.getTime() - 3540000).toISOString()
+        }
+      ]);
+    }
+
     // Calculate date range
     const now = new Date();
     const startDate = new Date();

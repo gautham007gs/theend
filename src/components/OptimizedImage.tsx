@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -10,10 +10,9 @@ interface OptimizedImageProps {
   height?: number;
   priority?: boolean;
   className?: string;
-  fill?: boolean;
-  sizes?: string;
   quality?: number;
-  onError?: () => void;
+  sizes?: string;
+  onLoadingComplete?: () => void;
 }
 
 export default function OptimizedImage({
@@ -23,22 +22,39 @@ export default function OptimizedImage({
   height,
   priority = false,
   className = '',
-  fill = false,
-  sizes,
   quality = 75,
-  onError
+  sizes,
+  onLoadingComplete
 }: OptimizedImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+    onLoadingComplete?.();
+  };
 
   const handleError = () => {
-    setImgSrc('/fallback-avatar.png');
-    onError?.();
+    setIsLoading(false);
+    setError(true);
   };
 
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
+  if (!isMounted) {
+    return <div className={`bg-gray-100 animate-pulse ${className}`} style={{ width, height }} />;
+  }
+
+  if (error) {
+    return (
+      <div className={`bg-gray-200 flex items-center justify-center ${className}`} style={{ width, height }}>
+        <span className="text-gray-500 text-sm">Failed to load</span>
+      </div>
+    );
+  }
 
   const imageProps = fill
     ? {
@@ -52,14 +68,14 @@ export default function OptimizedImage({
 
   return (
     <Image
-      src={imgSrc}
+      src={src}
       alt={alt}
       {...imageProps}
       priority={priority}
       quality={quality}
       className={`${className} ${isLoading ? 'blur-sm' : 'blur-0'} transition-all duration-300`}
       onError={handleError}
-      onLoad={handleLoad}
+      onLoad={handleLoadingComplete}
       loading={priority ? 'eager' : 'lazy'}
       placeholder="blur"
       blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Cimage width='100%25' height='100%25' filter='url(%23b)' href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='/%3E%3C/svg%3E"
