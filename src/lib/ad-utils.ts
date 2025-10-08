@@ -11,34 +11,8 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
     return false;
   }
 
-  const todayStr = new Date().toDateString();
-  const lastShownDate = localStorage.getItem(APP_ADS_LAST_SHOWN_DATE_KEY);
   let currentDailyCount = parseInt(localStorage.getItem(APP_ADS_DAILY_COUNT_KEY) || '0', 10);
   let currentSessionCount = parseInt(sessionStorage.getItem(APP_ADS_SESSION_COUNT_KEY) || '0', 10);
-
-  if (lastShownDate !== todayStr) {
-    currentDailyCount = 0;
-    localStorage.setItem(APP_ADS_LAST_SHOWN_DATE_KEY, todayStr);
-    currentSessionCount = 0;
-    sessionStorage.setItem(APP_ADS_SESSION_COUNT_KEY, '0');
-  }
-  localStorage.setItem(APP_ADS_DAILY_COUNT_KEY, currentDailyCount.toString());
-
-  // Use limits from AdSettings
-  const maxAdsPerDay = activeAdSettings.maxDirectLinkAdsPerDay ?? defaultAdSettings.maxDirectLinkAdsPerDay;
-  const maxAdsPerSession = activeAdSettings.maxDirectLinkAdsPerSession ?? defaultAdSettings.maxDirectLinkAdsPerSession;
-
-  // Check user engagement before showing ads
-  const userEngagement = localStorage.getItem('user_engagement_score') || '0.5';
-  const engagementScore = parseFloat(userEngagement);
-  
-  // Higher engagement users see more ads (they're more likely to click)
-  const adjustedMaxSession = engagementScore > 0.7 ? maxAdsPerSession + 1 : maxAdsPerSession;
-  const adjustedMaxDaily = engagementScore > 0.8 ? maxAdsPerDay + 2 : maxAdsPerDay;
-  
-  if (currentSessionCount >= adjustedMaxSession || currentDailyCount >= adjustedMaxDaily) {
-    return false;
-  }
 
   const lastShownNetwork = localStorage.getItem(APP_ADS_LAST_SHOWN_NETWORK_KEY);
   let networkToTry: 'adsterra' | 'monetag' | null = null;
@@ -86,7 +60,7 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
     return false;
   }
 
-  // Update counters only on successful ad display
+  // Update counters for tracking (no limits enforced)
   currentDailyCount++;
   localStorage.setItem(APP_ADS_DAILY_COUNT_KEY, currentDailyCount.toString());
   currentSessionCount++;

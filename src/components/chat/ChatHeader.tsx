@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, MoreVertical, Phone, Video } from 'lucide-react';
+import { ArrowLeft, MoreVertical, Phone, Video, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -102,6 +102,18 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <p className="text-xs text-chat-header-text/70">{onlineStatus}</p>
       </div >
 
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="text-inherit hover:bg-accent/10" 
+        aria-label="Camera" 
+        onClick={() => {
+          tryShowRotatedAd(adSettings);
+          router.push('/status');
+        }}
+      >
+        <Camera className="h-5 w-5" />
+      </Button>
       <Button 
         variant="ghost" 
         size="icon" 
