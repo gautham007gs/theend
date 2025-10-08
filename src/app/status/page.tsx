@@ -1,20 +1,10 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react'; 
 import Image from 'next/image';
-import type { Metadata } from 'next';
+import Head from 'next/head';
 import AppHeader from '@/components/AppHeader';
-
-export const metadata: Metadata = {
-  title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
-  description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
-  keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
-  openGraph: {
-    title: 'Status Updates - Kruthika AI Girlfriend',
-    description: 'Share your moments with Kruthika - AI girlfriend status updates and photo sharing',
-    url: 'https://kruthika.fun/status',
-  },
-};
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Camera, X as XIcon, ArrowLeft, Search, MoreVertical } from 'lucide-react';
@@ -56,10 +46,6 @@ const StatusPage: React.FC = () => {
     if (!avatarUrlToUse || typeof avatarUrlToUse !== 'string' || avatarUrlToUse.trim() === '' || (!avatarUrlToUse.startsWith('http') && !avatarUrlToUse.startsWith('data:'))) {
       avatarUrlToUse = defaultAIProfile.avatarUrl;
     }
-
-    // if (isKruthikaProfile) {
-      // console.log(`[StatusItemDisplay-Kruthika] Final avatarUrlToUse for list/dialog avatar: ${avatarUrlToUse}`);
-    // }
 
     let isValidStoryImageSrc = false;
     if (storyImageUrl && typeof storyImageUrl === 'string' && storyImageUrl.trim() !== '') {
@@ -110,7 +96,6 @@ const StatusPage: React.FC = () => {
         variant: "destructive",
         duration: 4000,
       });
-      // Keep dialog open to show the error, user can close manually if needed.
     };
 
     return (
@@ -129,7 +114,7 @@ const StatusPage: React.FC = () => {
           >
             <AvatarImage 
                 src={avatarUrlToUse || undefined} 
-                alt={displayName} 
+                alt={`${displayName} - AI girlfriend status update profile picture showing virtual companion avatar`}
                 data-ai-hint={dataAiHint || "profile person"} 
                 className="object-cover" 
                 key={`${statusKey}-avatar-img-${avatarUrlToUse || 'no_avatar_fallback_img_sp'}`}
@@ -173,7 +158,7 @@ const StatusPage: React.FC = () => {
                     >
                         <AvatarImage 
                             src={avatarUrlToUse || undefined} 
-                            alt={displayName} 
+                            alt={`${displayName} - AI companion profile picture in status story viewer`}
                             key={`${statusKey}-dialog-avatar-img-${avatarUrlToUse || 'no_avatar_fallback_dialog_img_sp'}`} 
                             onError={(e) => handleAvatarError(e, "Dialog")}
                         />
@@ -189,7 +174,7 @@ const StatusPage: React.FC = () => {
             <div className="relative flex-grow w-full flex items-center justify-center overflow-hidden">
                 <Image 
                     src={storyImageUrl} 
-                    alt={`${displayName}'s story`} 
+                    alt={`${displayName}'s status story - AI girlfriend virtual companion shared moment and update photo`}
                     fill={true}
                     style={{ objectFit: 'contain' }}
                     data-ai-hint="story image content large"
@@ -217,14 +202,6 @@ const StatusPage: React.FC = () => {
   const displayAdminOwnStatus = globalAdminOwnStatus || defaultAdminStatusDisplay;
   const displayManagedDemoContacts = globalManagedDemoContacts || defaultManagedContactStatuses;
 
-  // if (globalAIProfile) {
-    // console.log("[StatusPage] Using AIProfile from context:", JSON.stringify(globalAIProfile, null, 2));
-  // } else if (!isLoadingAIProfile) {
-    // console.log("[StatusPage] AIProfile from context is null (and not loading), using defaultAIProfile:", JSON.stringify(defaultAIProfile, null, 2));
-  // }
-  // console.log("[StatusPage] Effective AI Profile for render:", JSON.stringify(effectiveAIProfile, null, 2));
-
-
   if (isLoadingAIProfile || isLoadingGlobalStatuses || isLoadingAdSettings) { 
      return (
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
@@ -234,91 +211,125 @@ const StatusPage: React.FC = () => {
     );
   }
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://kruthika.fun'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Status Updates',
+        item: 'https://kruthika.fun/status'
+      }
+    ]
+  };
+
   return (
-    <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
-      {/* WhatsApp-style Header with Back Navigation */}
-      <div className="bg-gradient-to-r from-[#25d366] to-[#20c997] shadow-md">
-        <div className="px-6 py-4 flex items-center">
-          <button 
-            onClick={() => window.history.back()} 
-            className="mr-5 hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
-            aria-label="Go back"
-          >
-            <ArrowLeft size={22} className="text-white" />
-          </button>
-          <h1 className="text-2xl font-bold text-white">Status</h1>
-          <div className="flex items-center space-x-2 ml-auto">
-            <button className="hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="Search status">
-              <Search size={20} className="text-white" />
+    <>
+      <Head>
+        <title>Status Updates - AI Girlfriend Kruthika | Share Your Moments</title>
+        <meta name="description" content="View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features for emotional support." />
+        <meta name="keywords" content="AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend, Kruthika status" />
+        <meta property="og:title" content="Status Updates - Kruthika AI Girlfriend" />
+        <meta property="og:description" content="Share your moments with Kruthika - AI girlfriend status updates and photo sharing" />
+        <meta property="og:url" content="https://kruthika.fun/status" />
+        <link rel="canonical" href="https://kruthika.fun/status" />
+      </Head>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
+        {/* WhatsApp-style Header with Back Navigation */}
+        <div className="bg-gradient-to-r from-[#25d366] to-[#20c997] shadow-md">
+          <div className="px-6 py-4 flex items-center">
+            <button 
+              onClick={() => window.history.back()} 
+              className="mr-5 hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+              aria-label="Go back to previous page"
+            >
+              <ArrowLeft size={22} className="text-white" />
             </button>
-            <button className="hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="More options">
-              <MoreVertical size={20} className="text-white" />
-            </button>
+            <h1 className="text-2xl font-bold text-white">Status</h1>
+            <div className="flex items-center space-x-2 ml-auto">
+              <button className="hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="Search status updates">
+                <Search size={20} className="text-white" />
+              </button>
+              <button className="hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="More options for status">
+                <MoreVertical size={20} className="text-white" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex-grow overflow-y-auto custom-scrollbar">
-        <StatusItemDisplay
-            statusKey="admin-own-status-item"
-            displayName={displayAdminOwnStatus.name}
-            rawAvatarUrl={displayAdminOwnStatus.avatarUrl}
-            statusText={displayAdminOwnStatus.statusText}
-            hasUpdateRing={displayAdminOwnStatus.hasUpdate}
-            storyImageUrl={displayAdminOwnStatus.statusImageUrl}
-            dataAiHint="profile self admin"
-            isMyStatusStyle={true}
-            isKruthikaProfile={false}
-        />
-
-        <div className="px-6 py-3 text-xs font-bold text-muted-foreground/80 bg-secondary/20 border-y border-border/30 tracking-wider uppercase">Recent Updates</div>
-
-        {(effectiveAIProfile.statusStoryHasUpdate || (effectiveAIProfile.statusStoryText && effectiveAIProfile.statusStoryText !== defaultAIProfile.statusStoryText) || effectiveAIProfile.statusStoryImageUrl) && (
-            <StatusItemDisplay
-                statusKey="kruthika-status-story-item"
-                displayName={effectiveAIProfile.name}
-                rawAvatarUrl={effectiveAIProfile.avatarUrl} 
-                statusText={effectiveAIProfile.statusStoryText || "No story update."}
-                hasUpdateRing={effectiveAIProfile.statusStoryHasUpdate || false}
-                storyImageUrl={effectiveAIProfile.statusStoryImageUrl}
-                dataAiHint="profile woman ai"
-                isKruthikaProfile={true}
-            />
-        )}
-
-        {displayManagedDemoContacts.map(contact => (
-          (contact.hasUpdate || contact.statusImageUrl || (contact.statusText && contact.statusText !== "Tap to add status")) && 
-          <StatusItemDisplay 
-            key={contact.id}
-            statusKey={contact.id} 
-            displayName={contact.name}
-            rawAvatarUrl={contact.avatarUrl}
-            statusText={contact.statusText}
-            hasUpdateRing={contact.hasUpdate}
-            storyImageUrl={contact.statusImageUrl}
-            dataAiHint={contact.dataAiHint}
-            isKruthikaProfile={false}
+        <div className="flex-grow overflow-y-auto custom-scrollbar">
+          <StatusItemDisplay
+              statusKey="admin-own-status-item"
+              displayName={displayAdminOwnStatus.name}
+              rawAvatarUrl={displayAdminOwnStatus.avatarUrl}
+              statusText={displayAdminOwnStatus.statusText}
+              hasUpdateRing={displayAdminOwnStatus.hasUpdate}
+              storyImageUrl={displayAdminOwnStatus.statusImageUrl}
+              dataAiHint="profile self admin"
+              isMyStatusStyle={true}
+              isKruthikaProfile={false}
           />
-        ))}
 
-        {/* Ads Section */}
-        <div className="px-5 py-6 space-y-4 bg-secondary/10">
-          <BannerAdDisplay adType="standard" placementKey="statusPageBottom" className="mx-auto max-w-md" />
-          <BannerAdDisplay adType="native" placementKey="statusPageNative" className="" />
+          <div className="px-6 py-3 text-xs font-bold text-muted-foreground/80 bg-secondary/20 border-y border-border/30 tracking-wider uppercase">Recent Updates</div>
+
+          {(effectiveAIProfile.statusStoryHasUpdate || (effectiveAIProfile.statusStoryText && effectiveAIProfile.statusStoryText !== defaultAIProfile.statusStoryText) || effectiveAIProfile.statusStoryImageUrl) && (
+              <StatusItemDisplay
+                  statusKey="kruthika-status-story-item"
+                  displayName={effectiveAIProfile.name}
+                  rawAvatarUrl={effectiveAIProfile.avatarUrl} 
+                  statusText={effectiveAIProfile.statusStoryText || "No story update."}
+                  hasUpdateRing={effectiveAIProfile.statusStoryHasUpdate || false}
+                  storyImageUrl={effectiveAIProfile.statusStoryImageUrl}
+                  dataAiHint="profile woman ai"
+                  isKruthikaProfile={true}
+              />
+          )}
+
+          {displayManagedDemoContacts.map(contact => (
+            (contact.hasUpdate || contact.statusImageUrl || (contact.statusText && contact.statusText !== "Tap to add status")) && 
+            <StatusItemDisplay 
+              key={contact.id}
+              statusKey={contact.id} 
+              displayName={contact.name}
+              rawAvatarUrl={contact.avatarUrl}
+              statusText={contact.statusText}
+              hasUpdateRing={contact.hasUpdate}
+              storyImageUrl={contact.statusImageUrl}
+              dataAiHint={contact.dataAiHint}
+              isKruthikaProfile={false}
+            />
+          ))}
+
+          {/* Ads Section */}
+          <div className="px-5 py-6 space-y-4 bg-secondary/10">
+            <BannerAdDisplay adType="standard" placementKey="statusPageBottom" className="mx-auto max-w-md" />
+            <BannerAdDisplay adType="native" placementKey="statusPageNative" className="" />
+          </div>
+
         </div>
-
+        <div className="p-5 border-t border-border/50 flex justify-end bg-background/95 backdrop-blur-sm">
+          <Button 
+            variant="default" 
+            size="lg" 
+            className="rounded-full p-4 shadow-xl bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-700 transition-all hover:scale-105" 
+            onClick={() => alert("Camera access for status - not implemented")}
+            aria-label="Add new status update"
+          >
+            <Camera size={26} />
+          </Button>
+        </div>
       </div>
-      <div className="p-5 border-t border-border/50 flex justify-end bg-background/95 backdrop-blur-sm">
-        <Button 
-          variant="default" 
-          size="lg" 
-          className="rounded-full p-4 shadow-xl bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-700 transition-all hover:scale-105" 
-          onClick={() => alert("Camera access for status - not implemented")}
-          aria-label="Add status"
-        >
-          <Camera size={26} />
-        </Button>
-      </div>
-    </div>
+    </>
   );
 };
 

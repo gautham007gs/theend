@@ -245,8 +245,8 @@ const ChatListPage: React.FC = () => {
 
             <div className="flex space-x-3">
               <Link href="/status" className="flex-1">
-                <button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 min-h-[48px]" aria-label="View status updates">
-                  <span>👁️</span>
+                <button className="w-full bg-gradient-to-r from-purple-500 via-violet-500 to-fuchsia-500 hover:from-purple-600 hover:via-violet-600 hover:to-fuchsia-600 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center space-x-2 min-h-[48px]" aria-label="View status updates">
+                  <span>✨</span>
                   <span>View Status</span>
                 </button>
               </Link>
