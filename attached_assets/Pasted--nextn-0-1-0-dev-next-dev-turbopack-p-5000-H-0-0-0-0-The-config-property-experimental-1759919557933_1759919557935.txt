@@ -1,0 +1,325 @@
+> nextn@0.1.0 dev
+> next dev --turbopack -p 5000 -H 0.0.0.0
+
+ ⚠ The config property `experimental.turbo` is deprecated. Move this setting to `config.turbopack` or run `npx @next/codemod@latest next-experimental-turbo-to-turbopack   ▲ Next.js 15.5.4 (Turbopack)
+   - Local:        http://localhost:5000
+   - Network:      http://0.0.0.0:5000
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · turbo
+     ✓ inlineCss
+     ✓ optimizeCss
+     · ...
+
+ ✓ Starting...
+ ✓ Compiled middleware in 354ms
+ ✓ Ready in 1443ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5s
+Supabase Client: Successfully initialized REAL Supabase client.
+ GET / 200 in 5572ms
+ GET / 200 in 125ms
+ GET / 200 in 138ms
+ ○ Compiling /maya-chat ...
+ ✓ Compiled /maya-chat in 1155ms
+Credential Utils: Loaded enhanced credential formatting utilities with .env.local direct reading
+Token Optimization: Advanced cost reduction system loaded
+Credential Utils: Standard env parsing insufficient, reading from .env.local...
+Credential Utils: Reading from /home/runner/workspace/.env.local
+Credential Utils: Extracted 13 lines of JSON
+Credential Utils: Successfully extracted JSON from .env.local (content masked for security)
+Credential Utils: Processing credentials JSON...
+Credential Utils: Raw JSON length: 2362
+Credential Utils: Attempting to parse multi-line JSON...
+Credential Utils: Multi-line parsing successful
+Credential Utils: Successfully parsed and validated credentials
+Service account email: vertex-ai-service@maya-chatbot-470113.iam.gserviceaccount.com
+Project ID: maya-chatbot-470113
+Credential Utils: Multi-line parsing successful
+Vertex AI: Implementation loaded with service account authentication
+Kruthika AI: Authentic comeback messages loaded
+Kruthika AI: Proactive messaging system loaded
+Kruthika AI: Perfect language adaptation system loaded - v2.5 - Never admits AI nature!
+Cookie Manager: Advanced AI girlfriend cookie system loaded
+ GET /maya-chat 200 in 1415ms
+ ⚠ Blocked cross-origin request from 7c85a843-e828-44e4-9dc9-6a19927d1f10-00-3ii6zioal59pe.riker.replit.dev to /_next/* resource. To allow this, configure "allowedDevOrigins" in next.config
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 113ms
+ GET /maya-chat 200 in 141ms
+ GET / 200 in 121ms
+ GET /maya-chat 200 in 110ms
+ GET / 200 in 151ms
+ ✓ Compiled /status in 463ms
+ ⨯ ./src/app/status/page.tsx:8:14
+Ecmascript file had an error
+   6 | import AppHeader from '@/components/AppHeader';
+   7 |
+>  8 | export const metadata: Metadata = {
+     |              ^^^^^^^^
+   9 |   title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  10 |   description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  11 |   keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/status/page.tsx [Client Component Browser]
+    ./src/app/status/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/status/page.tsx [Client Component SSR]
+    ./src/app/status/page.tsx [Server Component]
+
+
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1669ms
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error [ModuleBuildError]: ./src/app/status/page.tsx:8:14
+Ecmascript file had an error
+   6 | import AppHeader from '@/components/AppHeader';
+   7 |
+>  8 | export const metadata: Metadata = {
+     |              ^^^^^^^^
+   9 |   title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  10 |   description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  11 |   keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/status/page.tsx [Client Component Browser]
+    ./src/app/status/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/status/page.tsx [Client Component SSR]
+    ./src/app/status/page.tsx [Server Component]
+
+
+    at <unknown> (ModuleBuildError: ./src/app/status/page.tsx:8:14)
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET /status 500 in 2525ms
+ GET /status 500 in 103ms
+ ⨯ ./src/app/status/page.tsx:8:14
+Ecmascript file had an error
+   6 | import AppHeader from '@/components/AppHeader';
+   7 |
+>  8 | export const metadata: Metadata = {
+     |              ^^^^^^^^
+   9 |   title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  10 |   description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  11 |   keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/status/page.tsx [Client Component Browser]
+    ./src/app/status/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/status/page.tsx [Client Component SSR]
+    ./src/app/status/page.tsx [Server Component]
+
+
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error [ModuleBuildError]: ./src/app/status/page.tsx:8:14
+Ecmascript file had an error
+   6 | import AppHeader from '@/components/AppHeader';
+   7 |
+>  8 | export const metadata: Metadata = {
+     |              ^^^^^^^^
+   9 |   title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  10 |   description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  11 |   keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/status/page.tsx [Client Component Browser]
+    ./src/app/status/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/status/page.tsx [Client Component SSR]
+    ./src/app/status/page.tsx [Server Component]
+
+
+    at <unknown> (ModuleBuildError: ./src/app/status/page.tsx:8:14)
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET /status 500 in 221ms
+ GET /status 500 in 82ms
+ ⨯ ./src/app/status/page.tsx:8:14
+Ecmascript file had an error
+   6 | import AppHeader from '@/components/AppHeader';
+   7 |
+>  8 | export const metadata: Metadata = {
+     |              ^^^^^^^^
+   9 |   title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  10 |   description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  11 |   keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/status/page.tsx [Client Component Browser]
+    ./src/app/status/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/status/page.tsx [Client Component SSR]
+    ./src/app/status/page.tsx [Server Component]
+
+
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+Error [ModuleBuildError]: ./src/app/status/page.tsx:8:14
+Ecmascript file had an error
+   6 | import AppHeader from '@/components/AppHeader';
+   7 |
+>  8 | export const metadata: Metadata = {
+     |              ^^^^^^^^
+   9 |   title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  10 |   description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  11 |   keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+
+You are attempting to export "metadata" from a component marked with "use client", which is disallowed. Either remove the export, or the "use client" directive. Read more: https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/app/status/page.tsx [Client Component Browser]
+    ./src/app/status/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/status/page.tsx [Client Component SSR]
+    ./src/app/status/page.tsx [Server Component]
+
+
+    at <unknown> (ModuleBuildError: ./src/app/status/page.tsx:8:14)
+ ⨯ [Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[Error: Cannot find module 'critters'
+Require stack:
+- /home/runner/workspace/node_modules/next/dist/server/post-process.js
+- /home/runner/workspace/node_modules/next/dist/server/render.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/module.js
+- /home/runner/workspace/node_modules/next/dist/server/route-modules/pages/builtin/_error.js
+- /home/runner/workspace/node_modules/next/dist/server/load-default-error-components.js
+- /home/runner/workspace/node_modules/next/dist/server/dev/next-dev-server.js
+- /home/runner/workspace/node_modules/next/dist/server/next.js
+- /home/runner/workspace/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+ GET /status 500 in 180ms
+ GET /status 500 in 79ms
+^C
