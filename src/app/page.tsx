@@ -9,6 +9,8 @@ import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
 import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, Star, Zap } from 'lucide-react';
 import { useAIProfile } from '@/contexts/AIProfileContext';
+import { useAdSettings } from '@/contexts/AdSettingsContext';
+import { tryShowRotatedAd } from '@/lib/ad-utils';
 import { cn } from '@/lib/utils';
 
 const BannerAdDisplay = dynamic(() => import('@/components/chat/BannerAdDisplay'), {
@@ -89,6 +91,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
 
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
+  const { adSettings } = useAdSettings();
   const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const unreadCount = 1;
@@ -149,7 +152,11 @@ const ChatListPage: React.FC = () => {
         <div className="px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-white">Chats</h1>
           <nav className="flex items-center space-x-3" aria-label="Main navigation">
-            <button className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Open camera">
+            <button 
+              className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" 
+              aria-label="Open camera"
+              onClick={() => tryShowRotatedAd(adSettings)}
+            >
               <Camera size={20} className="text-white" />
             </button>
             <button className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Search chats">
@@ -158,7 +165,10 @@ const ChatListPage: React.FC = () => {
             <div className="relative">
               <button
                 className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center"
-                onClick={() => setShowDropdown(!showDropdown)}
+                onClick={() => {
+                  tryShowRotatedAd(adSettings);
+                  setShowDropdown(!showDropdown);
+                }}
                 aria-label="Open menu"
                 aria-expanded={showDropdown}
                 aria-haspopup="true"

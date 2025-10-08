@@ -69,10 +69,10 @@ export const tryShowRotatedAd = (activeAdSettings: AdSettings | null): boolean =
     adLinkToShow = monetagLink;
   }
 
-  const isValidLink = (link: string | null | undefined): boolean => !!link && (link.startsWith('http://') || link.startsWith('https://')) && link !== DEFAULT_ADSTERRA_DIRECT_LINK && link !== DEFAULT_MONETAG_DIRECT_LINK && !link.toLowerCase().includes("placeholder");
+  const isValidLink = (link: string | null | undefined): boolean => !!link && (link.startsWith('http://') || link.startsWith('https://'));
 
   if (!isValidLink(adLinkToShow)) {
-    console.warn(`Ad display: ${networkToTry} direct link is not valid or is placeholder: ${adLinkToShow}`);
+    console.warn(`Ad display: ${networkToTry} direct link is not a valid URL: ${adLinkToShow}`);
     return false;
   }
 

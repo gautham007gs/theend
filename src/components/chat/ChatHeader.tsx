@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
-import { defaultAIProfile } from '@/config/ai'; 
+import { defaultAIProfile } from '@/config/ai';
+import { useAdSettings } from '@/contexts/AdSettingsContext';
+import { tryShowRotatedAd } from '@/lib/ad-utils'; 
 
 interface ChatHeaderProps {
   aiName: string;
@@ -34,6 +36,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onVideoClick,
 }) => {
   const router = useRouter();
+  const { adSettings } = useAdSettings();
 
   let avatarUrlToUse = aiAvatarUrl; 
   if (!avatarUrlToUse || typeof avatarUrlToUse !== 'string' || avatarUrlToUse.trim() === '' || (!avatarUrlToUse.startsWith('http') && !avatarUrlToUse.startsWith('data:'))) {
@@ -99,21 +102,48 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         <p className="text-xs text-chat-header-text/70">{onlineStatus}</p>
       </div >
 
-      <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10" aria-label="Video call (simulated ad)" onClick={onVideoClick}>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="text-inherit hover:bg-accent/10" 
+        aria-label="Video call" 
+        onClick={() => {
+          tryShowRotatedAd(adSettings);
+          onVideoClick();
+        }}
+      >
         <Video className="h-5 w-5" />
       </Button>
-      <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10 mr-1" aria-label="Call (simulated ad)" onClick={onCallClick}>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="text-inherit hover:bg-accent/10 mr-1" 
+        aria-label="Call" 
+        onClick={() => {
+          tryShowRotatedAd(adSettings);
+          onCallClick();
+        }}
+      >
         <Phone className="h-5 w-5" />
       </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="text-inherit hover:bg-accent/10" aria-label="More options">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-inherit hover:bg-accent/10" 
+            aria-label="More options"
+            onClick={() => tryShowRotatedAd(adSettings)}
+          >
             <MoreVertical className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={onAvatarClick}>
+          <DropdownMenuItem onClick={() => {
+            tryShowRotatedAd(adSettings);
+            onAvatarClick();
+          }}>
             <span>View Contact</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => alert("Media, links, and docs: Non-functional placeholder")}>
