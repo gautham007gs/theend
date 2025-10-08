@@ -37,27 +37,27 @@ export const defaultAdSettings: AdSettings = {
   adsterraDirectLink: DEFAULT_ADSTERRA_DIRECT_LINK,
   adsterraDirectLinkEnabled: true,
   adsterraBannerCode: "<!-- Adsterra Banner Code Placeholder: Paste full script here -->",
-  adsterraBannerEnabled: false,
+  adsterraBannerEnabled: true,
   adsterraNativeBannerCode: "<!-- Adsterra Native Banner Code Placeholder: Paste full script here -->",
-  adsterraNativeBannerEnabled: false,
+  adsterraNativeBannerEnabled: true,
   adsterraSocialBarCode: "<!-- Adsterra Social Bar Code Placeholder: Paste full script here -->",
-  adsterraSocialBarEnabled: false,
+  adsterraSocialBarEnabled: true,
   adsterraPopunderCode: "<!-- Adsterra Pop-under Script Placeholder: Paste full script here -->",
-  adsterraPopunderEnabled: false,
+  adsterraPopunderEnabled: true,
 
   monetagDirectLink: DEFAULT_MONETAG_DIRECT_LINK,
   monetagDirectLinkEnabled: true,
   monetagBannerCode: "<!-- Monetag Banner Code Placeholder: Paste full script here -->",
-  monetagBannerEnabled: false,
+  monetagBannerEnabled: true,
   monetagNativeBannerCode: "<!-- Monetag Native Banner Code Placeholder: Paste full script here -->",
-  monetagNativeBannerEnabled: false,
+  monetagNativeBannerEnabled: true,
   monetagSocialBarCode: "<!-- Monetag Social Bar Code Placeholder: Paste full script here -->",
-  monetagSocialBarEnabled: false,
+  monetagSocialBarEnabled: true,
   monetagPopunderCode: "<!-- Monetag Pop-under Script Placeholder: Paste full script here -->",
-  monetagPopunderEnabled: false,
+  monetagPopunderEnabled: true,
 
-  maxDirectLinkAdsPerDay: 6, // Default based on our previous discussion
-  maxDirectLinkAdsPerSession: 3, // Default based on our previous discussion
+  maxDirectLinkAdsPerDay: 50,
+  maxDirectLinkAdsPerSession: 20,
 };
 
 // Strategic media assets for psychological engagement

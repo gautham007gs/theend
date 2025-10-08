@@ -37,22 +37,22 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
 
     if (adType === 'standard') {
       // Prioritize Adsterra for standard banners if both enabled
-      if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode && !adSettings.adsterraBannerCode.toLowerCase().includes("placeholder")) {
+      if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode) {
         selectedAdCode = adSettings.adsterraBannerCode;
         selectedNetworkEnabled = true;
         selectedNetwork = 'adsterra';
-      } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode && !adSettings.monetagBannerCode.toLowerCase().includes("placeholder")) {
+      } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode) {
         selectedAdCode = adSettings.monetagBannerCode;
         selectedNetworkEnabled = true;
         selectedNetwork = 'monetag';
       }
     } else if (adType === 'native') {
       // Prioritize Adsterra for native banners if both enabled
-      if (adSettings.adsterraNativeBannerEnabled && adSettings.adsterraNativeBannerCode && !adSettings.adsterraNativeBannerCode.toLowerCase().includes("placeholder")) {
+      if (adSettings.adsterraNativeBannerEnabled && adSettings.adsterraNativeBannerCode) {
         selectedAdCode = adSettings.adsterraNativeBannerCode;
         selectedNetworkEnabled = true;
         selectedNetwork = 'adsterra';
-      } else if (adSettings.monetagNativeBannerEnabled && adSettings.monetagNativeBannerCode && !adSettings.monetagNativeBannerCode.toLowerCase().includes("placeholder")) {
+      } else if (adSettings.monetagNativeBannerEnabled && adSettings.monetagNativeBannerCode) {
         selectedAdCode = adSettings.monetagNativeBannerCode;
         selectedNetworkEnabled = true;
         selectedNetwork = 'monetag';

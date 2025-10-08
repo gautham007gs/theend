@@ -39,7 +39,7 @@ const GlobalAdScripts: React.FC = () => {
     };
 
     const injectScript = (scriptCode: string, networkName: string, injectedRef: React.MutableRefObject<boolean>) => {
-      if (injectedRef.current || !scriptCode || !scriptCode.trim() || scriptCode.toLowerCase().includes('placeholder')) {
+      if (injectedRef.current || !scriptCode || !scriptCode.trim()) {
         return; 
       }
 

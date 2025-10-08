@@ -25,10 +25,10 @@ const SocialBarAdDisplay: React.FC = () => {
     let selectedNetworkEnabled = false;
 
     // Prioritize Adsterra Social Bar if both are enabled and have valid code
-    if (adSettings.adsterraSocialBarEnabled && adSettings.adsterraSocialBarCode && !adSettings.adsterraSocialBarCode.toLowerCase().includes("placeholder")) {
+    if (adSettings.adsterraSocialBarEnabled && adSettings.adsterraSocialBarCode) {
       selectedAdCode = adSettings.adsterraSocialBarCode;
       selectedNetworkEnabled = true;
-    } else if (adSettings.monetagSocialBarEnabled && adSettings.monetagSocialBarCode && !adSettings.monetagSocialBarCode.toLowerCase().includes("placeholder")) {
+    } else if (adSettings.monetagSocialBarEnabled && adSettings.monetagSocialBarCode) {
       selectedAdCode = adSettings.monetagSocialBarCode;
       selectedNetworkEnabled = true;
     }
