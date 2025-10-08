@@ -2,7 +2,19 @@
 
 import React, { useState, useEffect, useRef } from 'react'; 
 import Image from 'next/image';
+import type { Metadata } from 'next';
 import AppHeader from '@/components/AppHeader';
+
+export const metadata: Metadata = {
+  title: 'Status Updates - AI Girlfriend Kruthika | Share Your Moments',
+  description: 'View and share status updates with Kruthika, your AI girlfriend. Experience authentic virtual companionship with photo sharing and real-time status features.',
+  keywords: 'AI girlfriend status, virtual companion updates, AI girlfriend photos, share moments AI girlfriend',
+  openGraph: {
+    title: 'Status Updates - Kruthika AI Girlfriend',
+    description: 'Share your moments with Kruthika - AI girlfriend status updates and photo sharing',
+    url: 'https://kruthika.fun/status',
+  },
+};
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, Camera, X as XIcon, ArrowLeft, Search, MoreVertical } from 'lucide-react';
@@ -104,14 +116,14 @@ const StatusPage: React.FC = () => {
     return (
     <React.Fragment key={`${statusKey}-${avatarUrlToUse || 'no_avatar_frag'}`}>
       <div 
-        className="flex items-center p-3 hover:bg-secondary/50 cursor-pointer border-b border-border transition-colors group" 
+        className="flex items-center px-5 py-4 hover:bg-secondary/60 cursor-pointer border-b border-border/50 transition-all duration-200 group active:bg-secondary/80" 
         onClick={handleItemClick}
       >
         <div className="relative">
           <Avatar 
             className={cn(
-                'h-12 w-12', 
-                hasUpdateRing ? 'ring-2 ring-primary p-0.5' : (isMyStatusStyle && !hasUpdateRing ? 'ring-2 ring-muted/50 p-0.5' : '')
+                'h-14 w-14 shadow-sm', 
+                hasUpdateRing ? 'ring-[3px] ring-primary ring-offset-2 ring-offset-background p-0.5' : (isMyStatusStyle && !hasUpdateRing ? 'ring-2 ring-muted/50 p-0.5' : '')
             )}
             key={`status-avatar-comp-${statusKey}-${avatarUrlToUse || 'default_avatar_comp_key_sp'}`}
           >
@@ -126,14 +138,14 @@ const StatusPage: React.FC = () => {
             <AvatarFallback>{(displayName || "S").charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           {isMyStatusStyle && !hasUpdateRing && !storyImageUrl && (
-             <div className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-0.5 border-2 border-background">
-              <PlusCircle size={16} />
+             <div className="absolute -bottom-0.5 -right-0.5 bg-gradient-to-br from-primary to-green-600 text-white rounded-full p-1 border-[3px] border-background shadow-md">
+              <PlusCircle size={18} />
             </div>
           )}
         </div>
         <div className="ml-4 flex-grow overflow-hidden">
-          <h2 className="font-semibold text-md truncate">{displayName}</h2>
-          <p className="text-sm text-muted-foreground truncate">{statusText}</p>
+          <h2 className="font-semibold text-base truncate text-foreground group-hover:text-primary transition-colors">{displayName}</h2>
+          <p className="text-sm text-muted-foreground truncate mt-0.5">{statusText}</p>
         </div>
       </div>
 
@@ -225,20 +237,21 @@ const StatusPage: React.FC = () => {
   return (
     <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header with Back Navigation */}
-      <div className="bg-green-500 text-white">
-        <div className="px-4 py-3 flex items-center">
+      <div className="bg-gradient-to-r from-[#25d366] to-[#20c997] shadow-md">
+        <div className="px-6 py-4 flex items-center">
           <button 
             onClick={() => window.history.back()} 
-            className="mr-4 hover:bg-green-400 rounded-full p-1.5 transition-colors"
+            className="mr-5 hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center"
+            aria-label="Go back"
           >
-            <ArrowLeft size={20} className="text-white" />
+            <ArrowLeft size={22} className="text-white" />
           </button>
-          <h1 className="text-xl font-semibold">Status</h1>
-          <div className="flex items-center space-x-3 ml-auto">
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+          <h1 className="text-2xl font-bold text-white">Status</h1>
+          <div className="flex items-center space-x-2 ml-auto">
+            <button className="hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="Search status">
               <Search size={20} className="text-white" />
             </button>
-            <button className="hover:bg-green-400 rounded-full p-1.5 transition-colors">
+            <button className="hover:bg-white/20 rounded-full p-2 transition-colors min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="More options">
               <MoreVertical size={20} className="text-white" />
             </button>
           </div>
@@ -257,7 +270,7 @@ const StatusPage: React.FC = () => {
             isKruthikaProfile={false}
         />
 
-        <div className="p-2 px-4 text-sm font-medium text-muted-foreground bg-secondary/30">RECENT UPDATES</div>
+        <div className="px-6 py-3 text-xs font-bold text-muted-foreground/80 bg-secondary/20 border-y border-border/30 tracking-wider uppercase">Recent Updates</div>
 
         {(effectiveAIProfile.statusStoryHasUpdate || (effectiveAIProfile.statusStoryText && effectiveAIProfile.statusStoryText !== defaultAIProfile.statusStoryText) || effectiveAIProfile.statusStoryImageUrl) && (
             <StatusItemDisplay
@@ -288,15 +301,21 @@ const StatusPage: React.FC = () => {
         ))}
 
         {/* Ads Section */}
-        <div className="p-4">
-          <BannerAdDisplay adType="standard" placementKey="statusPageBottom" className="mx-auto max-w-md mt-2 mb-1" />
-          <BannerAdDisplay adType="native" placementKey="statusPageNative" className="my-2" />
+        <div className="px-5 py-6 space-y-4 bg-secondary/10">
+          <BannerAdDisplay adType="standard" placementKey="statusPageBottom" className="mx-auto max-w-md" />
+          <BannerAdDisplay adType="native" placementKey="statusPageNative" className="" />
         </div>
 
       </div>
-      <div className="p-4 border-t border-border flex justify-end">
-        <Button variant="default" size="lg" className="rounded-full p-4 shadow-lg" onClick={() => alert("Camera access for status - not implemented")}>
-          <Camera size={24} />
+      <div className="p-5 border-t border-border/50 flex justify-end bg-background/95 backdrop-blur-sm">
+        <Button 
+          variant="default" 
+          size="lg" 
+          className="rounded-full p-4 shadow-xl bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-700 transition-all hover:scale-105" 
+          onClick={() => alert("Camera access for status - not implemented")}
+          aria-label="Add status"
+        >
+          <Camera size={26} />
         </Button>
       </div>
     </div>
