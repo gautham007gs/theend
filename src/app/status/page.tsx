@@ -28,6 +28,7 @@ import {
 } from "@/config/ai";
 import { tryShowRotatedAd } from "@/lib/ad-utils";
 import BannerAdDisplay from "@/components/chat/BannerAdDisplay";
+import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { useAIProfile } from "@/contexts/AIProfileContext";
 import { useGlobalStatus } from "@/contexts/GlobalStatusContext";
 import { useAdSettings } from "@/contexts/AdSettingsContext";
@@ -314,7 +315,12 @@ const StatusPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
+    <>
+      <BreadcrumbSchema items={[
+        { name: 'Home', url: 'https://kruthika.fun/' },
+        { name: 'Status Updates', url: 'https://kruthika.fun/status' }
+      ]} />
+      <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header with Back Navigation */}
       <div className="bg-gradient-to-r from-[#25d366] to-[#20c997] shadow-md">
         <div className="px-6 py-4 flex items-center">
@@ -424,6 +430,7 @@ const StatusPage: React.FC = () => {
         </Button>
       </div>
     </div>
+    </>
   );
 };
 
