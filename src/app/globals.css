@@ -132,36 +132,79 @@ img[loading="eager"]{content-visibility:visible}
 @layer base {
   * {
     @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    /* Attempt to prevent screenshots (limited support) */
+    /* Comprehensive copy protection */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    -webkit-touch-callout: none;
   }
-
-  /* Allow text selection for input fields */
-  input, textarea, [contenteditable] {
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-    pointer-events: auto !important;
-  }
-
-  /* Enhanced Screenshot Protection for All Media */
-  img, 
-  video,
-  canvas,
-  [data-screenshot-protected],
-  .screenshot-protected {
+  
+  body {
+    @apply bg-background text-foreground;
+    /* Enhanced screenshot and copy prevention */
     -webkit-user-select: none !important;
     -moz-user-select: none !important;
     -ms-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
+  }
+
+  /* Prevent right-click on body */
+  body {
+    pointer-events: auto;
+  }
+
+  /* Allow text selection ONLY for input fields */
+  input, 
+  textarea, 
+  [contenteditable] {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    pointer-events: auto !important;
+    -webkit-touch-callout: default !important;
+  }
+
+  /* Maximum protection for all media and content */
+  img, 
+  video,
+  canvas,
+  svg,
+  picture,
+  figure,
+  [data-screenshot-protected],
+  .screenshot-protected,
+  .message-bubble,
+  .chat-container {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* Prevent image dragging */
+  img {
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    pointer-events: none !important;
+  }
+
+  /* Make images un-saveable */
+  img::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
   }
 }
 

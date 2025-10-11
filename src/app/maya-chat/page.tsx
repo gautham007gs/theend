@@ -52,6 +52,7 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, Phone, Video, Info, X, ArrowLeft, MoreVertical } from "lucide-react";
 import dynamic from "next/dynamic";
 import { ScreenshotProtection } from "@/components/ScreenshotProtection";
+import { DevToolsBlocker } from "@/components/DevToolsBlocker";
 
 const SimulatedAdPlaceholder = dynamic(() => import("@/components/chat/SimulatedAdPlaceholder"), { ssr: false });
 const BannerAdDisplay = dynamic(() => import("@/components/chat/BannerAdDisplay"), { 
@@ -2320,6 +2321,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   return (
     <>
       <ScreenshotProtection />
+      <DevToolsBlocker />
       <ChatStructuredData />
       <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden">
         <ChatHeader

@@ -144,7 +144,15 @@ export default function RootLayout({
 
         <StructuredData />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning={true}>
+      <body 
+        className={`${inter.variable} font-sans antialiased`}
+        onContextMenu={(e) => e.preventDefault()}
+        onCopy={(e) => e.preventDefault()}
+        onCut={(e) => e.preventDefault()}
+        onPaste={(e) => e.preventDefault()}
+        onDragStart={(e) => e.preventDefault()}
+        onDrop={(e) => e.preventDefault()}
+      >
         <ErrorBoundary>
           <AIProfileProvider>
             <AdSettingsProvider>

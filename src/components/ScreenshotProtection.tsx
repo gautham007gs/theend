@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 export function ScreenshotProtection() {
   useEffect(() => {
-    // Add visual obscuring layer on screenshot attempt detection
+    // Enhanced visual obscuring layer for screenshot attempts
     const obscureContent = () => {
       const overlay = document.createElement('div');
       overlay.id = 'screenshot-blocker';
@@ -28,14 +28,14 @@ export function ScreenshotProtection() {
       }, 100);
     };
 
-    // Detect visibility change (often triggered during screenshot)
+    // Detect visibility change (triggered during screenshot)
     const handleVisibilityChange = () => {
       if (document.hidden) {
         obscureContent();
       }
     };
 
-    // Detect page blur (common during screenshot)
+    // Detect page blur (screenshot tools often blur the page)
     const handleBlur = () => {
       obscureContent();
     };
@@ -46,9 +46,25 @@ export function ScreenshotProtection() {
       return false;
     };
 
-    // Prevent keyboard shortcuts for screenshots and dev tools
+    // Prevent copy, cut, paste
+    const handleCopy = (e: Event) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const handleCut = (e: Event) => {
+      e.preventDefault();
+      return false;
+    };
+
+    const handlePaste = (e: Event) => {
+      e.preventDefault();
+      return false;
+    };
+
+    // Comprehensive keyboard shortcut blocking
     const handleKeydown = (e: KeyboardEvent) => {
-      // Prevent Print Screen, Windows + Shift + S, Command + Shift + 3/4/5
+      // Screenshot shortcuts
       if (
         e.key === 'PrintScreen' ||
         (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5')) ||
@@ -59,16 +75,43 @@ export function ScreenshotProtection() {
         return false;
       }
 
-      // Prevent developer tools
+      // Developer tools
       if (
-        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-        (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) ||
+        (e.ctrlKey && (e.key === 'U' || e.key === 'u')) ||
         e.key === 'F12'
       ) {
         e.preventDefault();
         return false;
       }
+
+      // Copy, save, select all shortcuts
+      if (e.ctrlKey || e.metaKey) {
+        if (
+          e.key === 'c' || e.key === 'C' ||
+          e.key === 's' || e.key === 'S' ||
+          e.key === 'x' || e.key === 'X' ||
+          e.key === 'a' || e.key === 'A'
+        ) {
+          e.preventDefault();
+          return false;
+        }
+      }
+    };
+
+    // Detect screenshot on mobile (user agent sniffing)
+    const detectMobileScreenshot = () => {
+      if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        const observer = new MutationObserver(() => {
+          if (document.hidden) {
+            obscureContent();
+          }
+        });
+        observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+        return observer;
+      }
+      return null;
     };
 
     // Add event listeners
@@ -76,13 +119,26 @@ export function ScreenshotProtection() {
     window.addEventListener('blur', handleBlur);
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('keydown', handleKeydown);
+    document.addEventListener('copy', handleCopy);
+    document.addEventListener('cut', handleCut);
+    document.addEventListener('paste', handlePaste);
 
-    // Cleanup: remove all event listeners
+    // Mobile screenshot detection
+    const mobileObserver = detectMobileScreenshot();
+
+    // Disable right-click on body
+    document.body.oncontextmenu = () => false;
+
+    // Cleanup
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleBlur);
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('keydown', handleKeydown);
+      document.removeEventListener('copy', handleCopy);
+      document.removeEventListener('cut', handleCut);
+      document.removeEventListener('paste', handlePaste);
+      if (mobileObserver) mobileObserver.disconnect();
     };
   }, []);
 
