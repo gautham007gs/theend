@@ -6,6 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { defaultAIProfile } from '@/config/ai';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface MessageBubbleProps {
   message: Message;
@@ -380,11 +385,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     return message.text && <p className="text-sm whitespace-pre-wrap">{message.text}</p>;
   };
 
-  // WhatsApp-style View Once Image Component - Realistic UI
+  // WhatsApp-style View Once Image Component with Dialog - Similar to DP zoom
   const ViewOnceImage: React.FC<{ imageUrl: string; messageId: string; isUserSent?: boolean }> = ({ imageUrl, messageId, isUserSent = false }) => {
     const [isViewed, setIsViewed] = useState(false);
-    const [showFullImage, setShowFullImage] = useState(false);
-    const [isViewing, setIsViewing] = useState(false);
+    const [showImageDialog, setShowImageDialog] = useState(false);
+    const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
       const viewedKey = `viewed_${messageId}`;
@@ -392,103 +397,134 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       setIsViewed(alreadyViewed);
     }, [messageId]);
 
+    useEffect(() => {
+      // Cleanup timer on unmount
+      return () => {
+        if (autoCloseTimerRef.current) {
+          clearTimeout(autoCloseTimerRef.current);
+        }
+      };
+    }, []);
+
     const handleViewImage = () => {
       if (isViewed) return;
       
-      setIsViewing(true);
-      setShowFullImage(true);
-      
+      setShowImageDialog(true);
       if (navigator.vibrate) navigator.vibrate(50);
 
-      // Auto-close after 3 seconds
-      setTimeout(() => {
-        setShowFullImage(false);
-        setIsViewing(false);
+      // Auto-close after 5 seconds and mark as viewed
+      autoCloseTimerRef.current = setTimeout(() => {
+        setShowImageDialog(false);
         setIsViewed(true);
         localStorage.setItem(`viewed_${messageId}`, 'true');
-      }, 3000);
+      }, 5000);
     };
 
-    if (showFullImage) {
-      return (
-        <div 
-          className="fixed inset-0 z-[100] bg-black flex items-center justify-center p-4"
-          style={{ 
-            userSelect: 'none', 
-            WebkitUserSelect: 'none', 
-            touchAction: 'none',
-            WebkitTouchCallout: 'none'
-          }}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-            <div className="flex items-center gap-2 text-white text-sm bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#25D366" strokeWidth="2" strokeDasharray="31.4 31.4" strokeDashoffset="15.7"/>
-                <text x="12" y="16.5" textAnchor="middle" fontSize="12" fontWeight="bold" fill="white">1</text>
-              </svg>
-              <span>View once</span>
-            </div>
-          </div>
-          <div className="relative w-full h-full flex items-center justify-center">
-            <img
-              src={imageUrl}
-              alt="View once"
-              className="max-w-[90vw] max-h-[85vh] w-auto h-auto object-contain select-none pointer-events-none"
-              style={{ 
-                userSelect: 'none', 
-                WebkitUserSelect: 'none', 
-                WebkitTouchCallout: 'none',
-                pointerEvents: 'none'
-              }}
-              onContextMenu={(e) => e.preventDefault()}
-              draggable={false}
-            />
-          </div>
-        </div>
-      );
-    }
+    const handleCloseDialog = () => {
+      if (autoCloseTimerRef.current) {
+        clearTimeout(autoCloseTimerRef.current);
+      }
+      setShowImageDialog(false);
+      setIsViewed(true);
+      localStorage.setItem(`viewed_${messageId}`, 'true');
+    };
 
-    // WhatsApp-style compact bubble - extra small and narrow
+    // WhatsApp-style compact bubble
     return (
-      <div 
-        className={cn(
-          "inline-flex items-center gap-1 py-0.5 px-1 cursor-pointer select-none rounded-md max-w-[120px]",
-          !isViewed && "hover:opacity-90 transition-opacity"
-        )}
-        onClick={handleViewImage}
-        style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
-      >
-        {!isViewed ? (
-          // Before opening - extra compact bubble with WhatsApp-style icon
-          <>
-            <div className="relative w-6 h-6 flex items-center justify-center flex-shrink-0">
-              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#25D366" strokeWidth="2" strokeDasharray="31.4 31.4" strokeDashoffset="15.7"/>
-                <text x="12" y="16.5" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#25D366">1</text>
-              </svg>
+      <>
+        <div 
+          className={cn(
+            "inline-flex items-center gap-1 py-0.5 px-1 cursor-pointer select-none rounded-md max-w-[120px]",
+            !isViewed && "hover:opacity-90 transition-opacity"
+          )}
+          onClick={handleViewImage}
+          style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+        >
+          {!isViewed ? (
+            <>
+              <div className="relative w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="#25D366" strokeWidth="2" strokeDasharray="31.4 31.4" strokeDashoffset="15.7"/>
+                  <text x="12" y="16.5" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#25D366">1</text>
+                </svg>
+              </div>
+              <div className="flex items-center gap-0.5 min-w-0">
+                <svg className="w-3 h-3 text-[#25D366] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                </svg>
+                <span className="text-[#25D366] text-[10px] font-medium truncate">Photo</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-6 h-6 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="2" />
+                  <path fillRule="evenodd" d="M10 4C5.5 4 1.73 6.943.458 10 1.732 13.057 5.522 16 10 16s8.268-2.943 9.542-6C18.268 6.943 14.478 4 10 4zm0 10a4 4 0 110-8 4 4 0 010 8z" clipRule="evenodd" />
+                  <line x1="4" y1="4" x2="16" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <span className="text-gray-500 dark:text-gray-400 text-[10px] truncate">Opened</span>
+            </>
+          )}
+        </div>
+
+        {/* Full-screen Dialog like DP zoom */}
+        <Dialog open={showImageDialog} onOpenChange={(open) => !open && handleCloseDialog()}>
+          <DialogContent className="fixed left-[50%] top-[50%] z-[100] w-[95vw] max-w-2xl h-auto translate-x-[-50%] translate-y-[-50%] bg-black border-0 shadow-2xl rounded-2xl p-0 overflow-hidden [&>button]:hidden">
+            {/* Header with view-once indicator */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-black"></div>
+              <div className="relative flex items-center justify-between p-4 text-white border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCloseDialog}
+                    className="text-white hover:bg-white/10 h-10 w-10 rounded-full p-0"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="#25D366" strokeWidth="2" strokeDasharray="31.4 31.4" strokeDashoffset="15.7"/>
+                      <text x="12" y="16.5" textAnchor="middle" fontSize="12" fontWeight="bold" fill="white">1</text>
+                    </svg>
+                    <DialogTitle className="text-white text-lg font-medium">
+                      View Once Photo
+                    </DialogTitle>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-0.5 min-w-0">
-              <svg className="w-3 h-3 text-[#25D366] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-              </svg>
-              <span className="text-[#25D366] text-[10px] font-medium truncate">Photo</span>
+
+            {/* Image Section with screenshot protection */}
+            <div className="flex flex-col items-center py-8 px-6 bg-black min-h-[400px] max-h-[70vh] justify-center">
+              <div className="relative w-full h-full flex items-center justify-center">
+                <Image
+                  src={imageUrl}
+                  alt="View once photo"
+                  width={600}
+                  height={600}
+                  className="max-w-full max-h-[60vh] w-auto h-auto object-contain rounded-lg select-none"
+                  style={{ 
+                    userSelect: 'none', 
+                    WebkitUserSelect: 'none', 
+                    WebkitTouchCallout: 'none'
+                  }}
+                  onContextMenu={(e) => e.preventDefault()}
+                  draggable={false}
+                  priority={true}
+                  unoptimized
+                />
+              </div>
+              <p className="text-white/70 text-sm mt-4 text-center">
+                This photo will disappear after closing
+              </p>
             </div>
-          </>
-        ) : (
-          // After opened - extra compact gray bubble with opened icon
-          <>
-            <div className="w-6 h-6 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
-              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <circle cx="10" cy="10" r="2" />
-                <path fillRule="evenodd" d="M10 4C5.5 4 1.73 6.943.458 10 1.732 13.057 5.522 16 10 16s8.268-2.943 9.542-6C18.268 6.943 14.478 4 10 4zm0 10a4 4 0 110-8 4 4 0 010 8z" clipRule="evenodd" />
-                <line x1="4" y1="4" x2="16" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <span className="text-gray-500 dark:text-gray-400 text-[10px] truncate">Opened</span>
-          </>
-        )}
-      </div>
+          </DialogContent>
+        </Dialog>
+      </>
     );
   };
 
