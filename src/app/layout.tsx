@@ -123,12 +123,6 @@ export default function RootLayout({
         {/* Prefetch chat page */}
         <link rel="prefetch" href="/maya-chat" />
 
-        {/* Ad Scripts - Pop-under */}
-        <script type='text/javascript' src='//acuteprone.com/01/e3/54/01e35447af2bd91188e667d4f37474a5.js' async></script>
-        
-        {/* Ad Scripts - Social Bar */}
-        <script type='text/javascript' src='//acuteprone.com/11/9e/af/119eafaa702a414f5c4b81494945df9b.js' async></script>
-
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{
           __html: `

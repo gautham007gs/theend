@@ -12,7 +12,6 @@ import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { tryShowRotatedAd } from '@/lib/ad-utils';
 import { cn } from '@/lib/utils';
-import Script from 'next/script';
 
 const BannerAdDisplay = dynamic(() => import('@/components/chat/BannerAdDisplay'), {
   ssr: false,
@@ -147,18 +146,6 @@ const ChatListPage: React.FC = () => {
 
   return (
     <>
-      {/* Pop-under Ad Script */}
-      <Script
-        src="//acuteprone.com/01/e3/54/01e35447af2bd91188e667d4f37474a5.js"
-        strategy="lazyOnload"
-      />
-      
-      {/* Social Bar Ad Script */}
-      <Script
-        src="//acuteprone.com/11/9e/af/119eafaa702a414f5c4b81494945df9b.js"
-        strategy="lazyOnload"
-      />
-      
       <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-background shadow-2xl overflow-hidden">
       {/* WhatsApp-style Header */}
       <header className="bg-[#25d366] shadow-sm sticky top-0 z-10 flex-shrink-0">

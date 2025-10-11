@@ -55,39 +55,22 @@ const SocialBarAdDisplay: React.FC = () => {
       
       try {
         console.log('Social Bar: Injecting ad script...', adCodeToInject.substring(0, 100));
+        const fragment = document.createRange().createContextualFragment(adCodeToInject);
+        adContainerRef.current.appendChild(fragment);
+        scriptInjectedRef.current = true; // Mark as injected for this specific code
+        console.log('Social Bar: Script successfully injected into DOM');
         
-        // Parse the script code
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = adCodeToInject.trim();
-        
-        // Find all script tags
-        const scripts = tempDiv.querySelectorAll('script');
-        
-        if (scripts.length === 0) {
-          console.warn('Social Bar: No script tags found in provided code');
-          return;
-        }
-
-        // Inject each script into the container
+        // Force execution of any inline scripts
+        const scripts = adContainerRef.current.querySelectorAll('script');
         scripts.forEach((oldScript) => {
           const newScript = document.createElement('script');
-          
-          // Copy all attributes
           Array.from(oldScript.attributes).forEach(attr => {
             newScript.setAttribute(attr.name, attr.value);
           });
-          
-          // Copy inline content if any
-          if (oldScript.innerHTML.trim()) {
-            newScript.innerHTML = oldScript.innerHTML;
-          }
-          
-          adContainerRef.current?.appendChild(newScript);
-          console.log('Social Bar: Script injected - src:', newScript.src || 'inline');
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode?.replaceChild(newScript, oldScript);
         });
-
-        scriptInjectedRef.current = true;
-        console.log('Social Bar: All scripts successfully injected');
+        console.log('Social Bar: Forced script re-execution complete');
       } catch (e) {
         console.error("Social Bar: Error injecting ad script:", e);
         scriptInjectedRef.current = false; // Allow retry on next render

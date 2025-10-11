@@ -63,40 +63,46 @@ const GlobalAdScripts: React.FC = () => {
       }
 
       try {
-        console.log(`${networkName}: Starting script injection...`, scriptCode.substring(0, 100));
+        console.log(`${networkName}: Starting script injection...`);
+        const scriptContainer = document.createElement('div');
+        scriptContainer.innerHTML = scriptCode; 
         
-        // Create a temporary container to parse the HTML
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = scriptCode.trim();
-        
-        // Find all script tags in the parsed HTML
-        const scripts = tempDiv.querySelectorAll('script');
-        
-        if (scripts.length === 0) {
-          console.warn(`${networkName}: No script tags found in provided code`);
-          return;
-        }
-
-        scripts.forEach((oldScript) => {
-          const newScript = document.createElement('script');
-          
-          // Copy all attributes (type, src, async, defer, etc.)
-          Array.from(oldScript.attributes).forEach(attr => {
-            newScript.setAttribute(attr.name, attr.value);
-          });
-          
-          // Copy inline script content if any
-          if (oldScript.innerHTML.trim()) {
-            newScript.innerHTML = oldScript.innerHTML;
+        let hasValidScriptTag = false;
+        Array.from(scriptContainer.childNodes).forEach(node => {
+          if (node.nodeName === "SCRIPT") {
+            const scriptTag = document.createElement('script');
+            const originalScript = node as HTMLScriptElement;
+            
+            // Copy all attributes
+            for (let i = 0; i < originalScript.attributes.length; i++) {
+              const attr = originalScript.attributes[i];
+              scriptTag.setAttribute(attr.name, attr.value);
+            }
+            
+            // Copy inline script content
+            if (originalScript.innerHTML.trim()) {
+              scriptTag.innerHTML = originalScript.innerHTML;
+            }
+            
+            if (scriptTag.src || scriptTag.innerHTML.trim()) {
+              hasValidScriptTag = true;
+              document.body.appendChild(scriptTag);
+              console.log(`${networkName}: Script tag appended to body (src: ${scriptTag.src || 'inline'})`);
+            } else {
+              console.warn(`${networkName}: Skipping empty script tag`);
+            }
+          } else if (node.nodeType !== Node.TEXT_NODE || node.textContent?.trim()) {
+            // Append other nodes like comments, noscript tags
+            document.body.appendChild(node.cloneNode(true));
           }
-          
-          // Append to body
-          document.body.appendChild(newScript);
-          console.log(`${networkName}: Script injected - src: ${newScript.src || 'inline code'}`);
         });
 
-        injectedRef.current = true;
-        console.log(`${networkName}: All scripts successfully injected`);
+        if (hasValidScriptTag) {
+          injectedRef.current = true;
+          console.log(`${networkName}: Script successfully injected and marked as complete`);
+        } else {
+          console.warn(`${networkName}: No valid script tags found in provided code`);
+        }
 
       } catch (e) {
         console.error(`${networkName}: Error during script injection:`, e);
