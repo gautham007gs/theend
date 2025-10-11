@@ -5,6 +5,40 @@ A Next.js-powered AI girlfriend chat application featuring real-time conversatio
 
 ## Recent Changes (October 2025)
 
+### View Once Feature Enhancement - WhatsApp UI Matching
+**Date**: October 11, 2025
+
+#### Completed Improvements:
+1. **WhatsApp-Style View Once UI**
+   - Updated ViewOnceImage component with authentic WhatsApp design
+   - SVG icon with half solid/half dotted circle stroke matching WhatsApp's "1" icon
+   - Compact preview bubble with small photo icon and "Photo" text
+   - Full-screen viewer displays for 3 seconds (increased from 2.5s)
+   - Improved image sizing in full-screen mode (responsive max-w-full max-h-full)
+
+2. **Critical Bug Fixes**
+   - Fixed ViewOnceImage to support BOTH AI-sent and user-sent view-once images
+   - Previously only worked with aiImageUrl, now handles userImageUrl too
+   - Fixed LSP error where message.sender was incorrectly compared to 'ad'
+
+3. **Package Updates**
+   - Updated @supabase/supabase-js to latest version
+   - Updated React types (@types/react, @types/react-dom)
+   - Updated react-day-picker and react-hook-form
+   - All updates verified stable with no breaking changes
+
+4. **Testing & Verification**
+   - Audio and video preset functionality confirmed working via upload API
+   - MessageBubble component renders audio when audioUrl is present
+   - View-once feature tested and architect-approved
+   - Site running smoothly on port 5000
+
+#### Files Modified:
+- `src/components/chat/MessageBubble.tsx` - Enhanced ViewOnceImage with WhatsApp UI
+- `package.json` - Updated dependencies to latest stable versions
+
+## Recent Changes (October 2025)
+
 ### Ad Monetization & SEO Optimization
 **Date**: October 8, 2025
 
