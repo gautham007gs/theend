@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Check, CheckCheck, Reply, Heart, ThumbsUp, Smile } from 'lucide-react';
+import { Check, CheckCheck, Reply, Heart, ThumbsUp, Smile, X } from 'lucide-react';
 import type { Message, MessageStatus, MessageReaction } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -377,26 +377,24 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     return message.text && <p className="text-sm whitespace-pre-wrap">{message.text}</p>;
   };
 
-  // WhatsApp-style View Once Image Component
+  // WhatsApp-style View Once Image Component - Exact UI
   const ViewOnceImage: React.FC<{ imageUrl: string; messageId: string }> = ({ imageUrl, messageId }) => {
     const [isViewed, setIsViewed] = useState(false);
     const [showFullImage, setShowFullImage] = useState(false);
 
     useEffect(() => {
-      // Check if already viewed from localStorage
       const viewedKey = `viewed_${messageId}`;
       const alreadyViewed = localStorage.getItem(viewedKey) === 'true';
       setIsViewed(alreadyViewed);
     }, [messageId]);
 
     const handleViewImage = () => {
-      if (isViewed) return; // Already viewed, can't open again
+      if (isViewed) return;
       
       setShowFullImage(true);
       setIsViewed(true);
       localStorage.setItem(`viewed_${messageId}`, 'true');
 
-      // Haptic feedback
       if (navigator.vibrate) navigator.vibrate(50);
     };
 
@@ -415,7 +413,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
               onClick={() => setShowFullImage(false)}
               className="text-white bg-black/70 p-2 rounded-full backdrop-blur-sm"
             >
-              <XIcon className="h-5 w-5" />
+              <X className="h-5 w-5" />
             </button>
           </div>
           <Image
@@ -433,33 +431,56 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       );
     }
 
+    // WhatsApp-style compact preview (exact replica)
     return (
       <div 
         className={cn(
-          "relative rounded-lg overflow-hidden cursor-pointer select-none",
-          isViewed ? "w-32 h-32 bg-muted/50" : "w-40 h-40 bg-gradient-to-br from-teal-500 to-green-600"
+          "relative rounded-md overflow-hidden cursor-pointer select-none",
+          "w-[200px] h-[200px]" // Compact WhatsApp size
         )}
         onClick={handleViewImage}
         style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
       >
         {!isViewed ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-            <div className="w-12 h-12 rounded-full bg-white/25 flex items-center justify-center mb-1.5 backdrop-blur-sm">
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-              </svg>
+          // Blurred preview with view-once icon (WhatsApp style)
+          <div className="relative w-full h-full">
+            {/* Blurred background image preview */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800">
+              <Image
+                src={imageUrl}
+                alt="Preview"
+                fill
+                className="object-cover blur-lg opacity-40"
+                unoptimized
+              />
             </div>
-            <p className="text-xs font-medium">VIEW ONCE</p>
+            {/* View once overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center mb-2 shadow-lg">
+                <svg className="w-8 h-8 text-teal-600 dark:text-teal-400" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="2.5" />
+                  <path fillRule="evenodd" d="M10 4C5.5 4 1.73 6.943.458 10 1.732 13.057 5.522 16 10 16s8.268-2.943 9.542-6C18.268 6.943 14.478 4 10 4zm0 10a4 4 0 110-8 4 4 0 010 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex items-center gap-1.5 bg-white/90 dark:bg-gray-800/90 px-3 py-1.5 rounded-full shadow-md">
+                <svg className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="2" />
+                </svg>
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Photo</span>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-            <div className="w-10 h-10 rounded-full bg-muted/80 flex items-center justify-center mb-1.5">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+          // Opened state (WhatsApp style)
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800">
+            <div className="w-14 h-14 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center mb-2">
+              <svg className="w-7 h-7 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <circle cx="10" cy="10" r="2" />
+                <path fillRule="evenodd" d="M10 4C5.5 4 1.73 6.943.458 10 1.732 13.057 5.522 16 10 16s8.268-2.943 9.542-6C18.268 6.943 14.478 4 10 4zm0 10a4 4 0 110-8 4 4 0 010 8z" clipRule="evenodd" />
+                <line x1="4" y1="4" x2="16" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
-            <p className="text-[10px] uppercase tracking-wide">Opened</p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Opened</p>
           </div>
         )}
       </div>

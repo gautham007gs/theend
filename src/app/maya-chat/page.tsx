@@ -897,6 +897,70 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       }
     } catch (error) {
       console.error("Kruthika AI: Error in proactive messaging:", error);
+
+
+  // Function to inject scrollable banner ad in chat
+  const injectBannerAdMessage = () => {
+    if (!adSettings || !adSettings.adsEnabledGlobally) {
+      return;
+    }
+
+    // Check if banner is enabled and has valid code
+    const hasAdsterraBanner =
+      adSettings.adsterraBannerEnabled &&
+      adSettings.adsterraBannerCode &&
+      !adSettings.adsterraBannerCode.toLowerCase().includes("placeholder");
+
+    const hasMonatagBanner =
+      adSettings.monetagBannerEnabled &&
+      adSettings.monetagBannerCode &&
+      !adSettings.monetagBannerCode.toLowerCase().includes("placeholder");
+
+    if (!hasAdsterraBanner && !hasMonatagBanner) {
+      console.log("Banner ad injection skipped: No valid banner code");
+      return;
+    }
+
+    // Rotate between networks
+    const lastShownNetwork = localStorage.getItem("last_banner_ad_network") || "";
+    let selectedCode = "";
+    let selectedNetwork = "";
+
+    if (hasAdsterraBanner && hasMonatagBanner) {
+      if (lastShownNetwork === "adsterra") {
+        selectedCode = adSettings.monetagBannerCode;
+        selectedNetwork = "monetag";
+      } else {
+        selectedCode = adSettings.adsterraBannerCode;
+        selectedNetwork = "adsterra";
+      }
+    } else if (hasAdsterraBanner) {
+      selectedCode = adSettings.adsterraBannerCode;
+      selectedNetwork = "adsterra";
+    } else if (hasMonatagBanner) {
+      selectedCode = adSettings.monetagBannerCode;
+      selectedNetwork = "monetag";
+    }
+
+    localStorage.setItem("last_banner_ad_network", selectedNetwork);
+
+    // Create banner ad message
+    const bannerId = `banner_ad_${Date.now()}`;
+    const bannerAdMessage: Message = {
+      id: bannerId,
+      text: "",
+      sender: "ad" as any,
+      timestamp: new Date(),
+      status: "read",
+      isNativeAd: true, // Reuse native ad rendering
+      nativeAdCode: selectedCode,
+      nativeAdId: `banner-ad-chat-${selectedNetwork}-${Date.now()}`,
+    };
+
+    setMessages((prev) => [...prev, bannerAdMessage]);
+    console.log("Banner ad injected in chat:", bannerId, "Network:", selectedNetwork);
+  };
+
     }
   };
 
@@ -1398,11 +1462,21 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         // Track total messages and show native ad after exactly 6 messages
         setTotalMessageCount(prev => {
           const newCount = prev + 1;
+          
+          // Show native ad at 6 messages
           if (newCount === 6 && !hasShownNativeAdOnce && adSettings && adSettings.adsEnabledGlobally) {
             setTimeout(() => {
               injectNativeAdMessage();
             }, 100);
           }
+          
+          // Show banner ad every 15 messages (after native ad at 6)
+          if (newCount > 6 && (newCount - 6) % 15 === 0 && adSettings && adSettings.adsEnabledGlobally) {
+            setTimeout(() => {
+              injectBannerAdMessage();
+            }, 100);
+          }
+          
           return newCount;
         });
 
@@ -2112,9 +2186,16 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       return;
     }
 
-    // Only show once
-    if (hasShownNativeAdOnce) {
-      console.log("Native ad already shown once, skipping");
+    // Critical check - prevent duplicates
+    if (hasShownNativeAdOnce || currentActiveAdId) {
+      console.log("Native ad already shown or active, preventing duplicate");
+      return;
+    }
+
+    // Double-check localStorage to prevent race conditions
+    const adAlreadyShown = localStorage.getItem(NATIVE_AD_SHOWN_KEY) === 'true';
+    if (adAlreadyShown) {
+      console.log("Native ad already shown (localStorage check), skipping");
       return;
     }
 
@@ -2272,7 +2353,11 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           />
         )}
 
-        {/* Single Banner Ad above input - no duplicates */}
+        {/* Banner Ad above input */}
+        <div className="flex-shrink-0 border-t border-border/30">
+          <BannerAdDisplay adType="standard" placementKey="maya-chat-input" className="mb-0" />
+        </div>
+        
         <div className="flex-shrink-0">
           <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
         </div>
