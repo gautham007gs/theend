@@ -1478,6 +1478,29 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         );
       };
 
+      // Random image drop for engagement (10% chance after 5+ messages)
+      const shouldDropRandomImage = () => {
+        const userMessageCount = messages.filter(m => m.sender === 'user').length;
+        return userMessageCount > 5 && Math.random() < 0.1; // 10% chance
+      };
+
+      // Check for random image drop opportunity
+      if (shouldDropRandomImage() && !aiResult.proactiveImageUrl) {
+        const randomImageUrl = getContextualImage(text, getTimeOfDay());
+        if (randomImageUrl) {
+          const randomCaptions = [
+            "btw dekho ye pic mil gayi 😊",
+            "arre wait, ye pic share karna tha",
+            "ohh forgot to share this",
+            "look what i found 📸",
+            "random pic drop 😛"
+          ];
+          const randomCaption = randomCaptions[Math.floor(Math.random() * randomCaptions.length)];
+          
+          await processAiMediaMessage("image", randomImageUrl, randomCaption);
+        }
+      }
+
       if (aiResult.proactiveImageUrl && aiResult.mediaCaption) {
         await processAiMediaMessage(
           "image",
@@ -1934,7 +1957,89 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     });
   };
 
-  // Get available images that haven't been sent yet
+  // Smart image selection based on context and description
+  const getContextualImage = (userMessage: string, timeOfDay: string): string | null => {
+    const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
+    const allImages = currentMediaConfig.assets.filter((a) => a.type === "image");
+
+    if (allImages.length === 0) return null;
+
+    // Get sent images from localStorage
+    const sentImagesStr = localStorage.getItem(SENT_IMAGES_KEY);
+    const sentImages: string[] = sentImagesStr ? JSON.parse(sentImagesStr) : [];
+
+    // Find images that haven't been sent
+    const unsentImages = allImages.filter(img => !sentImages.includes(img.url));
+
+    if (unsentImages.length === 0) {
+      // All images sent, reset tracking
+      localStorage.removeItem(SENT_IMAGES_KEY);
+      return allImages[0].url; // Start over
+    }
+
+    // Analyze user message for context
+    const msg = userMessage.toLowerCase();
+    
+    // Match by description/naming patterns
+    let selectedImage = null;
+    
+    // Mirror selfie requests
+    if (msg.includes('selfie') || msg.includes('pic') || msg.includes('photo')) {
+      selectedImage = unsentImages.find(img => 
+        img.description?.toLowerCase().includes('selfie') || 
+        img.description?.toLowerCase().includes('mirror')
+      );
+    }
+    
+    // Casual/outfit requests
+    if (msg.includes('outfit') || msg.includes('dress') || msg.includes('look')) {
+      selectedImage = unsentImages.find(img => 
+        img.description?.toLowerCase().includes('outfit') || 
+        img.description?.toLowerCase().includes('casual')
+      );
+    }
+    
+    // College/study context
+    if (msg.includes('college') || msg.includes('class') || msg.includes('study')) {
+      selectedImage = unsentImages.find(img => 
+        img.description?.toLowerCase().includes('college') || 
+        img.description?.toLowerCase().includes('study')
+      );
+    }
+    
+    // Food/eating context
+    if (msg.includes('food') || msg.includes('eat') || msg.includes('lunch') || msg.includes('dinner')) {
+      selectedImage = unsentImages.find(img => 
+        img.description?.toLowerCase().includes('food') || 
+        img.description?.toLowerCase().includes('cafe')
+      );
+    }
+    
+    // Evening/sunset context
+    if (timeOfDay === 'evening' || msg.includes('sunset') || msg.includes('evening')) {
+      selectedImage = unsentImages.find(img => 
+        img.description?.toLowerCase().includes('sunset') || 
+        img.description?.toLowerCase().includes('evening')
+      );
+    }
+    
+    // Morning context
+    if (timeOfDay === 'morning' || msg.includes('morning')) {
+      selectedImage = unsentImages.find(img => 
+        img.description?.toLowerCase().includes('morning') || 
+        img.description?.toLowerCase().includes('coffee')
+      );
+    }
+
+    // If no context match, return random unsent image
+    if (!selectedImage) {
+      selectedImage = unsentImages[Math.floor(Math.random() * unsentImages.length)];
+    }
+
+    return selectedImage.url;
+  };
+
+  // Get available images that haven't been sent yet (fallback)
   const getUnsentImage = (): string | null => {
     const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
     const availableImages = currentMediaConfig.assets
@@ -1971,9 +2076,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     }
   };
 
-  // Send mandatory image after 2 messages
+  // Send mandatory image after 2 messages with context
   const sendMandatoryImage = async () => {
-    const imageUrl = getUnsentImage();
+    const currentTimeOfDay = getTimeOfDay();
+    const lastUserMsg = messages.filter(m => m.sender === 'user').slice(-1)[0]?.text || '';
+    const imageUrl = getContextualImage(lastUserMsg, currentTimeOfDay) || getUnsentImage();
+    
     if (!imageUrl) return;
 
     setIsAiTyping(true);
@@ -2164,15 +2272,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           />
         )}
 
-        {/* Normal Banner Ad above input */}
-        <div className="flex-shrink-0">
-          <BannerAdDisplay
-            adType="standard"
-            placementKey="chat-bottom"
-            className="mb-1"
-          />
-        </div>
-
+        {/* Single Banner Ad above input - no duplicates */}
         <div className="flex-shrink-0">
           <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
         </div>
