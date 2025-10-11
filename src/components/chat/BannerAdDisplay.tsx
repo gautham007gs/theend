@@ -5,7 +5,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
-import { registerAdRefresh, unregisterAdRefresh } from '@/lib/ad-refresh-system';
 
 interface BannerAdDisplayProps {
   adType: 'standard' | 'native'; // Specify banner type
@@ -70,33 +69,6 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       scriptInjectedRef.current = false;
     }
   }, [adSettings, isLoadingAdSettings, adType]);
-
-  // Set up ad refresh system
-  useEffect(() => {
-    if (isVisible && currentNetwork && adElementId) {
-      // Register for safe ad refresh with network-specific settings
-      registerAdRefresh({
-        adElementId,
-        networkName: currentNetwork,
-        adType: adType === 'standard' ? 'banner' : 'native',
-        maxRefreshesPerHour: currentNetwork === 'adsterra' ? 6 : 8, // Conservative rates
-        respectUserActivity: true, // Only refresh when user is active
-      });
-
-      return () => {
-        unregisterAdRefresh(adElementId);
-      };
-    }
-  }, [isVisible, currentNetwork, adElementId, adType]);
-
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (adElementId) {
-        unregisterAdRefresh(adElementId);
-      }
-    };
-  }, [adElementId]);
 
   useEffect(() => {
     // Inject script only when adCodeToInject is set and container is available

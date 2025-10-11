@@ -13,11 +13,23 @@ const ServiceWorkerRegistration = dynamic(() => import('./ServiceWorkerRegistrat
   loading: () => null
 });
 
+const GlobalAdScripts = dynamic(() => import('./GlobalAdScripts'), {
+  ssr: false,
+  loading: () => null
+});
+
+const SocialBarAdDisplay = dynamic(() => import('./SocialBarAdDisplay'), {
+  ssr: false,
+  loading: () => null
+});
+
 export default function ClientComponentsWrapper() {
   return (
     <>
       <CookieConsent />
       <ServiceWorkerRegistration />
+      <GlobalAdScripts />
+      <SocialBarAdDisplay />
     </>
   );
 }

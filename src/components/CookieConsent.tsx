@@ -26,12 +26,9 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
     const cookieExists = document.cookie.split(';').some(item => item.trim().startsWith(COOKIE_CONSENT_KEY + '='));
     
     if (!hasConsented && !cookieExists) {
-      // Show after a short delay for better UX
-      const timer = setTimeout(() => {
-        setShowConsent(true);
-        setIsVisible(true);
-      }, 2000);
-      return () => clearTimeout(timer);
+      // Show immediately
+      setShowConsent(true);
+      setIsVisible(true);
     } else {
       setHasConsent(true); // User has already consented
     }
