@@ -23,7 +23,7 @@ interface MessageBubbleProps {
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd, onAvatarClick }) => {
   const isUser = message.sender === 'user';
-  const isAd = message.sender === 'ad' || message.isNativeAd;
+  const isAd = message.isNativeAd;
   const timestamp = new Date(message.timestamp);
 
   // Swipe gesture state
@@ -369,16 +369,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       return <p className="text-sm whitespace-pre-wrap">{parts}</p>;
     }
 
-    // Render view-once image if present
-    if (message.isViewOnce && message.aiImageUrl) {
-      return <ViewOnceImage imageUrl={message.aiImageUrl} messageId={message.id} />;
+    // Render view-once image if present (for both AI and user messages)
+    if (message.isViewOnce) {
+      const viewOnceImageUrl = message.aiImageUrl || message.userImageUrl;
+      if (viewOnceImageUrl) {
+        return <ViewOnceImage imageUrl={viewOnceImageUrl} messageId={message.id} isUserSent={message.sender === 'user'} />;
+      }
     }
 
     return message.text && <p className="text-sm whitespace-pre-wrap">{message.text}</p>;
   };
 
   // WhatsApp-style View Once Image Component - Realistic UI
-  const ViewOnceImage: React.FC<{ imageUrl: string; messageId: string }> = ({ imageUrl, messageId }) => {
+  const ViewOnceImage: React.FC<{ imageUrl: string; messageId: string; isUserSent?: boolean }> = ({ imageUrl, messageId, isUserSent = false }) => {
     const [isViewed, setIsViewed] = useState(false);
     const [showFullImage, setShowFullImage] = useState(false);
     const [isViewing, setIsViewing] = useState(false);
