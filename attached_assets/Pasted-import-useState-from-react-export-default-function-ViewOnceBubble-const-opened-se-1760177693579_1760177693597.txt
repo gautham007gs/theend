@@ -1,0 +1,64 @@
+import { useState } from "react";
+
+export default function ViewOnceBubble() {
+  const [opened, setOpened] = useState(false);
+  const [viewed, setViewed] = useState(false);
+
+  const handleOpen = () => {
+    if (!viewed) {
+      setOpened(true);
+      setTimeout(() => {
+        setOpened(false);
+        setViewed(true);
+      }, 2500); // Image visible for 2.5 seconds like WhatsApp
+    }
+  };
+
+  return (
+    <div className="flex justify-end bg-[#ECE5DD] min-h-screen p-5">
+      {/* Bubble */}
+      <div
+        className={`relative bg-[#DCF8C6] rounded-2xl rounded-tr-none shadow-md p-2 max-w-[70%] cursor-pointer transition-all ${
+          viewed ? "opacity-80" : "hover:brightness-95"
+        }`}
+        onClick={handleOpen}
+      >
+        {/* Before opening */}
+        {!opened && !viewed && (
+          <div className="flex flex-col items-center justify-center bg-black text-white rounded-xl overflow-hidden w-48 h-60">
+            <i className="ri-lock-line text-2xl text-gray-300"></i>
+            <p className="text-sm mt-1 text-gray-300">View once</p>
+            <div className="absolute bottom-2 right-3 text-[10px] text-gray-400">
+              10:21 AM ✓✓
+            </div>
+          </div>
+        )}
+
+        {/* After opening */}
+        {opened && (
+          <div className="relative w-48 h-60 rounded-xl overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+              alt="view once"
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute bottom-2 right-3 text-[10px] text-white drop-shadow">
+              Viewing...
+            </div>
+          </div>
+        )}
+
+        {/* After viewed */}
+        {!opened && viewed && (
+          <div className="flex flex-col items-center justify-center bg-gray-900 text-gray-400 rounded-xl overflow-hidden w-48 h-60">
+            <i className="ri-eye-line text-2xl text-gray-500"></i>
+            <p className="text-sm mt-1">Opened</p>
+            <div className="absolute bottom-2 right-3 text-[10px] text-gray-500">
+              10:24 AM ✓✓
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
