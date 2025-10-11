@@ -15,26 +15,55 @@ const GlobalAdScripts: React.FC = () => {
       return;
     }
 
+    // Reset injection flags if ad codes change or ads are disabled
+    if (!adSettings.adsEnabledGlobally) {
+      adsterraPopunderInjected.current = false;
+      monetagPopunderInjected.current = false;
+      return;
+    }
+
     const injectAdScripts = () => {
       if (adSettings.adsEnabledGlobally) {
-        // Adsterra Pop-under
+        // Adsterra Pop-under - delayed by 3 seconds
         if (adSettings.adsterraPopunderEnabled && !adsterraPopunderInjected.current) {
-          injectScript(adSettings.adsterraPopunderCode, "Adsterra", adsterraPopunderInjected);
+          const delayAdsterraPopunder = () => {
+            injectScript(adSettings.adsterraPopunderCode, "Adsterra Pop-under", adsterraPopunderInjected);
+          };
+          
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              setTimeout(delayAdsterraPopunder, 3000);
+            });
+          } else {
+            setTimeout(delayAdsterraPopunder, 3000);
+          }
         }
 
-        // Monetag Pop-under
+        // Monetag Pop-under - delayed by 3 seconds
         if (adSettings.monetagPopunderEnabled && !monetagPopunderInjected.current) {
-          injectScript(adSettings.monetagPopunderCode, "Monetag", monetagPopunderInjected);
+          const delayMonetagPopunder = () => {
+            injectScript(adSettings.monetagPopunderCode, "Monetag Pop-under", monetagPopunderInjected);
+          };
+          
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => {
+              setTimeout(delayMonetagPopunder, 3000);
+            });
+          } else {
+            setTimeout(delayMonetagPopunder, 3000);
+          }
         }
       }
     };
 
     const injectScript = (scriptCode: string, networkName: string, injectedRef: React.MutableRefObject<boolean>) => {
       if (injectedRef.current || !scriptCode || !scriptCode.trim()) {
+        console.log(`${networkName}: Script injection skipped - already injected or empty code`);
         return; 
       }
 
       try {
+        console.log(`${networkName}: Starting script injection...`);
         const scriptContainer = document.createElement('div');
         scriptContainer.innerHTML = scriptCode; 
         
@@ -44,36 +73,39 @@ const GlobalAdScripts: React.FC = () => {
             const scriptTag = document.createElement('script');
             const originalScript = node as HTMLScriptElement;
             
+            // Copy all attributes
             for (let i = 0; i < originalScript.attributes.length; i++) {
               const attr = originalScript.attributes[i];
               scriptTag.setAttribute(attr.name, attr.value);
             }
-            scriptTag.innerHTML = originalScript.innerHTML;
+            
+            // Copy inline script content
+            if (originalScript.innerHTML.trim()) {
+              scriptTag.innerHTML = originalScript.innerHTML;
+            }
             
             if (scriptTag.src || scriptTag.innerHTML.trim()) {
               hasValidScriptTag = true;
               document.body.appendChild(scriptTag);
+              console.log(`${networkName}: Script tag appended to body (src: ${scriptTag.src || 'inline'})`);
             } else {
-              // console.warn(`Skipping potentially empty/malformed ${networkName} pop-under script part (no src or innerHTML).`);
+              console.warn(`${networkName}: Skipping empty script tag`);
             }
-          } else {
-            // Append other nodes like comments, noscript tags, etc.
-            // Check if it's not just whitespace text node
-            if (node.nodeType !== Node.TEXT_NODE || node.textContent?.trim()) {
-                document.body.appendChild(node.cloneNode(true));
-            }
+          } else if (node.nodeType !== Node.TEXT_NODE || node.textContent?.trim()) {
+            // Append other nodes like comments, noscript tags
+            document.body.appendChild(node.cloneNode(true));
           }
         });
 
-        if(hasValidScriptTag){
-            injectedRef.current = true;
-            console.log(`${networkName} pop-under script injected.`);
+        if (hasValidScriptTag) {
+          injectedRef.current = true;
+          console.log(`${networkName}: Script successfully injected and marked as complete`);
         } else {
-            // console.warn(`No valid script tags found in ${networkName} pop-under code.`);
+          console.warn(`${networkName}: No valid script tags found in provided code`);
         }
 
       } catch (e) {
-        console.error(`Error injecting ${networkName} pop-under script:`, e);
+        console.error(`${networkName}: Error during script injection:`, e);
       }
     };
 

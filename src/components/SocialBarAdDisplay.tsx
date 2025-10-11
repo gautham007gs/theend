@@ -54,13 +54,26 @@ const SocialBarAdDisplay: React.FC = () => {
       adContainerRef.current.innerHTML = '';
       
       try {
+        console.log('Social Bar: Injecting ad script...', adCodeToInject.substring(0, 100));
         const fragment = document.createRange().createContextualFragment(adCodeToInject);
         adContainerRef.current.appendChild(fragment);
         scriptInjectedRef.current = true; // Mark as injected for this specific code
+        console.log('Social Bar: Script successfully injected into DOM');
+        
+        // Force execution of any inline scripts
+        const scripts = adContainerRef.current.querySelectorAll('script');
+        scripts.forEach((oldScript) => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => {
+            newScript.setAttribute(attr.name, attr.value);
+          });
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode?.replaceChild(newScript, oldScript);
+        });
+        console.log('Social Bar: Forced script re-execution complete');
       } catch (e) {
-        console.error("Error injecting Social Bar ad script:", e);
-        // Potentially allow retry if the code changes later by not setting injected to true
-        // scriptInjectedRef.current = false; // Or keep true to prevent multiple failed attempts with same code
+        console.error("Social Bar: Error injecting ad script:", e);
+        scriptInjectedRef.current = false; // Allow retry on next render
       }
     } else if (!adCodeToInject && adContainerRef.current) {
       // If no ad code is to be injected (e.g., disabled), clear the container
