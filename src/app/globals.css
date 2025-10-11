@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,43 +18,32 @@ img[loading="eager"]{content-visibility:visible}
 @layer base {
   :root {
     /* WhatsApp Inspired Green Theme */
-    --background: 48 33% 94%; /* Light Beige/Cream for page background (e.g., #F5F1E8) */
-    --foreground: 0 0% 15%; /* Dark Gray for text - good contrast */
-
-    --card: 0 0% 100%; /* Default card background (white) */
-    --card-foreground: 0 0% 15%; /* Text on default cards */
-
+    --background: 48 33% 94%;
+    --foreground: 0 0% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 15%;
-
-    --primary: 142 70% 49%; /* WhatsApp Lime Green #25d366 (37,211,102) */
-    --primary-foreground: 0 0% 100%; /* White text on primary green */
-
-    --secondary: 142 50% 95%; /* Very light WhatsApp green tint for secondary elements */
+    --primary: 142 70% 49%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 142 50% 95%;
     --secondary-foreground: 142 70% 25%;
-
     --muted: 142 20% 96%; 
-    --muted-foreground: 0 0% 45%; /* Grey for timestamps, non-read ticks */
-
-    --accent: 142 70% 49%; /* WhatsApp Lime Green #25D366 */
-    --accent-foreground: 0 0% 100%; /* White text on accent */
-
+    --muted-foreground: 0 0% 45%;
+    --accent: 142 70% 49%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
-    --border: 142 20% 85%; /* Subtle green-tinted border */
-    --input: 142 30% 98%; /* Very light green-tinted input background */
-    --ring: 142 70% 50%; /* WhatsApp signature green for focus rings */
-
-    --chart-1: 142 70% 50%; /* WhatsApp signature green #25D366 for charts */
-    --chart-2: 142 70% 30%; /* Darker WhatsApp Green variant */
+    --border: 142 20% 85%;
+    --input: 142 30% 98%;
+    --ring: 142 70% 50%;
+    --chart-1: 142 70% 50%;
+    --chart-2: 142 70% 30%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-
-    /* Sidebar (adjust if used, keeping WhatsApp feel) */
-    --sidebar-background: 142 40% 96%; /* Very light WhatsApp green tint */
+    --sidebar-background: 142 40% 96%;
     --sidebar-foreground: 0 0% 15%;
     --sidebar-primary: 142 70% 49%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -61,70 +51,45 @@ img[loading="eager"]{content-visibility:visible}
     --sidebar-accent-foreground: 142 70% 25%;
     --sidebar-border: 142 20% 85%;
     --sidebar-ring: 142 70% 50%;
-
-    /* Chat specific variables reflecting the new theme */
-    --chat-bg-user: 142 70% 90%; /* Light lime green tint for user messages */
-    --chat-text-user: 142 80% 15%; /* Dark text on user messages for contrast */
-
-    --chat-bg-ai: 0 0% 97%; /* WhatsApp AI/other person bubble: Very light grey/off-white (e.g. #F7F7F7) */
-    --chat-text-ai: 0 0% 15%; /* Dark text for AI messages on light background */
-
-    /* This is the background for the chat message viewing area (ChatView.tsx) */
-    /* It's a light beige, suitable to go under a doodle pattern if you add one. */
-    --chat-bg-default: 48 33% 92%; /* Lighter beige for chat area background - e.g. #F2EDE4 */
-
-    --chat-header-bg: 0 0% 98%; /* Whitish background for in-chat header */
-    --chat-header-text: hsl(var(--foreground)); /* Dark text on in-chat header */
-
-    --chat-input-bg: 0 0% 96%; /* Light grey/off-white for input area */
+    --chat-bg-user: 142 70% 90%;
+    --chat-text-user: 142 80% 15%;
+    --chat-bg-ai: 0 0% 97%;
+    --chat-text-ai: 0 0% 15%;
+    --chat-bg-default: 48 33% 92%;
+    --chat-header-bg: 0 0% 98%;
+    --chat-header-text: hsl(var(--foreground));
+    --chat-input-bg: 0 0% 96%;
   }
 
   .dark {
-    /* Dark Theme (adjust if needed, keeping general structure but with darker greens/greys) */
-    --background: 220 13% 10%; /* Dark grey/blue background */
-    --foreground: 120 10% 85%; /* Light grey/greenish text */
-
-    --card: 220 13% 18%; /* AI message bubble background (darker) */
+    --background: 220 13% 10%;
+    --foreground: 120 10% 85%;
+    --card: 220 13% 18%;
     --card-foreground: 120 10% 85%;
-
     --popover: 220 13% 10%;
     --popover-foreground: 120 10% 85%;
-
-    --primary: 142 70% 55%; /* WhatsApp Green (brighter for dark mode) #3CE87D */
-    --primary-foreground: 0 0% 10%; /* Dark text on primary green */
-
+    --primary: 142 70% 55%;
+    --primary-foreground: 0 0% 10%;
     --secondary: 142 30% 25%;
     --secondary-foreground: 142 20% 90%;
-
     --muted: 220 13% 22%; 
     --muted-foreground: 142 15% 65%;
-
-    --accent: 142 70% 60%; /* Lighter WhatsApp green accent for dark mode */
+    --accent: 142 70% 60%;
     --accent-foreground: 0 0% 10%;
-
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 142 15% 30%;
-    --input: 220 13% 22%; /* Darker input field */
+    --input: 220 13% 22%;
     --ring: 142 70% 55%;
-
     --chart-1: 142 70% 60%;
     --chart-2: 142 60% 50%;
-
-    /* Chat specific variables - Dark Mode */
-    --chat-bg-user: 142 45% 30%; /* WhatsApp green shade for user messages in dark mode */
-    --chat-text-user: 0 0% 95%; /* Light text for user messages in dark mode */
-
-    --chat-bg-ai: 220 10% 20%; /* WhatsApp AI/other person bubble: Dark grey (e.g. #2E3033) */
-    --chat-text-ai: 0 0% 90%; /* Light text for AI messages on dark background */
-
-    /* This is the background for the chat message viewing area in dark mode */
-    --chat-bg-default: 220 13% 12%; /* Darker grey for chat area background */
-
-    --chat-header-bg: 220 13% 18%; /* Darker background for in-chat header in dark mode */
-    --chat-header-text: hsl(var(--foreground)); /* Light text for in-chat header in dark mode */
-
+    --chat-bg-user: 142 45% 30%;
+    --chat-text-user: 0 0% 95%;
+    --chat-bg-ai: 220 10% 20%;
+    --chat-text-ai: 0 0% 90%;
+    --chat-bg-default: 220 13% 12%;
+    --chat-header-bg: 220 13% 18%;
+    --chat-header-text: hsl(var(--foreground));
     --chat-input-bg: 220 13% 16%; 
   }
 }
@@ -132,12 +97,13 @@ img[loading="eager"]{content-visibility:visible}
 @layer base {
   * {
     @apply border-border;
-    /* Comprehensive copy protection */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
+    /* Maximum content protection - all platforms */
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-drag: none !important;
   }
   
   body {
@@ -148,17 +114,13 @@ img[loading="eager"]{content-visibility:visible}
     -ms-user-select: none !important;
     user-select: none !important;
     -webkit-touch-callout: none !important;
-  }
-
-  /* Prevent right-click on body */
-  body {
     pointer-events: auto;
   }
 
-  /* Allow text selection ONLY for input fields */
+  /* ONLY allow text selection in input fields */
   input, 
   textarea, 
-  [contenteditable] {
+  [contenteditable="true"] {
     -webkit-user-select: text !important;
     -moz-user-select: text !important;
     -ms-user-select: text !important;
@@ -187,7 +149,7 @@ img[loading="eager"]{content-visibility:visible}
     pointer-events: auto !important;
   }
 
-  /* Prevent image dragging */
+  /* Prevent image dragging and saving */
   img {
     -webkit-user-drag: none !important;
     -khtml-user-drag: none !important;
@@ -197,7 +159,7 @@ img[loading="eager"]{content-visibility:visible}
     pointer-events: none !important;
   }
 
-  /* Make images un-saveable */
+  /* Block screenshot watermark */
   img::before {
     content: " ";
     display: block;
@@ -205,6 +167,15 @@ img[loading="eager"]{content-visibility:visible}
     height: 100%;
     width: 100%;
     background-color: transparent;
+  }
+
+  /* Prevent text selection on mobile */
+  @media (max-width: 768px) {
+    * {
+      -webkit-tap-highlight-color: transparent !important;
+      -webkit-user-select: none !important;
+      user-select: none !important;
+    }
   }
 }
 
@@ -269,7 +240,6 @@ img[loading="eager"]{content-visibility:visible}
   opacity: 0.8;
 }
 
-/* Style native ad text content */
 .native-ad-content p,
 .native-ad-content div,
 .native-ad-content span {
@@ -293,7 +263,6 @@ img[loading="eager"]{content-visibility:visible}
   font-size: 0.8rem;
 }
 
-/* Ensure scripts and iframes work */
 .native-ad-content iframe {
   max-width: 100%;
   border: none;

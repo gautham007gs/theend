@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -88,7 +89,6 @@ export const metadata: Metadata = {
     'geo.placename': 'United States',
     'geo.position': 'global',
     'ICBM': 'global',
-    'screenshot-capture': 'disabled', // Attempt to disable screenshots (limited browser support)
   },
 };
 
@@ -144,15 +144,7 @@ export default function RootLayout({
 
         <StructuredData />
       </head>
-      <body 
-        className={`${inter.variable} font-sans antialiased`}
-        onContextMenu={(e) => e.preventDefault()}
-        onCopy={(e) => e.preventDefault()}
-        onCut={(e) => e.preventDefault()}
-        onPaste={(e) => e.preventDefault()}
-        onDragStart={(e) => e.preventDefault()}
-        onDrop={(e) => e.preventDefault()}
-      >
+      <body className={`${inter.variable} font-sans antialiased`}>
         <ErrorBoundary>
           <AIProfileProvider>
             <AdSettingsProvider>
