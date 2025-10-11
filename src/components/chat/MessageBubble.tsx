@@ -397,13 +397,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       
       if (navigator.vibrate) navigator.vibrate(50);
 
-      // Auto-close after 2.5 seconds like WhatsApp
+      // Auto-close after 3 seconds
       setTimeout(() => {
         setShowFullImage(false);
         setIsViewing(false);
         setIsViewed(true);
         localStorage.setItem(`viewed_${messageId}`, 'true');
-      }, 2500);
+      }, 3000);
     };
 
     if (showFullImage) {
@@ -414,18 +414,19 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         >
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
             <div className="flex items-center gap-2 text-white text-sm bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              <div className="w-5 h-5 rounded-full bg-[#00a884] flex items-center justify-center">
-                <span className="text-white text-xs font-semibold">1</span>
-              </div>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#25D366" strokeWidth="2" strokeDasharray="31.4 31.4" strokeDashoffset="15.7"/>
+                <text x="12" y="16.5" textAnchor="middle" fontSize="12" fontWeight="bold" fill="white">1</text>
+              </svg>
               <span>View once</span>
             </div>
           </div>
           <Image
             src={imageUrl}
             alt="View once"
-            width={800}
-            height={800}
-            className="max-w-[85vw] max-h-[75vh] object-contain select-none pointer-events-none"
+            width={1200}
+            height={1200}
+            className="max-w-full max-h-full object-contain select-none pointer-events-none"
             style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
             onContextMenu={(e) => e.preventDefault()}
             draggable={false}
@@ -435,35 +436,43 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       );
     }
 
-    // WhatsApp-style compact bubble
+    // WhatsApp-style compact bubble - smaller size
     return (
       <div 
         className={cn(
-          "flex items-center gap-2 py-1.5 px-2 cursor-pointer select-none",
+          "flex items-center gap-1.5 py-1 px-1.5 cursor-pointer select-none rounded-lg",
           !isViewed && "hover:opacity-90 transition-opacity"
         )}
         onClick={handleViewImage}
         style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
       >
         {!isViewed ? (
-          // Before opening - compact green bubble with 1 icon
+          // Before opening - compact bubble with WhatsApp-style icon
           <>
-            <div className="w-10 h-10 rounded-full bg-[#00a884] flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-lg font-semibold">1</span>
+            <div className="relative w-8 h-8 flex items-center justify-center flex-shrink-0">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#25D366" strokeWidth="2" strokeDasharray="31.4 31.4" strokeDashoffset="15.7"/>
+                <text x="12" y="16.5" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#25D366">1</text>
+              </svg>
             </div>
-            <span className="text-[#00a884] text-sm font-medium">Photo</span>
+            <div className="flex items-center gap-1">
+              <svg className="w-4 h-4 text-[#25D366]" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+              </svg>
+              <span className="text-[#25D366] text-xs font-medium">Photo</span>
+            </div>
           </>
         ) : (
           // After opened - compact gray bubble with opened icon
           <>
-            <div className="w-10 h-10 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <div className="w-8 h-8 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <circle cx="10" cy="10" r="2" />
                 <path fillRule="evenodd" d="M10 4C5.5 4 1.73 6.943.458 10 1.732 13.057 5.522 16 10 16s8.268-2.943 9.542-6C18.268 6.943 14.478 4 10 4zm0 10a4 4 0 110-8 4 4 0 010 8z" clipRule="evenodd" />
                 <line x1="4" y1="4" x2="16" y2="16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="text-gray-500 dark:text-gray-400 text-sm">Opened</span>
+            <span className="text-gray-500 dark:text-gray-400 text-xs">Opened</span>
           </>
         )}
       </div>
