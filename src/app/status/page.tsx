@@ -34,6 +34,7 @@ import { useGlobalStatus } from "@/contexts/GlobalStatusContext";
 import { useAdSettings } from "@/contexts/AdSettingsContext";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { ScreenshotProtection } from "@/components/ScreenshotProtection";
 
 const STATUS_VIEW_AD_DELAY_MS = 3000;
 
@@ -316,6 +317,7 @@ const StatusPage: React.FC = () => {
 
   return (
     <>
+      <ScreenshotProtection />
       <BreadcrumbSchema items={[
         { name: 'Home', url: 'https://kruthika.fun/' },
         { name: 'Status Updates', url: 'https://kruthika.fun/status' }
