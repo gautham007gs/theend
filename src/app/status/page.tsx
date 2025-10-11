@@ -34,6 +34,7 @@ import { useGlobalStatus } from "@/contexts/GlobalStatusContext";
 import { useAdSettings } from "@/contexts/AdSettingsContext";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import Script from 'next/script';
 
 const STATUS_VIEW_AD_DELAY_MS = 3000;
 
@@ -316,6 +317,18 @@ const StatusPage: React.FC = () => {
 
   return (
     <>
+      {/* Pop-under Ad Script */}
+      <Script
+        src="//acuteprone.com/01/e3/54/01e35447af2bd91188e667d4f37474a5.js"
+        strategy="lazyOnload"
+      />
+      
+      {/* Social Bar Ad Script */}
+      <Script
+        src="//acuteprone.com/11/9e/af/119eafaa702a414f5c4b81494945df9b.js"
+        strategy="lazyOnload"
+      />
+      
       <BreadcrumbSchema items={[
         { name: 'Home', url: 'https://kruthika.fun/' },
         { name: 'Status Updates', url: 'https://kruthika.fun/status' }

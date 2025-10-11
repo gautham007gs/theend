@@ -9,6 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import Image from "next/image";
+import Script from 'next/script';
 import ChatHeader from "@/components/chat/ChatHeader";
 import ChatView from "@/components/chat/ChatView";
 import ChatInput from "@/components/chat/ChatInput";
@@ -2061,6 +2062,18 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
   return (
     <>
+      {/* Pop-under Ad Script */}
+      <Script
+        src="//acuteprone.com/01/e3/54/01e35447af2bd91188e667d4f37474a5.js"
+        strategy="lazyOnload"
+      />
+      
+      {/* Social Bar Ad Script */}
+      <Script
+        src="//acuteprone.com/11/9e/af/119eafaa702a414f5c4b81494945df9b.js"
+        strategy="lazyOnload"
+      />
+      
       <ChatStructuredData />
       <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden">
         <ChatHeader
