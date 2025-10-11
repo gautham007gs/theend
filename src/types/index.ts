@@ -1,23 +1,24 @@
-
 export type MessageStatus = 'sent' | 'delivered' | 'read';
 export type MessageReaction = 'heart' | 'thumbs_up' | 'laugh' | 'angry' | 'sad' | 'wow';
 
 export interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'ai' | 'ad';
+  sender: 'user' | 'ai';
   timestamp: Date;
   status: MessageStatus;
-  aiImageUrl?: string;
   userImageUrl?: string;
+  aiImageUrl?: string;
   audioUrl?: string;
-  reaction?: MessageReaction;
-  isLiked?: boolean;
-  deliveredAt?: Date;
-  readAt?: Date;
   isNativeAd?: boolean;
   nativeAdCode?: string;
   nativeAdId?: string;
+  deliveredAt?: Date;
+  readAt?: Date;
+  isLiked?: boolean;
+  reaction?: MessageReaction;
+  isViewOnce?: boolean; // WhatsApp-style view once
+  isViewed?: boolean; // Track if view-once was opened
 }
 
 export interface EmotionalStateOutput {
@@ -64,15 +65,15 @@ export interface ManagedContactStatus {
 
 export interface AdSettings {
   adsEnabledGlobally: boolean;
-  
+
   adsterraDirectLink: string;
   adsterraDirectLinkEnabled: boolean;
   adsterraBannerCode: string;
   adsterraBannerEnabled: boolean;
-  adsterraNativeBannerCode: string; 
-  adsterraNativeBannerEnabled: boolean; 
-  adsterraSocialBarCode: string; 
-  adsterraSocialBarEnabled: boolean; 
+  adsterraNativeBannerCode: string;
+  adsterraNativeBannerEnabled: boolean;
+  adsterraSocialBarCode: string;
+  adsterraSocialBarEnabled: boolean;
   adsterraPopunderCode: string;
   adsterraPopunderEnabled: boolean;
 
@@ -80,10 +81,10 @@ export interface AdSettings {
   monetagDirectLinkEnabled: boolean;
   monetagBannerCode: string;
   monetagBannerEnabled: boolean;
-  monetagNativeBannerCode: string; 
-  monetagNativeBannerEnabled: boolean; 
-  monetagSocialBarCode: string; 
-  monetagSocialBarEnabled: boolean; 
+  monetagNativeBannerCode: string;
+  monetagNativeBannerEnabled: boolean;
+  monetagSocialBarCode: string;
+  monetagSocialBarEnabled: boolean;
   monetagPopunderCode: string;
   monetagPopunderEnabled: boolean;
 
@@ -93,7 +94,7 @@ export interface AdSettings {
 }
 
 export interface AIMediaAsset {
-  id: string; 
+  id: string;
   type: 'image' | 'audio' | 'video';
   url: string; // Full public URL for uploaded files or external URLs
   description?: string; // Optional description for admin reference

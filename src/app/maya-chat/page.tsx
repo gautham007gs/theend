@@ -113,6 +113,11 @@ const USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA =
   "user_image_upload_last_date_kruthika_v1";
 const MAX_USER_IMAGES_PER_DAY = 5;
 
+// Media sharing tracking keys
+const SENT_IMAGES_KEY = "kruthika_sent_images_v1"; // Track which images were sent
+const MANDATORY_IMAGE_SENT_KEY = "kruthika_mandatory_image_sent_v1"; // Track if mandatory image sent
+const NATIVE_AD_SHOWN_KEY = "kruthika_native_ad_shown_v1"; // Track if native ad shown once
+
 // Utility function to get time of day
 const getTimeOfDay = (): "morning" | "afternoon" | "evening" | "night" => {
   const now = new Date();
@@ -479,9 +484,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const initialLoadComplete = useRef(false);
   const [isLoadingChatState, setIsLoadingChatState] = useState(true);
 
-  // Native ad injection state - single ad after 3 messages with rotation
-  const [messagesSinceLastAd, setMessagesSinceLastAd] = useState(0);
-  const [hasShownNativeAd, setHasShownNativeAd] = useState(false);
+  // Native ad injection state - show only ONCE after 6 total messages
+  const [totalMessageCount, setTotalMessageCount] = useState(0);
+  const [hasShownNativeAdOnce, setHasShownNativeAdOnce] = useState(false);
   const [currentActiveAdId, setCurrentActiveAdId] = useState<string | null>(
     null,
   );
@@ -556,6 +561,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         userPseudoId = `pseudo_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
         localStorage.setItem(USER_PSEUDO_ID_KEY, userPseudoId);
       }
+
+      // Load native ad shown status
+      const adShown = localStorage.getItem(NATIVE_AD_SHOWN_KEY) === 'true';
+      setHasShownNativeAdOnce(adShown);
 
       const today = format(new Date(), "yyyy-MM-dd");
       const lastActiveDate = localStorage.getItem(LAST_ACTIVE_DATE_KEY);
@@ -1051,17 +1060,19 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     if (adSettings && adSettings.adsEnabledGlobally)
       maybeTriggerAdOnMessageCount();
 
-    // Check if we should inject or refresh native ad after 3 messages
-    setMessagesSinceLastAd((prev) => {
-      const newCount = prev + 1;
-      if (newCount >= 3 && adSettings && adSettings.adsEnabledGlobally) {
-        // Use setTimeout to inject/refresh ad after current message is processed
-        setTimeout(() => {
-          injectNativeAdMessage();
-        }, 100);
-      }
-      return newCount;
-    });
+    // Track total message count for native ad (6 messages total)
+    setTotalMessageCount(prev => prev + 1);
+
+    // Check mandatory image after 2 user messages
+    const userMessageCount = messages.filter(m => m.sender === 'user').length + 1;
+    const mandatoryImageSent = localStorage.getItem(MANDATORY_IMAGE_SENT_KEY) === 'true';
+    
+    if (userMessageCount === 2 && !mandatoryImageSent) {
+      // Send mandatory image after AI responds
+      setTimeout(() => {
+        sendMandatoryImage();
+      }, 2000);
+    }
 
     // Update last user message time for proactive messaging
     setLastUserMessageTime(Date.now());
@@ -1384,11 +1395,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         if (adSettings && adSettings.adsEnabledGlobally)
           maybeTriggerAdOnMessageCount();
 
-        // Count AI messages for ad injection with rotation support
-        setMessagesSinceLastAd((prev) => {
+        // Track total messages and show native ad after exactly 6 messages
+        setTotalMessageCount(prev => {
           const newCount = prev + 1;
-          if (newCount >= 3 && adSettings && adSettings.adsEnabledGlobally) {
-            // Use setTimeout to inject/refresh ad after current message is processed
+          if (newCount === 6 && !hasShownNativeAdOnce && adSettings && adSettings.adsEnabledGlobally) {
             setTimeout(() => {
               injectNativeAdMessage();
             }, 100);
@@ -1424,17 +1434,36 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         const newAiMediaMessageId =
           (Date.now() + Math.random()).toString() + `_${mediaType}`;
         const newAiMediaMessage: Message = {
-          id: newAiMediaMessageMessageId,
+          id: newAiMediaMessageId,
           text: caption || "",
           sender: "ai",
           timestamp: new Date(),
           status: "read",
           aiImageUrl: mediaType === "image" ? url : undefined,
           audioUrl: mediaType === "audio" ? url : undefined,
+          isViewOnce: mediaType === "image", // All AI images are view-once
         };
         setMessages((prev) => [...prev, newAiMediaMessage]);
+        
+        // Mark image as sent
+        if (mediaType === "image") {
+          markImageAsSent(url);
+        }
+        
         if (adSettings && adSettings.adsEnabledGlobally)
           maybeTriggerAdOnMessageCount();
+        
+        // Track total messages
+        setTotalMessageCount(prev => {
+          const newCount = prev + 1;
+          if (newCount === 6 && !hasShownNativeAdOnce && adSettings && adSettings.adsEnabledGlobally) {
+            setTimeout(() => {
+              injectNativeAdMessage();
+            }, 100);
+          }
+          return newCount;
+        });
+        
         setRecentInteractions((prevInteractions) =>
           [
             ...prevInteractions,
@@ -1905,9 +1934,79 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     });
   };
 
-  // Function to inject or refresh native ad as a chat message with rotation
+  // Get available images that haven't been sent yet
+  const getUnsentImage = (): string | null => {
+    const currentMediaConfig = mediaAssetsConfig || defaultAIMediaAssetsConfig;
+    const availableImages = currentMediaConfig.assets
+      .filter((a) => a.type === "image")
+      .map((a) => a.url);
+
+    if (availableImages.length === 0) return null;
+
+    // Get sent images from localStorage
+    const sentImagesStr = localStorage.getItem(SENT_IMAGES_KEY);
+    const sentImages: string[] = sentImagesStr ? JSON.parse(sentImagesStr) : [];
+
+    // Find images that haven't been sent
+    const unsentImages = availableImages.filter(img => !sentImages.includes(img));
+
+    if (unsentImages.length === 0) {
+      // All images sent, reset tracking
+      localStorage.removeItem(SENT_IMAGES_KEY);
+      return availableImages[0]; // Start over
+    }
+
+    // Return random unsent image
+    return unsentImages[Math.floor(Math.random() * unsentImages.length)];
+  };
+
+  // Mark image as sent
+  const markImageAsSent = (imageUrl: string) => {
+    const sentImagesStr = localStorage.getItem(SENT_IMAGES_KEY);
+    const sentImages: string[] = sentImagesStr ? JSON.parse(sentImagesStr) : [];
+    
+    if (!sentImages.includes(imageUrl)) {
+      sentImages.push(imageUrl);
+      localStorage.setItem(SENT_IMAGES_KEY, JSON.stringify(sentImages));
+    }
+  };
+
+  // Send mandatory image after 2 messages
+  const sendMandatoryImage = async () => {
+    const imageUrl = getUnsentImage();
+    if (!imageUrl) return;
+
+    setIsAiTyping(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsAiTyping(false);
+
+    const imageMessage: Message = {
+      id: generateUniqueMessageId(),
+      text: "",
+      sender: "ai",
+      timestamp: new Date(),
+      status: "read",
+      aiImageUrl: imageUrl,
+      isViewOnce: true, // Mark as view-once
+    };
+
+    setMessages(prev => [...prev, imageMessage]);
+    markImageAsSent(imageUrl);
+    localStorage.setItem(MANDATORY_IMAGE_SENT_KEY, 'true');
+
+    // Track total messages
+    setTotalMessageCount(prev => prev + 1);
+  };
+
+  // Function to inject native ad ONCE after 6 total messages
   const injectNativeAdMessage = () => {
     if (!adSettings || !adSettings.adsEnabledGlobally) {
+      return;
+    }
+
+    // Only show once
+    if (hasShownNativeAdOnce) {
+      console.log("Native ad already shown once, skipping");
       return;
     }
 
@@ -1931,14 +2030,13 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       return;
     }
 
-    // Rotate between networks for better performance
+    // Select network
     const lastShownNetwork =
       localStorage.getItem("last_native_ad_network") || "";
     let selectedCode = "";
     let selectedNetwork = "";
 
     if (hasAdsterraCode && hasMonatagCode) {
-      // Rotate between networks
       if (lastShownNetwork === "adsterra") {
         selectedCode = adSettings.monetagNativeBannerCode;
         selectedNetwork = "monetag";
@@ -1954,62 +2052,32 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       selectedNetwork = "monetag";
     }
 
-    // Store the network for rotation
     localStorage.setItem("last_native_ad_network", selectedNetwork);
 
-    if (currentActiveAdId && hasShownNativeAd) {
-      // Replace existing ad content instead of creating new bubble
-      setMessages((prev) =>
-        prev.map((msg) => {
-          if (msg.id === currentActiveAdId && msg.isNativeAd) {
-            return {
-              ...msg,
-              nativeAdCode: selectedCode,
-              nativeAdId: `native-ad-chat-rotated-${Date.now()}`,
-              timestamp: new Date(), // Update timestamp for freshness
-            };
-          }
-          return msg;
-        }),
-      );
+    // Create ad bubble
+    const adId = `native_ad_${Date.now()}`;
+    const nativeAdMessage: Message = {
+      id: adId,
+      text: "",
+      sender: "ad" as any,
+      timestamp: new Date(),
+      status: "read",
+      isNativeAd: true,
+      nativeAdCode: selectedCode,
+      nativeAdId: `native-ad-chat-${selectedNetwork}-${Date.now()}`,
+    };
 
-      console.log(
-        "Native ad content refreshed for existing bubble:",
-        currentActiveAdId,
-        "Network:",
-        selectedNetwork,
-        "Code length:",
-        selectedCode.length,
-      );
-    } else {
-      // Create new ad bubble for first time
-      const adId = `native_ad_${Date.now()}`;
-      const nativeAdMessage: Message = {
-        id: adId,
-        text: "",
-        sender: "ad" as any,
-        timestamp: new Date(),
-        status: "read",
-        isNativeAd: true,
-        nativeAdCode: selectedCode,
-        nativeAdId: `native-ad-chat-${selectedNetwork}-${Date.now()}`,
-      };
+    setMessages((prev) => [...prev, nativeAdMessage]);
+    setCurrentActiveAdId(adId);
+    setHasShownNativeAdOnce(true);
+    localStorage.setItem(NATIVE_AD_SHOWN_KEY, 'true');
 
-      setMessages((prev) => [...prev, nativeAdMessage]);
-      setCurrentActiveAdId(adId);
-      setHasShownNativeAd(true);
-
-      console.log(
-        "New native ad bubble created:",
-        adId,
-        "Network:",
-        selectedNetwork,
-        "Code length:",
-        selectedCode.length,
-      );
-    }
-
-    setMessagesSinceLastAd(0);
+    console.log(
+      "Native ad shown once after 6 messages:",
+      adId,
+      "Network:",
+      selectedNetwork
+    );
   };
 
   const handleLikeMessage = (messageId: string) => {

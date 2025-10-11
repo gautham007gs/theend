@@ -88,6 +88,7 @@ export const metadata: Metadata = {
     'geo.placename': 'United States',
     'geo.position': 'global',
     'ICBM': 'global',
+    'screenshot-capture': 'disabled', // Attempt to disable screenshots (limited browser support)
   },
 };
 

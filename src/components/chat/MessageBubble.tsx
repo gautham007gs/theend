@@ -368,7 +368,94 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       }
       return <p className="text-sm whitespace-pre-wrap">{parts}</p>;
     }
+
+    // Render view-once image if present
+    if (message.isViewOnce && message.aiImageUrl) {
+      return <ViewOnceImage imageUrl={message.aiImageUrl} messageId={message.id} />;
+    }
+
     return message.text && <p className="text-sm whitespace-pre-wrap">{message.text}</p>;
+  };
+
+  // WhatsApp-style View Once Image Component
+  const ViewOnceImage: React.FC<{ imageUrl: string; messageId: string }> = ({ imageUrl, messageId }) => {
+    const [isViewed, setIsViewed] = useState(false);
+    const [showFullImage, setShowFullImage] = useState(false);
+
+    useEffect(() => {
+      // Check if already viewed from localStorage
+      const viewedKey = `viewed_${messageId}`;
+      const alreadyViewed = localStorage.getItem(viewedKey) === 'true';
+      setIsViewed(alreadyViewed);
+    }, [messageId]);
+
+    const handleViewImage = () => {
+      if (isViewed) return; // Already viewed, can't open again
+      
+      setShowFullImage(true);
+      setIsViewed(true);
+      localStorage.setItem(`viewed_${messageId}`, 'true');
+
+      // Haptic feedback
+      if (navigator.vibrate) navigator.vibrate(50);
+    };
+
+    if (showFullImage) {
+      return (
+        <div 
+          className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          onClick={() => setShowFullImage(false)}
+          style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+        >
+          <div className="absolute top-4 left-4 text-white text-sm bg-black/50 px-3 py-1 rounded-full">
+            Tap to close
+          </div>
+          <Image
+            src={imageUrl}
+            alt="View once"
+            width={400}
+            height={600}
+            className="max-w-full max-h-full object-contain select-none pointer-events-none"
+            style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+            onContextMenu={(e) => e.preventDefault()}
+            draggable={false}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div 
+        className={cn(
+          "relative w-48 h-48 rounded-lg overflow-hidden cursor-pointer select-none",
+          isViewed ? "bg-muted/50" : "bg-gradient-to-br from-pink-500 to-purple-600"
+        )}
+        onClick={handleViewImage}
+        style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+      >
+        {!isViewed ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-2">
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium">Tap to view</p>
+            <p className="text-xs text-white/80 mt-1">View once</p>
+          </div>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-2">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-xs">Opened</p>
+          </div>
+        )}
+      </div>
+    );
   };
 
 
@@ -447,7 +534,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           onTouchEnd={handleTouchEnd}
           onClick={!isAd ? handleTap : undefined}
         >
-          {isValidImageSrc && imageToShowUrl && (
+          {/* Only show regular images if NOT view-once */}
+          {isValidImageSrc && imageToShowUrl && !message.isViewOnce && (
             <Image
               src={imageToShowUrl}
               alt="Sent image"
