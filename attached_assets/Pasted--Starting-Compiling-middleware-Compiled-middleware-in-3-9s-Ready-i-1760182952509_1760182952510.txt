@@ -1,0 +1,60 @@
+    · ...
+
+ ✓ Starting...
+ ○ Compiling middleware ...
+ ✓ Compiled middleware in 3.9s
+ ✓ Ready in 7.8s
+ ○ Compiling / ...
+ ✓ Compiled / in 42.4s
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <body className=... onContextMenu={function onContextMenu} onCopy=... onCut=... onPaste=... onDragStart=... onDrop=... children=...>
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '2331507948'
+}
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <body className=... onContextMenu=... onCopy={function onCopy} onCut=... onPaste=... onDragStart=... onDrop=... children=...>
+                                               ^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3226670956'
+}
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <body className=... onContextMenu=... onCopy=... onCut={function onCut} onPaste=... onDragStart=... onDrop=... children=...>
+                                                         ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1219980236'
+}
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <body className=... onContextMenu=... onCopy=... onCut=... onPaste={function onPaste} onDragStart=... onDrop=... children=...>
+                                                                     ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3518084844'
+}
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <body className=... onContextMenu=... onCopy=... onCut=... onPaste=... onDragStart={function onDragStart} onDrop=... children=...>
+                                                                                     ^^^^^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1030454860'
+}
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <body className=... onContextMenu=... onCopy=... onCut=... onPaste=... onDragStart=... onDrop={function onDrop} children=...>
+                                                                                                ^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '3550111212'
+}
+Supabase Client: Successfully initialized REAL Supabase client.
+ GET / 500 in 57983ms
+ ⚠ Blocked cross-origin request from b41bb33c-6d17-49e3-9d3d-33383be600a4-00-cnh0048ndoyk.picard.replit.dev to /_next/* resource. To allow this, configure "allowedDevOrigins" in next.config
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
