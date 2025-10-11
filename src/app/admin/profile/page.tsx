@@ -439,8 +439,18 @@ const AdminProfilePage: React.FC = () => {
   const handleDeleteMediaAsset = async (assetId: string) => {
     const asset = aiMediaAssets.assets.find(a => a.id === assetId);
     
+    if (!asset) {
+      toast({ title: "Error", description: "Asset not found", variant: "destructive" });
+      return;
+    }
+
+    // Confirm deletion
+    if (!confirm(`Delete ${asset.description || 'this media file'}? This action cannot be undone.`)) {
+      return;
+    }
+    
     // If asset has storage metadata, delete from Supabase Storage first
-    if (asset?.storagePath && asset?.storageBucket) {
+    if (asset.storagePath && asset.storageBucket) {
       try {
         const response = await fetch(`/api/upload?path=${encodeURIComponent(asset.storagePath)}&bucket=${encodeURIComponent(asset.storageBucket)}`, {
           method: 'DELETE',
@@ -458,9 +468,32 @@ const AdminProfilePage: React.FC = () => {
       }
     }
     
-    // Remove from local state
-    setAiMediaAssets(prev => ({ assets: prev.assets.filter(asset => asset.id !== assetId) }));
-    toast({ title: "Asset Removed", description: "Media asset removed from list. Remember to 'Save Global AI Media Assets' to persist changes." });
+    // Remove from local state and auto-save
+    const updatedAssets = { assets: aiMediaAssets.assets.filter(a => a.id !== assetId) };
+    setAiMediaAssets(updatedAssets);
+
+    // Auto-save to persist deletion
+    if (!supabase) {
+      toast({ title: "Asset Removed", description: "File removed locally. Supabase unavailable - click 'Save' manually.", variant: "destructive" });
+      return;
+    }
+
+    try {
+      const { error: saveError } = await supabase
+        .from('app_configurations')
+        .upsert(
+          { id: AI_MEDIA_ASSETS_CONFIG_KEY, settings: updatedAssets, updated_at: new Date().toISOString() },
+          { onConflict: 'id' }
+        );
+      
+      if (saveError) throw saveError;
+      
+      await fetchMediaAssets(); // Refresh from DB
+      toast({ title: "Asset Deleted!", description: `${asset.description || 'Media file'} has been permanently deleted.` });
+    } catch (saveError: any) {
+      console.error("Error auto-saving after deletion:", saveError);
+      toast({ title: "Delete OK, Save Failed", description: "File deleted but changes not saved to database. Click 'Save' manually.", variant: "destructive" });
+    }
   };
 
   const handleFileUpload = async (file: File, type: 'image' | 'audio' | 'video') => {
@@ -497,10 +530,36 @@ const AdminProfilePage: React.FC = () => {
         description: file.name,
       };
 
-      setAiMediaAssets(prev => ({ assets: [...prev.assets, newAsset] }));
+      // Update local state
+      const updatedAssets = { assets: [...aiMediaAssets.assets, newAsset] };
+      setAiMediaAssets(updatedAssets);
+
+      // Auto-save to Supabase to persist immediately
+      if (!supabase) {
+        toast({ title: "Warning", description: "File uploaded but Supabase unavailable. Click 'Save' manually.", variant: "destructive" });
+        setUploadProgress('');
+        setUploadingFile(false);
+        return;
+      }
+
+      try {
+        const { error: saveError } = await supabase
+          .from('app_configurations')
+          .upsert(
+            { id: AI_MEDIA_ASSETS_CONFIG_KEY, settings: updatedAssets, updated_at: new Date().toISOString() },
+            { onConflict: 'id' }
+          );
+        
+        if (saveError) throw saveError;
+        
+        await fetchMediaAssets(); // Refresh from DB
+        toast({ title: "File Uploaded & Saved!", description: `${file.name} uploaded and saved to database successfully.` });
+      } catch (saveError: any) {
+        console.error("Error auto-saving uploaded file:", saveError);
+        toast({ title: "Upload OK, Save Failed", description: `File uploaded but not saved to database. Click 'Save Global AI Media Assets' manually.`, variant: "destructive" });
+      }
       
       setUploadProgress('');
-      toast({ title: "File Uploaded!", description: `${file.name} uploaded successfully. Remember to 'Save Global AI Media Assets' to persist.` });
     } catch (error: any) {
       console.error("Upload error:", error);
       toast({ title: "Upload Failed", description: error.message || 'Failed to upload file', variant: "destructive" });
