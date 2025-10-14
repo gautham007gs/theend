@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
+import { CPMOptimizer } from '@/lib/cpm-optimizer';
 
 interface BannerAdDisplayProps {
   adType: 'standard' | 'native'; // Specify banner type
@@ -82,6 +83,9 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         const fragment = document.createRange().createContextualFragment(adCodeToInject);
         adContainerRef.current.appendChild(fragment);
         scriptInjectedRef.current = true;
+        
+        // Track impression for CPM optimization
+        CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
       } catch (e) {
         console.error(`Error injecting ${adType} ad script for placement ${placementKey}:`, e);
         scriptInjectedRef.current = false; // Allow retry if code changes
@@ -91,6 +95,30 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       scriptInjectedRef.current = false;
     }
   }, [adCodeToInject, placementKey, adType]);
+
+  // Track viewability for CPM optimization
+  useEffect(() => {
+    if (!adContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
+            const viewableTime = Date.now();
+            setTimeout(() => {
+              CPMOptimizer.trackAdPerformance(placementKey, { 
+                viewableTime: 2000 // 2 seconds viewable
+              });
+            }, 2000);
+          }
+        });
+      },
+      { threshold: [0.7] }
+    );
+
+    observer.observe(adContainerRef.current);
+    return () => observer.disconnect();
+  }, [placementKey]);
 
 
   if (isLoadingAdSettings || !isVisible || !adCodeToInject) {
@@ -108,7 +136,12 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden",
         className
       )}
-      key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`} 
+      key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`}
+      onClick={() => {
+        // Track click for CPM optimization
+        CPMOptimizer.trackAdPerformance(placementKey, { click: true });
+      }}
+      data-ad-placement={placementKey}
     />
   );
 };

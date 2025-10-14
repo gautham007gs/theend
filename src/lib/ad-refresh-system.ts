@@ -9,11 +9,11 @@ const REFRESH_INTERVALS = {
   PEAK_HOURS: 75, // Longer intervals during peak traffic
 };
 
-// Viewability thresholds
+// Viewability thresholds - Optimized for higher CPM
 const VIEWABILITY_CONFIG = {
-  THRESHOLD: 0.5, // 50% of ad must be visible
-  DURATION: 1000, // Must be visible for 1 second
-  CHECK_INTERVAL: 250, // Check visibility every 250ms
+  THRESHOLD: 0.7, // 70% of ad must be visible (IAB standard for premium CPM)
+  DURATION: 2000, // Must be visible for 2 seconds (higher quality impressions)
+  CHECK_INTERVAL: 200, // Check visibility every 200ms (more accurate tracking)
 };
 
 // Click fraud protection
