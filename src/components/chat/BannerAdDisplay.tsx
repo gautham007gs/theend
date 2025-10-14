@@ -13,13 +13,43 @@ interface BannerAdDisplayProps {
   className?: string;
 }
 
+// Preload ad CDN resources early
+const preloadAdResources = (adCode: string) => {
+  if (typeof window === 'undefined') return;
+  
+  // Extract CDN URLs from ad code
+  const cdnUrls: string[] = [];
+  const scriptRegex = /src=["']([^"']+)["']/g;
+  const imgRegex = /https?:\/\/[^\s"']+\.(?:jpg|jpeg|png|gif|webp|svg)/gi;
+  
+  let match;
+  while ((match = scriptRegex.exec(adCode)) !== null) {
+    cdnUrls.push(match[1]);
+  }
+  while ((match = imgRegex.exec(adCode)) !== null) {
+    cdnUrls.push(match[0]);
+  }
+  
+  // Preload scripts with high priority
+  cdnUrls.forEach(url => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = url.endsWith('.js') ? 'script' : 'image';
+    link.href = url;
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+  });
+};
+
 const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey, className }) => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
   const [currentNetwork, setCurrentNetwork] = useState<'adsterra' | 'monetag' | null>(null);
+  const [shouldLoadAd, setShouldLoadAd] = useState(false); // Lazy load control
   const adContainerRef = useRef<HTMLDivElement>(null);
   const scriptInjectedRef = useRef(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const adElementId = `banner-ad-${adType}-${placementKey}`;
 
   useEffect(() => {
@@ -60,6 +90,9 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
     
     if (selectedNetworkEnabled && selectedAdCode.trim()) {
+      // Preload CDN resources immediately
+      preloadAdResources(selectedAdCode);
+      
       setAdCodeToInject(selectedAdCode);
       setCurrentNetwork(selectedNetwork);
       setIsVisible(true);
@@ -71,10 +104,39 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
   }, [adSettings, isLoadingAdSettings, adType]);
 
+  // Lazy load ad when near viewport (200px before visible)
   useEffect(() => {
-    // Inject script only when adCodeToInject is set and container is available
-    // and script hasn't been injected yet for this specific code.
-    if (adCodeToInject && adContainerRef.current && !scriptInjectedRef.current) {
+    if (!adContainerRef.current || !isVisible) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoadAd(true);
+            observerRef.current?.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '200px', // Load 200px before entering viewport
+        threshold: 0.01
+      }
+    );
+
+    observerRef.current.observe(adContainerRef.current);
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [isVisible]);
+
+  useEffect(() => {
+    // Inject script only when:
+    // 1. Ad code is ready
+    // 2. Container is available
+    // 3. Lazy load flag is true (near viewport)
+    // 4. Script hasn't been injected yet
+    if (adCodeToInject && adContainerRef.current && shouldLoadAd && !scriptInjectedRef.current) {
       // Clear previous content
       adContainerRef.current.innerHTML = '';
       
@@ -86,6 +148,8 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         
         // Track impression for CPM optimization
         CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
+        
+        console.log(`Ad loaded successfully: ${adType} - ${placementKey}`);
       } catch (e) {
         console.error(`Error injecting ${adType} ad script for placement ${placementKey}:`, e);
         scriptInjectedRef.current = false; // Allow retry if code changes
@@ -94,7 +158,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       adContainerRef.current.innerHTML = ''; // Clear if no ad code
       scriptInjectedRef.current = false;
     }
-  }, [adCodeToInject, placementKey, adType]);
+  }, [adCodeToInject, placementKey, adType, shouldLoadAd]);
 
   // Track viewability for CPM optimization
   useEffect(() => {
@@ -125,15 +189,29 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     return null; 
   }
   
+  // Show skeleton loader while ad is being lazy loaded
+  if (!shouldLoadAd) {
+    return (
+      <div
+        className={cn(
+          "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden",
+          className
+        )}
+      >
+        <div className="w-full h-full bg-gradient-to-r from-secondary/5 via-secondary/20 to-secondary/5 animate-pulse" />
+      </div>
+    );
+  }
+  
   // Key includes adCodeToInject to attempt re-render if the code itself changes.
-  // However, direct script injection might need more nuanced handling if the *same*
-  // container is reused for *different* ad codes frequently.
   return (
     <div
       id={adElementId}
       ref={adContainerRef}
       className={cn(
-        "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden",
+        "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden transition-opacity duration-300",
+        !scriptInjectedRef.current && "opacity-0",
+        scriptInjectedRef.current && "opacity-100",
         className
       )}
       key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`}

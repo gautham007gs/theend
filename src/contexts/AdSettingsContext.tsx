@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -6,6 +5,7 @@ import type { AdSettings } from '@/types';
 import { AD_SETTINGS_CONFIG_KEY } from '@/types'; // Corrected import path
 import { defaultAdSettings } from '@/config/ai'; // defaultAdSettings is still from config/ai
 import { supabase } from '@/lib/supabaseClient';
+import { AdCDNPreloader } from '@/lib/AdCDNPreloader'; // Assuming AdCDNPreloader is in lib/AdCDNPreloader
 
 interface AdSettingsContextType {
   adSettings: AdSettings | null;
@@ -42,13 +42,11 @@ export const AdSettingsProvider: React.FC<{ children: ReactNode }> = ({ children
         // Merge fetched settings with defaults to ensure all keys are present
         const mergedSettings = { ...defaultAdSettings, ...(data.settings as AdSettings) };
         setAdSettings(mergedSettings);
-      } else {
-        // No settings found in Supabase, use defaults (admin might save them later)
-        setAdSettings(defaultAdSettings);
-      }
-    } catch (e) {
-      console.error('Unexpected error fetching ad settings:', e);
-      setAdSettings(defaultAdSettings); // Fallback to defaults
+
+      // Preload ad CDN resources immediately after settings load
+      AdCDNPreloader.preloadAllAds(mergedSettings);
+    } catch (error) {
+      console.error("Error fetching ad settings:", error);
     } finally {
       setIsLoadingAdSettings(false);
     }
