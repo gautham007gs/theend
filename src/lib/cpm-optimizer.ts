@@ -1,4 +1,4 @@
-// CPM Optimization System
+// CPM Optimization System (Performance Tracking Only)
 export class CPMOptimizer {
   private static performanceData: Map<string, {
     impressions: number;
@@ -7,12 +7,7 @@ export class CPMOptimizer {
     ctr: number;
   }> = new Map();
 
-  private static readonly MIN_REFRESH_INTERVAL = 60000; // 60 seconds minimum
-  private static readonly MAX_REFRESH_INTERVAL = 120000; // 2 minutes maximum
-  private static readonly DEFAULT_REFRESH_INTERVAL = 60000; // 60 seconds default
-
-
-  // Track ad performance by placement
+  // Track ad performance by placement (analytics only)
   static trackAdPerformance(placementId: string, metrics: {
     impression?: boolean;
     click?: boolean;
@@ -34,43 +29,17 @@ export class CPMOptimizer {
     this.performanceData.set(placementId, current);
   }
 
-  // Get optimal ad refresh interval based on performance
-  static getOptimalRefreshInterval(placementId: string): number {
-    const data = this.performanceData.get(placementId);
-    if (!data) return this.DEFAULT_REFRESH_INTERVAL; // Default 60 seconds
-
-    // Higher CTR = faster refresh (more revenue)
-    // Ensure refresh interval is at least MIN_REFRESH_INTERVAL
-    if (data.ctr > 2.0) return Math.max(this.MIN_REFRESH_INTERVAL, 45000); // Premium performance
-    if (data.ctr > 1.0) return Math.max(this.MIN_REFRESH_INTERVAL, 55000); // Good performance
-    if (data.ctr > 0.5) return Math.max(this.MIN_REFRESH_INTERVAL, 65000); // Average performance
-    return Math.max(this.MIN_REFRESH_INTERVAL, 90000); // Poor performance - slow down to avoid waste
+  // Get placement performance stats
+  static getPlacementStats(placementId: string) {
+    return this.performanceData.get(placementId) || null;
   }
 
-  // Identify high-value placements
-  static getHighValuePlacements(): string[] {
-    const highValue: string[] = [];
-
-    this.performanceData.forEach((data, placementId) => {
-      if (data.ctr > 1.0 && data.impressions > 100) {
-        highValue.push(placementId);
-      }
-    });
-
-    return highValue;
-  }
-
-  // Get placement priority score (for ad network bidding)
-  static getPlacementScore(placementId: string): number {
-    const data = this.performanceData.get(placementId);
-    if (!data) return 0;
-
-    // Score based on CTR, viewability, and volume
-    const ctrScore = data.ctr * 30; // CTR weight: 30%
-    const viewabilityScore = (data.viewableTime / data.impressions) * 0.05; // Viewability weight: 50%
-    const volumeScore = Math.min(data.impressions / 1000, 1) * 20; // Volume weight: 20%
-
-    return Math.min(ctrScore + viewabilityScore + volumeScore, 100);
+  // Get all placement stats
+  static getAllStats() {
+    return Array.from(this.performanceData.entries()).map(([id, data]) => ({
+      placementId: id,
+      ...data
+    }));
   }
 }
 
@@ -188,4 +157,4 @@ export const getContentCPMMultiplier = (category: string): number => {
   return premiumCategories[category.toLowerCase()] || 1.0;
 };
 
-console.log('CPM Optimizer: Advanced CPM optimization system loaded');
+console.log('CPM Optimizer: Performance tracking only (no refresh)');

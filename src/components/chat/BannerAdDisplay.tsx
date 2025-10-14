@@ -160,7 +160,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
   }, [adCodeToInject, placementKey, adType, shouldLoadAd]);
 
-  // Track viewability for CPM optimization
+  // Track viewability for analytics only (no refresh)
   useEffect(() => {
     if (!adContainerRef.current) return;
 
@@ -168,11 +168,12 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
-            const viewableTime = Date.now();
             setTimeout(() => {
-              CPMOptimizer.trackAdPerformance(placementKey, { 
-                viewableTime: 2000 // 2 seconds viewable
-              });
+              if (entry.isIntersecting) {
+                CPMOptimizer.trackAdPerformance(placementKey, { 
+                  viewableTime: 2000 // 2 seconds viewable
+                });
+              }
             }, 2000);
           }
         });
