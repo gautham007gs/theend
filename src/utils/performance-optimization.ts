@@ -130,6 +130,7 @@ export const prefetchResource = (url: string, as: 'script' | 'style' | 'image' |
   link.rel = 'prefetch';
   link.href = url;
   link.as = as;
+  link.setAttribute('crossorigin', 'anonymous');
   document.head.appendChild(link);
 };
 

@@ -115,14 +115,16 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
         {/* Critical preconnects */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://torchfriendlypay.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://preferencenail.com" crossOrigin="anonymous" />
 
         {/* Preload critical LCP image */}
-        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" />
+        <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" crossOrigin="anonymous" />
 
         {/* Prefetch chat page */}
-        <link rel="prefetch" href="/maya-chat" />
+        <link rel="prefetch" href="/maya-chat" crossOrigin="anonymous" />
 
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{

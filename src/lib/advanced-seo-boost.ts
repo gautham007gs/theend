@@ -48,7 +48,7 @@ export class AdvancedSEOBoost {
       const link = document.createElement('link');
       link.rel = 'preconnect';
       link.href = url;
-      link.crossOrigin = 'anonymous';
+      link.setAttribute('crossorigin', 'anonymous');
       document.head.appendChild(link);
     });
   }
