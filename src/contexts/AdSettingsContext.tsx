@@ -44,9 +44,13 @@ export const AdSettingsProvider: React.FC<{ children: ReactNode }> = ({ children
         setAdSettings(mergedSettings);
 
       // Preload ad CDN resources immediately after settings load
-      AdCDNPreloader.preloadAllAds(mergedSettings);
+        AdCDNPreloader.preloadAllAds(mergedSettings);
+      } else {
+        setAdSettings(defaultAdSettings);
+      }
     } catch (error) {
       console.error("Error fetching ad settings:", error);
+      setAdSettings(defaultAdSettings);
     } finally {
       setIsLoadingAdSettings(false);
     }

@@ -75,7 +75,7 @@ class AdRefreshManager {
 
   registerAd(config: AdRefreshConfig): void {
     const { adElementId, networkName, adType, maxRefreshesPerHour, respectUserActivity } = config;
-    
+
     this.states.set(adElementId, {
       refreshCount: 0,
       lastRefreshTime: 0,
@@ -203,7 +203,7 @@ class AdRefreshManager {
       }
 
       this.performRefresh(adElementId, config);
-      
+
       // Schedule next refresh
       const timer = setTimeout(refresh, getRefreshInterval() * 1000);
       this.refreshTimers.set(adElementId, timer);
@@ -275,7 +275,7 @@ class AdRefreshManager {
       state.lastRefreshTime = Date.now();
 
       console.log(`Ad refreshed: ${adElementId} (${config.networkName} ${config.adType})`);
-      
+
       // Log for analytics
       this.logRefreshEvent(adElementId, config);
 
