@@ -52,11 +52,11 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com *.replit.dev *.replit.app https://adsterranet.com http://adsterranet.com https://judicialphilosophical.com http://judicialphilosophical.com https://js.adsterranet.com http://js.adsterranet.com https://cdn.adsterra.com http://cdn.adsterra.com *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com *.replit.dev *.replit.app https://adsterranet.com http://adsterranet.com https://judicialphilosophical.com http://judicialphilosophical.com https://js.adsterranet.com http://js.adsterranet.com https://cdn.adsterra.com http://cdn.adsterra.com *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com https://perchincomenotorious.com http://perchincomenotorious.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
       "img-src 'self' data: blob: https: http: *.supabase.co *.supabase.io https://placehold.co https://i.imghippo.com https://images.unsplash.com",
       "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
-      "connect-src 'self' https: wss: *.supabase.co *.supabase.io https://api.openai.com https://generativelanguage.googleapis.com *.replit.dev *.replit.app https://adsterra.com https://monetag.com https://adsterranet.com https://judicialphilosophical.com https://js.adsterranet.com https://cdn.adsterra.com *.adsterra.com *.monetag.io",
+      "connect-src 'self' https: wss: *.supabase.co *.supabase.io https://api.openai.com https://generativelanguage.googleapis.com *.replit.dev *.replit.app https://adsterra.com https://monetag.com https://adsterranet.com https://judicialphilosophical.com https://js.adsterranet.com https://cdn.adsterra.com *.adsterra.com *.monetag.io https://perchincomenotorious.com http://perchincomenotorious.com",
       "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
       "media-src 'self' data: blob: https:",
       "object-src 'none'",
