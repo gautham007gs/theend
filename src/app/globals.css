@@ -369,3 +369,21 @@ img[loading="eager"]{content-visibility:visible}
     background: hsl(var(--muted-foreground) / 0.5);
   }
 }
+
+/* Low performance mode optimizations */
+.low-performance-mode * {
+  will-change: auto !important;
+  transform: translateZ(0); /* Force GPU for essential animations only */
+}
+
+.low-performance-mode img.low-quality-mode {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Network-aware image loading */
+@media (prefers-reduced-data: reduce) {
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}

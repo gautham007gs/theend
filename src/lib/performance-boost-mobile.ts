@@ -1,28 +1,30 @@
+import { NetworkPerformanceOptimizer, DeviceCapabilityDetector, AdaptiveLoadingManager } from './network-performance';
 
 if (typeof window !== 'undefined') {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const isLowEndDevice = () => {
-    // Detect low-end devices
-    const memory = (performance as any).memory;
-    const hardwareConcurrency = navigator.hardwareConcurrency || 2;
-    return (memory && memory.jsHeapSizeLimit < 1073741824) || hardwareConcurrency <= 2;
-  };
   
   if (isMobile) {
     const optimizeForMobile = () => {
-      const isLowEnd = isLowEndDevice();
+      AdaptiveLoadingManager.applyAdaptiveSettings();
       
-      // Disable animations on low-end devices
-      if (isLowEnd) {
+      const isLowEnd = DeviceCapabilityDetector.detect();
+      const isSlow = NetworkPerformanceOptimizer.isSlow();
+      
+      // Disable animations on low-end devices or slow networks
+      if (isLowEnd || isSlow) {
         document.documentElement.style.setProperty('--animation-duration', '0s');
         document.documentElement.classList.add('reduce-motion');
+        console.log('⚡ Performance: Reduced animations for better performance');
       }
       
-      // Aggressive image optimization
+      // Aggressive image optimization based on network quality
       const images = document.querySelectorAll('img:not([loading])');
+      const imageQuality = NetworkPerformanceOptimizer.getOptimalImageQuality();
+      
       images.forEach((img: Element) => {
         const htmlImg = img as HTMLImageElement;
         const rect = htmlImg.getBoundingClientRect();
+        const isAboveFold = rect.top < window.innerHeight;
         
         // Lazy load everything below fold
         if (rect.top > window.innerHeight) {
@@ -30,7 +32,7 @@ if (typeof window !== 'undefined') {
         } else {
           htmlImg.loading = 'eager';
           if (rect.top < window.innerHeight * 0.5) {
-            htmlImg.fetchPriority = 'high';
+            (htmlImg as any).fetchPriority = NetworkPerformanceOptimizer.getOptimalFetchPriority(true);
           }
         }
         
@@ -43,6 +45,11 @@ if (typeof window !== 'undefined') {
             htmlImg.width = displayWidth;
             htmlImg.height = displayHeight;
           }
+        }
+        
+        // Add quality class for CSS optimization
+        if (isSlow) {
+          htmlImg.classList.add('low-quality-mode');
         }
       });
       
@@ -70,7 +77,7 @@ if (typeof window !== 'undefined') {
         });
       }
       
-      // Clear old messages from memory
+      // Clear old messages from memory on low-end devices
       if (isLowEnd) {
         const clearOldMessages = () => {
           const messagesKey = 'messages_kruthika';
@@ -78,8 +85,10 @@ if (typeof window !== 'undefined') {
             const saved = localStorage.getItem(messagesKey);
             if (saved) {
               const messages = JSON.parse(saved);
-              if (messages.length > 30) {
-                localStorage.setItem(messagesKey, JSON.stringify(messages.slice(-30)));
+              const maxMessages = DeviceCapabilityDetector.getMaxMessages();
+              if (messages.length > maxMessages) {
+                localStorage.setItem(messagesKey, JSON.stringify(messages.slice(-maxMessages)));
+                console.log(`🧹 Memory: Cleared old messages (kept last ${maxMessages})`);
               }
             }
           } catch (e) {
