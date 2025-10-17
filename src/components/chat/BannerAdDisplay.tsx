@@ -182,18 +182,9 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     return null;
   }
 
-  // Show skeleton loader while ad is being lazy loaded
+  // Don't show anything while lazy loading - removes placeholder
   if (!shouldLoadAd) {
-    return (
-      <div
-        className={cn(
-          "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden",
-          className
-        )}
-      >
-        <div className="w-full h-full bg-gradient-to-r from-secondary/5 via-secondary/20 to-secondary/5 animate-pulse" />
-      </div>
-    );
+    return null;
   }
 
   // Key includes adCodeToInject to attempt re-render if the code itself changes.

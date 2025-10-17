@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -57,7 +56,7 @@ const AdminProfilePage: React.FC = () => {
   const [managedContactStatuses, setManagedContactStatuses] = useState<ManagedContactStatus[]>(defaultManagedContactStatuses);
   const [adSettings, setAdSettings] = useState<AdSettings>(defaultAdSettings);
   const [aiMediaAssets, setAiMediaAssets] = useState<AIMediaAssetsConfig>(defaultAIMediaAssetsConfig);
-  
+
   const [newImageUrl, setNewImageUrl] = useState('');
   const [newAudioPath, setNewAudioPath] = useState('');
   const [uploadingFile, setUploadingFile] = useState<boolean>(false);
@@ -136,7 +135,7 @@ const AdminProfilePage: React.FC = () => {
 
       if (adConfigError && adConfigError.code !== 'PGRST116') throw adConfigError;
       const adSettingsData = adConfigData?.settings;
-      
+
       const mergedAdSettings = { 
         ...defaultAdSettings, 
         ...(adSettingsData as Partial<AdSettings>),
@@ -168,7 +167,7 @@ const AdminProfilePage: React.FC = () => {
       fetchAllNonAnalyticsConfigs();
     }
   }, [isAuthenticated, fetchAllNonAnalyticsConfigs]);
-  
+
    useEffect(() => {
     if (!isAuthenticated) return;
 
@@ -227,7 +226,7 @@ const AdminProfilePage: React.FC = () => {
           return { date: format(day, 'EEE'), count: found ? Number(found.active_users) : 0 };
         });
         setDailyActiveUsersData(formattedDAUCounts);
-        
+
         const todayFormatted = format(todayDate, 'EEE');
         const todayDAU = formattedDAUCounts.find(d => d.date === todayFormatted);
         setCurrentDAU(todayDAU ? todayDAU.count : 0);
@@ -276,7 +275,7 @@ const AdminProfilePage: React.FC = () => {
     console.log("[AdminProfilePage] handleSaveKruthikaStory - storyDataToUpdate before calling context update:", JSON.stringify(storyDataToUpdate, null, 2));
     await updateAIProfile(storyDataToUpdate);
   };
-  
+
   const handleClearKruthikaStoryField = (field: 'statusStoryText' | 'statusStoryImageUrl') => {
     setCurrentGlobalAIProfile(p => ({
       ...p,
@@ -310,7 +309,7 @@ const AdminProfilePage: React.FC = () => {
       toast({ title: "Error Saving 'My Status'", description: `Could not save your status globally. ${error.message || ''}`, variant: "destructive" });
     }
   };
-  
+
   const handleClearAdminStatusField = (field: 'statusText' | 'statusImageUrl') => {
     setAdminStatus(s => ({
         ...s,
@@ -438,7 +437,7 @@ const AdminProfilePage: React.FC = () => {
 
   const handleDeleteMediaAsset = async (assetId: string) => {
     const asset = aiMediaAssets.assets.find(a => a.id === assetId);
-    
+
     if (!asset) {
       toast({ title: "Error", description: "Asset not found", variant: "destructive" });
       return;
@@ -448,14 +447,14 @@ const AdminProfilePage: React.FC = () => {
     if (!confirm(`Delete ${asset.description || 'this media file'}? This action cannot be undone.`)) {
       return;
     }
-    
+
     // If asset has storage metadata, delete from Supabase Storage first
     if (asset.storagePath && asset.storageBucket) {
       try {
         const response = await fetch(`/api/upload?path=${encodeURIComponent(asset.storagePath)}&bucket=${encodeURIComponent(asset.storageBucket)}`, {
           method: 'DELETE',
         });
-        
+
         if (!response.ok) {
           const error = await response.json();
           toast({ title: "Storage Delete Error", description: `Failed to delete file from storage: ${error.error || 'Unknown error'}`, variant: "destructive" });
@@ -467,7 +466,7 @@ const AdminProfilePage: React.FC = () => {
         return;
       }
     }
-    
+
     // Remove from local state and auto-save
     const updatedAssets = { assets: aiMediaAssets.assets.filter(a => a.id !== assetId) };
     setAiMediaAssets(updatedAssets);
@@ -485,9 +484,9 @@ const AdminProfilePage: React.FC = () => {
           { id: AI_MEDIA_ASSETS_CONFIG_KEY, settings: updatedAssets, updated_at: new Date().toISOString() },
           { onConflict: 'id' }
         );
-      
+
       if (saveError) throw saveError;
-      
+
       await fetchMediaAssets(); // Refresh from DB
       toast({ title: "Asset Deleted!", description: `${asset.description || 'Media file'} has been permanently deleted.` });
     } catch (saveError: any) {
@@ -549,16 +548,16 @@ const AdminProfilePage: React.FC = () => {
             { id: AI_MEDIA_ASSETS_CONFIG_KEY, settings: updatedAssets, updated_at: new Date().toISOString() },
             { onConflict: 'id' }
           );
-        
+
         if (saveError) throw saveError;
-        
+
         await fetchMediaAssets(); // Refresh from DB
         toast({ title: "File Uploaded & Saved!", description: `${file.name} uploaded and saved to database successfully.` });
       } catch (saveError: any) {
         console.error("Error auto-saving uploaded file:", saveError);
         toast({ title: "Upload OK, Save Failed", description: `File uploaded but not saved to database. Click 'Save Global AI Media Assets' manually.`, variant: "destructive" });
       }
-      
+
       setUploadProgress('');
     } catch (error: any) {
       console.error("Upload error:", error);
@@ -599,7 +598,7 @@ const AdminProfilePage: React.FC = () => {
     toast({ title: 'Logged Out', description: 'You have been logged out of the admin panel.' });
     router.replace('/admin/login');
   };
-  
+
   const handleForceRefreshGlobalData = async () => {
     toast({ title: "Refreshing...", description: "Manually fetching latest global data from Supabase."});
     await fetchAllNonAnalyticsConfigs(); 
@@ -612,7 +611,7 @@ const AdminProfilePage: React.FC = () => {
   }
 
   const scriptPasteInstruction = "Paste the full ad script code provided by the ad network here. Include any <!-- comments --> or <script> tags as provided.";
-  
+
   let adminPageAvatarUrlToUse = currentGlobalAIProfile.avatarUrl;
   if (!adminPageAvatarUrlToUse || typeof adminPageAvatarUrlToUse !== 'string' || adminPageAvatarUrlToUse.trim() === '' || (!adminPageAvatarUrlToUse.startsWith('http') && !adminPageAvatarUrlToUse.startsWith('data:'))) {
     adminPageAvatarUrlToUse = defaultAIProfile.avatarUrl;
@@ -696,6 +695,69 @@ const AdminProfilePage: React.FC = () => {
                   <p className="text-md text-muted-foreground italic">&quot;{currentGlobalAIProfile.status}&quot;</p>
                 </div>
               </div>
+
+              <div className="space-y-3 p-4 border rounded-md shadow-sm bg-secondary/20">
+                <Label className="font-medium text-sm">Kruthika's Avatar</Label>
+                <div className="space-y-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Upload Avatar File</Label>
+                    <Input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setUploadingFile(true);
+                          setUploadProgress(`Uploading ${file.name}...`);
+
+                          try {
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('type', 'image');
+
+                            const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                            if (!response.ok) throw new Error((await response.json()).error || 'Upload failed');
+
+                            const result = await response.json();
+                            setCurrentGlobalAIProfile(p => ({ ...p, avatarUrl: result.url }));
+
+                            toast({ title: "Avatar Uploaded!", description: `${file.name} uploaded successfully.` });
+                          } catch (error: any) {
+                            toast({ title: "Upload Failed", description: error.message || 'Failed to upload file', variant: "destructive" });
+                          } finally {
+                            setUploadingFile(false);
+                            setUploadProgress('');
+                          }
+                        }
+                      }}
+                      className="text-sm"
+                      disabled={uploadingFile}
+                    />
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-secondary/20 px-2 text-muted-foreground">Or add URL</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-sm font-medium">Avatar URL</Label>
+                    <Input
+                      type="url"
+                      value={currentGlobalAIProfile.avatarUrl || ""}
+                      onChange={(e) => setCurrentGlobalAIProfile(p => ({ ...p, avatarUrl: e.target.value }))}
+                      placeholder="https://example.com/avatar.jpg"
+                      className="text-sm"
+                    />
+                  </div>
+                </div>
+                {uploadingFile && uploadProgress && (
+                  <div className="text-xs text-muted-foreground animate-pulse">{uploadProgress}</div>
+                )}
+              </div>
+
                <Button onClick={() => setIsProfileEditorOpen(true)} className="mt-3 w-full sm:w-auto"><Edit className="mr-2 h-4 w-4" />Edit Kruthika's Core Profile (Global)</Button>
                <p className="text-xs text-muted-foreground flex items-center mt-1"><Info size={13} className="mr-1 shrink-0"/>Kruthika's name is primarily defined by her AI persona logic. Editing it here might have limited effect if the AI's core prompt overrides it.</p>
             </CardContent>
@@ -710,7 +772,7 @@ const AdminProfilePage: React.FC = () => {
               />
             )}
           </Card>
-          
+
           <Card className="bg-card text-card-foreground mb-8 shadow-lg">
             <CardHeader className="pb-4">
                <CardTitle className="flex items-center text-xl font-semibold"><Palette className="mr-2 h-5 w-5 text-primary"/>Kruthika's Status Story (Global)</CardTitle>
@@ -727,84 +789,82 @@ const AdminProfilePage: React.FC = () => {
                     className="min-h-[70px]"
                   />
                 </div>
-                
+
                 <div className="space-y-3">
                   <Label className="font-medium text-sm">Story Media (Image, Video, or Audio)</Label>
-                  
-                  <div className="space-y-1.5">
-                    <Label className="text-sm font-medium">Upload Media File</Label>
-                    <div className="flex gap-2">
-                      <Input 
-                        type="file" 
-                        accept="image/*,video/*,audio/*" 
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            let type: 'image' | 'audio' | 'video' = 'image';
-                            if (file.type.startsWith('video/')) type = 'video';
-                            else if (file.type.startsWith('audio/')) type = 'audio';
-                            
-                            setUploadingFile(true);
-                            setUploadProgress(`Uploading ${file.name}...`);
-                            
-                            try {
-                              const formData = new FormData();
-                              formData.append('file', file);
-                              formData.append('type', type);
-                              
-                              const response = await fetch('/api/upload', { method: 'POST', body: formData });
-                              if (!response.ok) throw new Error((await response.json()).error || 'Upload failed');
-                              
-                              const result = await response.json();
-                              setCurrentGlobalAIProfile(p => ({ 
-                                ...p, 
-                                statusStoryMediaUrl: result.url,
-                                statusStoryMediaType: type,
-                                statusStoryImageUrl: type === 'image' ? result.url : p.statusStoryImageUrl
-                              }));
-                              
-                              toast({ title: "File Uploaded!", description: `${file.name} uploaded successfully for story.` });
-                            } catch (error: any) {
-                              toast({ title: "Upload Failed", description: error.message || 'Failed to upload file', variant: "destructive" });
-                            } finally {
-                              setUploadingFile(false);
-                              setUploadProgress('');
+
+                  <div className="space-y-2">
+                    <div className="space-y-1.5">
+                      <Label className="text-sm font-medium">Upload Media File</Label>
+                      <div className="flex gap-2">
+                        <Input 
+                          type="file" 
+                          accept="image/*,video/*,audio/*" 
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              let type: 'image' | 'audio' | 'video' = 'image';
+                              if (file.type.startsWith('video/')) type = 'video';
+                              else if (file.type.startsWith('audio/')) type = 'audio';
+
+                              setUploadingFile(true);
+                              setUploadProgress(`Uploading ${file.name}...`);
+
+                              try {
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                formData.append('type', type);
+
+                                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                                if (!response.ok) throw new Error((await response.json()).error || 'Upload failed');
+
+                                const result = await response.json();
+                                setCurrentGlobalAIProfile(p => ({ 
+                                  ...p, 
+                                  statusStoryMediaUrl: result.url,
+                                  statusStoryMediaType: type,
+                                  statusStoryImageUrl: type === 'image' ? result.url : p.statusStoryImageUrl
+                                }));
+
+                                toast({ title: "File Uploaded!", description: `${file.name} uploaded successfully for story.` });
+                              } catch (error: any) {
+                                toast({ title: "Upload Failed", description: error.message || 'Failed to upload file', variant: "destructive" });
+                              } finally {
+                                setUploadingFile(false);
+                                setUploadProgress('');
+                              }
                             }
-                          }
-                        }}
-                        className="flex-grow text-sm"
-                        disabled={uploadingFile}
+                          }}
+                          className="flex-grow text-sm"
+                          disabled={uploadingFile}
+                        />
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Or add URL</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="kruthikaStoryMediaUrl" className="font-medium text-sm">Media URL (Image/Video/Audio)</Label>
+                      <Input
+                        id="kruthikaStoryMediaUrl"
+                        type="url"
+                        value={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl || ""}
+                        onChange={(e) => setCurrentGlobalAIProfile(p => ({ 
+                          ...p, 
+                          statusStoryMediaUrl: e.target.value,
+                          statusStoryImageUrl: e.target.value
+                        }))}
+                        placeholder="https://example.com/media.jpg or .mp4 or .mp3"
                       />
                     </div>
-                    {uploadingFile && uploadProgress && (
-                      <div className="text-xs text-muted-foreground animate-pulse">{uploadProgress}</div>
-                    )}
                   </div>
-                  
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-card px-2 text-muted-foreground">Or add URL</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1.5">
-                    <Label htmlFor="kruthikaStoryMediaUrl" className="font-medium text-sm">Media URL (Image/Video/Audio)</Label>
-                    <Input
-                      id="kruthikaStoryMediaUrl"
-                      type="url"
-                      value={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl || ""}
-                      onChange={(e) => setCurrentGlobalAIProfile(p => ({ 
-                        ...p, 
-                        statusStoryMediaUrl: e.target.value,
-                        statusStoryImageUrl: e.target.value
-                      }))}
-                      placeholder="https://example.com/media.jpg or .mp4 or .mp3"
-                    />
-                  </div>
-                  
+
                   {(currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl) && (
                     <div className="mt-2">
                       <Label className="text-xs text-muted-foreground mb-2 block">Preview:</Label>
@@ -825,7 +885,7 @@ const AdminProfilePage: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="kruthikaStoryHasUpdate"
@@ -976,7 +1036,7 @@ const AdminProfilePage: React.FC = () => {
                 <Switch id="adsEnabledGlobally" checked={adSettings.adsEnabledGlobally} onCheckedChange={(checked) => handleAdSettingChange('adsEnabledGlobally', checked)}/>
                 <Label htmlFor="adsEnabledGlobally" className="text-md font-semibold">Enable All Ads Globally</Label>
               </div>
-              
+
               <Card className="bg-secondary/10 border-border shadow-sm">
                 <CardHeader className="pb-3 pt-4">
                   <CardTitle className="text-lg font-semibold text-primary flex items-center"><TrendingUp className="mr-2 h-5 w-5"/>Direct Link Ad Frequency</CardTitle>
@@ -1111,7 +1171,7 @@ const AdminProfilePage: React.FC = () => {
             </CardFooter>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="status_content">
           <Card className="bg-card text-card-foreground mb-8 shadow-lg">
             <CardHeader className="pb-4">
@@ -1295,5 +1355,3 @@ const AdminProfilePage: React.FC = () => {
 };
 
 export default AdminProfilePage;
-
-    
