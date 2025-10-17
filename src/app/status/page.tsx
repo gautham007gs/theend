@@ -406,8 +406,8 @@ const StatusPage: React.FC = () => {
             ),
         )}
 
-        {/* Ads Section */}
-        <div className="px-5 py-6 space-y-4 bg-secondary/10">
+        {/* Ads Section - Always Visible */}
+        <div className="px-5 py-6 space-y-4 bg-white border-t border-border/30">
           <BannerAdDisplay
             adType="standard"
             placementKey="statusPageBottom"
@@ -416,7 +416,7 @@ const StatusPage: React.FC = () => {
           <BannerAdDisplay
             adType="native"
             placementKey="statusPageNative"
-            className=""
+            className="mx-auto max-w-md"
           />
         </div>
       </div>
