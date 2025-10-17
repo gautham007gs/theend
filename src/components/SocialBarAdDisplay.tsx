@@ -37,15 +37,15 @@ const SocialBarAdDisplay: React.FC = () => {
       // If the code changes, allow re-injection
       if (adCodeToInject !== selectedAdCode) {
         scriptInjectedRef.current = false;
+        setAdCodeToInject(selectedAdCode);
       }
-      setAdCodeToInject(selectedAdCode);
       setIsVisible(true);
     } else {
       setAdCodeToInject(null);
       setIsVisible(false);
       scriptInjectedRef.current = false;
     }
-  }, [adSettings, isLoadingAdSettings, adCodeToInject]); // adCodeToInject in dep array for re-eval when it changes
+  }, [adSettings, isLoadingAdSettings]); // Removed adCodeToInject to prevent loop
 
   useEffect(() => {
     // Inject script only when adCodeToInject is set, container is available, and script hasn't been injected yet
@@ -90,7 +90,7 @@ const SocialBarAdDisplay: React.FC = () => {
     <div
       ref={adContainerRef}
       className={cn(
-        "kruthika-social-bar-ad-container fixed !bottom-0 !top-auto left-0 right-0 z-[90] w-full max-h-[120px]", // Force bottom position
+        "kruthika-social-bar-ad-container fixed !bottom-0 !top-auto left-0 right-0 z-[95] w-full max-h-[120px]", // Higher z-index than banner (z-90)
         "flex justify-center items-end overflow-hidden" // Align items to bottom
       )}
       style={{ 
@@ -98,7 +98,7 @@ const SocialBarAdDisplay: React.FC = () => {
         top: 'auto !important',
         position: 'fixed !important' as any
       }}
-      key={`social-bar-${adCodeToInject.substring(0,30)}`} // Re-key if ad code changes
+      key={`social-bar-${adCodeToInject?.substring(0,30) || 'empty'}`} // Re-key if ad code changes
     />
   );
 };

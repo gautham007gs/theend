@@ -8,7 +8,7 @@ import { CPMOptimizer } from '@/lib/cpm-optimizer';
 
 interface BannerAdDisplayProps {
   adType: 'standard' | 'native'; // Specify banner type
-  placementKey: string; 
+  placementKey: string;
   className?: string;
 }
 
@@ -159,7 +159,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
           if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
             setTimeout(() => {
               if (entry.isIntersecting) {
-                CPMOptimizer.trackAdPerformance(placementKey, { 
+                CPMOptimizer.trackAdPerformance(placementKey, {
                   viewableTime: 2000 // 2 seconds viewable
                 });
               }
@@ -179,7 +179,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     if (!isLoadingAdSettings && !isVisible) {
       console.log(`ℹ️ Banner Ad [${adType}] - Not visible for placement: ${placementKey} (ads disabled or no code)`);
     }
-    return null; 
+    return null;
   }
 
   // Show skeleton loader while ad is being lazy loaded
