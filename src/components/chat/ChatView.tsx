@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import type { Message, MessageReaction } from '@/types';
 import MessageBubble from './MessageBubble';
@@ -48,12 +47,18 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
           message.text || '',
           !!(message.aiImageUrl || message.userImageUrl)
         );
-        
+
         // Mark as tracked in session storage
         sessionStorage.setItem(messageKey, 'true');
       }
     });
   }, [messages]);
+
+  // Limit rendered messages on low-end devices
+  const isLowEnd = typeof window !== 'undefined' && (performance as any).memory?.jsHeapSizeLimit < 1073741824;
+  const maxMessages = isLowEnd ? 30 : 100;
+  const filteredMessages = messages.filter(msg => !msg.isHidden).slice(-maxMessages);
+
 
   return (
     <div 
@@ -61,7 +66,7 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
       data-chat-container="true"
       style={{ minHeight: 0 }}
     >
-      {messages.map((msg) => (
+      {filteredMessages.map((msg) => (
         <MessageBubble 
             key={msg.id} 
             message={msg} 
@@ -84,4 +89,3 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
 };
 
 export default ChatView;
-    

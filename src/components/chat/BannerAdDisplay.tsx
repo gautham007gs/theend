@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -60,7 +59,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         selectedNetwork = 'monetag';
       }
     }
-    
+
     if (selectedNetworkEnabled && selectedAdCode.trim()) {
       setAdCodeToInject(selectedAdCode);
       setCurrentNetwork(selectedNetwork);
@@ -105,34 +104,47 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     // 2. Container is available
     // 3. Lazy load flag is true (near viewport)
     // 4. Script hasn't been injected yet
-    if (adCodeToInject && adContainerRef.current && shouldLoadAd && !scriptInjectedRef.current) {
-      // Clear previous content
-      adContainerRef.current.innerHTML = '';
-      
-      try {
-        console.log(`🎯 Banner Ad [${adType}] - Starting injection for placement: ${placementKey}`);
-        console.log(`🎯 Banner Ad [${adType}] - Network: ${currentNetwork}`);
-        console.log(`🎯 Banner Ad [${adType}] - Code length: ${adCodeToInject.length} chars`);
-        
-        // Using a more robust way to append script tags
-        const fragment = document.createRange().createContextualFragment(adCodeToInject);
-        adContainerRef.current.appendChild(fragment);
-        scriptInjectedRef.current = true;
-        
-        // Track impression for CPM optimization
-        CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
-        
-        console.log(`✅ Banner Ad [${adType}] - Successfully loaded for placement: ${placementKey}`);
-        console.log(`✅ Banner Ad [${adType}] - DOM element ID: ${adElementId}`);
-      } catch (e) {
-        console.error(`❌ Banner Ad [${adType}] - Error injecting script for placement ${placementKey}:`, e);
-        scriptInjectedRef.current = false; // Allow retry if code changes
+    if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings) {
+      return;
+    }
+
+    // Defer ad loading on low-end devices
+    const isLowEnd = (performance as any).memory?.jsHeapSizeLimit < 1073741824;
+    const loadDelay = isLowEnd ? 2000 : 500;
+
+    const loadTimer = setTimeout(() => {
+      if (adContainerRef.current) {
+        adContainerRef.current.innerHTML = '';
+
+        try {
+          console.log(`🎯 Banner Ad [${adType}] - Starting injection for placement: ${placementKey}`);
+          console.log(`🎯 Banner Ad [${adType}] - Network: ${currentNetwork}`);
+          console.log(`🎯 Banner Ad [${adType}] - Code length: ${adCodeToInject.length} chars`);
+
+          // Using a more robust way to append script tags
+          const fragment = document.createRange().createContextualFragment(adCodeToInject);
+          adContainerRef.current.appendChild(fragment);
+          scriptInjectedRef.current = true;
+
+          // Track impression for CPM optimization
+          CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
+
+          console.log(`✅ Banner Ad [${adType}] - Successfully loaded for placement: ${placementKey}`);
+          console.log(`✅ Banner Ad [${adType}] - DOM element ID: ${adElementId}`);
+        } catch (e) {
+          console.error(`❌ Banner Ad [${adType}] - Error injecting script for placement ${placementKey}:`, e);
+          scriptInjectedRef.current = false; // Allow retry if code changes
+        }
       }
-    } else if (!adCodeToInject && adContainerRef.current) {
+    }, loadDelay);
+
+    return () => clearTimeout(loadTimer);
+    
+    else if (!adCodeToInject && adContainerRef.current) {
       adContainerRef.current.innerHTML = ''; // Clear if no ad code
       scriptInjectedRef.current = false;
     }
-  }, [adCodeToInject, placementKey, adType, shouldLoadAd]);
+  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings]);
 
   // Track viewability for analytics only (no refresh)
   useEffect(() => {
@@ -166,7 +178,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
     return null; 
   }
-  
+
   // Show skeleton loader while ad is being lazy loaded
   if (!shouldLoadAd) {
     return (
@@ -180,7 +192,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       </div>
     );
   }
-  
+
   // Key includes adCodeToInject to attempt re-render if the code itself changes.
   return (
     <div

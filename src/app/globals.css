@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -105,7 +104,6 @@ img[loading="eager"]{content-visibility:visible}
     -webkit-touch-callout: none !important;
     -webkit-user-drag: none !important;
   }
-  
   body {
     @apply bg-background text-foreground;
     /* Enhanced screenshot and copy prevention */
@@ -115,6 +113,25 @@ img[loading="eager"]{content-visibility:visible}
     user-select: none !important;
     -webkit-touch-callout: none !important;
     pointer-events: auto;
+  }
+
+  /* Low-end device optimizations */
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /* ONLY allow text selection in input fields */

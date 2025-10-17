@@ -1,12 +1,12 @@
 export const performanceConfig = {
   lcp: {
-    targetTime: 2500,
-    criticalImages: ['/kruthika-avatar.svg', '/og-image.jpg'],
-    preloadFonts: ['Inter-400.woff2', 'Inter-600.woff2'],
+    targetTime: 1500, // More aggressive for mobile
+    criticalImages: ['/kruthika-avatar.svg'],
+    preloadFonts: [], // Skip font preload on low-end devices
   },
   
   cls: {
-    targetScore: 0.1,
+    targetScore: 0.05,
     reserveSpace: true,
     aspectRatios: {
       avatar: '1/1',
@@ -16,21 +16,21 @@ export const performanceConfig = {
   },
   
   fid: {
-    targetTime: 100,
+    targetTime: 50, // Faster interaction
     deferScripts: true,
-    lazyLoadThreshold: '200px',
+    lazyLoadThreshold: '100px', // Reduced for faster loading
   },
   
   inp: {
-    targetTime: 200,
-    debounceDelay: 300,
-    throttleDelay: 150,
+    targetTime: 100, // Reduced for smoother interaction
+    debounceDelay: 150, // Faster debounce
+    throttleDelay: 100, // Faster throttle
   },
   
   tbt: {
-    targetTime: 300,
-    chunkSize: 50,
-    idleTimeout: 50,
+    targetTime: 150, // Reduced blocking time
+    chunkSize: 25, // Smaller chunks for low-end devices
+    idleTimeout: 25, // Faster idle timeout
   },
   
   caching: {
