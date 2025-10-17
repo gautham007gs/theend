@@ -90,9 +90,14 @@ const SocialBarAdDisplay: React.FC = () => {
     <div
       ref={adContainerRef}
       className={cn(
-        "kruthika-social-bar-ad-container fixed bottom-0 left-0 right-0 z-[90] w-full", // Ensure it's above most content
-        "flex justify-center items-center" // Basic styling, actual ad script will control appearance
+        "kruthika-social-bar-ad-container fixed !bottom-0 !top-auto left-0 right-0 z-[90] w-full max-h-[120px]", // Force bottom position
+        "flex justify-center items-end overflow-hidden" // Align items to bottom
       )}
+      style={{ 
+        bottom: '0 !important', 
+        top: 'auto !important',
+        position: 'fixed !important' as any
+      }}
       key={`social-bar-${adCodeToInject.substring(0,30)}`} // Re-key if ad code changes
     />
   );
