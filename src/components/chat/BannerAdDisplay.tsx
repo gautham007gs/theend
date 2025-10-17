@@ -139,12 +139,15 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }, loadDelay);
 
     return () => clearTimeout(loadTimer);
-    
-    else if (!adCodeToInject && adContainerRef.current) {
-      adContainerRef.current.innerHTML = ''; // Clear if no ad code
+  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings]);
+
+  // Clear ad container if no ad code
+  useEffect(() => {
+    if (!adCodeToInject && adContainerRef.current) {
+      adContainerRef.current.innerHTML = '';
       scriptInjectedRef.current = false;
     }
-  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings]);
+  }, [adCodeToInject]);
 
   // Track viewability for analytics only (no refresh)
   useEffect(() => {

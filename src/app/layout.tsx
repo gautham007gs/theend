@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -10,6 +9,7 @@ import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
 import StructuredData from '@/components/StructuredData';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
+import CookieConsent from '@/components/CookieConsent';
 
 
 // Optimize font loading - use fallback font immediately with aggressive caching
@@ -153,6 +153,7 @@ export default function RootLayout({
                   {children}
                   <Toaster />
                   <ClientComponentsWrapper />
+                  <CookieConsent />
                 </AIMediaAssetsProvider>
               </GlobalStatusProvider>
             </AdSettingsProvider>
