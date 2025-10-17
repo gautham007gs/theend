@@ -1,32 +1,44 @@
-// CPM Optimization System (Performance Tracking Only)
+// Enhanced CPM Optimization System with Viewability Tracking
 export class CPMOptimizer {
   private static performanceData: Map<string, {
     impressions: number;
     clicks: number;
     viewableTime: number;
+    viewableImpressions: number;
     ctr: number;
+    viewabilityRate: number;
   }> = new Map();
 
-  // Track ad performance by placement (analytics only)
+  // Track ad performance by placement with viewability metrics
   static trackAdPerformance(placementId: string, metrics: {
     impression?: boolean;
     click?: boolean;
     viewableTime?: number;
+    wasViewable?: boolean;
   }) {
     const current = this.performanceData.get(placementId) || {
       impressions: 0,
       clicks: 0,
       viewableTime: 0,
-      ctr: 0
+      viewableImpressions: 0,
+      ctr: 0,
+      viewabilityRate: 0
     };
 
     if (metrics.impression) current.impressions++;
     if (metrics.click) current.clicks++;
     if (metrics.viewableTime) current.viewableTime += metrics.viewableTime;
+    if (metrics.wasViewable) current.viewableImpressions++;
 
     current.ctr = current.impressions > 0 ? (current.clicks / current.impressions) * 100 : 0;
+    current.viewabilityRate = current.impressions > 0 ? (current.viewableImpressions / current.impressions) * 100 : 0;
 
     this.performanceData.set(placementId, current);
+    
+    // Log viewability insights
+    if (current.impressions % 10 === 0) {
+      console.log(`📊 Ad Performance [${placementId}]: ${current.viewabilityRate.toFixed(1)}% viewable, ${current.ctr.toFixed(2)}% CTR`);
+    }
   }
 
   // Get placement performance stats

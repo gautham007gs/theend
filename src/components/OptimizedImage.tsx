@@ -12,6 +12,7 @@ interface OptimizedImageProps {
   className?: string;
   quality?: number;
   sizes?: string;
+  fill?: boolean;
   onLoadingComplete?: () => void;
 }
 
@@ -24,6 +25,7 @@ export default function OptimizedImage({
   className = '',
   quality = 75,
   sizes,
+  fill = false,
   onLoadingComplete
 }: OptimizedImageProps) {
   const [isLoading, setIsLoading] = useState(true);
