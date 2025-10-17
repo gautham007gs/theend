@@ -13,34 +13,6 @@ interface BannerAdDisplayProps {
   className?: string;
 }
 
-// Preload ad CDN resources early
-const preloadAdResources = (adCode: string) => {
-  if (typeof window === 'undefined') return;
-  
-  // Extract CDN URLs from ad code
-  const cdnUrls: string[] = [];
-  const scriptRegex = /src=["']([^"']+)["']/g;
-  const imgRegex = /https?:\/\/[^\s"']+\.(?:jpg|jpeg|png|gif|webp|svg)/gi;
-  
-  let match;
-  while ((match = scriptRegex.exec(adCode)) !== null) {
-    cdnUrls.push(match[1]);
-  }
-  while ((match = imgRegex.exec(adCode)) !== null) {
-    cdnUrls.push(match[0]);
-  }
-  
-  // Preload scripts with high priority
-  cdnUrls.forEach(url => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = url.endsWith('.js') ? 'script' : 'image';
-    link.href = url;
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-  });
-};
-
 const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey, className }) => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const [isVisible, setIsVisible] = useState(false);
@@ -90,9 +62,6 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
     
     if (selectedNetworkEnabled && selectedAdCode.trim()) {
-      // Preload CDN resources immediately
-      preloadAdResources(selectedAdCode);
-      
       setAdCodeToInject(selectedAdCode);
       setCurrentNetwork(selectedNetwork);
       setIsVisible(true);

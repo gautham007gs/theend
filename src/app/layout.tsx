@@ -99,7 +99,7 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#0d8043" />
@@ -117,8 +117,6 @@ export default function RootLayout({
         {/* Critical preconnects */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://torchfriendlypay.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://preferencenail.com" crossOrigin="anonymous" />
 
         {/* Preload critical LCP image */}
         <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" crossOrigin="anonymous" />
