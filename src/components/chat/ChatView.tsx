@@ -40,7 +40,7 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
       // Track new messages for analytics
       const messageKey = `tracked_${message.id}`;
       if (!sessionStorage.getItem(messageKey)) {
-        const senderType = message.sender === 'ad' ? 'ai' : message.sender as 'user' | 'ai';
+        const senderType = message.sender === 'ai' || (message.sender as any) === 'ad' ? 'ai' : 'user';
         analyticsTracker.trackMessage(
           message.id,
           senderType,
@@ -57,14 +57,14 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
   // Limit rendered messages on low-end devices
   const isLowEnd = typeof window !== 'undefined' && (performance as any).memory?.jsHeapSizeLimit < 1073741824;
   const maxMessages = isLowEnd ? 30 : 100;
-  const filteredMessages = messages.filter(msg => !msg.isHidden).slice(-maxMessages);
+  const filteredMessages = messages.slice(-maxMessages);
 
 
   return (
     <div 
-      className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 bg-chat-bg-default custom-scrollbar"
+      className="p-3 sm:p-4 space-y-3 sm:space-y-4 bg-chat-bg-default custom-scrollbar"
       data-chat-container="true"
-      style={{ minHeight: 0 }}
+      style={{ minHeight: '100%', paddingBottom: '1rem' }}
     >
       {filteredMessages.map((msg) => (
         <MessageBubble 

@@ -899,7 +899,8 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       }
     } catch (error) {
       console.error("Kruthika AI: Error in proactive messaging:", error);
-
+    }
+  };
 
   // Function to inject scrollable banner ad in chat
   const injectBannerAdMessage = () => {
@@ -961,9 +962,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
     setMessages((prev) => [...prev, bannerAdMessage]);
     console.log("Banner ad injected in chat:", bannerId, "Network:", selectedNetwork);
-  };
-
-    }
   };
 
   // Generate unique message IDs to prevent duplicate key violations
@@ -1096,7 +1094,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     if (currentImageUri) {
       const todayStr = new Date().toDateString();
       const lastUploadDate = localStorage.getItem(
-        USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
+        USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
       );
       let currentUploadCount = parseInt(
         localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || "0",
@@ -1664,7 +1662,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           localStorage.getItem(USER_IMAGE_UPLOAD_COUNT_KEY_KRUTHIKA) || "0",
         );
         const lastUploadDate = localStorage.getItem(
-          USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
+          USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
         );
 
         if (lastUploadDate !== todayStr) {
@@ -1676,7 +1674,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           currentUploadCount.toString(),
         );
         localStorage.setItem(
-          USER_IMAGE_UPLOAD_LAST_DATE_KRUTHIKA,
+          USER_IMAGE_UPLOAD_LAST_DATE_KEY_KRUTHIKA,
           todayStr,
         );
       }
@@ -2323,26 +2321,30 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       <ScreenshotProtection />
       <DevToolsBlocker />
       <ChatStructuredData />
-      <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden">
-        <ChatHeader
-          aiName={displayAIProfile.name}
-          aiAvatarUrl={displayAIProfile.avatarUrl}
-          onlineStatus={onlineStatus}
-          onAvatarClick={handleOpenAvatarZoom}
-          onCallClick={handleCallVideoClick}
-          onVideoClick={handleCallVideoClick}
-        />
-        <ChatView
-          messages={messages}
-          aiAvatarUrl={displayAIProfile.avatarUrl}
-          aiName={displayAIProfile.name}
-          isAiTyping={isAiTyping}
-          onTriggerAd={handleBubbleAdTrigger}
-          onQuickReply={handleQuickReply}
-          onLikeMessage={handleLikeMessage}
-          onReactToMessage={handleReactToMessage}
-          onAvatarClick={handleOpenAvatarZoom}
-        />
+      <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
+        <div className="flex-shrink-0 sticky top-0 z-10 bg-chat-header-bg">
+          <ChatHeader
+            aiName={displayAIProfile.name}
+            aiAvatarUrl={displayAIProfile.avatarUrl}
+            onlineStatus={onlineStatus}
+            onAvatarClick={handleOpenAvatarZoom}
+            onCallClick={handleCallVideoClick}
+            onVideoClick={handleCallVideoClick}
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto" style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}>
+          <ChatView
+            messages={messages}
+            aiAvatarUrl={displayAIProfile.avatarUrl}
+            aiName={displayAIProfile.name}
+            isAiTyping={isAiTyping}
+            onTriggerAd={handleBubbleAdTrigger}
+            onQuickReply={handleQuickReply}
+            onLikeMessage={handleLikeMessage}
+            onReactToMessage={handleReactToMessage}
+            onAvatarClick={handleOpenAvatarZoom}
+          />
+        </div>
 
         {showInterstitialAd && (
           <SimulatedAdPlaceholder
@@ -2358,11 +2360,11 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         )}
 
         {/* Banner Ad above input */}
-        <div className="flex-shrink-0 border-t border-border/30">
+        <div className="flex-shrink-0 border-t border-border/30 sticky bottom-16 z-10 bg-chat-bg-default">
           <BannerAdDisplay adType="standard" placementKey="maya-chat-input" className="mb-0" />
         </div>
         
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 sticky bottom-0 z-10 bg-chat-input-bg">
           <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
         </div>
 

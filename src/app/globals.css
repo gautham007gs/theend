@@ -289,3 +289,83 @@ img[loading="eager"]{content-visibility:visible}
 .native-ad-content script {
   display: none;
 }
+
+/* Mobile viewport fixes for preventing header/footer scroll issues */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific fixes */
+  .fixed.inset-0 {
+    height: -webkit-fill-available;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Prevent address bar scrolling on mobile */
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+  
+  /* Fixed chat container for mobile */
+  .fixed.inset-0 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    max-height: 100vh;
+    max-height: -webkit-fill-available;
+  }
+  
+  /* Ensure proper touch scrolling */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Sticky header and footer optimization */
+  .sticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+  
+  /* Prevent viewport shifts */
+  .chat-header,
+  [class*="chat-input"] {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
+
+/* Performance optimizations for low-end devices */
+@media (max-width: 768px) and (hover: none) {
+  /* Disable hover effects on touch devices */
+  *:hover {
+    transition: none !important;
+  }
+  
+  /* Optimize animations */
+  .reduce-motion,
+  .reduce-motion * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Enhanced scrollbar for better mobile UX */
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}
