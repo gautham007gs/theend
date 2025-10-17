@@ -110,6 +110,10 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       adContainerRef.current.innerHTML = '';
       
       try {
+        console.log(`🎯 Banner Ad [${adType}] - Starting injection for placement: ${placementKey}`);
+        console.log(`🎯 Banner Ad [${adType}] - Network: ${currentNetwork}`);
+        console.log(`🎯 Banner Ad [${adType}] - Code length: ${adCodeToInject.length} chars`);
+        
         // Using a more robust way to append script tags
         const fragment = document.createRange().createContextualFragment(adCodeToInject);
         adContainerRef.current.appendChild(fragment);
@@ -118,9 +122,10 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         // Track impression for CPM optimization
         CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
         
-        console.log(`Ad loaded successfully: ${adType} - ${placementKey}`);
+        console.log(`✅ Banner Ad [${adType}] - Successfully loaded for placement: ${placementKey}`);
+        console.log(`✅ Banner Ad [${adType}] - DOM element ID: ${adElementId}`);
       } catch (e) {
-        console.error(`Error injecting ${adType} ad script for placement ${placementKey}:`, e);
+        console.error(`❌ Banner Ad [${adType}] - Error injecting script for placement ${placementKey}:`, e);
         scriptInjectedRef.current = false; // Allow retry if code changes
       }
     } else if (!adCodeToInject && adContainerRef.current) {
@@ -156,6 +161,9 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
 
 
   if (isLoadingAdSettings || !isVisible || !adCodeToInject) {
+    if (!isLoadingAdSettings && !isVisible) {
+      console.log(`ℹ️ Banner Ad [${adType}] - Not visible for placement: ${placementKey} (ads disabled or no code)`);
+    }
     return null; 
   }
   
