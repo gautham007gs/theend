@@ -233,13 +233,13 @@ const ChatListPage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Welcome Section */}
+        {/* Welcome Section - LCP Optimized */}
         <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm">
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">
+            <h2 className="text-xl font-semibold text-gray-800 mb-3" style={{ fontDisplay: 'swap' }}>
               Chat with {effectiveAIProfile.name}
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500" style={{ fontDisplay: 'swap' }}>
               Smart conversations
             </p>
           </div>

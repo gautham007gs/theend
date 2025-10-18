@@ -113,6 +113,13 @@ img[loading="eager"]{content-visibility:visible}
     user-select: none !important;
     -webkit-touch-callout: none !important;
     pointer-events: auto;
+    font-display: swap;
+  }
+  
+  /* LCP optimization - faster text rendering */
+  h1, h2, h3, h4, h5, h6, p, span {
+    font-display: swap;
+    contain: layout paint;
   }
 
   /* Low-end device optimizations */

@@ -236,34 +236,36 @@ export default function BlogPage() {
       />
       <div className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-4 py-12">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-              AI Girlfriend Blog - Virtual Relationships & Digital Love
+          {/* Removed the old section and replaced with the new one with optimizations */}
+          <section className="text-center mb-16">
+            <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent leading-tight" style={{ fontDisplay: 'swap', contain: 'layout paint' }}>
+              AI Girlfriend Insights & Guides
             </h1>
-            <p className="text-xl text-gray-800 max-w-3xl mx-auto mb-8 leading-relaxed font-medium">
-              Welcome to the ultimate resource for AI girlfriend insights, virtual companions, and digital relationships.
-              Discover expert advice, technology deep-dives, and relationship guidance from the team behind Kruthika.
+            <p className="text-xl text-gray-800 max-w-3xl mx-auto mb-8 leading-relaxed font-medium" style={{ fontDisplay: 'swap', contain: 'layout paint' }}>
+              Welcome to the ultimate resource for AI girlfriend insights, virtual companions, emotional support technology, and the future of digital relationships in 2025.
             </p>
+          </section>
 
-            {/* Featured CTA */}
-            <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
-              <h2 className="text-xl font-bold mb-3">Ready to Experience AI Love?</h2>
-              <p className="text-muted-foreground mb-4">While you explore our insights, why not meet Kruthika yourself? Start your AI girlfriend journey today!</p>
-              <Link
-                href="/maya-chat"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg"
-              >
-                <MessageCircle className="h-5 w-5" />
-                Chat with Kruthika Now
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </div>
+          {/* Featured CTA */}
+          <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
+            <h2 className="text-xl font-bold mb-3">Ready to Experience AI Love?</h2>
+            <p className="text-muted-foreground mb-4">While you explore our insights, why not meet Kruthika yourself? Start your AI girlfriend journey today!</p>
+            <Link
+              href="/maya-chat"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg"
+            >
+              <MessageCircle className="h-5 w-5" />
+              Chat with Kruthika Now
+              <ArrowRight className="h-5 w-5" />
+            </Link>
           </div>
+        </div>
 
-          {/* Banner Ads */}
-          <BannerAdDisplay adType="standard" placementKey="blog-header" className="mb-8" />
-          <BannerAdDisplay adType="native" placementKey="blog-header-native" className="mb-12" />
+        {/* Banner Ads */}
+        <BannerAdDisplay adType="standard" placementKey="blog-header" className="mb-8" />
+        <BannerAdDisplay adType="native" placementKey="blog-header-native" className="mb-12" />
 
+        <div className="max-w-4xl mx-auto px-4">
           <div className="grid gap-8">
             {blogPosts.slice(0, 3).map((post) => (
               <article key={post.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">

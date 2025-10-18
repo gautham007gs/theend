@@ -408,7 +408,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
     const handleViewImage = () => {
       if (isViewed) return;
-      
+
       setShowImageDialog(true);
       if (navigator.vibrate) navigator.vibrate(50);
 

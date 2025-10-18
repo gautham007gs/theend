@@ -203,10 +203,10 @@ const StatusPage: React.FC = () => {
             )}
           </div>
           <div className="ml-4 flex-grow overflow-hidden">
-            <h2 className="font-semibold text-base truncate text-foreground group-hover:text-primary transition-colors">
+            <h2 className="font-semibold text-base truncate text-foreground group-hover:text-primary transition-colors" style={{ fontDisplay: 'swap', contain: 'layout' }}>
               {displayName}
             </h2>
-            <p className="text-sm text-muted-foreground truncate mt-0.5">
+            <p className="text-sm text-muted-foreground truncate mt-0.5" style={{ fontDisplay: 'swap', contain: 'layout' }}>
               {statusText}
             </p>
           </div>

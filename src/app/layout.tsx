@@ -116,7 +116,24 @@ export default function RootLayout({
 
         {/* Critical preconnects */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
+
+        {/* Preload critical fonts FIRST for LCP text */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
 
         {/* Preload critical LCP image */}
         <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" crossOrigin="anonymous" />
@@ -126,20 +143,22 @@ export default function RootLayout({
         
         {/* NO ad scripts in head - all handled by components */}
 
-        {/* Inline critical CSS */}
+        {/* Inline critical CSS - Enhanced for LCP */}
         <style dangerouslySetInnerHTML={{
           __html: `
             @font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2')}
             @font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2')}
             *{box-sizing:border-box;margin:0;padding:0}
-            html{-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
-            body{font-family:Inter,-apple-system,sans-serif;line-height:1.5;background:#F2EDE4;min-height:100vh;overflow-x:hidden;position:relative}
-            img{max-width:100%;height:auto;display:block}
+            html{-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth;font-display:swap}
+            body{font-family:Inter,-apple-system,sans-serif;line-height:1.5;background:#F2EDE4;min-height:100vh;overflow-x:hidden;position:relative;font-display:swap}
+            img{max-width:100%;height:auto;display:block;content-visibility:auto}
             .avatar-placeholder,[class*="avatar"]{width:48px;height:48px;border-radius:50%;flex-shrink:0}
-            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:10}
+            .chat-header{height:64px;background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:10;contain:layout}
             button,input,textarea{font:inherit;touch-action:manipulation}
             [hidden]{display:none!important}
             main{min-height:calc(100vh - 64px);contain:layout style paint}
+            h1,h2,h3,p{font-display:swap;contain:layout paint}
+            .text-xl,.text-5xl,.font-semibold{font-display:swap;contain:layout}
             @media (prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}}
           `
         }} />
