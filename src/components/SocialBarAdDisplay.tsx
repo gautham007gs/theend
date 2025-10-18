@@ -6,11 +6,20 @@ import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
 
-// Singleton flag to prevent multiple instances
-let socialBarInstanceExists = false;
+// GLOBAL singleton flag - only ONE social bar EVER
+if (typeof window !== 'undefined') {
+  (window as any).__SOCIAL_BAR_MOUNTED__ = (window as any).__SOCIAL_BAR_MOUNTED__ || false;
+}
+
 let socialBarCleanupTimer: NodeJS.Timeout | null = null;
 
 const SocialBarAdDisplay: React.FC = () => {
+  // IMMEDIATE CHECK: Block render if another instance exists
+  if (typeof window !== 'undefined' && (window as any).__SOCIAL_BAR_MOUNTED__) {
+    console.warn('Social Bar: Rendering blocked - instance already exists');
+    return null;
+  }
+
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
@@ -47,23 +56,30 @@ const SocialBarAdDisplay: React.FC = () => {
   };
 
   useEffect(() => {
-    // Prevent multiple instances - stronger enforcement
-    if (socialBarInstanceExists && !mountedRef.current) {
-      console.warn('Social Bar: Another instance already exists, blocking this one');
-      return;
+    // CRITICAL: Check global window flag to prevent ANY duplicates
+    if (typeof window !== 'undefined') {
+      if ((window as any).__SOCIAL_BAR_MOUNTED__) {
+        console.warn('Social Bar: BLOCKED - Another instance already mounted globally');
+        return;
+      }
+      
+      // Mark as mounted IMMEDIATELY
+      (window as any).__SOCIAL_BAR_MOUNTED__ = true;
+      mountedRef.current = true;
+      
+      console.log('Social Bar: First instance mounted successfully');
     }
     
-    socialBarInstanceExists = true;
-    mountedRef.current = true;
-    
-    // Immediate cleanup on mount
+    // Aggressive cleanup on mount
     cleanupOldSocialBars();
 
     return () => {
       if (socialBarCleanupTimer) {
         clearTimeout(socialBarCleanupTimer);
       }
-      socialBarInstanceExists = false;
+      if (typeof window !== 'undefined') {
+        (window as any).__SOCIAL_BAR_MOUNTED__ = false;
+      }
       mountedRef.current = false;
     };
   }, []);

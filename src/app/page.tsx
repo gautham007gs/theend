@@ -269,10 +269,10 @@ const ChatListPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Banner Ads - Always Visible */}
-      <div className="px-4 py-4 space-y-3 bg-secondary/5">
-        <BannerAdDisplay adType="standard" placementKey="chatListBottom" className="mx-auto max-w-md" />
-        <BannerAdDisplay adType="native" placementKey="chatListNative" className="mx-auto max-w-md" />
+      {/* Banner Ads - Always Visible on Home Page */}
+      <div className="flex-shrink-0 px-4 py-4 space-y-3 bg-secondary/5">
+        <BannerAdDisplay adType="standard" placementKey="home-banner-1" className="mx-auto max-w-md" />
+        <BannerAdDisplay adType="native" placementKey="home-native-1" className="mx-auto max-w-md" />
       </div>
 
       {/* Floating Action Button */}
