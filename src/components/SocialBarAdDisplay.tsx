@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 // Singleton flag to prevent multiple instances
 let socialBarInstanceExists = false;
+let socialBarCleanupTimer: NodeJS.Timeout | null = null;
 
 const SocialBarAdDisplay: React.FC = () => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
@@ -16,31 +17,52 @@ const SocialBarAdDisplay: React.FC = () => {
   const adContainerRef = useRef<HTMLDivElement>(null);
   const scriptInjectedRef = useRef(false);
   const mountedRef = useRef(false);
+  const instanceIdRef = useRef(Math.random().toString(36).substr(2, 9));
 
-  // Cleanup function to remove old social bar elements
+  // Aggressive cleanup function to remove ALL duplicate social bars
   const cleanupOldSocialBars = () => {
-    // Remove any existing social bar elements from DOM
-    const existingBars = document.querySelectorAll('[class*="social-bar"], [id*="social-bar"], .kruthika-social-bar-ad-container');
-    existingBars.forEach((bar, index) => {
-      // Keep only the first one (current instance)
-      if (index > 0) {
-        console.log('Social Bar: Removing duplicate element', bar);
-        bar.remove();
-      }
-    });
+    if (socialBarCleanupTimer) {
+      clearTimeout(socialBarCleanupTimer);
+    }
+
+    socialBarCleanupTimer = setTimeout(() => {
+      // Remove any existing social bar containers except current
+      const allBars = document.querySelectorAll('.kruthika-social-bar-ad-container');
+      allBars.forEach((bar) => {
+        if (bar !== adContainerRef.current) {
+          console.log('Social Bar: Removing duplicate container', bar);
+          bar.remove();
+        }
+      });
+
+      // Also remove any orphaned ad scripts in body
+      const adScripts = document.querySelectorAll('script[src*="socialbar"], script[src*="social-bar"], ins[class*="socialbar"]');
+      adScripts.forEach((script, index) => {
+        if (index > 0) { // Keep first instance only
+          console.log('Social Bar: Removing duplicate ad script', script);
+          script.remove();
+        }
+      });
+    }, 100);
   };
 
   useEffect(() => {
-    // Prevent multiple instances
+    // Prevent multiple instances - stronger enforcement
     if (socialBarInstanceExists && !mountedRef.current) {
-      console.warn('Social Bar: Another instance already exists, skipping...');
+      console.warn('Social Bar: Another instance already exists, blocking this one');
       return;
     }
     
     socialBarInstanceExists = true;
     mountedRef.current = true;
+    
+    // Immediate cleanup on mount
+    cleanupOldSocialBars();
 
     return () => {
+      if (socialBarCleanupTimer) {
+        clearTimeout(socialBarCleanupTimer);
+      }
       socialBarInstanceExists = false;
       mountedRef.current = false;
     };
@@ -112,8 +134,14 @@ const SocialBarAdDisplay: React.FC = () => {
           });
           console.log('Social Bar: Forced script re-execution complete');
           
-          // Clean up duplicates again after injection
-          setTimeout(() => cleanupOldSocialBars(), 1000);
+          // Continuous cleanup monitoring - check every 2 seconds for duplicates
+          const cleanupInterval = setInterval(() => {
+            cleanupOldSocialBars();
+          }, 2000);
+          
+          // Stop monitoring after 30 seconds
+          setTimeout(() => clearInterval(cleanupInterval), 30000);
+          
         } catch (e) {
           console.error("Social Bar: Error injecting ad script:", e);
           scriptInjectedRef.current = false;
@@ -135,16 +163,24 @@ const SocialBarAdDisplay: React.FC = () => {
   return (
     <div
       ref={adContainerRef}
+      data-social-bar-instance={instanceIdRef.current}
       className={cn(
-        "kruthika-social-bar-ad-container fixed !bottom-0 !top-auto left-0 right-0 z-[95] w-full max-h-[120px]", // Higher z-index than banner (z-90)
-        "flex justify-center items-end overflow-hidden" // Align items to bottom
+        "kruthika-social-bar-ad-container",
+        "!fixed !bottom-0 !left-0 !right-0 !top-[unset]",
+        "!z-[95] !w-full !max-h-[120px]",
+        "flex justify-center items-end overflow-hidden"
       )}
       style={{ 
-        bottom: '0 !important', 
-        top: 'auto !important',
-        position: 'fixed !important' as any
+        bottom: '0px',
+        top: 'unset',
+        left: '0px',
+        right: '0px',
+        position: 'fixed',
+        zIndex: 95,
+        maxHeight: '120px',
+        pointerEvents: 'auto'
       }}
-      key={`social-bar-${adCodeToInject?.substring(0,30) || 'empty'}`} // Re-key if ad code changes
+      key={`social-bar-${instanceIdRef.current}`}
     />
   );
 };
