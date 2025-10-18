@@ -5,12 +5,32 @@ import { useEffect, useRef } from 'react';
 
 export function useMobileOptimization() {
   const cleanupRef = useRef<(() => void)[]>([]);
+  const isPausedRef = useRef(false);
 
   useEffect(() => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     if (!isMobile) return;
 
     const isLowEnd = (performance as any).memory?.jsHeapSizeLimit < 1073741824;
+
+    // Listen for freeze prevention pause/resume
+    const handlePause = () => {
+      console.log('📱 Mobile Optimization: Paused');
+      isPausedRef.current = true;
+    };
+
+    const handleResume = () => {
+      console.log('📱 Mobile Optimization: Resumed');
+      isPausedRef.current = false;
+    };
+
+    window.addEventListener('freeze-prevention-pause', handlePause);
+    window.addEventListener('freeze-prevention-resume', handleResume);
+
+    cleanupRef.current.push(() => {
+      window.removeEventListener('freeze-prevention-pause', handlePause);
+      window.removeEventListener('freeze-prevention-resume', handleResume);
+    });
 
     // Use passive listeners for better scroll
     const options: AddEventListenerOptions = { passive: true };
@@ -46,12 +66,19 @@ export function useMobileOptimization() {
       chatContainer.style.willChange = 'transform';
     }
 
-    // Aggressive memory cleanup for low-end
+    // ENHANCED: Memory cleanup that respects pause state
     const memoryInterval = isLowEnd ? 15000 : 30000;
     const memoryCleanup = setInterval(() => {
+      // Don't perform cleanup when paused
+      if (isPausedRef.current) {
+        console.log('📱 Mobile Optimization: Skipping cleanup (paused)');
+        return;
+      }
+
       if ('memory' in performance && (performance as any).memory) {
         const memory = (performance as any).memory;
         if (memory.usedJSHeapSize > memory.jsHeapSizeLimit * (isLowEnd ? 0.7 : 0.9)) {
+          console.log('📱 Mobile Optimization: High memory usage, cleaning up');
           // Clear old data
           const keys = ['messages_kruthika', 'chat_history'];
           keys.forEach(key => {
