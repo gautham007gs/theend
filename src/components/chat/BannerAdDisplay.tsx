@@ -17,10 +17,8 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
   const [currentNetwork, setCurrentNetwork] = useState<'adsterra' | 'monetag' | null>(null);
-  const [shouldLoadAd, setShouldLoadAd] = useState(false); // Controlled loading for performance
   const adContainerRef = useRef<HTMLDivElement>(null);
   const scriptInjectedRef = useRef(false);
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const adElementId = `banner-ad-${adType}-${placementKey}`;
 
   useEffect(() => {
@@ -72,56 +70,17 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
   }, [adSettings, isLoadingAdSettings, adType]);
 
-  // Smart ad loading: immediate for above-fold, lazy for below-fold (performance optimized)
-  useEffect(() => {
-    if (!adContainerRef.current || !isVisible) return;
-
-    // Check if ad is in viewport on mount (above-fold ads load immediately)
-    const rect = adContainerRef.current.getBoundingClientRect();
-    const isInViewport = rect.top < window.innerHeight;
-    
-    if (isInViewport) {
-      // Above-fold ad: load immediately for monetization
-      setShouldLoadAd(true);
-      return;
-    }
-
-    // Below-fold ad: use lazy loading for performance
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setShouldLoadAd(true);
-            observerRef.current?.disconnect();
-          }
-        });
-      },
-      {
-        rootMargin: '100px', // Load 100px before entering viewport
-        threshold: 0.01
-      }
-    );
-
-    observerRef.current.observe(adContainerRef.current);
-
-    return () => {
-      observerRef.current?.disconnect();
-    };
-  }, [isVisible]);
-
   useEffect(() => {
     // Inject script only when:
     // 1. Ad code is ready
     // 2. Container is available
-    // 3. Lazy load flag is true (near viewport)
-    // 4. Script hasn't been injected yet
-    if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings || !shouldLoadAd) {
+    // 3. Script hasn't been injected yet
+    if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings) {
       return;
     }
 
-    // Defer ad loading on low-end devices
-    const isLowEnd = (performance as any).memory?.jsHeapSizeLimit < 1073741824;
-    const loadDelay = isLowEnd ? 2000 : 500;
+    // Load ads immediately without delay
+    const loadDelay = 100;
 
     const loadTimer = setTimeout(() => {
       if (adContainerRef.current) {
@@ -150,7 +109,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }, loadDelay);
 
     return () => clearTimeout(loadTimer);
-  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings, shouldLoadAd]);
+  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings]);
 
   // Clear ad container if no ad code
   useEffect(() => {
