@@ -23,10 +23,10 @@ export default function DynamicMetaTags({
   const baseUrl = 'https://kruthika.fun';
   const fullUrl = canonicalUrl || `${baseUrl}${pathname}`;
   
-  // Dynamic meta based on page
-  const dynamicTitle = title || 'Kruthika.fun - #1 AI Girlfriend Chat';
-  const dynamicDescription = description || 'Meet Kruthika, India\'s most realistic AI girlfriend. Experience authentic conversations and emotional connection with the best free AI girlfriend simulator.';
-  const dynamicKeywords = keywords || 'AI girlfriend, virtual girlfriend, AI companion, AI chat, Kruthika.fun';
+  // Dynamic meta based on page with trending 2025 keywords
+  const dynamicTitle = title || 'Kruthika - Best Free AI Girlfriend 2025 | No Sign Up | Voice Chat';
+  const dynamicDescription = description || 'Meet Kruthika, the world\'s most realistic AI girlfriend. Free unlimited chat, no sign up required, voice chat available, 24/7 emotional support. Better than Replika, Character.AI & Candy.AI. Start now!';
+  const dynamicKeywords = keywords || 'AI girlfriend, AI girlfriend free, virtual girlfriend, realistic AI girlfriend 2025, AI girlfriend no sign up, AI girlfriend voice chat, best AI girlfriend app 2025, Replika alternative, Character.AI alternative, Candy.AI alternative, free AI girlfriend apps, AI companion, AI girlfriend chat, AI girlfriend generator, create AI girlfriend, virtual companion, AI girlfriend simulator, AI girlfriend with pictures, emotional support AI, 24/7 AI companion, conversational AI girlfriend, AI girlfriend online, best free AI girlfriend 2025';
   const dynamicOgImage = ogImage || `${baseUrl}/og-image.png`;
 
   return (

@@ -55,36 +55,10 @@ export class CPMOptimizer {
   }
 }
 
-// Ad lazy loading for better viewability
-export const setupLazyAdLoading = () => {
-  if (typeof window === 'undefined') return;
-
-  const adElements = document.querySelectorAll('[data-ad-placement]');
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const element = entry.target as HTMLElement;
-          const placementId = element.dataset.adPlacement;
-
-          // Load ad only when it's about to be visible
-          if (placementId && !element.dataset.adLoaded) {
-            element.dataset.adLoaded = 'true';
-            // Trigger ad load here
-            console.log(`Loading ad for placement: ${placementId}`);
-          }
-        }
-      });
-    },
-    {
-      rootMargin: '50px', // Load 50px before entering viewport
-      threshold: 0.1
-    }
-  );
-
-  adElements.forEach((el) => observer.observe(el));
-};
+// Lazy loading disabled - ads load immediately for maximum monetization
+// export const setupLazyAdLoading = () => {
+//   // Disabled - ads now load immediately
+// };
 
 // Geographic targeting for premium CPM
 export const getGeoCPMMultiplier = async (): Promise<number> => {

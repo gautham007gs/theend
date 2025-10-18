@@ -17,7 +17,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
   const [currentNetwork, setCurrentNetwork] = useState<'adsterra' | 'monetag' | null>(null);
-  const [shouldLoadAd, setShouldLoadAd] = useState(false); // Lazy load control
+  const [shouldLoadAd, setShouldLoadAd] = useState(false); // Controlled loading for performance
   const adContainerRef = useRef<HTMLDivElement>(null);
   const scriptInjectedRef = useRef(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -72,10 +72,21 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
   }, [adSettings, isLoadingAdSettings, adType]);
 
-  // Lazy load ad when near viewport (200px before visible)
+  // Smart ad loading: immediate for above-fold, lazy for below-fold (performance optimized)
   useEffect(() => {
     if (!adContainerRef.current || !isVisible) return;
 
+    // Check if ad is in viewport on mount (above-fold ads load immediately)
+    const rect = adContainerRef.current.getBoundingClientRect();
+    const isInViewport = rect.top < window.innerHeight;
+    
+    if (isInViewport) {
+      // Above-fold ad: load immediately for monetization
+      setShouldLoadAd(true);
+      return;
+    }
+
+    // Below-fold ad: use lazy loading for performance
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -86,7 +97,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         });
       },
       {
-        rootMargin: '200px', // Load 200px before entering viewport
+        rootMargin: '100px', // Load 100px before entering viewport
         threshold: 0.01
       }
     );
