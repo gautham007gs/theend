@@ -11,6 +11,8 @@ class FreezeRecoverySystem {
   private recoveryInProgress: boolean = false;
   private recoveryDebounceTimer: number | null = null;
   private visibilityChangeCount: number = 0;
+  private originalSetTimeout: typeof setTimeout | null = null;
+  private originalSetInterval: typeof setInterval | null = null;
   
   static getInstance(): FreezeRecoverySystem {
     if (!FreezeRecoverySystem.instance) {
@@ -119,9 +121,18 @@ class FreezeRecoverySystem {
       clearTimeout(this.recoveryDebounceTimer);
     }
 
-    this.recoveryDebounceTimer = window.setTimeout(() => {
-      this.performRecovery();
-    }, 100); // 100ms debounce
+    // CRITICAL: Use original setTimeout to bypass pause guard
+    // Recovery timers must always run, even when paused
+    if (this.originalSetTimeout) {
+      this.recoveryDebounceTimer = this.originalSetTimeout(() => {
+        this.performRecovery();
+      }, 100) as unknown as number; // 100ms debounce
+    } else {
+      // Fallback if originalSetTimeout not set yet
+      this.recoveryDebounceTimer = window.setTimeout(() => {
+        this.performRecovery();
+      }, 100) as unknown as number;
+    }
   }
 
   private async performRecovery() {
@@ -263,21 +274,23 @@ class FreezeRecoverySystem {
   private interceptTimers() {
     if (typeof window === 'undefined') return;
 
-    const originalSetTimeout = window.setTimeout;
-    const originalSetInterval = window.setInterval;
+    // CRITICAL: Store original functions BEFORE overriding
+    this.originalSetTimeout = window.setTimeout;
+    this.originalSetInterval = window.setInterval;
     const originalClearTimeout = window.clearTimeout;
     const originalClearInterval = window.clearInterval;
 
     // Intercept setTimeout
     window.setTimeout = ((callback: any, delay?: number, ...args: any[]) => {
       // Don't create new timers when paused (except recovery timer)
+      // Recovery timer uses originalSetTimeout directly
       if (this.isPaused && !this.recoveryInProgress) {
         console.log('⏸️ Freeze Prevention: Blocked setTimeout during pause');
         return 0;
       }
       
-      const id = originalSetTimeout(callback, delay, ...args);
-      this.activeTimers.add(id);
+      const id = this.originalSetTimeout!(callback, delay, ...args);
+      this.activeTimers.add(id as unknown as number);
       return id;
     }) as typeof setTimeout;
 
@@ -289,8 +302,8 @@ class FreezeRecoverySystem {
         return 0;
       }
       
-      const id = originalSetInterval(callback, delay, ...args);
-      this.activeIntervals.add(id);
+      const id = this.originalSetInterval!(callback, delay, ...args);
+      this.activeIntervals.add(id as unknown as number);
       return id;
     }) as typeof setInterval;
 
