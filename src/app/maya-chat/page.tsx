@@ -75,6 +75,7 @@ import {
   useMobileOptimization,
   useMessageCleanup,
 } from "@/hooks/use-mobile-optimization";
+import FreezeRecoverySystem from "@/lib/freeze-recovery";
 
 const AI_DISCLAIMER_SHOWN_KEY = "ai_disclaimer_shown_kruthika_chat_v2";
 const AI_DISCLAIMER_DURATION = 2000;
@@ -476,92 +477,75 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const [aiMood, setAiMood] = useState<string>("neutral");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
-  const [pageRecovered, setPageRecovered] = useState(false);
+  const [isPausedByFreezePrevention, setIsPausedByFreezePrevention] = useState(false);
   
-  // CRITICAL: IMMEDIATE recovery mechanism for post-ad page freeze
+  // ENHANCED: Integration with new freeze prevention system
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const handlePageRecovery = () => {
-      const wasHidden = sessionStorage.getItem('page_was_hidden');
-      const needsRecovery = sessionStorage.getItem('needs_recovery');
+    console.log('🛡️ Maya Chat: Integrating with freeze prevention system');
+
+    // Handle pause events from freeze prevention system
+    const handlePause = () => {
+      console.log('⏸️ Maya Chat: PAUSING all chat operations');
+      setIsPausedByFreezePrevention(true);
+      setIsAiTyping(false);
       
-      if ((wasHidden === 'true' || needsRecovery === 'true') && !pageRecovered) {
-        console.log('🔧 Chat Recovery: IMMEDIATE recovery initiated...');
-        
-        // STEP 1: Kill ALL timers and intervals IMMEDIATELY
-        const highestTimeoutId = setTimeout(() => {}, 0);
-        for (let i = 0; i < highestTimeoutId; i++) {
-          clearTimeout(i);
-        }
-        
-        const highestIntervalId = setInterval(() => {}, 99999);
-        for (let i = 0; i < highestIntervalId; i++) {
-          clearInterval(i);
-        }
-        
-        // STEP 2: Clear stuck React states
-        setIsAiTyping(false);
-        
-        // STEP 3: Force complete re-render
-        setPageRecovered(true);
-        setMessages(prev => [...prev]); // Force array reference change
-        
-        // STEP 4: Clear ALL ad-related DOM
-        document.querySelectorAll('[data-ad-network], script[src*="adsterra"], script[src*="monetag"]').forEach(el => {
-          try {
-            el.remove();
-          } catch (e) {}
-        });
-        
-        // STEP 5: Reset session flags
-        sessionStorage.removeItem('needs_recovery');
-        sessionStorage.removeItem('page_was_hidden');
-        
-        // STEP 6: Force browser to release memory
-        if ((window as any).gc) {
-          try {
-            (window as any).gc();
-          } catch (e) {}
-        }
-        
-        console.log('✅ Chat Recovery: IMMEDIATE recovery completed');
+      // Clear any pending AI typing states
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+      if (interstitialAdTimerRef.current) {
+        clearTimeout(interstitialAdTimerRef.current);
+        interstitialAdTimerRef.current = null;
+      }
+      if (proactiveMessageTimerRef.current) {
+        clearTimeout(proactiveMessageTimerRef.current);
+        proactiveMessageTimerRef.current = null;
       }
     };
 
-    // Run recovery check IMMEDIATELY (no delay)
-    handlePageRecovery();
-    
-    // Listen for focus events
-    const focusHandler = () => {
-      console.log('🔍 Focus detected - checking recovery state');
-      handlePageRecovery();
+    // Handle resume events from freeze prevention system
+    const handleResume = () => {
+      console.log('▶️ Maya Chat: RESUMING chat operations');
+      setIsPausedByFreezePrevention(false);
+      
+      // Force re-render to ensure UI is fresh
+      setMessages(prev => [...prev]);
     };
-    window.addEventListener('focus', focusHandler, { passive: true });
-    
-    // Listen for visibility changes with IMMEDIATE response
-    const visibilityHandler = () => {
-      if (document.visibilityState === 'visible') {
-        console.log('👁️ Visibility restored - immediate recovery');
-        // NO setTimeout - run IMMEDIATELY
-        handlePageRecovery();
-      }
+
+    // Handle recovery complete event
+    const handleRecoveryComplete = (event: any) => {
+      console.log('✅ Maya Chat: Recovery complete, resetting chat state');
+      
+      // Clear any stuck states
+      setIsAiTyping(false);
+      setIsPausedByFreezePrevention(false);
+      setShowInterstitialAd(false);
+      
+      // Force complete UI refresh
+      setMessages(prev => [...prev]);
+      
+      // Show user notification
+      toast({
+        title: "Chat Restored",
+        description: "Your chat is back and running smoothly!",
+        duration: 2000,
+      });
     };
-    document.addEventListener('visibilitychange', visibilityHandler);
-    
-    // Listen for custom recovery event
-    const customRecoveryHandler = () => {
-      console.log('🔧 Custom recovery event received');
-      handlePageRecovery();
-    };
-    window.addEventListener('freeze-recovery-complete', customRecoveryHandler);
+
+    // Register event listeners
+    window.addEventListener('freeze-prevention-pause', handlePause);
+    window.addEventListener('freeze-prevention-resume', handleResume);
+    window.addEventListener('freeze-recovery-complete', handleRecoveryComplete as EventListener);
 
     return () => {
-      window.removeEventListener('focus', focusHandler);
-      document.removeEventListener('visibilitychange', visibilityHandler);
-      window.removeEventListener('freeze-recovery-complete', customRecoveryHandler);
+      window.removeEventListener('freeze-prevention-pause', handlePause);
+      window.removeEventListener('freeze-prevention-resume', handleResume);
+      window.removeEventListener('freeze-recovery-complete', handleRecoveryComplete as EventListener);
     };
-  }, [pageRecovered]);
+  }, []);
 
   // Mobile optimizations and memory leak prevention
   useMobileOptimization();
@@ -1086,6 +1070,13 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
 
     if (!text.trim() && !currentImageUri) return;
+    
+    // CRITICAL: Don't send messages when system is paused (recovering from ad)
+    if (isPausedByFreezePrevention) {
+      console.log('⏸️ Maya Chat: Message blocked - system is paused for recovery');
+      return;
+    }
+    
     if (isLoadingAdSettings || isLoadingAIProfile || isLoadingMediaAssets) {
       toast({
         title: "Please wait",
