@@ -406,11 +406,18 @@ const StatusPage: React.FC = () => {
             ),
         )}
 
-        {/* Banner Ad - Always Visible on Status Page */}
-        <div className="flex-shrink-0 border-t border-border/30 bg-white">
+        {/* Banner Ads - Always Visible on Status Page */}
+        <div className="flex-shrink-0 bg-white">
+          <div className="border-t border-border/30">
+            <BannerAdDisplay
+              adType="standard"
+              placementKey="status-banner"
+              className="mb-0"
+            />
+          </div>
           <BannerAdDisplay
-            adType="standard"
-            placementKey="status-banner"
+            adType="native"
+            placementKey="status-native"
             className="mb-0"
           />
         </div>

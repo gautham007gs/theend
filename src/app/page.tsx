@@ -270,7 +270,7 @@ const ChatListPage: React.FC = () => {
       </main>
 
       {/* Banner Ad - Always Visible on Home Page */}
-      <div className="flex-shrink-0 border-t border-border/30 sticky bottom-16 z-10 bg-chat-bg-default">
+      <div className="flex-shrink-0 border-t border-border/30 bg-chat-bg-default">
         <BannerAdDisplay adType="standard" placementKey="home-banner-1" className="mb-0" />
       </div>
 
