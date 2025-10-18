@@ -476,6 +476,49 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const [aiMood, setAiMood] = useState<string>("neutral");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
+  const [pageRecovered, setPageRecovered] = useState(false);
+  
+  // CRITICAL: Recovery mechanism for post-ad page freeze
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePageRecovery = () => {
+      const wasHidden = sessionStorage.getItem('page_was_hidden');
+      const needsRecovery = sessionStorage.getItem('needs_recovery');
+      
+      if ((wasHidden === 'true' || needsRecovery === 'true') && !pageRecovered) {
+        console.log('🔧 Chat Recovery: Detected post-ad state, initiating recovery...');
+        
+        // Clear stuck states
+        setIsAiTyping(false);
+        
+        // Force re-render by updating a dummy state
+        setPageRecovered(true);
+        
+        // Clear recovery flags
+        sessionStorage.removeItem('needs_recovery');
+        
+        console.log('✅ Chat Recovery: Page state recovered successfully');
+      }
+    };
+
+    // Run recovery check immediately and on focus
+    handlePageRecovery();
+    window.addEventListener('focus', handlePageRecovery);
+    
+    // Also check on visibility change
+    const visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
+        setTimeout(handlePageRecovery, 100);
+      }
+    };
+    document.addEventListener('visibilitychange', visibilityHandler);
+
+    return () => {
+      window.removeEventListener('focus', handlePageRecovery);
+      document.removeEventListener('visibilitychange', visibilityHandler);
+    };
+  }, [pageRecovered]);
 
   // Mobile optimizations and memory leak prevention
   useMobileOptimization();

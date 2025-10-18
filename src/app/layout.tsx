@@ -140,7 +140,7 @@ export default function RootLayout({
 
         {/* Prefetch chat page */}
         <link rel="prefetch" href="/maya-chat" crossOrigin="anonymous" />
-        
+
         {/* NO ad scripts in head - all handled by components */}
 
         {/* Inline critical CSS - Enhanced for LCP */}

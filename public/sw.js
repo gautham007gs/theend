@@ -51,6 +51,15 @@ self.addEventListener('fetch', (event) => {
 // Chat request handler for offline support
 async function handleChatRequest(request) {
   try {
+    // CRITICAL: Check if we need to invalidate cache after ad interaction
+    const needsCacheInvalidation = await caches.match('__needs_cache_invalidation__');
+    if (needsCacheInvalidation) {
+      console.log('SW: Invalidating cache after ad interaction');
+      await caches.delete(CHAT_CACHE_NAME);
+      await caches.delete(CACHE_NAME);
+      await caches.delete('__needs_cache_invalidation__');
+    }
+    
     const response = await fetch(request);
     if (response.ok) {
       // Cache successful responses
@@ -91,6 +100,26 @@ async function handleChatPageRequest(request) {
     event.respondWith(handleChatPageRequest(request));
     return;
   }
+});
+
+// CRITICAL: Listen for cache invalidation messages from main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'INVALIDATE_CACHE_AFTER_AD') {
+    console.log('SW: Received cache invalidation request');
+    caches.open('__needs_cache_invalidation__').then(cache => {
+      cache.put('__needs_cache_invalidation__', new Response('true'));
+    });
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
+    console.log('SW: Clearing all caches immediately');
+    caches.keys().then(names => {
+      return Promise.all(names.map(name => caches.delete(name)));
+    }).then(() => {
+      console.log('SW: All caches cleared');
+    });
+  }
+});
 
   // Cache static assets aggressively (Cache First)
   if (url.pathname.startsWith('/_next/static/') ||
