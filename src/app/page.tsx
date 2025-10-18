@@ -270,8 +270,8 @@ const ChatListPage: React.FC = () => {
       </main>
 
       {/* Banner Ad - Always Visible on Home Page */}
-      <div className="flex-shrink-0 px-4 py-4 bg-secondary/5">
-        <BannerAdDisplay adType="standard" placementKey="home-banner-1" className="mx-auto max-w-md" />
+      <div className="flex-shrink-0 border-t border-border/30 sticky bottom-16 z-10 bg-chat-bg-default">
+        <BannerAdDisplay adType="standard" placementKey="home-banner-1" className="mb-0" />
       </div>
 
       {/* Floating Action Button */}
