@@ -261,7 +261,7 @@ export default function BlogPage() {
           </div>
 
           {/* Banner Ad */}
-          <BannerAdDisplay adType="standard" placementKey="blog-main-header" className="mb-12" />
+          <BannerAdDisplay adType="standard" placementKey="blog-header" className="mb-12" />
 
           <div className="grid gap-8">
             {blogPosts.slice(0, 3).map((post) => (
@@ -306,7 +306,7 @@ export default function BlogPage() {
             ))}
 
             {/* Mid-content Banner Ad */}
-            <BannerAdDisplay adType="native" placementKey="blog-mid-content" className="my-8" />
+            <BannerAdDisplay adType="native" placementKey="blog-middle" className="my-8" />
 
             {/* Mid-content CTA */}
             <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-200 rounded-lg p-8 text-center my-8">

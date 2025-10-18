@@ -104,7 +104,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     // 2. Container is available
     // 3. Lazy load flag is true (near viewport)
     // 4. Script hasn't been injected yet
-    if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings) {
+    if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings || !shouldLoadAd) {
       return;
     }
 
@@ -139,7 +139,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }, loadDelay);
 
     return () => clearTimeout(loadTimer);
-  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings]);
+  }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings, shouldLoadAd]);
 
   // Clear ad container if no ad code
   useEffect(() => {
@@ -182,11 +182,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     return null;
   }
 
-  // Don't show anything while lazy loading - removes placeholder
-  if (!shouldLoadAd) {
-    return null;
-  }
-
+  // Show container immediately for proper lazy loading detection
   // Key includes adCodeToInject to attempt re-render if the code itself changes.
   return (
     <div
