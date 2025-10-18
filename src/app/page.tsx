@@ -269,11 +269,6 @@ const ChatListPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Banner Ad - Always Visible on Home Page */}
-      <div className="flex-shrink-0 border-t border-border/30 bg-chat-bg-default">
-        <BannerAdDisplay adType="standard" placementKey="home-banner-1" className="mb-0" />
-      </div>
-
       {/* Floating Action Button */}
       <Link
         href="/maya-chat"
