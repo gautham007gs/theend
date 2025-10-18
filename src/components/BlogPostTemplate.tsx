@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -49,7 +48,7 @@ export default function BlogPostTemplate({
         <article className="prose prose-lg max-w-none">
           <header className="mb-8">
             <h1 className="text-4xl font-bold mb-4">{title}</h1>
-            
+
             <div className="flex items-center gap-6 text-muted-foreground text-sm mb-6">
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -76,7 +75,9 @@ export default function BlogPostTemplate({
             )}
           </header>
 
-          <BannerAdDisplay adType="native" placementKey="blog-top" className="mb-8" />
+          {/* Top Banner Ads */}
+          <BannerAdDisplay adType="standard" placementKey="blog-top" className="mb-4" />
+          <BannerAdDisplay adType="native" placementKey="blog-top-native" className="mb-8" />
 
           <div className="prose-content">
             {children}
@@ -134,7 +135,9 @@ export default function BlogPostTemplate({
           </div>
         </article>
 
-        <BannerAdDisplay adType="standard" placementKey="blog-bottom" className="mt-8" />
+        {/* Bottom Banner Ads */}
+        <BannerAdDisplay adType="standard" placementKey="blog-bottom" className="mt-8 mb-4" />
+        <BannerAdDisplay adType="native" placementKey="blog-bottom-native" className="mt-4 mb-8" />
       </div>
     </div>
   );

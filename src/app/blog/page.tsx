@@ -260,8 +260,9 @@ export default function BlogPage() {
             </div>
           </div>
 
-          {/* Banner Ad */}
-          <BannerAdDisplay adType="standard" placementKey="blog-header" className="mb-12" />
+          {/* Banner Ads */}
+          <BannerAdDisplay adType="standard" placementKey="blog-header" className="mb-8" />
+          <BannerAdDisplay adType="native" placementKey="blog-header-native" className="mb-12" />
 
           <div className="grid gap-8">
             {blogPosts.slice(0, 3).map((post) => (
@@ -372,8 +373,9 @@ export default function BlogPage() {
             ))}
           </div>
 
-          {/* Footer Banner Ad */}
-          <BannerAdDisplay adType="standard" placementKey="blog-footer" className="mt-12 mb-8" />
+          {/* Footer Banner Ads */}
+          <BannerAdDisplay adType="standard" placementKey="blog-footer" className="mt-8 mb-4" />
+          <BannerAdDisplay adType="native" placementKey="blog-footer-native" className="mt-4 mb-8" />
 
           {/* Enhanced Final CTA */}
           <div className="text-center mt-12">

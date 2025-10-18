@@ -71,44 +71,34 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
   }, [adSettings, isLoadingAdSettings, adType]);
 
   useEffect(() => {
-    // Inject script only when:
-    // 1. Ad code is ready
-    // 2. Container is available
-    // 3. Script hasn't been injected yet
+    // Inject script immediately when ad code is ready
     if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings) {
       return;
     }
 
-    // Load ads immediately without delay
-    const loadDelay = 100;
+    if (adContainerRef.current) {
+      adContainerRef.current.innerHTML = '';
 
-    const loadTimer = setTimeout(() => {
-      if (adContainerRef.current) {
-        adContainerRef.current.innerHTML = '';
+      try {
+        console.log(`🎯 Banner Ad [${adType}] - Starting injection for placement: ${placementKey}`);
+        console.log(`🎯 Banner Ad [${adType}] - Network: ${currentNetwork}`);
+        console.log(`🎯 Banner Ad [${adType}] - Code length: ${adCodeToInject.length} chars`);
 
-        try {
-          console.log(`🎯 Banner Ad [${adType}] - Starting injection for placement: ${placementKey}`);
-          console.log(`🎯 Banner Ad [${adType}] - Network: ${currentNetwork}`);
-          console.log(`🎯 Banner Ad [${adType}] - Code length: ${adCodeToInject.length} chars`);
+        // Using a more robust way to append script tags
+        const fragment = document.createRange().createContextualFragment(adCodeToInject);
+        adContainerRef.current.appendChild(fragment);
+        scriptInjectedRef.current = true;
 
-          // Using a more robust way to append script tags
-          const fragment = document.createRange().createContextualFragment(adCodeToInject);
-          adContainerRef.current.appendChild(fragment);
-          scriptInjectedRef.current = true;
+        // Track impression for CPM optimization
+        CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
 
-          // Track impression for CPM optimization
-          CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
-
-          console.log(`✅ Banner Ad [${adType}] - Successfully loaded for placement: ${placementKey}`);
-          console.log(`✅ Banner Ad [${adType}] - DOM element ID: ${adElementId}`);
-        } catch (e) {
-          console.error(`❌ Banner Ad [${adType}] - Error injecting script for placement ${placementKey}:`, e);
-          scriptInjectedRef.current = false; // Allow retry if code changes
-        }
+        console.log(`✅ Banner Ad [${adType}] - Successfully loaded for placement: ${placementKey}`);
+        console.log(`✅ Banner Ad [${adType}] - DOM element ID: ${adElementId}`);
+      } catch (e) {
+        console.error(`❌ Banner Ad [${adType}] - Error injecting script for placement ${placementKey}:`, e);
+        scriptInjectedRef.current = false; // Allow retry if code changes
       }
-    }, loadDelay);
-
-    return () => clearTimeout(loadTimer);
+    }
   }, [adCodeToInject, isVisible, placementKey, currentNetwork, adType, isLoadingAdSettings]);
 
   // Clear ad container if no ad code
@@ -159,9 +149,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       id={adElementId}
       ref={adContainerRef}
       className={cn(
-        "kruthika-chat-banner-ad-container my-2 flex justify-center items-center bg-secondary/10 min-h-[50px] w-full overflow-hidden transition-opacity duration-300",
-        !scriptInjectedRef.current && "opacity-0",
-        scriptInjectedRef.current && "opacity-100",
+        "kruthika-chat-banner-ad-container my-2 flex justify-center items-center w-full overflow-hidden",
         className
       )}
       key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`}
