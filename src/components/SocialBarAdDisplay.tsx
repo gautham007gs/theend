@@ -6,12 +6,45 @@ import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
 
+// Singleton flag to prevent multiple instances
+let socialBarInstanceExists = false;
+
 const SocialBarAdDisplay: React.FC = () => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
   const adContainerRef = useRef<HTMLDivElement>(null);
-  const scriptInjectedRef = useRef(false); // To prevent re-injecting the same script
+  const scriptInjectedRef = useRef(false);
+  const mountedRef = useRef(false);
+
+  // Cleanup function to remove old social bar elements
+  const cleanupOldSocialBars = () => {
+    // Remove any existing social bar elements from DOM
+    const existingBars = document.querySelectorAll('[class*="social-bar"], [id*="social-bar"], .kruthika-social-bar-ad-container');
+    existingBars.forEach((bar, index) => {
+      // Keep only the first one (current instance)
+      if (index > 0) {
+        console.log('Social Bar: Removing duplicate element', bar);
+        bar.remove();
+      }
+    });
+  };
+
+  useEffect(() => {
+    // Prevent multiple instances
+    if (socialBarInstanceExists && !mountedRef.current) {
+      console.warn('Social Bar: Another instance already exists, skipping...');
+      return;
+    }
+    
+    socialBarInstanceExists = true;
+    mountedRef.current = true;
+
+    return () => {
+      socialBarInstanceExists = false;
+      mountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (isLoadingAdSettings || !adSettings || !adSettings.adsEnabledGlobally) {
@@ -45,42 +78,55 @@ const SocialBarAdDisplay: React.FC = () => {
       setIsVisible(false);
       scriptInjectedRef.current = false;
     }
-  }, [adSettings, isLoadingAdSettings]); // Removed adCodeToInject to prevent loop
+  }, [adSettings, isLoadingAdSettings]);
 
   useEffect(() => {
     // Inject script only when adCodeToInject is set, container is available, and script hasn't been injected yet
-    if (adCodeToInject && adContainerRef.current && !scriptInjectedRef.current) {
+    if (adCodeToInject && adContainerRef.current && !scriptInjectedRef.current && mountedRef.current) {
+      // Clean up any duplicate social bars first
+      cleanupOldSocialBars();
+      
       // Clear previous content to handle potential ad code changes
       adContainerRef.current.innerHTML = '';
       
-      try {
-        console.log('Social Bar: Injecting ad script...', adCodeToInject.substring(0, 100));
-        const fragment = document.createRange().createContextualFragment(adCodeToInject);
-        adContainerRef.current.appendChild(fragment);
-        scriptInjectedRef.current = true; // Mark as injected for this specific code
-        console.log('Social Bar: Script successfully injected into DOM');
+      // Delay injection to ensure DOM is ready
+      const injectionTimer = setTimeout(() => {
+        if (!adContainerRef.current || !mountedRef.current) return;
         
-        // Force execution of any inline scripts
-        const scripts = adContainerRef.current.querySelectorAll('script');
-        scripts.forEach((oldScript) => {
-          const newScript = document.createElement('script');
-          Array.from(oldScript.attributes).forEach(attr => {
-            newScript.setAttribute(attr.name, attr.value);
+        try {
+          console.log('Social Bar: Injecting ad script...', adCodeToInject.substring(0, 100));
+          const fragment = document.createRange().createContextualFragment(adCodeToInject);
+          adContainerRef.current.appendChild(fragment);
+          scriptInjectedRef.current = true;
+          console.log('Social Bar: Script successfully injected into DOM');
+          
+          // Force execution of any inline scripts
+          const scripts = adContainerRef.current.querySelectorAll('script');
+          scripts.forEach((oldScript) => {
+            const newScript = document.createElement('script');
+            Array.from(oldScript.attributes).forEach(attr => {
+              newScript.setAttribute(attr.name, attr.value);
+            });
+            newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+            oldScript.parentNode?.replaceChild(newScript, oldScript);
           });
-          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-          oldScript.parentNode?.replaceChild(newScript, oldScript);
-        });
-        console.log('Social Bar: Forced script re-execution complete');
-      } catch (e) {
-        console.error("Social Bar: Error injecting ad script:", e);
-        scriptInjectedRef.current = false; // Allow retry on next render
-      }
+          console.log('Social Bar: Forced script re-execution complete');
+          
+          // Clean up duplicates again after injection
+          setTimeout(() => cleanupOldSocialBars(), 1000);
+        } catch (e) {
+          console.error("Social Bar: Error injecting ad script:", e);
+          scriptInjectedRef.current = false;
+        }
+      }, 500);
+
+      return () => clearTimeout(injectionTimer);
     } else if (!adCodeToInject && adContainerRef.current) {
       // If no ad code is to be injected (e.g., disabled), clear the container
       adContainerRef.current.innerHTML = '';
       scriptInjectedRef.current = false;
     }
-  }, [adCodeToInject]); // Re-run effect when adCodeToInject changes
+  }, [adCodeToInject]);
 
   if (isLoadingAdSettings || !isVisible || !adCodeToInject) {
     return null; 
