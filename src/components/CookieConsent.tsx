@@ -18,20 +18,43 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
   const [showConsent, setShowConsent] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [showCustomize, setShowCustomize] = useState(false);
-  const [hasConsent, setHasConsent] = useState(false); // State to track if consent has been given
 
   useEffect(() => {
-    // Check if user has already given consent
-    const hasConsented = localStorage.getItem(COOKIE_CONSENT_KEY);
-    const cookieExists = document.cookie.split(';').some(item => item.trim().startsWith(COOKIE_CONSENT_KEY + '='));
-    
-    if (!hasConsented && !cookieExists) {
-      // Show immediately
-      setShowConsent(true);
-      setIsVisible(true);
-    } else {
-      setHasConsent(true); // User has already consented
-    }
+    // Only run in browser
+    if (typeof window === 'undefined') return;
+
+    // Small delay to ensure DOM is ready and avoid hydration issues
+    const checkConsent = () => {
+      try {
+        // Check localStorage first
+        const localStorageConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
+        
+        // Check if cookie exists
+        const cookieExists = document.cookie
+          .split(';')
+          .some(item => item.trim().startsWith(COOKIE_CONSENT_KEY + '='));
+        
+        // Only show consent if BOTH checks are false (new user)
+        const hasNoConsent = !localStorageConsent && !cookieExists;
+        
+        if (hasNoConsent) {
+          console.log('🍪 New user detected - showing cookie consent');
+          setShowConsent(true);
+          // Use setTimeout to ensure smooth animation
+          setTimeout(() => setIsVisible(true), 50);
+        } else {
+          console.log('🍪 Existing user - consent already given');
+        }
+      } catch (error) {
+        console.error('Cookie consent check error:', error);
+        // On error, show consent to be safe
+        setShowConsent(true);
+        setTimeout(() => setIsVisible(true), 50);
+      }
+    };
+
+    // Run check after component mount
+    checkConsent();
   }, []);
 
   const setCookieConsent = (preferences: {
@@ -42,21 +65,28 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
     aiLearning?: boolean;
     intimacyLevel?: boolean;
   }) => {
-    const consentData = {
-      ...preferences,
-      timestamp: new Date().toISOString(),
-      version: 'v2'
-    };
+    try {
+      const consentData = {
+        ...preferences,
+        timestamp: new Date().toISOString(),
+        version: 'v2'
+      };
 
-    localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consentData));
+      // Save to localStorage
+      localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consentData));
 
-    // Set cookie with expiry
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + COOKIE_CONSENT_EXPIRY);
-    document.cookie = `${COOKIE_CONSENT_KEY}=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+      // Set cookie with expiry
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + COOKIE_CONSENT_EXPIRY);
+      document.cookie = `${COOKIE_CONSENT_KEY}=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
 
-    hideConsent();
-    setHasConsent(true); // Update state to indicate consent
+      console.log('🍪 Cookie consent saved:', preferences);
+      
+      // Hide the consent banner
+      hideConsent();
+    } catch (error) {
+      console.error('Error saving cookie consent:', error);
+    }
   };
 
   const handleAcceptAll = () => {
@@ -85,7 +115,6 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
     setIsVisible(false);
     setTimeout(() => {
       setShowConsent(false);
-      setHasConsent(true); // Ensure hasConsent is true after hiding
     }, 300);
   };
 
