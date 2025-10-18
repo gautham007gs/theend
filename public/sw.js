@@ -112,12 +112,23 @@ self.addEventListener('message', (event) => {
   }
   
   if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
-    console.log('SW: Clearing all caches immediately');
-    caches.keys().then(names => {
-      return Promise.all(names.map(name => caches.delete(name)));
-    }).then(() => {
-      console.log('SW: All caches cleared');
-    });
+    console.log('SW: IMMEDIATE cache clearing initiated');
+    event.waitUntil(
+      caches.keys().then(names => {
+        return Promise.all(names.map(name => {
+          console.log('SW: Deleting cache:', name);
+          return caches.delete(name);
+        }));
+      }).then(() => {
+        console.log('SW: All caches cleared successfully');
+        // Send confirmation back to main thread
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'CACHES_CLEARED' });
+          });
+        });
+      })
+    );
   }
 });
 

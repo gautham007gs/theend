@@ -45,7 +45,7 @@ const GlobalAdScripts: React.FC = () => {
     console.log('✅ Ad Cleanup: Completed aggressive cleanup');
   };
 
-  // CRITICAL: Handle page visibility to detect return from ad
+  // CRITICAL: Handle page visibility to detect return from ad with IMMEDIATE cleanup
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
@@ -53,35 +53,60 @@ const GlobalAdScripts: React.FC = () => {
       if (document.visibilityState === 'visible') {
         console.log('👁️ Page Visibility: User returned to chat page');
         
+        // IMMEDIATELY clear all ad timers BEFORE any other checks
+        performAdCleanup();
+        
         // Detect if we're returning from an ad (tab was hidden)
         const wasHidden = sessionStorage.getItem('page_was_hidden');
         if (wasHidden === 'true') {
-          console.log('🔄 Ad Return Detected: Performing recovery cleanup...');
+          console.log('🔄 Ad Return Detected: Performing AGGRESSIVE recovery...');
           
-          // Perform aggressive cleanup
-          performAdCleanup();
+          // Force immediate garbage collection
+          if ((window as any).gc) {
+            try {
+              (window as any).gc();
+            } catch (e) {
+              console.log('GC not available');
+            }
+          }
           
-          // Clear service worker cache to prevent corruption
+          // Clear ALL DOM mutations from ad networks
+          document.querySelectorAll('script[data-ad-network], div[data-ad-network], iframe[src*="adsterra"], iframe[src*="monetag"]').forEach(el => {
+            try {
+              if (el.parentNode) {
+                el.parentNode.removeChild(el);
+              }
+            } catch (e) {
+              console.warn('Failed to remove ad element:', e);
+            }
+          });
+          
+          // Clear service worker cache SYNCHRONOUSLY
           if ('caches' in window) {
             caches.keys().then(names => {
               names.forEach(name => {
-                if (name.includes('maya-chat') || name.includes('next')) {
-                  caches.delete(name);
-                  console.log(`🗑️ Cleared cache: ${name}`);
-                }
+                caches.delete(name);
+                console.log(`🗑️ Cleared cache: ${name}`);
               });
             });
           }
           
-          // Reset React rendering by forcing a clean state
-          setTimeout(() => {
-            sessionStorage.removeItem('page_was_hidden');
-            console.log('✅ Recovery complete - page should be responsive now');
-          }, 100);
+          // Force React re-render by dispatching event
+          window.dispatchEvent(new Event('resize'));
+          
+          // Reset session state IMMEDIATELY
+          sessionStorage.removeItem('page_was_hidden');
+          sessionStorage.setItem('page_recovered', 'true');
+          
+          console.log('✅ AGGRESSIVE Recovery complete - page is now responsive');
         }
       } else if (document.visibilityState === 'hidden') {
         console.log('👁️ Page Visibility: User left chat page (possibly ad)');
         sessionStorage.setItem('page_was_hidden', 'true');
+        sessionStorage.removeItem('page_recovered');
+        
+        // PRE-EMPTIVELY clear timers before ad opens
+        performAdCleanup();
       }
     };
 

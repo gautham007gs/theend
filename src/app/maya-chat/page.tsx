@@ -478,7 +478,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
   const [pageRecovered, setPageRecovered] = useState(false);
   
-  // CRITICAL: Recovery mechanism for post-ad page freeze
+  // CRITICAL: IMMEDIATE recovery mechanism for post-ad page freeze
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -487,36 +487,79 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       const needsRecovery = sessionStorage.getItem('needs_recovery');
       
       if ((wasHidden === 'true' || needsRecovery === 'true') && !pageRecovered) {
-        console.log('🔧 Chat Recovery: Detected post-ad state, initiating recovery...');
+        console.log('🔧 Chat Recovery: IMMEDIATE recovery initiated...');
         
-        // Clear stuck states
+        // STEP 1: Kill ALL timers and intervals IMMEDIATELY
+        const highestTimeoutId = setTimeout(() => {}, 0);
+        for (let i = 0; i < highestTimeoutId; i++) {
+          clearTimeout(i);
+        }
+        
+        const highestIntervalId = setInterval(() => {}, 99999);
+        for (let i = 0; i < highestIntervalId; i++) {
+          clearInterval(i);
+        }
+        
+        // STEP 2: Clear stuck React states
         setIsAiTyping(false);
         
-        // Force re-render by updating a dummy state
+        // STEP 3: Force complete re-render
         setPageRecovered(true);
+        setMessages(prev => [...prev]); // Force array reference change
         
-        // Clear recovery flags
+        // STEP 4: Clear ALL ad-related DOM
+        document.querySelectorAll('[data-ad-network], script[src*="adsterra"], script[src*="monetag"]').forEach(el => {
+          try {
+            el.remove();
+          } catch (e) {}
+        });
+        
+        // STEP 5: Reset session flags
         sessionStorage.removeItem('needs_recovery');
+        sessionStorage.removeItem('page_was_hidden');
         
-        console.log('✅ Chat Recovery: Page state recovered successfully');
+        // STEP 6: Force browser to release memory
+        if ((window as any).gc) {
+          try {
+            (window as any).gc();
+          } catch (e) {}
+        }
+        
+        console.log('✅ Chat Recovery: IMMEDIATE recovery completed');
       }
     };
 
-    // Run recovery check immediately and on focus
+    // Run recovery check IMMEDIATELY (no delay)
     handlePageRecovery();
-    window.addEventListener('focus', handlePageRecovery);
     
-    // Also check on visibility change
+    // Listen for focus events
+    const focusHandler = () => {
+      console.log('🔍 Focus detected - checking recovery state');
+      handlePageRecovery();
+    };
+    window.addEventListener('focus', focusHandler, { passive: true });
+    
+    // Listen for visibility changes with IMMEDIATE response
     const visibilityHandler = () => {
       if (document.visibilityState === 'visible') {
-        setTimeout(handlePageRecovery, 100);
+        console.log('👁️ Visibility restored - immediate recovery');
+        // NO setTimeout - run IMMEDIATELY
+        handlePageRecovery();
       }
     };
     document.addEventListener('visibilitychange', visibilityHandler);
+    
+    // Listen for custom recovery event
+    const customRecoveryHandler = () => {
+      console.log('🔧 Custom recovery event received');
+      handlePageRecovery();
+    };
+    window.addEventListener('freeze-recovery-complete', customRecoveryHandler);
 
     return () => {
-      window.removeEventListener('focus', handlePageRecovery);
+      window.removeEventListener('focus', focusHandler);
       document.removeEventListener('visibilitychange', visibilityHandler);
+      window.removeEventListener('freeze-recovery-complete', customRecoveryHandler);
     };
   }, [pageRecovered]);
 
