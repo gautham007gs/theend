@@ -75,7 +75,6 @@ import {
   useMobileOptimization,
   useMessageCleanup,
 } from "@/hooks/use-mobile-optimization";
-import FreezeRecoverySystem from "@/lib/freeze-recovery";
 
 const AI_DISCLAIMER_SHOWN_KEY = "ai_disclaimer_shown_kruthika_chat_v2";
 const AI_DISCLAIMER_DURATION = 2000;
@@ -477,75 +476,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const [aiMood, setAiMood] = useState<string>("neutral");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
-  const [isPausedByFreezePrevention, setIsPausedByFreezePrevention] = useState(false);
-  
-  // ENHANCED: Integration with new freeze prevention system
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    console.log('🛡️ Maya Chat: Integrating with freeze prevention system');
-
-    // Handle pause events from freeze prevention system
-    const handlePause = () => {
-      console.log('⏸️ Maya Chat: PAUSING all chat operations');
-      setIsPausedByFreezePrevention(true);
-      setIsAiTyping(false);
-      
-      // Clear any pending AI typing states
-      if (inactivityTimerRef.current) {
-        clearTimeout(inactivityTimerRef.current);
-        inactivityTimerRef.current = null;
-      }
-      if (interstitialAdTimerRef.current) {
-        clearTimeout(interstitialAdTimerRef.current);
-        interstitialAdTimerRef.current = null;
-      }
-      if (proactiveMessageTimerRef.current) {
-        clearTimeout(proactiveMessageTimerRef.current);
-        proactiveMessageTimerRef.current = null;
-      }
-    };
-
-    // Handle resume events from freeze prevention system
-    const handleResume = () => {
-      console.log('▶️ Maya Chat: RESUMING chat operations');
-      setIsPausedByFreezePrevention(false);
-      
-      // Force re-render to ensure UI is fresh
-      setMessages(prev => [...prev]);
-    };
-
-    // Handle recovery complete event
-    const handleRecoveryComplete = (event: any) => {
-      console.log('✅ Maya Chat: Recovery complete, resetting chat state');
-      
-      // Clear any stuck states
-      setIsAiTyping(false);
-      setIsPausedByFreezePrevention(false);
-      setShowInterstitialAd(false);
-      
-      // Force complete UI refresh
-      setMessages(prev => [...prev]);
-      
-      // Show user notification
-      toast({
-        title: "Chat Restored",
-        description: "Your chat is back and running smoothly!",
-        duration: 2000,
-      });
-    };
-
-    // Register event listeners
-    window.addEventListener('freeze-prevention-pause', handlePause);
-    window.addEventListener('freeze-prevention-resume', handleResume);
-    window.addEventListener('freeze-recovery-complete', handleRecoveryComplete as EventListener);
-
-    return () => {
-      window.removeEventListener('freeze-prevention-pause', handlePause);
-      window.removeEventListener('freeze-prevention-resume', handleResume);
-      window.removeEventListener('freeze-recovery-complete', handleRecoveryComplete as EventListener);
-    };
-  }, []);
 
   // Mobile optimizations and memory leak prevention
   useMobileOptimization();
@@ -1070,12 +1000,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
 
     if (!text.trim() && !currentImageUri) return;
-    
-    // CRITICAL: Don't send messages when system is paused (recovering from ad)
-    if (isPausedByFreezePrevention) {
-      console.log('⏸️ Maya Chat: Message blocked - system is paused for recovery');
-      return;
-    }
     
     if (isLoadingAdSettings || isLoadingAIProfile || isLoadingMediaAssets) {
       toast({

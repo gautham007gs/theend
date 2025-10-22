@@ -12,37 +12,36 @@ const GlobalAdScripts: React.FC = () => {
   const cleanupFunctionsRef = useRef<(() => void)[]>([]);
   const visibilityHandlerRef = useRef<(() => void) | null>(null);
 
-  // CRITICAL: Cleanup function to prevent freezing after ads
+  // FIXED: Cleanup only AD elements, NOT React timers
   const performAdCleanup = () => {
-    console.log('🧹 Ad Cleanup: Performing aggressive cleanup after ad interaction...');
+    console.log('🧹 Ad Cleanup: Cleaning ONLY ad-related elements (NOT React timers)...');
     
-    // Clear all ad-related timers
-    const highestTimeoutId = setTimeout(() => {}, 0);
-    for (let i = 0; i < highestTimeoutId; i++) {
-      clearTimeout(i);
-    }
+    // Remove ONLY ad-related DOM elements
+    const adSelectors = [
+      'script[data-ad-network]',
+      'div[data-ad-network]',
+      'iframe[src*="adsterra"]',
+      'iframe[src*="monetag"]',
+      'iframe[src*="popads"]',
+      '[id*="adsterra"]',
+      '[id*="monetag"]',
+      '[class*="adsterra"]',
+      '[class*="monetag"]'
+    ];
     
-    // Clear all intervals
-    const highestIntervalId = setInterval(() => {}, 99999);
-    for (let i = 0; i < highestIntervalId; i++) {
-      clearInterval(i);
-    }
-    
-    // Remove ad network event listeners
-    const adNetworkEvents = ['click', 'mousedown', 'touchstart', 'beforeunload', 'popstate'];
-    adNetworkEvents.forEach(eventType => {
-      const oldHandler = (window as any)[`on${eventType}`];
-      if (oldHandler && typeof oldHandler === 'function') {
-        (window as any)[`on${eventType}`] = null;
+    adSelectors.forEach(selector => {
+      try {
+        document.querySelectorAll(selector).forEach(el => {
+          if (el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        });
+      } catch (e) {
+        // Ignore errors
       }
     });
     
-    // Force garbage collection hint
-    if ((window as any).gc) {
-      (window as any).gc();
-    }
-    
-    console.log('✅ Ad Cleanup: Completed aggressive cleanup');
+    console.log('✅ Ad Cleanup: Completed (React timers preserved)');
   };
 
   // CRITICAL: Handle page visibility to detect return from ad with IMMEDIATE cleanup
@@ -51,62 +50,22 @@ const GlobalAdScripts: React.FC = () => {
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log('👁️ Page Visibility: User returned to chat page');
+        console.log('👁️ Page Visibility: User returned to page');
         
-        // IMMEDIATELY clear all ad timers BEFORE any other checks
-        performAdCleanup();
-        
-        // Detect if we're returning from an ad (tab was hidden)
+        // Clean up ad DOM elements when user returns
         const wasHidden = sessionStorage.getItem('page_was_hidden');
         if (wasHidden === 'true') {
-          console.log('🔄 Ad Return Detected: Performing AGGRESSIVE recovery...');
+          console.log('🔄 Ad Return: Cleaning up ad elements...');
           
-          // Force immediate garbage collection
-          if ((window as any).gc) {
-            try {
-              (window as any).gc();
-            } catch (e) {
-              console.log('GC not available');
-            }
-          }
-          
-          // Clear ALL DOM mutations from ad networks
-          document.querySelectorAll('script[data-ad-network], div[data-ad-network], iframe[src*="adsterra"], iframe[src*="monetag"]').forEach(el => {
-            try {
-              if (el.parentNode) {
-                el.parentNode.removeChild(el);
-              }
-            } catch (e) {
-              console.warn('Failed to remove ad element:', e);
-            }
-          });
-          
-          // Clear service worker cache SYNCHRONOUSLY
-          if ('caches' in window) {
-            caches.keys().then(names => {
-              names.forEach(name => {
-                caches.delete(name);
-                console.log(`🗑️ Cleared cache: ${name}`);
-              });
-            });
-          }
-          
-          // Force React re-render by dispatching event
-          window.dispatchEvent(new Event('resize'));
-          
-          // Reset session state IMMEDIATELY
-          sessionStorage.removeItem('page_was_hidden');
-          sessionStorage.setItem('page_recovered', 'true');
-          
-          console.log('✅ AGGRESSIVE Recovery complete - page is now responsive');
+          // Wait a tiny bit for ad scripts to finish
+          setTimeout(() => {
+            performAdCleanup();
+            sessionStorage.removeItem('page_was_hidden');
+          }, 100);
         }
       } else if (document.visibilityState === 'hidden') {
-        console.log('👁️ Page Visibility: User left chat page (possibly ad)');
+        console.log('👁️ Page Visibility: Page hidden (possibly ad)');
         sessionStorage.setItem('page_was_hidden', 'true');
-        sessionStorage.removeItem('page_recovered');
-        
-        // PRE-EMPTIVELY clear timers before ad opens
-        performAdCleanup();
       }
     };
 
@@ -260,7 +219,7 @@ const GlobalAdScripts: React.FC = () => {
       console.log('🧹 GlobalAdScripts: Component unmounting, cleaning up...');
       cleanupFunctionsRef.current.forEach(cleanup => cleanup());
       cleanupFunctionsRef.current = [];
-      performAdCleanup();
+      // Don't call performAdCleanup on unmount - it can interfere with React
     };
   }, [adSettings, isLoadingAdSettings]);
 
