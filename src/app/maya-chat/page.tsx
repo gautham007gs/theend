@@ -82,7 +82,7 @@ const AI_DISCLAIMER_DURATION = 2000;
 // These constants will now be effectively overridden by AdSettings from context
 // const MAX_ADS_PER_DAY = 6;
 // const MAX_ADS_PER_SESSION = 3;
-const MESSAGES_PER_AD_TRIGGER = 10; // Kept as a fixed trigger point
+const MESSAGES_PER_AD_TRIGGER = 8; // Optimized for better ad frequency
 const INACTIVITY_AD_TIMEOUT_MS = 60000; // 1 minute
 const INACTIVITY_AD_CHANCE = 0.2; // 20% chance
 const REWARD_AD_INTERSTITIAL_DURATION_MS = 3000; // 3 seconds
@@ -2323,7 +2323,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       <DevToolsBlocker />
       <ChatStructuredData />
       <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
-        <div className="flex-shrink-0 sticky top-0 z-10 bg-chat-header-bg">
+        <div className="flex-shrink-0 sticky top-0 z-10">
           <ChatHeader
             aiName={displayAIProfile.name}
             aiAvatarUrl={displayAIProfile.avatarUrl}

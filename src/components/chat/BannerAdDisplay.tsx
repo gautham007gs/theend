@@ -149,7 +149,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       id={adElementId}
       ref={adContainerRef}
       className={cn(
-        "kruthika-chat-banner-ad-container flex justify-center items-center w-full overflow-hidden",
+        "kruthika-chat-banner-ad-container flex justify-center items-center w-full overflow-hidden sticky bottom-0 z-20 bg-background shadow-lg",
         className
       )}
       key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`}
