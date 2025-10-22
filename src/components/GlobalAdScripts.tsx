@@ -11,9 +11,16 @@ const GlobalAdScripts: React.FC = () => {
   const monetagPopunderInjected = useRef(false);
   const cleanupFunctionsRef = useRef<(() => void)[]>([]);
   const visibilityHandlerRef = useRef<(() => void) | null>(null);
+  const cleanupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // FIXED: Cleanup only AD elements, NOT React timers
   const performAdCleanup = () => {
+    // Defensive check: don't run if document is not available
+    if (typeof document === 'undefined' || !document.querySelector) {
+      console.warn('⚠️ Ad Cleanup: Document not available, skipping cleanup');
+      return;
+    }
+
     console.log('🧹 Ad Cleanup: Cleaning ONLY ad-related elements (NOT React timers)...');
     
     // Remove ONLY ad-related DOM elements
@@ -37,7 +44,7 @@ const GlobalAdScripts: React.FC = () => {
           }
         });
       } catch (e) {
-        // Ignore errors
+        // Ignore errors - element might have been removed already
       }
     });
     
@@ -57,10 +64,16 @@ const GlobalAdScripts: React.FC = () => {
         if (wasHidden === 'true') {
           console.log('🔄 Ad Return: Cleaning up ad elements...');
           
-          // Wait a tiny bit for ad scripts to finish
-          setTimeout(() => {
+          // Clear any pending cleanup timeout first
+          if (cleanupTimeoutRef.current) {
+            clearTimeout(cleanupTimeoutRef.current);
+          }
+          
+          // Wait a tiny bit for ad scripts to finish, then cleanup
+          cleanupTimeoutRef.current = setTimeout(() => {
             performAdCleanup();
             sessionStorage.removeItem('page_was_hidden');
+            cleanupTimeoutRef.current = null;
           }, 100);
         }
       } else if (document.visibilityState === 'hidden') {
@@ -73,6 +86,12 @@ const GlobalAdScripts: React.FC = () => {
     visibilityHandlerRef.current = handleVisibilityChange;
 
     return () => {
+      // Clear pending cleanup timeout on unmount
+      if (cleanupTimeoutRef.current) {
+        clearTimeout(cleanupTimeoutRef.current);
+        cleanupTimeoutRef.current = null;
+      }
+      
       if (visibilityHandlerRef.current) {
         document.removeEventListener('visibilitychange', visibilityHandlerRef.current);
       }
