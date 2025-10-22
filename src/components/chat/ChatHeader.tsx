@@ -52,7 +52,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center p-3 bg-chat-header-bg border-b border-border shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
+    <header className="flex items-center p-3 bg-primary border-b border-border shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
@@ -98,14 +98,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </Avatar>
       </button>
       <div className="flex-grow cursor-pointer" onClick={onAvatarClick}>
-        <h1 className="font-semibold text-lg text-chat-header-text">{aiName}</h1>
-        <p className="text-xs text-chat-header-text/70">{onlineStatus}</p>
+        <h1 className="font-semibold text-lg text-primary-foreground">{aiName}</h1>
+        <p className="text-xs text-primary-foreground/70">{onlineStatus}</p>
       </div >
 
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-inherit hover:bg-accent/10" 
+        className="text-primary-foreground hover:bg-accent/10" 
         aria-label="Camera" 
         onClick={() => {
           tryShowRotatedAd(adSettings);
@@ -117,7 +117,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-inherit hover:bg-accent/10" 
+        className="text-primary-foreground hover:bg-accent/10" 
         aria-label="Video call" 
         onClick={() => {
           tryShowRotatedAd(adSettings);
@@ -129,7 +129,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-inherit hover:bg-accent/10 mr-1" 
+        className="text-primary-foreground hover:bg-accent/10 mr-1" 
         aria-label="Call" 
         onClick={() => {
           tryShowRotatedAd(adSettings);
@@ -144,7 +144,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-inherit hover:bg-accent/10" 
+            className="text-primary-foreground hover:bg-accent/10" 
             aria-label="More options"
             onClick={() => tryShowRotatedAd(adSettings)}
           >

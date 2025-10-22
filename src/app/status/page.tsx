@@ -324,7 +324,7 @@ const StatusPage: React.FC = () => {
       ]} />
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header with Back Navigation */}
-      <div className="bg-gradient-to-r from-[#25d366] to-[#20c997] shadow-md">
+      <div className="bg-primary shadow-md">
         <div className="px-6 py-4 flex items-center">
           <button
             onClick={() => window.history.back()}
