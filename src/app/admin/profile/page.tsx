@@ -30,6 +30,7 @@ import { useAIMediaAssets } from '@/contexts/AIMediaAssetsContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 
 const ADMIN_AUTH_KEY = 'isAdminLoggedIn_KruthikaChat';
@@ -118,7 +119,7 @@ const AdminProfilePage: React.FC = () => {
   const fetchAllNonAnalyticsConfigs = useCallback(async () => {
     if (!supabase) {
       toast({ title: "Supabase Error", description: "Supabase client not available. Cannot load some global configurations.", variant: "destructive" });
-      setAdSettings(defaultAdSettings); 
+      setAdSettings(defaultAdSettings);
       setCurrentGlobalAIProfile(defaultAIProfile); // Ensure fallback
       return;
     }
@@ -136,8 +137,8 @@ const AdminProfilePage: React.FC = () => {
       if (adConfigError && adConfigError.code !== 'PGRST116') throw adConfigError;
       const adSettingsData = adConfigData?.settings;
 
-      const mergedAdSettings = { 
-        ...defaultAdSettings, 
+      const mergedAdSettings = {
+        ...defaultAdSettings,
         ...(adSettingsData as Partial<AdSettings>),
         maxDirectLinkAdsPerDay: (adSettingsData as AdSettings)?.maxDirectLinkAdsPerDay ?? defaultAdSettings.maxDirectLinkAdsPerDay,
         maxDirectLinkAdsPerSession: (adSettingsData as AdSettings)?.maxDirectLinkAdsPerSession ?? defaultAdSettings.maxDirectLinkAdsPerSession,
@@ -151,7 +152,7 @@ const AdminProfilePage: React.FC = () => {
     } catch (error: any) {
       console.error("Failed to load some global configurations from Supabase:", error);
       toast({ title: "Error Loading Some Global Configs", description: `Could not load some global settings. Using defaults. ${error.message || ''}`, variant: "destructive" });
-      setAdSettings(defaultAdSettings); 
+      setAdSettings(defaultAdSettings);
       setCurrentGlobalAIProfile(defaultAIProfile);
       setAdminStatus(defaultAdminStatusDisplay);
       setManagedContactStatuses(defaultManagedContactStatuses);
@@ -255,16 +256,16 @@ const AdminProfilePage: React.FC = () => {
   const handleSaveKruthikaCoreProfile = async (updatedCoreProfileData: Partial<AIProfile>) => {
     // Construct the data to update, ensuring empty avatarUrl is treated as undefined
     const profileDataToUpdate: Partial<AIProfile> = {
-      name: updatedCoreProfileData.name, 
+      name: updatedCoreProfileData.name,
       status: updatedCoreProfileData.status,
       avatarUrl: updatedCoreProfileData.avatarUrl?.trim() === '' ? undefined : updatedCoreProfileData.avatarUrl,
     };
     console.log("[AdminProfilePage] handleSaveKruthikaCoreProfile - profileDataToUpdate before calling context update:", JSON.stringify(profileDataToUpdate, null, 2));
-    await updateAIProfile(profileDataToUpdate); 
+    await updateAIProfile(profileDataToUpdate);
     setIsProfileEditorOpen(false);
   };
 
-  const handleSaveKruthikaStory = async () => { 
+  const handleSaveKruthikaStory = async () => {
     const storyDataToUpdate: Partial<AIProfile> = {
         statusStoryText: currentGlobalAIProfile.statusStoryText,
         statusStoryImageUrl: currentGlobalAIProfile.statusStoryImageUrl?.trim() === '' ? undefined : currentGlobalAIProfile.statusStoryImageUrl,
@@ -301,7 +302,7 @@ const AdminProfilePage: React.FC = () => {
           { onConflict: 'id' }
         );
       if (error) throw error;
-      await fetchGlobalStatuses(); 
+      await fetchGlobalStatuses();
       toast({ title: "Global 'My Status' Saved!", description: "Your status for the Status Page has been updated universally." });
     } catch (error: any)
       {
@@ -355,7 +356,7 @@ const AdminProfilePage: React.FC = () => {
           { onConflict: 'id' }
         );
       if (error) throw error;
-      await fetchGlobalStatuses(); 
+      await fetchGlobalStatuses();
       toast({ title: "Global Demo Contacts Saved!", description: "Status details for demo contacts have been updated universally." });
     } catch (error: any) {
       console.error("Failed to save managed contact statuses to Supabase:", error);
@@ -417,7 +418,7 @@ const AdminProfilePage: React.FC = () => {
         return;
       }
       urlToAdd = newImageUrl.trim();
-    } else { 
+    } else {
       if (!newAudioPath.trim() || !newAudioPath.startsWith('/media/')) {
         toast({ title: "Invalid Audio Path", description: "Audio path must start with /media/ (e.g., /media/sound.mp3). Ensure file is in public/media/.", variant: "destructive" });
         return;
@@ -581,7 +582,7 @@ const AdminProfilePage: React.FC = () => {
           { onConflict: 'id' }
         );
       if (error) throw error;
-      await fetchMediaAssets(); 
+      await fetchMediaAssets();
       toast({ title: "Global AI Media Assets Saved!", description: "Kruthika's sharable images and audio have been updated universally." });
     } catch (error: any) {
       console.error("Failed to save AI Media Assets to Supabase:", error);
@@ -601,7 +602,7 @@ const AdminProfilePage: React.FC = () => {
 
   const handleForceRefreshGlobalData = async () => {
     toast({ title: "Refreshing...", description: "Manually fetching latest global data from Supabase."});
-    await fetchAllNonAnalyticsConfigs(); 
+    await fetchAllNonAnalyticsConfigs();
     toast({ title: "Refreshed!", description: "Global data updated."});
   };
 
@@ -669,20 +670,20 @@ const AdminProfilePage: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-5 pt-2">
               <div className="flex flex-col sm:flex-row items-center gap-4 p-3 bg-secondary/20 rounded-md">
-                <div 
+                <div
                   className={cn(
                     "relative rounded-full shrink-0",
-                    currentGlobalAIProfile.name === "Kruthika" && "border-2 border-primary p-0.5" 
+                    currentGlobalAIProfile.name === "Kruthika" && "border-2 border-primary p-0.5"
                   )}
                   key={`admin-page-avatar-wrapper-${adminPageAvatarUrlToUse || 'default_wrapper_key_admin'}`}
                 >
-                  <Avatar 
-                    className="h-24 w-24 shadow-md" 
+                  <Avatar
+                    className="h-24 w-24 shadow-md"
                     key={`admin-page-avatar-comp-${adminPageAvatarUrlToUse || 'default_avatar_comp_key_admin'}`}
                   >
-                      <AvatarImage 
-                        src={adminPageAvatarUrlToUse || undefined} 
-                        alt={currentGlobalAIProfile.name} 
+                      <AvatarImage
+                        src={adminPageAvatarUrlToUse || undefined}
+                        alt={currentGlobalAIProfile.name}
                         data-ai-hint="profile woman"
                         key={`admin-page-avatar-img-${adminPageAvatarUrlToUse || 'default_img_key_admin_final'}`}
                         onError={(e) => console.error(`Admin Page - AvatarImage load error for ${currentGlobalAIProfile.name}. URL: ${adminPageAvatarUrlToUse}`, e)}
@@ -701,9 +702,9 @@ const AdminProfilePage: React.FC = () => {
                 <div className="space-y-2">
                   <div className="space-y-1.5">
                     <Label className="text-sm font-medium">Upload Avatar File</Label>
-                    <Input 
-                      type="file" 
-                      accept="image/*" 
+                    <Input
+                      type="file"
+                      accept="image/*"
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -797,9 +798,9 @@ const AdminProfilePage: React.FC = () => {
                     <div className="space-y-1.5">
                       <Label className="text-sm font-medium">Upload Media File</Label>
                       <div className="flex gap-2">
-                        <Input 
-                          type="file" 
-                          accept="image/*,video/*,audio/*" 
+                        <Input
+                          type="file"
+                          accept="image/*,video/*,audio/*"
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
@@ -819,8 +820,8 @@ const AdminProfilePage: React.FC = () => {
                                 if (!response.ok) throw new Error((await response.json()).error || 'Upload failed');
 
                                 const result = await response.json();
-                                setCurrentGlobalAIProfile(p => ({ 
-                                  ...p, 
+                                setCurrentGlobalAIProfile(p => ({
+                                  ...p,
                                   statusStoryMediaUrl: result.url,
                                   statusStoryMediaType: type,
                                   statusStoryImageUrl: type === 'image' ? result.url : p.statusStoryImageUrl
@@ -855,8 +856,8 @@ const AdminProfilePage: React.FC = () => {
                         id="kruthikaStoryMediaUrl"
                         type="url"
                         value={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl || ""}
-                        onChange={(e) => setCurrentGlobalAIProfile(p => ({ 
-                          ...p, 
+                        onChange={(e) => setCurrentGlobalAIProfile(p => ({
+                          ...p,
                           statusStoryMediaUrl: e.target.value,
                           statusStoryImageUrl: e.target.value
                         }))}
@@ -874,9 +875,9 @@ const AdminProfilePage: React.FC = () => {
                         <audio src={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl} controls className="w-full mt-1" />
                       ) : (
                         <Avatar className="w-24 h-40 border rounded-md shadow">
-                          <AvatarImage 
-                            src={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl} 
-                            alt="Story preview" 
+                          <AvatarImage
+                            src={currentGlobalAIProfile.statusStoryMediaUrl || currentGlobalAIProfile.statusStoryImageUrl}
+                            alt="Story preview"
                             className="object-contain"
                           />
                           <AvatarFallback>Preview</AvatarFallback>
@@ -916,9 +917,9 @@ const AdminProfilePage: React.FC = () => {
                   <div className="space-y-1.5">
                     <Label className="text-sm font-medium">Upload Image File</Label>
                     <div className="flex gap-2">
-                      <Input 
-                        type="file" 
-                        accept="image/*" 
+                      <Input
+                        type="file"
+                        accept="image/*"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleFileUpload(file, 'image');
@@ -967,9 +968,9 @@ const AdminProfilePage: React.FC = () => {
                   <div className="space-y-1.5">
                     <Label className="text-sm font-medium">Upload Audio File</Label>
                     <div className="flex gap-2">
-                      <Input 
-                        type="file" 
-                        accept="audio/*" 
+                      <Input
+                        type="file"
+                        accept="audio/*"
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleFileUpload(file, 'audio');
@@ -1044,13 +1045,13 @@ const AdminProfilePage: React.FC = () => {
                 <CardContent className="space-y-4 px-4 pb-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="maxDirectLinkAdsPerDay" className="font-medium text-sm">Max Direct Link Ads Per User Per Day</Label>
-                    <Input 
-                      id="maxDirectLinkAdsPerDay" 
-                      type="number" 
-                      value={adSettings.maxDirectLinkAdsPerDay} 
-                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerDay', e.target.value)} 
-                      placeholder="e.g., 6" 
-                      className="text-sm" 
+                    <Input
+                      id="maxDirectLinkAdsPerDay"
+                      type="number"
+                      value={adSettings.maxDirectLinkAdsPerDay}
+                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerDay', e.target.value)}
+                      placeholder="e.g., 6"
+                      className="text-sm"
                       disabled={!adSettings.adsEnabledGlobally}
                       min="0"
                     />
@@ -1058,13 +1059,13 @@ const AdminProfilePage: React.FC = () => {
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="maxDirectLinkAdsPerSession" className="font-medium text-sm">Max Direct Link Ads Per User Per Session</Label>
-                    <Input 
-                      id="maxDirectLinkAdsPerSession" 
-                      type="number" 
-                      value={adSettings.maxDirectLinkAdsPerSession} 
-                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerSession', e.target.value)} 
-                      placeholder="e.g., 3" 
-                      className="text-sm" 
+                    <Input
+                      id="maxDirectLinkAdsPerSession"
+                      type="number"
+                      value={adSettings.maxDirectLinkAdsPerSession}
+                      onChange={(e) => handleAdSettingChange('maxDirectLinkAdsPerSession', e.target.value)}
+                      placeholder="e.g., 3"
+                      className="text-sm"
                       disabled={!adSettings.adsEnabledGlobally}
                       min="0"
                     />
@@ -1195,7 +1196,27 @@ const AdminProfilePage: React.FC = () => {
               <div className="space-y-1.5">
                 <Label htmlFor="adminStatusImageUrl" className="font-medium text-sm">Your Story Image URL (Optional, Publicly Accessible)</Label>
                 <Input id="adminStatusImageUrl" type="url" value={adminStatus.statusImageUrl || ""} onChange={(e) => setAdminStatus(s => ({ ...s, statusImageUrl: e.target.value }))} placeholder="https://placehold.co/300x500.png" className="text-sm"/>
-                 {adminStatus.statusImageUrl && adminStatus.statusImageUrl.trim() !== '' && (<Avatar className="w-24 h-40 mt-2 border rounded-md shadow" key={`admin-status-image-${adminStatus.statusImageUrl}`}><AvatarImage src={adminStatus.statusImageUrl} alt="Your story preview" data-ai-hint="story image content" className="object-contain" onError={(e) => console.error(`Admin Page - Admin Story Image load error. URL: ${adminStatus.statusImageUrl}`, e)} /><AvatarFallback>Preview</AvatarFallback></Avatar>)}
+                 {adminStatus.statusImageUrl && adminStatus.statusImageUrl.trim() !== '' && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Preview</Label>
+                    <div className="relative w-32 h-32 border rounded-lg overflow-hidden">
+                      <Image
+                        src={adminStatus.statusImageUrl}
+                        alt="Status preview"
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/300x500/CCCCCC/FFFFFF?text=Error';
+                        }}
+                      />
+                    </div>
+                    <div className="text-xs text-muted-foreground break-all">
+                      <a href={adminStatus.statusImageUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        {adminStatus.statusImageUrl}
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex items-center space-x-3 pt-2">
                 <Switch id="adminStatusHasUpdate" checked={adminStatus.hasUpdate} onCheckedChange={(checked) => setAdminStatus(s => ({ ...s, hasUpdate: checked }))}/>
@@ -1255,8 +1276,8 @@ const AdminProfilePage: React.FC = () => {
               <CardTitle className="flex items-center text-xl font-semibold">
                 <Database className="mr-2 h-5 w-5 text-primary"/>
                 Usage Analytics Dashboard
-                <a 
-                  href="/admin/analytics" 
+                <a
+                  href="/admin/analytics"
                   className="ml-auto text-sm bg-primary text-primary-foreground px-3 py-1 rounded-md hover:bg-primary/90 transition-colors"
                   aria-label="View full analytics dashboard with detailed metrics and insights"
                 >
