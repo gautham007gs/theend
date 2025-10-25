@@ -98,7 +98,6 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   compress: true, // Enable Gzip/Brotli compression
   poweredByHeader: false,
-  generateEtags: true,
   reactStrictMode: true,
   productionBrowserSourceMaps: true, // Enable source maps for better debugging
   typedRoutes: true, // Enable typed routes for better type safety
@@ -106,8 +105,8 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
     } : false,
-    reactRemoveProperties: process.env.NODE_ENV === 'production' ? { 
-      properties: ['^data-test', '^data-testid'] 
+    reactRemoveProperties: process.env.NODE_ENV === 'production' ? {
+      properties: ['^data-test', '^data-testid']
     } : false,
   },
 

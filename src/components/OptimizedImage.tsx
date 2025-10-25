@@ -61,11 +61,12 @@ export default function OptimizedImage({
   const imageProps = fill
     ? {
         fill: true,
-        sizes: sizes || '(max-width: 768px) 100vw, 50vw',
+        sizes: sizes || '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
       }
     : {
         width: width || 400,
         height: height || 400,
+        sizes: sizes || '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px',
       };
 
   return (

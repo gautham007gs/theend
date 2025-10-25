@@ -124,10 +124,10 @@ const GlobalAdScripts: React.FC = () => {
           
           if ('requestIdleCallback' in window) {
             requestIdleCallback(() => {
-              setTimeout(delayAdsterraPopunder, 3000);
-            });
+              setTimeout(delayAdsterraPopunder, 5000);
+            }, { timeout: 6000 });
           } else {
-            setTimeout(delayAdsterraPopunder, 3000);
+            setTimeout(delayAdsterraPopunder, 5000);
           }
         }
 
@@ -139,10 +139,10 @@ const GlobalAdScripts: React.FC = () => {
           
           if ('requestIdleCallback' in window) {
             requestIdleCallback(() => {
-              setTimeout(delayMonetagPopunder, 3000);
-            });
+              setTimeout(delayMonetagPopunder, 7000);
+            }, { timeout: 8000 });
           } else {
-            setTimeout(delayMonetagPopunder, 3000);
+            setTimeout(delayMonetagPopunder, 7000);
           }
         }
       }
