@@ -233,11 +233,6 @@ const ChatListPage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Banner Ad */}
-        <div className="bg-white mt-4">
-          <BannerAdDisplay adType="standard" placementKey="homepage-feed" className="py-2" />
-        </div>
-
         {/* Welcome Section - LCP Optimized */}
         <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm">
           <div className="mb-6">
@@ -271,6 +266,11 @@ const ChatListPage: React.FC = () => {
             </div>
           </div>
 
+        </div>
+
+        {/* Banner Ad - Footer */}
+        <div className="bg-white mt-4 pb-4">
+          <BannerAdDisplay adType="standard" placementKey="homepage-footer" className="py-2" />
         </div>
       </main>
 

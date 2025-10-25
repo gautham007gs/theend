@@ -52,7 +52,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center p-3 bg-[#075E54] border-b border-border shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
+    <header className="flex items-center p-3 bg-[#25d366] border-b border-border shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
