@@ -1,39 +1,22 @@
 
 import { MetadataRoute } from 'next'
+import { getAllBlogSlugs, blogPostsMetadata } from '@/lib/blog-metadata'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
                   (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://kruthika.fun')
   
-  const blogPosts = [
-    'psychology-ai-girlfriends',
-    'ai-girlfriends-india-dating-culture',
-    'building-perfect-ai-girlfriend-technology',
-    'benefits-ai-girlfriend-kruthika',
-    'future-ai-girlfriends-2024',
-    'kruthika-origin-story-mumbai-ai-girlfriend',
-    'best-ai-girlfriend-apps-india-2025',
-    'how-to-talk-ai-girlfriend-conversation-guide',
-    'ai-girlfriend-privacy-safety-guide',
-    'ai-girlfriend-voice-chat-technology-2025',
-    'free-ai-girlfriend-apps-vs-premium-2025',
-    'ai-companion-social-anxiety-confidence-building',
-    'ai-girlfriend-market-statistics-2025-growth-trends',
-    'replika-vs-character-ai-vs-kruthika-comparison-2025',
-    '24-7-ai-companionship-constant-availability-benefits',
-    'ai-girlfriend-psychology-attachment-2025',
-    'ai-girlfriend-emotional-support-loneliness',
-    'best-ai-girlfriend-2025',
-    'how-does-ai-girlfriend-work-technology-guide',
-    'is-ai-girlfriend-safe-privacy-security-guide',
-  ];
+  const blogSlugs = getAllBlogSlugs();
 
-  const blogUrls = blogPosts.map((slug) => ({
-    url: `${baseUrl}/blog/${slug}`,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: 0.85,
-  }));
+  const blogUrls = blogSlugs.map((slug) => {
+    const meta = blogPostsMetadata[slug];
+    return {
+      url: `${baseUrl}/blog/${slug}`,
+      lastModified: new Date(meta.dateModified),
+      changeFrequency: 'weekly' as const,
+      priority: 0.85,
+    };
+  });
 
   return [
     {
@@ -41,25 +24,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1.0,
-      images: [
-        {
-          url: `${baseUrl}/kruthika-avatar.svg`,
-          title: 'Kruthika AI Girlfriend - Free AI Companion Chat',
-          caption: 'Chat with Kruthika, your realistic AI girlfriend companion'
-        }
-      ]
     },
     {
       url: `${baseUrl}/maya-chat`,
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.95,
-      images: [
-        {
-          url: `${baseUrl}/kruthika-avatar.svg`,
-          title: 'AI Girlfriend Chat - Kruthika',
-        }
-      ]
     },
     {
       url: `${baseUrl}/us`,

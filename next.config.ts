@@ -129,9 +129,6 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
       bodySizeLimit: '2mb',
     },
-    turbo: {
-      resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
-    },
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',
@@ -155,14 +152,9 @@ const nextConfig: NextConfig = {
     inlineCss: true,
   },
 
-  // Turbopack configuration (migrated from experimental.turbo)
+  // Turbopack configuration 
   turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
   },
 
   // Bundle optimization

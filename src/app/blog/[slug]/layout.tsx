@@ -3,21 +3,17 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Home } from 'lucide-react';
 import type { Metadata } from 'next';
+import { generateBlogMetadata } from '@/lib/blog-metadata';
 
-export const metadata: Metadata = {
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
+type Props = {
+  params: { slug: string };
+  children: ReactNode;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const slug = params.slug;
+  return generateBlogMetadata(slug);
+}
 
 export default function BlogPostLayout({ children }: { children: ReactNode }) {
   return (
