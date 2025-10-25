@@ -33,11 +33,11 @@ const getBaseUrl = () => {
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
   title: {
-    default: 'AI Girlfriend Free | Best Virtual Companion 2025 - Kruthika',
-    template: '%s | Kruthika - AI Girlfriend'
+    default: 'AI Girlfriend Free - Best AI Girlfriend 2025 | Kruthika AI Girlfriend Chat',
+    template: '%s | Kruthika AI Girlfriend'
   },
-  description: 'Chat with Kruthika - World\'s most realistic AI girlfriend. Free unlimited conversations, no sign up required, 24/7 emotional support for loneliness & anxiety. Voice chat available. Start now!',
-  keywords: 'AI girlfriend, AI girlfriend free, virtual girlfriend, AI companion, best AI girlfriend 2025, AI girlfriend app, AI girlfriend chat, realistic AI girlfriend, AI girlfriend simulator, free AI girlfriend no sign up, AI girlfriend voice chat, AI girlfriend generator, AI girlfriend with pictures, AI girlfriend video call, custom AI girlfriend, AI girlfriend online, AI girlfriend no filter, create AI girlfriend, AI girlfriend chatbot, 24/7 AI companion, Replika alternative, Character.AI alternative, Candy.AI alternative, DreamGF alternative, GirlfriendGPT alternative, ai girlfriend vs Replika, best free AI girlfriend apps 2025, AI companion for loneliness, emotional support AI, AI girlfriend for anxiety, AI girlfriend for depression, virtual girlfriend app, AI girlfriend USA, AI girlfriend UK, AI girlfriend Canada, AI girlfriend Australia, AI girlfriend India, AI girlfriend emotional support, virtual companion mental health, conversational AI girlfriend, authentic AI girlfriend, AI relationship simulator, virtual dating, girlfriend simulator AI, AI girlfriend premium, AI girlfriend subscription, AI girlfriend NSFW, realistic AI girlfriend 2025, AI companion chat, virtual girlfriend online free, AI girlfriend anime, AI girlfriend personality, AI girlfriend memory, top AI girlfriend apps, AI girlfriend comparison, how to get AI girlfriend, AI girlfriend tutorial, AI companion for adults, virtual girlfriend free download, best virtual companion 2025, AI girlfriend technology',
+  description: 'AI Girlfriend Free - Chat with Kruthika, the world\'s most realistic AI girlfriend. Free unlimited AI girlfriend chat, no sign up, 24/7 AI girlfriend emotional support. Best AI girlfriend 2025. Start now!',
+  keywords: 'AI girlfriend, AI girlfriend free, AI girlfriend chat, AI girlfriend app, best AI girlfriend, AI girlfriend online, virtual AI girlfriend, realistic AI girlfriend, AI girlfriend simulator, AI girlfriend 2025, free AI girlfriend, AI girlfriend no sign up, AI girlfriend voice chat, AI girlfriend video call, AI girlfriend USA, AI girlfriend UK, AI girlfriend Canada, AI girlfriend Australia, AI girlfriend India, AI girlfriend emotional support, AI girlfriend for loneliness, AI girlfriend for anxiety, AI girlfriend 24/7, AI girlfriend companion, AI girlfriend chatbot, AI girlfriend generator, create AI girlfriend, custom AI girlfriend, AI girlfriend with pictures, AI girlfriend personality, AI girlfriend memory, AI girlfriend conversation, talk to AI girlfriend, AI girlfriend app free, AI girlfriend no filter, AI girlfriend NSFW, romantic AI girlfriend, AI girlfriend relationship, virtual girlfriend AI, AI companion girlfriend, AI girlfriend therapy, AI girlfriend mental health, emotional AI girlfriend, empathetic AI girlfriend, intelligent AI girlfriend, advanced AI girlfriend, top AI girlfriend, #1 AI girlfriend, best free AI girlfriend, AI girlfriend alternative, AI girlfriend vs Replika, AI girlfriend vs Character.AI, AI girlfriend comparison, AI girlfriend reviews, AI girlfriend ratings, how to get AI girlfriend, AI girlfriend guide, AI girlfriend tutorial, AI girlfriend website, AI girlfriend platform, AI girlfriend service, AI girlfriend technology, AI girlfriend features, AI girlfriend benefits, why AI girlfriend, find AI girlfriend, meet AI girlfriend, try AI girlfriend, download AI girlfriend, install AI girlfriend, use AI girlfriend, start AI girlfriend, AI girlfriend experience, AI girlfriend demo, AI girlfriend trial',
   authors: [{ name: 'Kruthika.fun Team' }],
   creator: 'Kruthika.fun',
   publisher: 'Kruthika.fun',
@@ -57,10 +57,10 @@ export const metadata: Metadata = {
   },
   category: 'technology',
   openGraph: {
-    title: 'AI Girlfriend Free | Best Virtual Companion for Emotional Support 2025',
-    description: 'Meet Kruthika, the world\'s most realistic AI girlfriend. Free unlimited chat, emotional support for loneliness, 24/7 availability. Trusted by 500K+ users in USA, UK, Canada, Australia. Start your AI companion journey today!',
+    title: 'AI Girlfriend Free - Best AI Girlfriend 2025 | Kruthika AI Girlfriend Chat',
+    description: 'AI Girlfriend Free - Meet Kruthika, the #1 rated AI girlfriend. Best AI girlfriend 2025 with free unlimited AI girlfriend chat, 24/7 AI girlfriend support. Top AI girlfriend for USA, UK, Canada, Australia, India. Start your AI girlfriend experience now!',
     url: 'https://kruthika.fun',
-    siteName: 'Kruthika - AI Girlfriend & Virtual Companion',
+    siteName: 'Kruthika AI Girlfriend - Best Free AI Girlfriend 2025',
     images: [
       {
         url: 'https://kruthika.fun/og-image.jpg',
@@ -75,8 +75,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AI Girlfriend Free | Best Virtual Companion for Emotional Support',
-    description: 'Chat with Kruthika - World\'s most realistic AI girlfriend. Free unlimited conversations, emotional support for loneliness, anxiety, depression. Available 24/7 globally. Start now!',
+    title: 'AI Girlfriend Free - Best AI Girlfriend 2025 | Kruthika AI Girlfriend',
+    description: 'AI Girlfriend Free - Chat with Kruthika, the best AI girlfriend. #1 AI girlfriend app with free unlimited AI girlfriend chat, 24/7 AI girlfriend emotional support. Top AI girlfriend worldwide. Start now!',
     images: ['https://kruthika.fun/og-image.jpg'],
     creator: '@kruthikafun',
     site: '@kruthikafun',

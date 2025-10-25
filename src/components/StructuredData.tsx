@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 export default function StructuredData() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const organizationSchema = {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -33,9 +33,10 @@ export default function StructuredData() {
     const websiteSchema = {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "Kruthika - AI Girlfriend & Virtual Companion",
+      "name": "Kruthika AI Girlfriend - Best Free AI Girlfriend 2025",
+      "alternateName": "Kruthika AI Girlfriend Chat",
+      "description": "AI Girlfriend Free - Kruthika is the best AI girlfriend 2025. Free AI girlfriend chat with unlimited conversations. Top-rated AI girlfriend for emotional support, companionship, and realistic AI girlfriend experience 24/7.",
       "url": "https://kruthika.fun",
-      "description": "World's most realistic AI girlfriend chat and virtual companion. Free unlimited conversations with emotional intelligence, 24/7 availability for emotional support, loneliness relief, and mental health companionship.",
       "inLanguage": "en-US",
       "publisher": {
         "@type": "Organization",
@@ -234,7 +235,7 @@ export default function StructuredData() {
     };
 
     const schemas = [organizationSchema, websiteSchema, webApplicationSchema, softwareAppSchema, howToSchema, reviewSchema, faqSchema];
-    
+
     schemas.forEach((schema, index) => {
       const existingScript = document.querySelector(`script[data-schema="${index}"]`);
       if (!existingScript) {

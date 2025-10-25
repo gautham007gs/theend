@@ -71,6 +71,7 @@ import {
 import { analyticsTracker } from "@/lib/analytics-tracker";
 import { tryShowRotatedAd } from "@/lib/ad-utils";
 import { ChatStructuredData } from "./structured-data";
+import AIGirlfriendFAQSchema from "./ai-girlfriend-faq-schema";
 import {
   useMobileOptimization,
   useMessageCleanup,
@@ -2322,6 +2323,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       <ScreenshotProtection />
       <DevToolsBlocker />
       <ChatStructuredData />
+      <AIGirlfriendFAQSchema />
       <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
         <div className="flex-shrink-0 sticky top-0 z-10">
           <ChatHeader
