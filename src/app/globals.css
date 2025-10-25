@@ -118,8 +118,15 @@ img[loading="eager"]{content-visibility:visible}
   
   /* LCP optimization - faster text rendering */
   h1, h2, h3, h4, h5, h6, p, span {
-    font-display: swap;
+    font-display: block;
     contain: layout paint;
+  }
+
+  /* Critical LCP element - instant render */
+  .text-xl.font-semibold.text-gray-800 {
+    font-display: block !important;
+    will-change: auto;
+    content-visibility: auto;
   }
 
   /* Low-end device optimizations */

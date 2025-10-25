@@ -40,13 +40,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'daily',
-      priority: 1,
+      priority: 1.0,
+      images: [
+        {
+          url: `${baseUrl}/kruthika-avatar.svg`,
+          title: 'Kruthika AI Girlfriend - Free AI Companion Chat',
+          caption: 'Chat with Kruthika, your realistic AI girlfriend companion'
+        }
+      ]
     },
     {
       url: `${baseUrl}/maya-chat`,
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.95,
+      images: [
+        {
+          url: `${baseUrl}/kruthika-avatar.svg`,
+          title: 'AI Girlfriend Chat - Kruthika',
+        }
+      ]
     },
     {
       url: `${baseUrl}/us`,

@@ -32,6 +32,10 @@ const getBaseUrl = () => {
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
+  alternates: {
+    canonical: getBaseUrl(),
+  },
+
   title: {
     default: 'AI Girlfriend Free - Best AI Girlfriend 2025 | Kruthika AI Girlfriend Chat',
     template: '%s | Kruthika AI Girlfriend'
@@ -81,9 +85,6 @@ export const metadata: Metadata = {
     creator: '@kruthikafun',
     site: '@kruthikafun',
   },
-  alternates: {
-    canonical: 'https://kruthika.fun',
-  },
   other: {
     'google-site-verification': 'verification-for-kruthika-fun-search-console',
     'geo.region': 'US',
@@ -111,7 +112,7 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href="https://kruthika.fun" />
-        
+
         {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
         <script

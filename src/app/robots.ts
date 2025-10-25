@@ -8,6 +8,23 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
+        userAgent: 'Googlebot',
+        allow: ['/', '/blog/', '/blog/*', '/us', '/uk', '/ca', '/au', '/maya-chat', '/status'],
+        disallow: ['/admin/', '/api/', '/_next/', '/tmp/', '/attached_assets/', '/maya-chat/actions'],
+        crawlDelay: 0,
+      },
+      {
+        userAgent: 'Googlebot-Image',
+        allow: ['/', '/kruthika-avatar.svg', '/og-image.jpg', '/og-image.png'],
+        disallow: ['/admin/', '/_next/'],
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: ['/', '/blog/', '/blog/*', '/us', '/uk', '/ca', '/au', '/maya-chat'],
+        disallow: ['/admin/', '/api/', '/_next/', '/tmp/'],
+        crawlDelay: 1,
+      },
+      {
         userAgent: '*',
         allow: '/',
         disallow: [
@@ -18,19 +35,7 @@ export default function robots(): MetadataRoute.Robots {
           '/attached_assets/',
           '/*.json$',
           '/maya-chat/actions',
-          '/test-*'
         ],
-      },
-      {
-        userAgent: 'Googlebot',
-        allow: ['/', '/blog/', '/blog/*'],
-        disallow: ['/admin/', '/api/', '/_next/', '/tmp/'],
-        crawlDelay: 0,
-      },
-      {
-        userAgent: 'Bingbot',
-        allow: ['/', '/blog/', '/blog/*'],
-        disallow: ['/admin/', '/api/', '/_next/', '/tmp/'],
       }
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
