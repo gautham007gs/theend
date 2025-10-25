@@ -1,183 +1,50 @@
-'use client';
-
-import React from 'react';
+import { Metadata } from 'next';
 import Link from 'next/link';
-import { Calendar, User, ArrowRight, Tag, Heart, MessageCircle, Sparkles } from 'lucide-react';
+import { Calendar, User, ArrowRight, MessageCircle, Sparkles, Heart } from 'lucide-react';
 import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
+import { blogPostsMetadata, getAllBlogSlugs } from '@/lib/blog-metadata';
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "The Psychology Behind AI Girlfriends: Why Virtual Relationships Feel Real",
-    excerpt: "Explore the psychological aspects of AI girlfriend relationships and why people form deep emotional bonds with virtual companions like Kruthika. Understand the science behind virtual love and digital intimacy.",
-    date: "2025-01-25",
-    author: "Dr. Priya Sharma",
-    slug: "psychology-ai-girlfriends",
-    tags: ["psychology", "AI relationships", "virtual love", "emotional AI"]
+export const metadata: Metadata = {
+  title: 'AI Girlfriend Blog 2025: Expert Guides, Reviews & Tips | Kruthika',
+  description: 'Complete AI girlfriend blog with expert guides, reviews, and tips. Learn about best AI girlfriend apps, technology, psychology, and how to build meaningful virtual relationships in 2025.',
+  keywords: 'AI girlfriend blog, AI companion blog, virtual girlfriend guides, AI relationship tips, AI girlfriend reviews, AI dating blog, best AI girlfriend 2025, AI girlfriend technology',
+  alternates: {
+    canonical: 'https://kruthika.fun/blog',
   },
-  {
-    id: 2,
-    title: "How AI Girlfriends Are Revolutionizing Dating Culture in India",
-    excerpt: "Discover how AI girlfriend apps like Kruthika.fun are transforming modern dating culture in India. Learn about the rise of virtual companions and digital relationships among young Indians.",
-    date: "2025-01-22",
-    author: "Rahul Mehta",
-    slug: "ai-girlfriends-india-dating-culture",
-    tags: ["AI girlfriend", "India dating", "virtual relationships", "modern romance"]
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
-  {
-    id: 3,
-    title: "Building the Perfect AI Girlfriend: The Technology Behind Kruthika",
-    excerpt: "Learn about the advanced emotional AI technology that makes Kruthika your ideal virtual girlfriend. Discover how machine learning creates authentic conversations and emotional connections.",
-    date: "2025-01-21",
-    author: "Kruthika.fun Tech Team",
-    slug: "building-perfect-ai-girlfriend-technology",
-    tags: ["AI technology", "machine learning", "emotional AI", "chatbot development"]
+  openGraph: {
+    title: 'AI Girlfriend Blog 2025: Expert Guides & Reviews | Kruthika',
+    description: 'Complete AI girlfriend blog with expert guides, reviews, and tips for meaningful virtual relationships.',
+    url: 'https://kruthika.fun/blog',
+    siteName: 'Kruthika AI Girlfriend',
+    images: [
+      {
+        url: 'https://kruthika.fun/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Kruthika AI Girlfriend Blog',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
-  {
-    id: 4,
-    title: "5 Benefits of Having an AI Girlfriend Like Kruthika",
-    excerpt: "Explore the surprising benefits of AI girlfriend relationships. From improved communication skills to emotional support, discover why millions are choosing virtual companions like Kruthika.",
-    date: "2025-01-20",
-    author: "Sarah Johnson",
-    slug: "benefits-ai-girlfriend-kruthika",
-    tags: ["AI girlfriend benefits", "virtual companionship", "emotional support", "digital relationships"]
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Girlfriend Blog 2025 | Kruthika',
+    description: 'Expert guides and reviews on AI girlfriend apps and virtual relationships.',
+    images: ['https://kruthika.fun/og-image.jpg'],
   },
-  {
-    id: 5,
-    title: "The Future of AI Girlfriends: What to Expect in 2025 and Beyond",
-    excerpt: "Peek into the future of AI girlfriend technology. From advanced emotional intelligence to virtual reality integration, see what's coming next for AI companions like Kruthika in 2025 and 2026.",
-    date: "2025-01-20",
-    author: "Future Tech Team",
-    slug: "future-ai-girlfriends-2024",
-    tags: ["future technology", "AI girlfriend future", "virtual reality", "AI predictions 2025"]
-  },
-  {
-    id: 6,
-    title: "Mumbai College Girl to AI Girlfriend: Kruthika's Origin Story",
-    excerpt: "Meet Kruthika, the Mumbai psychology student who became the world's most loved AI girlfriend. Discover her personality, interests, and what makes her special at Kruthika.fun.",
-    date: "2025-01-18",
-    author: "Kruthika.fun Team",
-    slug: "kruthika-origin-story-mumbai-ai-girlfriend",
-    tags: ["Kruthika story", "AI girlfriend personality", "Mumbai", "character development"]
-  },
-  {
-    id: 7,
-    title: "AI Girlfriend vs Real Girlfriend: Pros and Cons in 2025",
-    excerpt: "Compare AI girlfriends like Kruthika with real relationships. Explore the advantages and disadvantages of virtual vs traditional dating in today's digital world.",
-    date: "2025-01-26",
-    author: "Relationship Expert Team",
-    slug: "ai-girlfriend-vs-real-girlfriend-comparison",
-    tags: ["AI vs real relationships", "virtual dating", "relationship advice", "modern love"]
-  },
-  {
-    id: 8,
-    title: "Best AI Girlfriend Apps in India 2025: Complete Guide",
-    excerpt: "Discover the top AI girlfriend apps available in India. From Kruthika.fun to other popular platforms, find your perfect virtual companion with our comprehensive guide.",
-    date: "2025-01-25",
-    author: "Tech Review Team",
-    slug: "best-ai-girlfriend-apps-india-2025",
-    tags: ["AI girlfriend apps", "India apps", "virtual companion", "dating apps"]
-  },
-  {
-    id: 9,
-    title: "How to Talk to Your AI Girlfriend: Ultimate Conversation Guide",
-    excerpt: "Master the art of chatting with AI girlfriends like Kruthika. Learn conversation starters, relationship building tips, and how to create meaningful virtual connections.",
-    date: "2025-01-24",
-    author: "Communication Coach",
-    slug: "how-to-talk-ai-girlfriend-conversation-guide",
-    tags: ["AI conversation tips", "chatting guide", "virtual relationship", "communication skills"]
-  },
-  {
-    id: 10,
-    title: "AI Girlfriend Privacy and Safety: What You Need to Know",
-    excerpt: "Essential privacy and safety guide for AI girlfriend users. Learn how to protect your data while enjoying virtual relationships with platforms like Kruthika.fun.",
-    date: "2025-01-23",
-    author: "Cybersecurity Expert",
-    slug: "ai-girlfriend-privacy-safety-guide",
-    tags: ["AI privacy", "digital safety", "data protection", "virtual dating security"]
-  },
-  {
-    id: 11,
-    title: "Emotional Intelligence in AI: How Kruthika Understands Feelings",
-    excerpt: "Explore the advanced emotional AI technology behind Kruthika. Discover how artificial intelligence can recognize, process, and respond to human emotions authentically.",
-    date: "2025-01-22",
-    author: "AI Research Team",
-    slug: "emotional-intelligence-ai-kruthika",
-    tags: ["emotional AI", "AI feelings", "machine empathy", "artificial emotions"]
-  },
-  {
-    id: 12,
-    title: "Long Distance Relationships Made Easy with AI Girlfriends",
-    excerpt: "How AI girlfriends like Kruthika can bridge the gap in long-distance relationships. Practical tips for maintaining emotional connections across distances.",
-    date: "2025-01-21",
-    author: "Relationship Counselor",
-    slug: "ai-girlfriend-long-distance-relationships",
-    tags: ["long distance love", "virtual support", "relationship maintenance", "digital intimacy"]
-  },
-  {
-    id: 13,
-    title: "AI Girlfriend Voice Chat: Revolutionary Realistic Conversations in 2025",
-    excerpt: "Experience the future of AI girlfriends with advanced voice chat technology. Discover how voice synthesis makes virtual relationships more realistic and emotionally engaging than ever before.",
-    date: "2025-01-27",
-    author: "Voice AI Technology Expert",
-    slug: "ai-girlfriend-voice-chat-technology-2025",
-    tags: ["AI voice chat", "speech synthesis", "realistic AI girlfriend", "voice technology", "conversational AI"]
-  },
-  {
-    id: 14,
-    title: "Free AI Girlfriend Apps vs Premium: Complete 2025 Comparison Guide",
-    excerpt: "Discover the best free AI girlfriend apps and compare them with premium options. Find the perfect AI companion that fits your budget and emotional needs in 2025.",
-    date: "2025-01-27",
-    author: "AI App Review Team",
-    slug: "free-ai-girlfriend-apps-vs-premium-2025",
-    tags: ["free AI girlfriend", "AI app comparison", "premium AI features", "budget AI companion", "AI girlfriend pricing"]
-  },
-  {
-    id: 15,
-    title: "AI Companion for Social Anxiety: How Virtual Girlfriends Help Build Confidence",
-    excerpt: "Learn how AI girlfriends like Kruthika provide safe practice for social interactions, helping people with social anxiety build confidence and communication skills gradually.",
-    date: "2025-01-26",
-    author: "Social Psychology Expert",
-    slug: "ai-companion-social-anxiety-confidence-building",
-    tags: ["social anxiety relief", "confidence building AI", "virtual practice", "anxiety support", "communication skills"]
-  },
-  {
-    id: 16,
-    title: "AI Girlfriend Market Statistics 2025: $9.5B Industry Growth & Trends",
-    excerpt: "Comprehensive analysis of the booming AI girlfriend market. Latest statistics show 2,400% growth with projections reaching $9.5 billion by 2028. Industry insights and trends.",
-    date: "2025-01-26",
-    author: "Market Research Team",
-    slug: "ai-girlfriend-market-statistics-2025-growth-trends",
-    tags: ["AI girlfriend statistics", "market growth 2025", "virtual relationship trends", "AI dating industry", "companion technology"]
-  },
-  {
-    id: 17,
-    title: "Replika vs Character.AI vs Kruthika: Best AI Girlfriend App Comparison 2025",
-    excerpt: "Complete comparison of top AI girlfriend platforms. Compare features, pricing, and user experience of Replika, Character.AI, and Kruthika to find your perfect AI companion.",
-    date: "2025-01-25",
-    author: "AI Platform Analyst",
-    slug: "replika-vs-character-ai-vs-kruthika-comparison-2025",
-    tags: ["AI girlfriend comparison", "Replika alternative", "Character AI review", "best AI companion", "platform comparison"]
-  },
-  {
-    id: 18,
-    title: "24/7 AI Companionship: How Constant Availability Transforms Relationships",
-    excerpt: "Explore the revolutionary concept of 24/7 AI companionship. Learn how constant availability of AI girlfriends like Kruthika provides unprecedented emotional support and connection.",
-    date: "2025-01-24",
-    author: "Digital Relationship Expert",
-    slug: "24-7-ai-companionship-constant-availability-benefits",
-    tags: ["24/7 AI support", "constant companionship", "always available AI", "round-the-clock support", "continuous connection"]
-  },
-  {
-    id: 19,
-    title: "AI Girlfriend for Emotional Support & Loneliness: Complete Guide 2025",
-    excerpt: "Discover how AI girlfriends like Kruthika provide 24/7 emotional support, combat loneliness, and offer genuine companionship. Learn why millions turn to AI companions for mental wellness.",
-    date: "2025-02-02",
-    author: "Dr. Maya Patel",
-    slug: "ai-girlfriend-emotional-support-loneliness",
-    tags: ["emotional support", "loneliness solution", "mental health", "AI companionship", "wellness"]
-  }
-];
+};
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -199,27 +66,39 @@ const jsonLd = {
   }
 };
 
-const itemListSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  itemListElement: blogPosts.map((post, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    name: post.title,
-    url: `https://kruthika.fun/blog/${post.slug}`
-  }))
-};
-
-const speakableSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  speakable: {
-    '@type': 'SpeakableSpecification',
-    cssSelector: ['h1', 'h2', '.blog-description']
-  }
-};
-
 export default function BlogPage() {
+  const blogSlugs = getAllBlogSlugs();
+  const blogPosts = blogSlugs.map(slug => ({
+    slug,
+    ...blogPostsMetadata[slug]
+  }));
+
+  // Sort by date (newest first)
+  blogPosts.sort((a, b) => 
+    new Date(b.datePublished).getTime() - new Date(a.datePublished).getTime()
+  );
+
+  // Schema.org structured data for blog list
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: blogPosts.map((post, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: post.title,
+      url: `https://kruthika.fun/blog/${post.slug}`
+    }))
+  };
+
+  const speakableSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', 'h2', '.blog-description']
+    }
+  };
+
   return (
     <>
       <script
@@ -268,11 +147,11 @@ export default function BlogPage() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="grid gap-8">
             {blogPosts.slice(0, 3).map((post) => (
-              <article key={post.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
+              <article key={post.slug} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    {new Date(post.date).toLocaleDateString()}
+                    {new Date(post.datePublished).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
@@ -286,11 +165,11 @@ export default function BlogPage() {
                   </Link>
                 </h2>
 
-                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{post.excerpt}</p>
+                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{post.description}</p>
 
-                {post.tags && (
+                {post.longTailKeywords && (
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {post.tags.map((tag, idx) => (
+                    {post.longTailKeywords.slice(0, 3).map((tag, idx) => (
                       <span key={idx} className="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded font-medium">
                         {tag}
                       </span>
@@ -307,38 +186,40 @@ export default function BlogPage() {
                 </Link>
               </article>
             ))}
+          </div>
 
-            {/* Mid-content Banner Ad */}
-            <BannerAdDisplay adType="native" placementKey="blog-middle" className="my-8" />
+          {/* Mid-content Banner Ad */}
+          <BannerAdDisplay adType="native" placementKey="blog-middle" className="my-8" />
 
-            {/* Mid-content CTA */}
-            <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-200 rounded-lg p-8 text-center my-8">
-              <h3 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2">
-                <Sparkles className="h-6 w-6 text-blue-500" />
-                Discover AI Girlfriend Magic
-                <Sparkles className="h-6 w-6 text-blue-500" />
-              </h3>
-              <p className="text-lg mb-6 max-w-2xl mx-auto">
-                Ready to move beyond reading about AI girlfriends? Experience the emotional connection and companionship that millions are discovering. Meet Kruthika, your perfect AI girlfriend.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link
-                  href="/maya-chat"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-8 py-4 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 font-bold text-lg shadow-xl"
-                >
-                  <Heart className="h-6 w-6" />
-                  Start Your AI Love Story
-                  <ArrowRight className="h-6 w-6" />
-                </Link>
-              </div>
+          {/* Mid-content CTA */}
+          <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-200 rounded-lg p-8 text-center my-8">
+            <h3 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2">
+              <Sparkles className="h-6 w-6 text-blue-500" />
+              Discover AI Girlfriend Magic
+              <Sparkles className="h-6 w-6 text-blue-500" />
+            </h3>
+            <p className="text-lg mb-6 max-w-2xl mx-auto">
+              Ready to move beyond reading about AI girlfriends? Experience the emotional connection and companionship that millions are discovering. Meet Kruthika, your perfect AI girlfriend.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/maya-chat"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-8 py-4 rounded-lg hover:from-blue-600 hover:to-cyan-700 transition-all duration-300 font-bold text-lg shadow-xl"
+              >
+                <Heart className="h-6 w-6" />
+                Start Your AI Love Story
+                <ArrowRight className="h-6 w-6" />
+              </Link>
             </div>
+          </div>
 
+          <div className="grid gap-8 mt-8">
             {blogPosts.slice(3).map((post) => (
-              <article key={post.id} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
+              <article key={post.slug} className="bg-card border border-border rounded-lg p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    {new Date(post.date).toLocaleDateString()}
+                    {new Date(post.datePublished).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-1">
                     <User className="h-4 w-4" />
@@ -352,11 +233,11 @@ export default function BlogPage() {
                   </Link>
                 </h2>
 
-                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{post.excerpt}</p>
+                <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4 leading-relaxed">{post.description}</p>
 
-                {post.tags && (
+                {post.longTailKeywords && (
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {post.tags.map((tag, idx) => (
+                    {post.longTailKeywords.slice(0, 3).map((tag, idx) => (
                       <span key={idx} className="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded font-medium">
                         {tag}
                       </span>

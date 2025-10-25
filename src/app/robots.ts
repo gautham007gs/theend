@@ -1,4 +1,3 @@
-
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
@@ -9,7 +8,27 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: 'Googlebot',
-        allow: ['/', '/blog/', '/blog/*', '/us', '/uk', '/ca', '/au', '/maya-chat', '/status'],
+        allow: [
+          '/',
+          '/blog',
+          '/blog/',
+          '/blog/*',
+          '/blog/psychology-ai-girlfriends',
+          '/blog/best-ai-girlfriend-2025',
+          '/blog/ai-girlfriend-emotional-support-loneliness',
+          '/blog/24-7-ai-companionship-constant-availability-benefits',
+          '/blog/ai-companion-social-anxiety-confidence-building',
+          '/blog/ai-girlfriends-india-dating-culture',
+          '/blog/building-perfect-ai-girlfriend-technology',
+          '/blog/benefits-ai-girlfriend-kruthika',
+          '/blog/future-ai-girlfriends-2024',
+          '/us',
+          '/uk',
+          '/ca',
+          '/au',
+          '/maya-chat',
+          '/status'
+        ],
         disallow: ['/admin/', '/api/', '/_next/', '/tmp/', '/attached_assets/', '/maya-chat/actions'],
         crawlDelay: 0,
       },

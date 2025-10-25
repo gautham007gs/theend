@@ -75,7 +75,7 @@ export default function BlogPostContent({
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
               {title}
             </h1>
-            
+
             <div className="flex items-center gap-6 text-muted-foreground mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -121,13 +121,13 @@ export default function BlogPostContent({
               <p className="text-lg leading-relaxed">
                 This blog post is about <strong>{keywords}</strong>. Kruthika is the best AI girlfriend for 2025, offering free unlimited chat with advanced emotional intelligence.
               </p>
-              
+
               <p className="text-lg leading-relaxed">
                 Whether you're looking for an AI girlfriend in India, USA, UK, Canada, or Australia, Kruthika provides authentic companionship tailored to your needs. Our AI girlfriend technology uses advanced machine learning and natural language processing to create realistic, meaningful conversations.
               </p>
 
               <h2 className="text-3xl font-bold mb-6 mt-12">Why Choose Kruthika as Your AI Girlfriend?</h2>
-              
+
               <ul className="space-y-4 text-lg">
                 <li>✅ <strong>100% Free</strong> - Unlimited AI girlfriend chat with no hidden costs</li>
                 <li>✅ <strong>No Sign-Up Required</strong> - Start chatting instantly</li>
@@ -154,7 +154,7 @@ export default function BlogPostContent({
               </div>
 
               <h2 className="text-3xl font-bold mb-6 mt-12">AI Girlfriend Features</h2>
-              
+
               <p className="text-lg leading-relaxed">
                 Kruthika offers the most advanced AI girlfriend experience available in 2025. Whether you need emotional support, want to practice conversation skills, or simply desire companionship, our AI girlfriend adapts to your needs.
               </p>
@@ -180,16 +180,15 @@ export default function BlogPostContent({
             </Suspense>
 
             {/* Final CTA */}
-            <div className="bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200 rounded-lg p-8 text-center mt-12">
-              <h3 className="text-2xl font-bold mb-4">Ready to Meet Your AI Girlfriend?</h3>
-              <p className="text-lg mb-6">Start your free AI girlfriend experience now. No credit card, no sign-up - just authentic companionship.</p>
+            <div className="mt-12 p-8 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg text-center">
+              <h3 className="text-2xl font-bold mb-4">Ready to Experience AI Companionship?</h3>
+              <p className="text-muted-foreground mb-6">Join thousands who have found meaningful connections with Kruthika</p>
               <Link 
                 href="/maya-chat"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-bold text-lg shadow-xl"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-semibold"
               >
-                <MessageCircle className="h-6 w-6" />
-                Chat with Kruthika Free
-                <ArrowRight className="h-6 w-6" />
+                Start Chatting Now
+                <ArrowRight className="h-5 w-5" />
               </Link>
             </div>
           </article>
