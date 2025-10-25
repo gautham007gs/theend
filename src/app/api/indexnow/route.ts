@@ -45,8 +45,62 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ 
-    message: 'IndexNow endpoint active',
-    info: 'POST URLs to this endpoint for instant indexing'
-  });
+  try {
+    // Automatically submit all blog posts to IndexNow
+    const { getAllBlogSlugs } = await import('@/lib/blog-metadata');
+    const blogSlugs = getAllBlogSlugs();
+    
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kruthika.fun';
+    const apiKey = 'e8f3d9a7b2c4f1e6d8a9c3b5f7e2d4a6';
+    
+    const allUrls = [
+      baseUrl,
+      `${baseUrl}/maya-chat`,
+      `${baseUrl}/blog`,
+      `${baseUrl}/us`,
+      `${baseUrl}/uk`,
+      `${baseUrl}/ca`,
+      `${baseUrl}/au`,
+      `${baseUrl}/about`,
+      `${baseUrl}/faq`,
+      ...blogSlugs.map(slug => `${baseUrl}/blog/${slug}`)
+    ];
+
+    const indexNowPayload = {
+      host: new URL(baseUrl).hostname,
+      key: apiKey,
+      keyLocation: `${baseUrl}/${apiKey}.txt`,
+      urlList: allUrls
+    };
+
+    const response = await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify(indexNowPayload)
+    });
+
+    if (response.ok || response.status === 202) {
+      return NextResponse.json({ 
+        success: true,
+        message: `Successfully submitted ${allUrls.length} URLs to IndexNow for instant indexing`,
+        count: allUrls.length,
+        urls: allUrls
+      });
+    } else {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'IndexNow endpoint active',
+        info: 'POST URLs to this endpoint for instant indexing'
+      });
+    }
+  } catch (error) {
+    console.error('IndexNow GET error:', error);
+    return NextResponse.json({ 
+      message: 'IndexNow endpoint active',
+      info: 'POST URLs to this endpoint for instant indexing',
+      error: String(error)
+    });
+  }
 }

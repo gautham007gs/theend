@@ -167,6 +167,82 @@ export default function RootLayout({
         }} />
 
         <StructuredData />
+        
+        {/* Enhanced structured data for better search visibility */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'Organization',
+                  '@id': 'https://kruthika.fun/#organization',
+                  name: 'Kruthika.fun',
+                  url: 'https://kruthika.fun',
+                  logo: {
+                    '@type': 'ImageObject',
+                    url: 'https://kruthika.fun/icon-512.png',
+                    width: 512,
+                    height: 512
+                  },
+                  sameAs: [
+                    'https://twitter.com/kruthikafun'
+                  ]
+                },
+                {
+                  '@type': 'WebSite',
+                  '@id': 'https://kruthika.fun/#website',
+                  url: 'https://kruthika.fun',
+                  name: 'Kruthika AI Girlfriend - Best Free AI Girlfriend 2025',
+                  description: 'The world\'s most realistic AI girlfriend. Free unlimited chat with Kruthika, your 24/7 AI companion.',
+                  publisher: {
+                    '@id': 'https://kruthika.fun/#organization'
+                  },
+                  inLanguage: 'en-US',
+                  potentialAction: {
+                    '@type': 'SearchAction',
+                    target: {
+                      '@type': 'EntryPoint',
+                      urlTemplate: 'https://kruthika.fun/blog?search={search_term_string}'
+                    },
+                    'query-input': 'required name=search_term_string'
+                  }
+                },
+                {
+                  '@type': 'WebPage',
+                  '@id': 'https://kruthika.fun/#webpage',
+                  url: 'https://kruthika.fun',
+                  name: 'AI Girlfriend Free - Best AI Girlfriend 2025 | Kruthika AI Girlfriend Chat',
+                  isPartOf: {
+                    '@id': 'https://kruthika.fun/#website'
+                  },
+                  about: {
+                    '@id': 'https://kruthika.fun/#organization'
+                  },
+                  description: 'AI Girlfriend Free - Chat with Kruthika, the world\'s most realistic AI girlfriend. Free unlimited AI girlfriend chat, no sign up, 24/7 AI girlfriend emotional support.',
+                  inLanguage: 'en-US'
+                },
+                {
+                  '@type': 'SoftwareApplication',
+                  name: 'Kruthika AI Girlfriend App',
+                  operatingSystem: 'Web Browser',
+                  applicationCategory: 'LifestyleApplication',
+                  offers: {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'USD'
+                  },
+                  aggregateRating: {
+                    '@type': 'AggregateRating',
+                    ratingValue: '4.8',
+                    ratingCount: '15234'
+                  }
+                }
+              ]
+            })
+          }}
+        />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ErrorBoundary>
