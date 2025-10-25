@@ -23,7 +23,13 @@ export default function robots(): MetadataRoute.Robots {
       },
       {
         userAgent: 'Googlebot',
-        allow: '/',
+        allow: ['/', '/blog/', '/blog/*'],
+        disallow: ['/admin/', '/api/', '/_next/', '/tmp/'],
+        crawlDelay: 0,
+      },
+      {
+        userAgent: 'Bingbot',
+        allow: ['/', '/blog/', '/blog/*'],
         disallow: ['/admin/', '/api/', '/_next/', '/tmp/'],
       }
     ],

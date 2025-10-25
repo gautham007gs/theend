@@ -119,6 +119,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://kruthika.fun" />
 
         {/* Preload critical fonts FIRST for LCP text */}
         <link

@@ -106,20 +106,30 @@ const StatusPage: React.FC = () => {
       }
     }
 
-    const handleItemClick = () => {
+    const handleItemClick = React.useCallback(() => {
       if (isValidStoryImageSrc && storyImageUrl) {
-        setShowStoryImageViewer(true);
-        storyViewedLongEnoughRef.current = false;
-        if (storyViewTimerRef.current) clearTimeout(storyViewTimerRef.current);
-        storyViewTimerRef.current = setTimeout(() => {
-          storyViewedLongEnoughRef.current = true;
-        }, STATUS_VIEW_AD_DELAY_MS);
-      } else if (storyImageUrl) {
-        console.warn(
-          `[StatusItemDisplay-${displayName}] Not opening story image viewer due to invalid/empty URL: ${storyImageUrl}`,
-        );
+        // Use requestIdleCallback for better INP
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            setShowStoryImageViewer(true);
+            storyViewedLongEnoughRef.current = false;
+            if (storyViewTimerRef.current) clearTimeout(storyViewTimerRef.current);
+            storyViewTimerRef.current = setTimeout(() => {
+              storyViewedLongEnoughRef.current = true;
+            }, STATUS_VIEW_AD_DELAY_MS);
+          }, { timeout: 100 });
+        } else {
+          requestAnimationFrame(() => {
+            setShowStoryImageViewer(true);
+            storyViewedLongEnoughRef.current = false;
+            if (storyViewTimerRef.current) clearTimeout(storyViewTimerRef.current);
+            storyViewTimerRef.current = setTimeout(() => {
+              storyViewedLongEnoughRef.current = true;
+            }, STATUS_VIEW_AD_DELAY_MS);
+          });
+        }
       }
-    };
+    }, [isValidStoryImageSrc, storyImageUrl]);
 
     const handleCloseStoryViewer = () => {
       setShowStoryImageViewer(false);
@@ -182,6 +192,7 @@ const StatusPage: React.FC = () => {
                     ? "ring-2 ring-muted/50 p-0.5"
                     : "",
               )}
+              style={{ contain: 'layout style paint' }}
               key={`status-avatar-comp-${statusKey}-${avatarUrlToUse || "default_avatar_comp_key_sp"}`}
             >
               <AvatarImage
@@ -189,6 +200,8 @@ const StatusPage: React.FC = () => {
                 alt={displayName}
                 data-ai-hint={dataAiHint || "profile person"}
                 className="object-cover"
+                loading={isKruthikaProfile || isMyStatusStyle ? "eager" : "lazy"}
+                fetchpriority={isKruthikaProfile || isMyStatusStyle ? "high" : "auto"}
                 key={`${statusKey}-avatar-img-${avatarUrlToUse || "no_avatar_fallback_img_sp"}`}
                 onError={(e) => handleAvatarError(e, "List")}
               />
@@ -297,12 +310,24 @@ const StatusPage: React.FC = () => {
   const displayManagedDemoContacts =
     globalManagedDemoContacts || defaultManagedContactStatuses;
 
-  // if (globalAIProfile) {
-  // console.log("[StatusPage] Using AIProfile from context:", JSON.stringify(globalAIProfile, null, 2));
-  // } else if (!isLoadingAIProfile) {
-  // console.log("[StatusPage] AIProfile from context is null (and not loading), using defaultAIProfile:", JSON.stringify(defaultAIProfile, null, 2));
-  // }
-  // console.log("[StatusPage] Effective AI Profile for render:", JSON.stringify(effectiveAIProfile, null, 2));
+  // Preload critical avatar images for LCP optimization
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const preloadImages = [
+      displayAdminOwnStatus.avatarUrl,
+      effectiveAIProfile.avatarUrl
+    ].filter(url => url && typeof url === 'string' && url.trim() !== '');
+
+    preloadImages.forEach(url => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = url;
+      link.fetchPriority = 'high';
+      document.head.appendChild(link);
+    });
+  }, [displayAdminOwnStatus.avatarUrl, effectiveAIProfile.avatarUrl]);
 
   if (isLoadingAIProfile || isLoadingGlobalStatuses || isLoadingAdSettings) {
     return (

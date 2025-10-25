@@ -23,13 +23,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '24-7-ai-companionship-constant-availability-benefits',
     'ai-girlfriend-psychology-attachment-2025',
     'ai-girlfriend-emotional-support-loneliness',
+    'best-ai-girlfriend-2025',
+    'how-does-ai-girlfriend-work-technology-guide',
+    'is-ai-girlfriend-safe-privacy-security-guide',
   ];
 
   const blogUrls = blogPosts.map((slug) => ({
     url: `${baseUrl}/blog/${slug}`,
     lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
+    changeFrequency: 'daily' as const,
+    priority: 0.85,
   }));
 
   return [
