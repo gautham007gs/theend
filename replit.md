@@ -9,6 +9,8 @@ Kruthika is a Next.js-powered AI girlfriend chat application offering real-time 
 - Security-first approach with strong CSP
 - Real data over mock data
 - Clean, maintainable code structure
+- Professional, human-like blog content with proper spacing and formatting
+- All pages must be indexed and crawlable by search engines
 
 ## System Architecture
 The application is built on Next.js 15.5.4 with Turbopack, styled using Tailwind CSS and Radix UI components. State management is handled by React Context API, with form handling via React Hook Form and Zod.
@@ -28,6 +30,12 @@ The application is built on Next.js 15.5.4 with Turbopack, styled using Tailwind
   - Structured data (JSON-LD) for search engine understanding
   - Mobile-first performance optimizations with adaptive loading
   - Clean, focused metadata (removed keyword stuffing)
+  - Professional blog typography following 2025 best practices:
+    * 18px base font (16px mobile) with 1.8 line height
+    * Generous paragraph spacing (2em bottom, 1.25em top)
+    * Large heading margins for clear visual hierarchy
+    * Mobile-responsive design for optimal readability
+    * Text selection enabled for better UX (removed harmful user-select:none)
 - **Security:** Strong Content Security Policy (CSP) headers, XSS protection, Supabase RLS policies, file upload validation, and HTTPS-only enforcement.
 
 **UI/UX:**
