@@ -18,8 +18,16 @@ The application is built on Next.js 15.5.4 with Turbopack, styled using Tailwind
 - **Admin Panel:** Comprehensive interface for AI profile customization, media asset management (images, audio, video), story management for demo contacts, and usage analytics.
 - **Progressive Web App (PWA):** Features offline functionality via a service worker and is installable on mobile devices.
 - **Status/Stories Feature:** WhatsApp-style ephemeral stories with image and video support for engaging demo contacts.
-- **Monetization:** Aggressive ad integration strategy including banner, native, social bar, pop-under, and direct link ads, strategically placed and loaded for maximum revenue while balancing performance.
-- **SEO & Performance:** Extensive SEO optimization with trending keywords, FAQ schema for voice search, sitemap cleanup, and comprehensive structured data. Mobile performance is critical, with optimizations like adaptive loading based on network quality, dynamic image adjustment, and preloading strategies.
+- **Monetization:** Ad integration via Adsterra and Monetag networks. CPM optimization code removed to let ad networks handle optimization automatically.
+- **SEO & Performance:** Comprehensive SEO optimization targeting "ai girlfriend" keyword globally and locally. Features include:
+  - Optimized keyword density (0.5-1.5%) to avoid stuffing while maintaining relevance
+  - FAQ schema markup on all blog posts for featured snippets
+  - Complete blog indexing via robots.txt and sitemap.ts
+  - Unique, SEO-optimized blog content (2000+ words per post)
+  - Strategic internal linking across all pages
+  - Structured data (JSON-LD) for search engine understanding
+  - Mobile-first performance optimizations with adaptive loading
+  - Clean, focused metadata (removed keyword stuffing)
 - **Security:** Strong Content Security Policy (CSP) headers, XSS protection, Supabase RLS policies, file upload validation, and HTTPS-only enforcement.
 
 **UI/UX:**
