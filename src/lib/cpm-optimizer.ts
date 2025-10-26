@@ -7,7 +7,12 @@ export class CPMOptimizer {
     viewableImpressions: number;
     ctr: number;
     viewabilityRate: number;
+    invalidClicks: number;
+    botTraffic: number;
   }> = new Map();
+
+  // CPM Issue Diagnostics
+  private static cpmIssues: string[] = [];
 
   // Track ad performance by placement with viewability metrics
   static trackAdPerformance(placementId: string, metrics: {
@@ -22,11 +27,34 @@ export class CPMOptimizer {
       viewableTime: 0,
       viewableImpressions: 0,
       ctr: 0,
-      viewabilityRate: 0
+      viewabilityRate: 0,
+      invalidClicks: 0,
+      botTraffic: 0
     };
 
-    if (metrics.impression) current.impressions++;
-    if (metrics.click) current.clicks++;
+    if (metrics.impression) {
+      current.impressions++;
+      
+      // Detect potential bot traffic (rapid impressions)
+      if (current.impressions > 10) {
+        const avgTimePerImpression = current.viewableTime / current.impressions;
+        if (avgTimePerImpression < 500) { // Less than 0.5 seconds per impression
+          current.botTraffic++;
+          this.cpmIssues.push(`⚠️ Potential bot traffic detected on ${placementId}`);
+        }
+      }
+    }
+    
+    if (metrics.click) {
+      current.clicks++;
+      
+      // Detect invalid clicks (too fast after impression)
+      if (metrics.viewableTime && metrics.viewableTime < 1000) {
+        current.invalidClicks++;
+        this.cpmIssues.push(`⚠️ Suspicious click detected (too fast) on ${placementId}`);
+      }
+    }
+    
     if (metrics.viewableTime) current.viewableTime += metrics.viewableTime;
     if (metrics.wasViewable) current.viewableImpressions++;
 
@@ -35,10 +63,63 @@ export class CPMOptimizer {
 
     this.performanceData.set(placementId, current);
     
-    // Log viewability insights
+    // Comprehensive logging every 10 impressions
     if (current.impressions % 10 === 0) {
-      console.log(`📊 Ad Performance [${placementId}]: ${current.viewabilityRate.toFixed(1)}% viewable, ${current.ctr.toFixed(2)}% CTR`);
+      console.log(`📊 Ad Performance [${placementId}]:`);
+      console.log(`   • Impressions: ${current.impressions}`);
+      console.log(`   • Viewability: ${current.viewabilityRate.toFixed(1)}%`);
+      console.log(`   • CTR: ${current.ctr.toFixed(2)}%`);
+      console.log(`   • Avg View Time: ${(current.viewableTime / current.impressions / 1000).toFixed(2)}s`);
+      
+      // CPM Quality Warnings
+      if (current.viewabilityRate < 50) {
+        console.warn(`⚠️ LOW VIEWABILITY (${current.viewabilityRate.toFixed(1)}%) - CPM will be reduced by Adsterra`);
+        this.cpmIssues.push(`Low viewability: ${current.viewabilityRate.toFixed(1)}%`);
+      }
+      if (current.ctr < 0.1) {
+        console.warn(`⚠️ LOW CTR (${current.ctr.toFixed(2)}%) - Poor ad engagement affects CPM`);
+        this.cpmIssues.push(`Low CTR: ${current.ctr.toFixed(2)}%`);
+      }
+      if (current.botTraffic > current.impressions * 0.3) {
+        console.error(`🚨 HIGH BOT TRAFFIC (${(current.botTraffic / current.impressions * 100).toFixed(1)}%) - Adsterra will heavily discount CPM`);
+        this.cpmIssues.push(`High bot traffic: ${(current.botTraffic / current.impressions * 100).toFixed(1)}%`);
+      }
     }
+  }
+
+  // Get comprehensive CPM diagnostics
+  static getCPMDiagnostics() {
+    const allStats = this.getAllStats();
+    const totalImpressions = allStats.reduce((sum, stat) => sum + stat.impressions, 0);
+    const avgViewability = allStats.reduce((sum, stat) => sum + stat.viewabilityRate, 0) / allStats.length;
+    const avgCTR = allStats.reduce((sum, stat) => sum + stat.ctr, 0) / allStats.length;
+    
+    return {
+      totalImpressions,
+      avgViewability: avgViewability || 0,
+      avgCTR: avgCTR || 0,
+      issues: this.cpmIssues,
+      estimatedCPM: this.estimateCurrentCPM(avgViewability, avgCTR)
+    };
+  }
+
+  // Estimate current CPM based on quality metrics
+  private static estimateCurrentCPM(viewability: number, ctr: number): number {
+    let baseCPM = 2.0; // Base CPM for quality traffic
+    
+    // Viewability impact (Adsterra requirement: >50%)
+    if (viewability < 30) baseCPM *= 0.1; // Severe penalty
+    else if (viewability < 50) baseCPM *= 0.3;
+    else if (viewability < 70) baseCPM *= 0.6;
+    else if (viewability >= 80) baseCPM *= 1.5; // Premium
+    
+    // CTR impact
+    if (ctr < 0.1) baseCPM *= 0.2; // Very low engagement
+    else if (ctr < 0.5) baseCPM *= 0.5;
+    else if (ctr >= 1.0) baseCPM *= 1.3;
+    else if (ctr >= 2.0) baseCPM *= 1.8;
+    
+    return Math.max(0.05, baseCPM);
   }
 
   // Get placement performance stats
@@ -143,4 +224,26 @@ export const getContentCPMMultiplier = (category: string): number => {
   return premiumCategories[category.toLowerCase()] || 1.0;
 };
 
-console.log('CPM Optimizer: Performance tracking only (no refresh)');
+// Log CPM diagnostics on load
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    const diagnostics = CPMOptimizer.getCPMDiagnostics();
+    console.log('🔍 CPM DIAGNOSTICS:');
+    console.log(`   Estimated CPM: $${diagnostics.estimatedCPM.toFixed(2)}`);
+    console.log(`   Avg Viewability: ${diagnostics.avgViewability.toFixed(1)}%`);
+    console.log(`   Avg CTR: ${diagnostics.avgCTR.toFixed(2)}%`);
+    
+    if (diagnostics.issues.length > 0) {
+      console.warn('⚠️ CPM ISSUES DETECTED:');
+      diagnostics.issues.forEach(issue => console.warn(`   • ${issue}`));
+      console.log('\n💡 RECOMMENDATIONS:');
+      console.log('   1. Ensure ads are visible in viewport (>50% area)');
+      console.log('   2. Keep ads on screen for 2+ seconds');
+      console.log('   3. Avoid auto-clicks or bot traffic');
+      console.log('   4. Target tier-1 countries (US, UK, CA, AU)');
+      console.log('   5. Use contextual ad placements');
+    }
+  }, 5000);
+}
+
+console.log('CPM Optimizer: Advanced diagnostics enabled');

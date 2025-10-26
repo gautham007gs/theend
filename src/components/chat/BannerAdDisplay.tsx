@@ -20,6 +20,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
   const adContainerRef = useRef<HTMLDivElement>(null);
   const scriptInjectedRef = useRef(false);
   const adElementId = `banner-ad-${adType}-${placementKey}`;
+  const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
     if (isLoadingAdSettings || !adSettings || !adSettings.adsEnabledGlobally) {
@@ -88,6 +89,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         const fragment = document.createRange().createContextualFragment(adCodeToInject);
         adContainerRef.current.appendChild(fragment);
         scriptInjectedRef.current = true;
+        setAdLoaded(true);
 
         // Track impression for CPM optimization
         CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
@@ -142,14 +144,14 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     return null;
   }
 
-  // Show container immediately for proper lazy loading detection
-  // Key includes adCodeToInject to attempt re-render if the code itself changes.
+  // Show container only when ad is loaded
   return (
     <div
       id={adElementId}
       ref={adContainerRef}
       className={cn(
-        "kruthika-chat-banner-ad-container flex justify-center items-center w-full overflow-hidden sticky bottom-0 z-20 bg-background shadow-lg",
+        "kruthika-chat-banner-ad-container flex justify-center items-center w-full overflow-hidden sticky bottom-0 z-20",
+        adLoaded ? "min-h-0" : "h-0 opacity-0",
         className
       )}
       key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`}
