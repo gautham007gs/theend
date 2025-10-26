@@ -1,19 +1,21 @@
-
 import { Metadata } from 'next';
 import { generateBlogMetadata } from '@/lib/blog-metadata';
-import BlogPostTemplate from '@/components/BlogPostTemplate';
+import BlogPostContent from '@/components/BlogPostContent';
 import Link from 'next/link';
 
 export const metadata: Metadata = generateBlogMetadata('psychology-ai-girlfriends');
 
 export default function PsychologyAIGirlfriendsPost() {
   return (
-    <BlogPostTemplate
-      title="Psychology of AI Girlfriends 2025: Why Virtual Relationships Feel Real"
+    <BlogPostContent
+      slug="psychology-ai-girlfriends"
+      title="Psychology of AI Girlfriends 2025: Why Virtual Relationships Feel Real | Kruthika"
       author="Dr. Priya Sharma"
       date="2025-01-25"
       readTime="8 min"
       tags={['AI Psychology', 'Virtual Relationships', 'Emotional AI', 'Digital Companionship']}
+      keywords="AI girlfriend psychology, psychology of AI relationships, virtual girlfriend emotional bond"
+      description="Discover the psychology behind AI girlfriend relationships. Learn why millions form deep emotional bonds with virtual companions like Kruthika."
       relatedPosts={[
         {
           title: 'AI Girlfriend Attachment Psychology 2025',
@@ -178,6 +180,6 @@ export default function PsychologyAIGirlfriendsPost() {
         <li><Link href="/blog/ai-companion-social-anxiety-confidence-building">AI Companions for Social Anxiety</Link></li>
         <li><Link href="/blog/best-ai-girlfriend-2025">Best AI Girlfriend Apps 2025 Comparison</Link></li>
       </ul>
-    </BlogPostTemplate>
+    </BlogPostContent>
   );
 }
