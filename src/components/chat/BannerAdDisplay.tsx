@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
-import { CPMOptimizer } from '@/lib/cpm-optimizer';
 
 interface BannerAdDisplayProps {
   adType: 'standard' | 'native'; // Specify banner type
@@ -91,9 +90,6 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         scriptInjectedRef.current = true;
         setAdLoaded(true);
 
-        // Track impression for CPM optimization
-        CPMOptimizer.trackAdPerformance(placementKey, { impression: true });
-
         console.log(`✅ Banner Ad [${adType}] - Successfully loaded for placement: ${placementKey}`);
         console.log(`✅ Banner Ad [${adType}] - DOM element ID: ${adElementId}`);
       } catch (e) {
@@ -111,30 +107,6 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     }
   }, [adCodeToInject]);
 
-  // Track viewability for analytics only (no refresh)
-  useEffect(() => {
-    if (!adContainerRef.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
-            setTimeout(() => {
-              if (entry.isIntersecting) {
-                CPMOptimizer.trackAdPerformance(placementKey, {
-                  viewableTime: 2000 // 2 seconds viewable
-                });
-              }
-            }, 2000);
-          }
-        });
-      },
-      { threshold: [0.7] }
-    );
-
-    observer.observe(adContainerRef.current);
-    return () => observer.disconnect();
-  }, [placementKey]);
 
 
   if (isLoadingAdSettings || !isVisible || !adCodeToInject) {
@@ -155,10 +127,6 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         className
       )}
       key={`${placementKey}-${adType}-${adCodeToInject.substring(0, 30)}`}
-      onClick={() => {
-        // Track click for CPM optimization
-        CPMOptimizer.trackAdPerformance(placementKey, { click: true });
-      }}
       data-ad-placement={placementKey}
     />
   );

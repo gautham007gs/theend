@@ -236,10 +236,10 @@ const ChatListPage: React.FC = () => {
         {/* Welcome Section - LCP Optimized */}
         <div className="flex flex-col items-center justify-center px-8 py-12 text-center bg-white mt-4 mx-4 rounded-lg shadow-sm" style={{ minHeight: '280px', contain: 'layout' }}>
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3" style={{ fontDisplay: 'block', contain: 'layout paint' }}>
+            <h2 className="text-xl font-semibold text-gray-800 mb-3" style={{ contain: 'layout paint' }}>
               Chat with Kruthika
             </h2>
-            <p className="text-xs text-gray-500" style={{ fontDisplay: 'block', contain: 'layout paint' }}>
+            <p className="text-xs text-gray-500" style={{ contain: 'layout paint' }}>
               Smart conversations
             </p>
           </div>
