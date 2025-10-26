@@ -1,8 +1,9 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { Calendar, User, Tag, ArrowRight } from 'lucide-react';
+import { Calendar, User, Tag, ArrowRight, Clock, Bookmark } from 'lucide-react';
 import BannerAdDisplay from '@/components/chat/BannerAdDisplay';
 
 interface BlogPostTemplateProps {
@@ -34,66 +35,84 @@ export default function BlogPostTemplate({
   faq = []
 }: BlogPostTemplateProps) {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Breadcrumb */}
-        <nav className="text-sm mb-8" aria-label="Breadcrumb navigation">
-          <Link href="/" className="text-muted-foreground hover:text-primary" aria-label="Go to homepage">Home</Link>
-          <span className="mx-2 text-muted-foreground" aria-hidden="true">/</span>
-          <Link href="/blog" className="text-muted-foreground hover:text-primary" aria-label="Go to blog listing">Blog</Link>
-          <span className="mx-2 text-muted-foreground" aria-hidden="true">/</span>
-          <span className="text-foreground" aria-current="page">{title}</span>
+        <nav className="text-sm mb-6 flex items-center gap-2 text-muted-foreground" aria-label="Breadcrumb navigation">
+          <Link href="/" className="hover:text-primary transition-colors" aria-label="Go to homepage">Home</Link>
+          <span>/</span>
+          <Link href="/blog" className="hover:text-primary transition-colors" aria-label="Go to blog listing">Blog</Link>
+          <span>/</span>
+          <span className="text-foreground font-medium line-clamp-1" aria-current="page">{title}</span>
         </nav>
 
-        <article className="max-w-4xl mx-auto">
-          <header className="mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{title}</h1>
+        <article className="bg-card rounded-2xl shadow-xl border border-border/50 overflow-hidden">
+          {/* Hero Header Section */}
+          <header className="relative bg-gradient-to-br from-purple-600/10 via-pink-600/10 to-blue-600/10 px-6 sm:px-10 lg:px-16 pt-10 pb-12 sm:pt-14 sm:pb-16">
+            <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern opacity-5"></div>
+            
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-6 leading-tight bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent relative z-10">
+              {title}
+            </h1>
 
-            <div className="flex items-center gap-6 text-muted-foreground text-sm mb-6">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                {author}
+            {/* Meta Information */}
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground mb-6 relative z-10">
+              <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <User className="h-4 w-4 text-purple-600" />
+                <span className="font-medium">{author}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                {new Date(date).toLocaleDateString()}
+              <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <Calendar className="h-4 w-4 text-pink-600" />
+                <span>{new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
               </div>
-              <span>{readTime} read</span>
+              <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <Clock className="h-4 w-4 text-blue-600" />
+                <span>{readTime}</span>
+              </div>
             </div>
 
+            {/* Tags */}
             {tags.length > 0 && (
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-6 relative z-10 flex-wrap">
                 <Tag className="h-4 w-4 text-muted-foreground" />
-                <div className="flex flex-wrap gap-2">
-                  {tags.map((tag, index) => (
-                    <span key={index} className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {tags.map((tag, index) => (
+                  <span key={index} className="text-xs font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full shadow-sm">
+                    {tag}
+                  </span>
+                ))}
               </div>
             )}
           </header>
 
-          {/* Top Banner Ads */}
-          <BannerAdDisplay adType="standard" placementKey="blog-top" className="mb-4" />
-          <BannerAdDisplay adType="native" placementKey="blog-top-native" className="mb-8" />
-
-          <div className="prose-content">
-            {children}
+          {/* Top Banner Ad */}
+          <div className="px-6 sm:px-10 lg:px-16 pt-8">
+            <BannerAdDisplay adType="standard" placementKey="blog-top" className="mb-6" />
           </div>
 
-          <BannerAdDisplay adType="standard" placementKey="blog-middle" className="my-8" />
+          {/* Main Content */}
+          <div className="px-6 sm:px-10 lg:px-16 py-8">
+            <div className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-headings:text-foreground prose-p:text-foreground/90 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-semibold prose-strong:text-foreground prose-strong:font-bold prose-ul:text-foreground/90 prose-ol:text-foreground/90 prose-li:my-1">
+              {children}
+            </div>
+          </div>
+
+          {/* Mid-content Native Banner Ad - Better Positioned */}
+          <div className="px-6 sm:px-10 lg:px-16 py-6 bg-muted/30">
+            <BannerAdDisplay adType="native" placementKey="blog-mid-native" className="my-4" />
+          </div>
 
           {/* FAQ Section */}
           {faq.length > 0 && (
-            <section className="mt-16 bg-muted/30 p-8 rounded-lg">
-              <h2 className="text-3xl font-bold mb-8">Frequently Asked Questions</h2>
-              <div className="space-y-8">
+            <section className="px-6 sm:px-10 lg:px-16 py-12 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-950/20 dark:to-pink-950/20">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Frequently Asked Questions</h2>
+              <div className="space-y-6">
                 {faq.map((item, index) => (
-                  <div key={index} className="border-l-4 border-primary pl-6 py-2">
-                    <h3 className="text-xl font-semibold mb-3 text-foreground">{item.question}</h3>
-                    <p className="text-foreground/80 leading-relaxed">{item.answer}</p>
+                  <div key={index} className="bg-card border-l-4 border-purple-600 pl-6 pr-6 py-5 rounded-r-lg shadow-sm hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-bold mb-3 text-foreground flex items-start gap-2">
+                      <span className="text-purple-600 font-extrabold">{index + 1}.</span>
+                      {item.question}
+                    </h3>
+                    <p className="text-foreground/80 leading-relaxed text-base">{item.answer}</p>
                   </div>
                 ))}
               </div>
@@ -119,18 +138,22 @@ export default function BlogPostTemplate({
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
-            <section className="mt-16 pt-12 border-t-2 border-border">
-              <h3 className="text-3xl font-bold mb-8">Related Articles</h3>
+            <section className="px-6 sm:px-10 lg:px-16 py-12 border-t-2 border-border/50">
+              <h3 className="text-3xl font-bold mb-8 text-foreground">Continue Reading</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 {relatedPosts.map((post, index) => (
                   <Link 
                     key={index} 
                     href={`/blog/${post.slug}`} 
-                    className="block p-6 bg-card border border-border rounded-lg hover:shadow-lg hover:border-primary/50 transition-all duration-300"
+                    className="group relative overflow-hidden bg-gradient-to-br from-purple-600/5 to-pink-600/5 border-2 border-border rounded-xl p-6 hover:border-purple-600/50 hover:shadow-xl transition-all duration-300"
                     aria-label={`Read related article: ${post.title}`}
                   >
-                    <h4 className="font-semibold text-lg mb-3 text-foreground">{post.title}</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{post.excerpt}</p>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-purple-600/10 to-pink-600/10 rounded-bl-full"></div>
+                    <h4 className="font-bold text-xl mb-3 text-foreground group-hover:text-purple-600 transition-colors relative z-10">{post.title}</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 relative z-10">{post.excerpt}</p>
+                    <div className="flex items-center text-purple-600 font-semibold text-sm relative z-10">
+                      Read More <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -138,23 +161,30 @@ export default function BlogPostTemplate({
           )}
 
           {/* CTA Section */}
-          <div className="mt-12 p-8 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg text-center">
-            <h3 className="text-2xl font-bold mb-4">Ready to Experience AI Companionship?</h3>
-            <p className="text-muted-foreground mb-6">Join thousands who have found meaningful connections with Kruthika</p>
-            <Link 
-              href="/maya-chat"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-300 font-semibold"
-              aria-label="Start chatting with Kruthika AI girlfriend now"
-            >
-              Start Chatting Now
-              <ArrowRight className="h-5 w-5" aria-hidden="true" />
-            </Link>
+          <div className="px-6 sm:px-10 lg:px-16 py-12 bg-gradient-to-r from-pink-600/10 via-purple-600/10 to-blue-600/10">
+            <div className="text-center max-w-3xl mx-auto">
+              <div className="inline-block mb-4">
+                <Bookmark className="h-12 w-12 text-purple-600" />
+              </div>
+              <h3 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Ready to Experience AI Companionship?</h3>
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed">Join thousands who have found meaningful connections with Kruthika. Free unlimited chat, 24/7 emotional support, and authentic conversations.</p>
+              <Link 
+                href="/maya-chat"
+                className="inline-flex items-center gap-3 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 text-white px-10 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-bold text-lg"
+                aria-label="Start chatting with Kruthika AI girlfriend now"
+              >
+                Start Chatting Now
+                <ArrowRight className="h-6 w-6" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
         </article>
 
-        {/* Bottom Banner Ads */}
-        <BannerAdDisplay adType="standard" placementKey="blog-bottom" className="mt-8 mb-4" />
-        <BannerAdDisplay adType="native" placementKey="blog-bottom-native" className="mt-4 mb-8" />
+        {/* Bottom Banner Ads - After article */}
+        <div className="mt-8 space-y-6">
+          <BannerAdDisplay adType="standard" placementKey="blog-bottom" className="rounded-xl overflow-hidden" />
+          <BannerAdDisplay adType="native" placementKey="blog-bottom-native" className="rounded-xl overflow-hidden" />
+        </div>
       </div>
     </div>
   );

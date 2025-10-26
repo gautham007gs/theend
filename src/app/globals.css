@@ -2,94 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Critical CSS optimizations */
-:root{--font-inter:'Inter','Inter Fallback',system-ui,sans-serif}
-html,body,.font-inter{font-family:var(--font-inter)}
-*{box-sizing:border-box}
-img{max-width:100%;height:auto;content-visibility:auto}
-img[loading="eager"]{content-visibility:visible}
-.avatar-placeholder{background:#f3f4f6;border-radius:50%;display:inline-block;width:48px;height:48px;flex-shrink:0}
-.chat-container{min-height:100vh;contain:layout size}
-.message-bubble{transform:translateZ(0);contain:layout style paint;will-change:auto}
-.chat-header{contain:layout size style}
-[data-radix-popper-content-wrapper]{contain:layout}
-
 @layer base {
   :root {
-    /* WhatsApp Exact Green Theme */
-    --background: 48 8% 93%;
-    --foreground: 0 0% 15%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 15%;
-    --primary: 142 53% 49%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 142 30% 95%;
-    --secondary-foreground: 142 53% 25%;
-    --muted: 142 10% 96%; 
-    --muted-foreground: 0 0% 45%;
-    --accent: 142 53% 49%;
-    --accent-foreground: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 142 10% 88%;
-    --input: 142 15% 98%;
-    --ring: 142 53% 49%;
-    --chart-1: 142 53% 49%;
-    --chart-2: 142 53% 35%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 142 20% 96%;
-    --sidebar-foreground: 0 0% 15%;
-    --sidebar-primary: 142 53% 49%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 142 53% 95%;
-    --sidebar-accent-foreground: 142 53% 25%;
-    --sidebar-border: 142 10% 88%;
-    --sidebar-ring: 142 53% 49%;
-    --chat-bg-user: 142 53% 87%;
-    --chat-text-user: 0 0% 15%;
-    --chat-bg-ai: 0 0% 100%;
-    --chat-text-ai: 0 0% 15%;
-    --chat-bg-default: 38 8% 93%;
-    --chat-header-bg: 142 70% 45%;
-    --chat-header-text: 0 0% 100%;
-    --chat-input-bg: 0 0% 98%;
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 85%;
-    --card: 0 0% 11%;
-    --card-foreground: 0 0% 85%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 85%;
-    --primary: 142 53% 49%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 142 20% 20%;
-    --secondary-foreground: 0 0% 90%;
-    --muted: 0 0% 15%; 
-    --muted-foreground: 0 0% 65%;
-    --accent: 142 53% 49%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 142 53% 49%;
-    --chart-1: 142 53% 49%;
-    --chart-2: 142 53% 35%;
-    --chat-bg-user: 142 39% 25%;
-    --chat-text-user: 0 0% 95%;
-    --chat-bg-ai: 0 0% 11%;
-    --chat-text-ai: 0 0% 90%;
-    --chat-bg-default: 0 0% 7%;
-    --chat-header-bg: 0 0% 11%;
-    --chat-header-text: 0 0% 85%;
-    --chat-input-bg: 0 0% 11%; 
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -99,83 +65,72 @@ img[loading="eager"]{content-visibility:visible}
   }
   body {
     @apply bg-background text-foreground;
-    pointer-events: auto;
-    font-display: swap;
-  }
-  
-  /* LCP optimization - faster text rendering */
-  h1, h2, h3, h4, h5, h6, p, span {
-    font-display: block;
-    contain: layout paint;
-  }
-
-  /* Critical LCP element - instant render */
-  .text-xl.font-semibold.text-gray-800 {
-    font-display: block !important;
-    will-change: auto;
-    content-visibility: auto;
-  }
-
-  /* Low-end device optimizations */
-  .reduce-motion *,
-  .reduce-motion *::before,
-  .reduce-motion *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-
-  /* Allow text selection for better UX */
-  input, 
-  textarea, 
-  [contenteditable="true"] {
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    user-select: text !important;
-    pointer-events: auto !important;
-    -webkit-touch-callout: default !important;
-  }
-
-  /* Remove tap highlight on mobile for cleaner UI */
-  @media (max-width: 768px) {
-    * {
-      -webkit-tap-highlight-color: transparent !important;
-    }
   }
 }
 
-/* Custom scrollbar for chat view */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground) / 0.7) transparent;
+/* Enhanced Prose Styles for Blog Posts */
+.prose-content {
+  @apply text-base sm:text-lg leading-relaxed text-foreground/90;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+.prose-content h1,
+.prose-content h2,
+.prose-content h3,
+.prose-content h4 {
+  @apply font-bold text-foreground mt-8 mb-4;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+.prose-content h1 {
+  @apply text-3xl sm:text-4xl;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.7);
-  border-radius: 10px;
+.prose-content h2 {
+  @apply text-2xl sm:text-3xl border-l-4 border-purple-600 pl-4 py-2;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--accent) / 0.9);
+.prose-content h3 {
+  @apply text-xl sm:text-2xl;
+}
+
+.prose-content h4 {
+  @apply text-lg sm:text-xl;
+}
+
+.prose-content p {
+  @apply mb-6 leading-relaxed;
+}
+
+.prose-content ul,
+.prose-content ol {
+  @apply mb-6 ml-6 space-y-2;
+}
+
+.prose-content li {
+  @apply leading-relaxed;
+}
+
+.prose-content strong {
+  @apply font-bold text-foreground;
+}
+
+.prose-content a {
+  @apply text-blue-600 font-semibold hover:text-blue-800 underline transition-colors;
+}
+
+.prose-content blockquote {
+  @apply border-l-4 border-purple-600 pl-6 py-4 my-6 italic bg-muted/30 rounded-r-lg;
+}
+
+.prose-content code {
+  @apply bg-muted px-2 py-1 rounded text-sm font-mono;
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
 }
 
 /* Native ad styling in chat */
@@ -249,293 +204,9 @@ img[loading="eager"]{content-visibility:visible}
   display: none;
 }
 
-/* Mobile viewport fixes for preventing header/footer scroll issues */
+/* Mobile viewport fixes */
 @supports (-webkit-touch-callout: none) {
-  /* iOS Safari specific fixes */
   .fixed.inset-0 {
     height: -webkit-fill-available;
   }
-}
-
-@media (max-width: 768px) {
-  /* Prevent address bar scrolling on mobile */
-  html {
-    height: -webkit-fill-available;
-  }
-  
-  body {
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-  }
-  
-  /* Fixed chat container for mobile */
-  .fixed.inset-0 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 100%;
-    max-height: 100vh;
-    max-height: -webkit-fill-available;
-  }
-  
-  /* Ensure proper touch scrolling */
-  .overflow-y-auto {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-  }
-  
-  /* Sticky header and footer optimization */
-  .sticky {
-    position: -webkit-sticky;
-    position: sticky;
-  }
-  
-  /* Prevent viewport shifts */
-  .chat-header,
-  [class*="chat-input"] {
-    position: -webkit-sticky;
-    position: sticky;
-  }
-}
-
-/* Performance optimizations for low-end devices */
-@media (max-width: 768px) and (hover: none) {
-  /* Disable hover effects on touch devices */
-  *:hover {
-    transition: none !important;
-  }
-  
-  /* Optimize animations */
-  .reduce-motion,
-  .reduce-motion * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* Enhanced scrollbar for better mobile UX */
-@media (max-width: 768px) {
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
-  }
-  
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.5);
-  }
-}
-
-/* Low performance mode optimizations */
-.low-performance-mode * {
-  will-change: auto !important;
-  transform: translateZ(0); /* Force GPU for essential animations only */
-}
-
-.low-performance-mode img.low-quality-mode {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-/* Network-aware image loading */
-@media (prefers-reduced-data: reduce) {
-  img {
-    image-rendering: -webkit-optimize-contrast;
-  }
-}
-
-/* ========================================
-   BLOG TYPOGRAPHY - 2025 BEST PRACTICES
-   ======================================== */
-
-/* Professional blog post formatting with optimal readability */
-.prose-content {
-  font-size: 18px;
-  line-height: 1.8;
-  color: hsl(var(--foreground));
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-/* Headings with proper spacing and hierarchy */
-.prose-content h2 {
-  font-size: 2em;
-  font-weight: 700;
-  line-height: 1.3;
-  margin-top: 3.5em;
-  margin-bottom: 1.25em;
-  color: hsl(var(--foreground));
-  letter-spacing: -0.02em;
-  padding-top: 0.5em;
-}
-
-.prose-content h2:first-of-type {
-  margin-top: 1.5em;
-}
-
-.prose-content h3 {
-  font-size: 1.5em;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-top: 2.5em;
-  margin-bottom: 1em;
-  color: hsl(var(--foreground));
-}
-
-.prose-content h4 {
-  font-size: 1.25em;
-  font-weight: 600;
-  line-height: 1.5;
-  margin-top: 1.5em;
-  margin-bottom: 0.6em;
-  color: hsl(var(--foreground));
-}
-
-/* Paragraphs with generous spacing */
-.prose-content p {
-  margin-bottom: 2em;
-  margin-top: 1.25em;
-  line-height: 1.85;
-  color: hsl(var(--foreground) / 0.9);
-  font-size: 1.05em;
-}
-
-/* Lists with proper spacing */
-.prose-content ul,
-.prose-content ol {
-  margin-top: 2em;
-  margin-bottom: 2em;
-  padding-left: 1.75em;
-}
-
-.prose-content li {
-  margin-bottom: 1em;
-  line-height: 1.8;
-  color: hsl(var(--foreground) / 0.9);
-  padding-left: 0.5em;
-}
-
-.prose-content li > p {
-  margin-bottom: 0.5em;
-}
-
-/* Strong emphasis - subtle but effective */
-.prose-content strong {
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
-/* Links with clear interaction states */
-.prose-content a {
-  color: hsl(var(--primary));
-  text-decoration: underline;
-  text-decoration-color: hsl(var(--primary) / 0.3);
-  text-underline-offset: 3px;
-  transition: all 0.2s ease;
-}
-
-.prose-content a:hover {
-  text-decoration-color: hsl(var(--primary));
-  color: hsl(var(--primary) / 0.8);
-}
-
-/* Blockquotes for emphasis */
-.prose-content blockquote {
-  border-left: 4px solid hsl(var(--primary));
-  padding-left: 1.5em;
-  margin: 2em 0;
-  font-style: italic;
-  color: hsl(var(--foreground) / 0.8);
-}
-
-/* Tables with clean design */
-.prose-content table {
-  width: 100%;
-  margin: 2em 0;
-  border-collapse: collapse;
-  font-size: 0.95em;
-}
-
-.prose-content th {
-  background: hsl(var(--muted));
-  font-weight: 600;
-  padding: 0.75em 1em;
-  text-align: left;
-  border: 1px solid hsl(var(--border));
-}
-
-.prose-content td {
-  padding: 0.75em 1em;
-  border: 1px solid hsl(var(--border));
-}
-
-.prose-content tbody tr:nth-child(even) {
-  background: hsl(var(--muted) / 0.3);
-}
-
-/* Code blocks with clear styling */
-.prose-content code {
-  background: hsl(var(--muted));
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  font-size: 0.9em;
-  font-family: 'Monaco', 'Courier New', monospace;
-}
-
-/* HR dividers for section breaks */
-.prose-content hr {
-  border: none;
-  border-top: 2px solid hsl(var(--border));
-  margin: 3em 0;
-}
-
-/* Images with proper spacing */
-.prose-content img {
-  max-width: 100%;
-  height: auto;
-  margin: 2em 0;
-  border-radius: 8px;
-}
-
-/* Mobile responsive typography */
-@media (max-width: 768px) {
-  .prose-content {
-    font-size: 16px;
-    line-height: 1.7;
-  }
-  
-  .prose-content h2 {
-    font-size: 1.75em;
-    margin-top: 2em;
-  }
-  
-  .prose-content h3 {
-    font-size: 1.4em;
-    margin-top: 1.75em;
-  }
-  
-  .prose-content p {
-    margin-bottom: 1.25em;
-  }
-  
-  .prose-content ul,
-  .prose-content ol {
-    padding-left: 1.5em;
-  }
-}
-
-/* Improve first paragraph emphasis */
-.prose-content > p:first-of-type {
-  font-size: 1.1em;
-  color: hsl(var(--foreground));
-}
-
-/* CTA boxes within content */
-.prose-content > div[class*="bg-gradient"] {
-  margin: 2.5em 0;
-  padding: 2em;
-  border-radius: 12px;
 }
