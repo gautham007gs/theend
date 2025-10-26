@@ -45,9 +45,9 @@ export default function BlogPostTemplate({
           <span className="text-foreground" aria-current="page">{title}</span>
         </nav>
 
-        <article className="prose prose-lg max-w-none">
-          <header className="mb-8">
-            <h1 className="text-4xl font-bold mb-4">{title}</h1>
+        <article className="max-w-4xl mx-auto">
+          <header className="mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">{title}</h1>
 
             <div className="flex items-center gap-6 text-muted-foreground text-sm mb-6">
               <div className="flex items-center gap-2">
@@ -87,33 +87,50 @@ export default function BlogPostTemplate({
 
           {/* FAQ Section */}
           {faq.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
-              <div className="space-y-6">
+            <section className="mt-16 bg-muted/30 p-8 rounded-lg">
+              <h2 className="text-3xl font-bold mb-8">Frequently Asked Questions</h2>
+              <div className="space-y-8">
                 {faq.map((item, index) => (
-                  <div key={index} className="border-l-4 border-primary pl-4">
-                    <h3 className="font-semibold mb-2">{item.question}</h3>
-                    <p className="text-muted-foreground">{item.answer}</p>
+                  <div key={index} className="border-l-4 border-primary pl-6 py-2">
+                    <h3 className="text-xl font-semibold mb-3 text-foreground">{item.question}</h3>
+                    <p className="text-foreground/80 leading-relaxed">{item.answer}</p>
                   </div>
                 ))}
               </div>
+              <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                  __html: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "FAQPage",
+                    "mainEntity": faq.map(item => ({
+                      "@type": "Question",
+                      "name": item.question,
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": item.answer
+                      }
+                    }))
+                  })
+                }}
+              />
             </section>
           )}
 
           {/* Related Posts */}
           {relatedPosts.length > 0 && (
-            <section className="mt-12 pt-8 border-t border-border">
-              <h3 className="text-2xl font-bold mb-6">Related Articles</h3>
+            <section className="mt-16 pt-12 border-t-2 border-border">
+              <h3 className="text-3xl font-bold mb-8">Related Articles</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 {relatedPosts.map((post, index) => (
                   <Link 
                     key={index} 
                     href={`/blog/${post.slug}`} 
-                    className="block p-6 bg-card border border-border rounded-lg hover:shadow-lg transition-shadow"
+                    className="block p-6 bg-card border border-border rounded-lg hover:shadow-lg hover:border-primary/50 transition-all duration-300"
                     aria-label={`Read related article: ${post.title}`}
                   >
-                    <h4 className="font-semibold mb-2">{post.title}</h4>
-                    <p className="text-muted-foreground text-sm">{post.excerpt}</p>
+                    <h4 className="font-semibold text-lg mb-3 text-foreground">{post.title}</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{post.excerpt}</p>
                   </Link>
                 ))}
               </div>
