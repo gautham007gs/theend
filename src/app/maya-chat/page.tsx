@@ -54,7 +54,7 @@ import dynamic from "next/dynamic";
 import { ScreenshotProtection } from "@/components/ScreenshotProtection";
 import { DevToolsBlocker } from "@/components/DevToolsBlocker";
 import ErrorBoundary from '@/components/ErrorBoundary';
-import LoadingSkeleton from '@/components/LoadingSkeleton';
+import { ChatSkeleton } from '@/components/LoadingSkeleton';
 
 
 const SimulatedAdPlaceholder = dynamic(() => import("@/components/chat/SimulatedAdPlaceholder"), { ssr: false });

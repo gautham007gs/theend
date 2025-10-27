@@ -537,7 +537,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
 
   // Reaction picker component
   const ReactionPicker: React.FC<{ messageId: string }> = ({ messageId }) => {
-    const reactions: MessageReaction[] = ['❤️', '👍', '😂', '😮', '😢', '😠'];
+    const reactions: MessageReaction[] = ['heart', 'thumbs_up', 'laugh', 'wow', 'sad', 'angry'];
 
     const handleReactionClick = (reaction: MessageReaction) => {
       if (onReactToMessage) {
