@@ -23,6 +23,11 @@ const SocialBarAdDisplay = dynamic(() => import('./SocialBarAdDisplay'), {
   loading: () => null
 });
 
+const DevDiagnostics = dynamic(() => import('./DevDiagnostics'), {
+  ssr: false,
+  loading: () => null
+});
+
 export default function ClientComponentsWrapper() {
   return (
     <>
@@ -30,6 +35,7 @@ export default function ClientComponentsWrapper() {
       <ServiceWorkerRegistration />
       <GlobalAdScripts />
       <SocialBarAdDisplay />
+      <DevDiagnostics />
     </>
   );
 }
