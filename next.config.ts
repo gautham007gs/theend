@@ -264,12 +264,14 @@ const nextConfig: NextConfig = {
   },
 
   // Fix cross-origin warnings for Replit and allow all dev origins
+  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : undefined,
   allowedDevOrigins: [
-    'https://*.replit.dev',
-    'https://*.replit.app',
-    'http://localhost:*',
-    'http://127.0.0.1:*',
-    'http://0.0.0.0:*'
+    ...(process.env.REPLIT_DEV_DOMAIN ? [process.env.REPLIT_DEV_DOMAIN, `https://${process.env.REPLIT_DEV_DOMAIN}`] : []),
+    '*.replit.dev',
+    '*.replit.app',
+    'localhost:5000',
+    '127.0.0.1:5000',
+    '0.0.0.0:5000'
   ],
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first for better compression
