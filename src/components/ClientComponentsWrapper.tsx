@@ -28,6 +28,11 @@ const DevDiagnostics = dynamic(() => import('./DevDiagnostics'), {
   loading: () => null
 });
 
+const GoogleAnalytics = dynamic(() => import('./GoogleAnalytics'), {
+  ssr: false,
+  loading: () => null
+});
+
 export default function ClientComponentsWrapper() {
   return (
     <>
@@ -36,6 +41,7 @@ export default function ClientComponentsWrapper() {
       <GlobalAdScripts />
       <SocialBarAdDisplay />
       <DevDiagnostics />
+      <GoogleAnalytics />
     </>
   );
 }
