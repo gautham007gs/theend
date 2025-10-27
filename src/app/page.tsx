@@ -79,7 +79,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
       <div className="flex flex-col items-end text-xs ml-2 shrink-0">
         <span className="text-muted-foreground mb-1">{timestamp}</span>
         {unreadCount && unreadCount > 0 && (
-          <span className="bg-primary text-primary-foreground rounded-full px-2 py-0.5 text-xs font-semibold">
+          <span className="bg-[#25d366] text-white rounded-full px-2 py-0.5 text-xs font-semibold">
             {unreadCount}
           </span>
         )}
@@ -92,7 +92,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const { adSettings } = useAdSettings();
-  const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
+  const [lastMessageTime, setLastMessageTime] = useState<string | null>("9:15 AM");
   const [showDropdown, setShowDropdown] = useState(false);
   const unreadCount = 1;
 
@@ -110,19 +110,17 @@ const ChatListPage: React.FC = () => {
           } else {
              setLastMessageTime(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
           }
-        } else if (!lastMessageTime) {
+        } else {
           setLastMessageTime("9:15 AM");
         }
       } catch (e) {
         console.warn("Could not parse last message time from localStorage", e);
-        if (!lastMessageTime) {
-          setLastMessageTime("9:15 AM");
-        }
+        setLastMessageTime("9:15 AM");
       }
-    } else if (!lastMessageTime) {
+    } else {
       setLastMessageTime("9:15 AM");
     }
-  }, []);
+  }, [lastMessageTime]);
 
   const effectiveAIProfile = globalAIProfile || defaultAIProfile;
 

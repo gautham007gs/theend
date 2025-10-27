@@ -14,7 +14,13 @@ import {
   Search,
   MoreVertical,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import type {
   AdminStatusDisplay,
   ManagedContactStatus,
@@ -262,6 +268,7 @@ const StatusPage: React.FC = () => {
                   <DialogTitle className="text-white text-sm font-semibold">
                     {displayName}
                   </DialogTitle>
+                  <DialogDescription>Viewing {displayName}&apos;s story update</DialogDescription>
                 </div>
                 <Button
                   variant="ghost"
@@ -313,7 +320,7 @@ const StatusPage: React.FC = () => {
   // Preload critical avatar images for LCP optimization
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const preloadImages = [
       displayAdminOwnStatus.avatarUrl,
       effectiveAIProfile.avatarUrl
