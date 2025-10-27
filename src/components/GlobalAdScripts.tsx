@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { AdSettings } from '@/types';
 import { useAdSettings } from '@/contexts/AdSettingsContext'; // Import useAdSettings
 
@@ -12,6 +11,11 @@ const GlobalAdScripts: React.FC = () => {
   const cleanupFunctionsRef = useRef<(() => void)[]>([]);
   const visibilityHandlerRef = useRef<(() => void) | null>(null);
   const cleanupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // FIXED: Cleanup only AD elements, NOT React timers
   const performAdCleanup = () => {
@@ -22,7 +26,7 @@ const GlobalAdScripts: React.FC = () => {
     }
 
     console.log('🧹 Ad Cleanup: Cleaning ONLY ad-related elements (NOT React timers)...');
-    
+
     // Remove ONLY ad-related DOM elements
     const adSelectors = [
       'script[data-ad-network]',
@@ -35,7 +39,7 @@ const GlobalAdScripts: React.FC = () => {
       '[class*="adsterra"]',
       '[class*="monetag"]'
     ];
-    
+
     adSelectors.forEach(selector => {
       try {
         document.querySelectorAll(selector).forEach(el => {
@@ -47,7 +51,7 @@ const GlobalAdScripts: React.FC = () => {
         // Ignore errors - element might have been removed already
       }
     });
-    
+
     console.log('✅ Ad Cleanup: Completed (React timers preserved)');
   };
 
@@ -58,26 +62,26 @@ const GlobalAdScripts: React.FC = () => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         console.log('👁️ Page Visibility: User returned to page');
-        
+
         // IMMEDIATELY force a re-render and cleanup to prevent freezing
         const wasHidden = sessionStorage.getItem('page_was_hidden');
         if (wasHidden === 'true') {
           console.log('🔄 Ad Return: Immediate cleanup to prevent freezing...');
-          
+
           // Clear any pending cleanup timeout first
           if (cleanupTimeoutRef.current) {
             clearTimeout(cleanupTimeoutRef.current);
           }
-          
+
           // IMMEDIATE cleanup - no delay
           performAdCleanup();
           sessionStorage.removeItem('page_was_hidden');
-          
+
           // Force DOM re-layout to prevent freezing (without full reload)
           document.body.style.display = 'none';
           document.body.offsetHeight; // Force reflow
           document.body.style.display = '';
-          
+
           console.log('✅ Page refreshed - freezing prevented');
         }
       } else if (document.visibilityState === 'hidden') {
@@ -95,7 +99,7 @@ const GlobalAdScripts: React.FC = () => {
         clearTimeout(cleanupTimeoutRef.current);
         cleanupTimeoutRef.current = null;
       }
-      
+
       if (visibilityHandlerRef.current) {
         document.removeEventListener('visibilitychange', visibilityHandlerRef.current);
       }
@@ -103,6 +107,9 @@ const GlobalAdScripts: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // Only run on client side
+    if (!isClient) return;
+
     if (isLoadingAdSettings || !adSettings || typeof document === 'undefined') {
       return;
     }
@@ -111,7 +118,7 @@ const GlobalAdScripts: React.FC = () => {
     if (!adSettings.adsEnabledGlobally) {
       adsterraPopunderInjected.current = false;
       monetagPopunderInjected.current = false;
-      
+
       // Clean up any existing ad scripts
       cleanupFunctionsRef.current.forEach(cleanup => cleanup());
       cleanupFunctionsRef.current = [];
@@ -125,7 +132,7 @@ const GlobalAdScripts: React.FC = () => {
           const delayAdsterraPopunder = () => {
             injectScript(adSettings.adsterraPopunderCode, "Adsterra Pop-under", adsterraPopunderInjected);
           };
-          
+
           if ('requestIdleCallback' in window) {
             requestIdleCallback(() => {
               setTimeout(delayAdsterraPopunder, 5000);
@@ -140,7 +147,7 @@ const GlobalAdScripts: React.FC = () => {
           const delayMonetagPopunder = () => {
             injectScript(adSettings.monetagPopunderCode, "Monetag Pop-under", monetagPopunderInjected);
           };
-          
+
           if ('requestIdleCallback' in window) {
             requestIdleCallback(() => {
               setTimeout(delayMonetagPopunder, 7000);
@@ -155,7 +162,7 @@ const GlobalAdScripts: React.FC = () => {
     const injectScript = (scriptCode: string, networkName: string, injectedRef: React.MutableRefObject<boolean>) => {
       if (injectedRef.current || !scriptCode || !scriptCode.trim()) {
         console.log(`${networkName}: Script injection skipped - already injected or empty code`);
-        return; 
+        return;
       }
 
       try {
@@ -163,25 +170,25 @@ const GlobalAdScripts: React.FC = () => {
         const scriptContainer = document.createElement('div');
         scriptContainer.innerHTML = scriptCode;
         scriptContainer.setAttribute('data-ad-network', networkName);
-        
+
         const injectedElements: (HTMLElement | HTMLScriptElement)[] = [];
         let hasValidScriptTag = false;
-        
+
         Array.from(scriptContainer.childNodes).forEach(node => {
           if (node.nodeName === "SCRIPT") {
             const scriptTag = document.createElement('script');
             const originalScript = node as HTMLScriptElement;
-            
+
             // Add isolation markers
             scriptTag.setAttribute('data-ad-network', networkName);
             scriptTag.setAttribute('data-ad-type', 'popunder');
-            
+
             // Copy all attributes
             for (let i = 0; i < originalScript.attributes.length; i++) {
               const attr = originalScript.attributes[i];
               scriptTag.setAttribute(attr.name, attr.value);
             }
-            
+
             // Copy inline script content with error handling wrapper
             if (originalScript.innerHTML.trim()) {
               const wrappedCode = `
@@ -193,7 +200,7 @@ const GlobalAdScripts: React.FC = () => {
               `;
               scriptTag.innerHTML = wrappedCode;
             }
-            
+
             if (scriptTag.src || scriptTag.innerHTML.trim()) {
               hasValidScriptTag = true;
               document.body.appendChild(scriptTag);
@@ -213,7 +220,7 @@ const GlobalAdScripts: React.FC = () => {
         if (hasValidScriptTag) {
           injectedRef.current = true;
           console.log(`${networkName}: Script successfully injected (isolated with ${injectedElements.length} elements)`);
-          
+
           // Store cleanup function
           const cleanup = () => {
             console.log(`${networkName}: Cleaning up ${injectedElements.length} ad elements...`);
@@ -236,7 +243,7 @@ const GlobalAdScripts: React.FC = () => {
 
     // Inject ad scripts immediately
     injectAdScripts();
-    
+
     // Cleanup on unmount
     return () => {
       console.log('🧹 GlobalAdScripts: Component unmounting, cleaning up...');
@@ -244,9 +251,9 @@ const GlobalAdScripts: React.FC = () => {
       cleanupFunctionsRef.current = [];
       // Don't call performAdCleanup on unmount - it can interfere with React
     };
-  }, [adSettings, isLoadingAdSettings]);
+  }, [adSettings, isLoadingAdSettings, isClient]);
 
-  return null; 
+  return null;
 };
 
 export default GlobalAdScripts;

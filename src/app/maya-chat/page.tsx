@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import type { NextPage } from "next";
 import React, {
@@ -53,6 +53,9 @@ import { MessageSquare, Phone, Video, Info, X, ArrowLeft, MoreVertical } from "l
 import dynamic from "next/dynamic";
 import { ScreenshotProtection } from "@/components/ScreenshotProtection";
 import { DevToolsBlocker } from "@/components/DevToolsBlocker";
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+
 
 const SimulatedAdPlaceholder = dynamic(() => import("@/components/chat/SimulatedAdPlaceholder"), { ssr: false });
 const BannerAdDisplay = dynamic(() => import("@/components/chat/BannerAdDisplay"), { 
@@ -1001,7 +1004,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     const currentEffectiveAIProfile = globalAIProfile || defaultAIProfile;
 
     if (!text.trim() && !currentImageUri) return;
-    
+
     if (isLoadingAdSettings || isLoadingAIProfile || isLoadingMediaAssets) {
       toast({
         title: "Please wait",
@@ -1132,7 +1135,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     // Check mandatory image after 2 user messages
     const userMessageCount = messages.filter(m => m.sender === 'user').length + 1;
     const mandatoryImageSent = localStorage.getItem(MANDATORY_IMAGE_SENT_KEY) === 'true';
-    
+
     if (userMessageCount === 2 && !mandatoryImageSent) {
       // Send mandatory image after AI responds
       setTimeout(() => {
@@ -1464,21 +1467,21 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         // Track total messages and show native ad after exactly 6 messages
         setTotalMessageCount(prev => {
           const newCount = prev + 1;
-          
+
           // Show native ad at 6 messages
           if (newCount === 6 && !hasShownNativeAdOnce && adSettings && adSettings.adsEnabledGlobally) {
             setTimeout(() => {
               injectNativeAdMessage();
             }, 100);
           }
-          
+
           // Show banner ad every 15 messages (after native ad at 6)
           if (newCount > 6 && (newCount - 6) % 15 === 0 && adSettings && adSettings.adsEnabledGlobally) {
             setTimeout(() => {
               injectBannerAdMessage();
             }, 100);
           }
-          
+
           return newCount;
         });
 
@@ -1520,15 +1523,15 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           isViewOnce: mediaType === "image", // All AI images are view-once
         };
         setMessages((prev) => [...prev, newAiMediaMessage]);
-        
+
         // Mark image as sent
         if (mediaType === "image") {
           markImageAsSent(url);
         }
-        
+
         if (adSettings && adSettings.adsEnabledGlobally)
           maybeTriggerAdOnMessageCount();
-        
+
         // Track total messages
         setTotalMessageCount(prev => {
           const newCount = prev + 1;
@@ -1539,7 +1542,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           }
           return newCount;
         });
-        
+
         setRecentInteractions((prevInteractions) =>
           [
             ...prevInteractions,
@@ -1572,7 +1575,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             "random pic drop 😛"
           ];
           const randomCaption = randomCaptions[Math.floor(Math.random() * randomCaptions.length)];
-          
+
           await processAiMediaMessage("image", randomImageUrl, randomCaption);
         }
       }
@@ -2055,10 +2058,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
     // Analyze user message for context
     const msg = userMessage.toLowerCase();
-    
+
     // Match by description/naming patterns
     let selectedImage = null;
-    
+
     // Mirror selfie requests
     if (msg.includes('selfie') || msg.includes('pic') || msg.includes('photo')) {
       selectedImage = unsentImages.find(img => 
@@ -2066,7 +2069,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         img.description?.toLowerCase().includes('mirror')
       );
     }
-    
+
     // Casual/outfit requests
     if (msg.includes('outfit') || msg.includes('dress') || msg.includes('look')) {
       selectedImage = unsentImages.find(img => 
@@ -2074,7 +2077,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         img.description?.toLowerCase().includes('casual')
       );
     }
-    
+
     // College/study context
     if (msg.includes('college') || msg.includes('class') || msg.includes('study')) {
       selectedImage = unsentImages.find(img => 
@@ -2082,7 +2085,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         img.description?.toLowerCase().includes('study')
       );
     }
-    
+
     // Food/eating context
     if (msg.includes('food') || msg.includes('eat') || msg.includes('lunch') || msg.includes('dinner')) {
       selectedImage = unsentImages.find(img => 
@@ -2090,7 +2093,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         img.description?.toLowerCase().includes('cafe')
       );
     }
-    
+
     // Evening/sunset context
     if (timeOfDay === 'evening' || msg.includes('sunset') || msg.includes('evening')) {
       selectedImage = unsentImages.find(img => 
@@ -2098,7 +2101,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         img.description?.toLowerCase().includes('evening')
       );
     }
-    
+
     // Morning context
     if (timeOfDay === 'morning' || msg.includes('morning')) {
       selectedImage = unsentImages.find(img => 
@@ -2145,7 +2148,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const markImageAsSent = (imageUrl: string) => {
     const sentImagesStr = localStorage.getItem(SENT_IMAGES_KEY);
     const sentImages: string[] = sentImagesStr ? JSON.parse(sentImagesStr) : [];
-    
+
     if (!sentImages.includes(imageUrl)) {
       sentImages.push(imageUrl);
       localStorage.setItem(SENT_IMAGES_KEY, JSON.stringify(sentImages));
@@ -2157,7 +2160,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     const currentTimeOfDay = getTimeOfDay();
     const lastUserMsg = messages.filter(m => m.sender === 'user').slice(-1)[0]?.text || '';
     const imageUrl = getContextualImage(lastUserMsg, currentTimeOfDay) || getUnsentImage();
-    
+
     if (!imageUrl) return;
 
     setIsAiTyping(true);
@@ -2336,17 +2339,19 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           />
         </div>
         <div className="flex-1 overflow-y-auto" style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}>
-          <ChatView
-            messages={messages}
-            aiAvatarUrl={displayAIProfile.avatarUrl}
-            aiName={displayAIProfile.name}
-            isAiTyping={isAiTyping}
-            onTriggerAd={handleBubbleAdTrigger}
-            onQuickReply={handleQuickReply}
-            onLikeMessage={handleLikeMessage}
-            onReactToMessage={handleReactToMessage}
-            onAvatarClick={handleOpenAvatarZoom}
-          />
+          <ErrorBoundary>
+            <ChatView
+              messages={messages}
+              aiAvatarUrl={displayAIProfile.avatarUrl}
+              aiName={displayAIProfile.name}
+              isAiTyping={isAiTyping}
+              onTriggerAd={handleBubbleAdTrigger}
+              onQuickReply={handleQuickReply}
+              onLikeMessage={handleLikeMessage}
+              onReactToMessage={handleReactToMessage}
+              onAvatarClick={handleOpenAvatarZoom}
+            />
+          </ErrorBoundary>
         </div>
 
         {showInterstitialAd && (
@@ -2366,7 +2371,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         <div className="flex-shrink-0 border-t border-border/30 sticky bottom-16 z-10 bg-chat-bg-default">
           <BannerAdDisplay adType="standard" placementKey="maya-chat-input" className="mb-0" />
         </div>
-        
+
         <div className="flex-shrink-0 sticky bottom-0 z-10 bg-chat-input-bg">
           <ChatInput onSendMessage={handleSendMessage} isAiTyping={isAiTyping} />
         </div>

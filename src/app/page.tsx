@@ -79,9 +79,11 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
       <div className="flex flex-col items-end text-xs ml-2 shrink-0">
         <span className="text-muted-foreground mb-1">{timestamp}</span>
         {unreadCount && unreadCount > 0 && (
-          <span className="bg-[#25d366] text-white rounded-full px-2 py-0.5 text-xs font-semibold">
-            {unreadCount}
-          </span>
+          <div className="relative">
+            <div className="absolute -top-2 -left-2 w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center border-2 border-green-400 shadow-lg shadow-green-500/50">
+                    <span className="text-xs font-bold text-white">1</span>
+                  </div>
+          </div>
         )}
       </div>
     </div>

@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import type { AIProfile } from '@/types'; 
+import type { AIProfile } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
 
 interface ProfileEditorProps {
@@ -35,7 +35,7 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({
   const [avatarUrlInput, setAvatarUrlInput] = useState(currentProfile.avatarUrl || ''); // Ensure it's a string
 
   useEffect(() => {
-    if (isOpen) { 
+    if (isOpen) {
       setName(currentProfile.name);
       setStatus(currentProfile.status);
       setAvatarUrlInput(currentProfile.avatarUrl || ''); // Ensure it's a string on open
@@ -45,13 +45,13 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({
   const handleSave = () => {
     const profileUpdate: Partial<AIProfile> = {
       status,
-      avatarUrl: avatarUrlInput.trim() === '' ? undefined : avatarUrlInput.trim(), 
+      avatarUrl: avatarUrlInput.trim() === '' ? undefined : avatarUrlInput.trim(),
     };
     if (isAdminEditor) {
       profileUpdate.name = name;
     }
     onSave(profileUpdate);
-    onOpenChange(false); 
+    onOpenChange(false);
   };
 
   // Basic check for a valid-looking URL for preview
@@ -62,9 +62,12 @@ const ProfileEditor: React.FC<ProfileEditorProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[480px]" aria-describedby="profile-editor-description">
         <DialogHeader>
           <DialogTitle>Edit {isAdminEditor ? name : currentProfile.name}'s Profile</DialogTitle>
+          <DialogDescription id="profile-editor-description">
+            Customize your AI girlfriend's personality, appearance, and behavior settings.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
