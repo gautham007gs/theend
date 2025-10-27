@@ -1,0 +1,203 @@
+~/workspace$ npm run dev -- -p 5002
+
+> nextn@0.1.0 dev
+> next dev --turbopack -p 5000 -H 0.0.0.0 -p 5002
+
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:5002
+   - Network:      http://0.0.0.0:5002
+   - Environments: .env.local
+   - Experiments (use with caution):
+     ✓ inlineCss
+     ✓ optimizeCss
+     · cssChunking: "strict"
+     · ...
+
+ ✓ Starting...
+ ✓ Compiled middleware in 330ms
+ ✓ Ready in 1841ms
+ ○ Compiling / ...
+ ✓ Compiled / in 218.6s
+ ⨯ ./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |
+  19 | // Lazy load diagnostics in development only
+> 20 | const PerformanceDiagnostics = dynamic(
+     |                                ^^^^^^^^
+> 21 |   () => import('@/lib/performance-diagnostics').then(mod => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |     if (typeof window !== 'undefined') {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |       mod.PerformanceDiagnostics.initializeWebVitals();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     return () => null;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |   }),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |   { ssr: false }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 | );
+     | ^^
+  29 |
+  30 | const SEOOptimizer = dynamic(
+  31 |   () => import('@/lib/seo-optimizer').then(mod => {
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:30:22
+Ecmascript file had an error
+  28 | );
+  29 |
+> 30 | const SEOOptimizer = dynamic(
+     |                      ^^^^^^^^
+> 31 |   () => import('@/lib/seo-optimizer').then(mod => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |     if (typeof window !== 'undefined') {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |       mod.SEOOptimizer.initialize();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     return () => null;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |   }),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   { ssr: false }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 | );
+     | ^^
+  39 |
+  40 | const PWAValidator = dynamic(
+  41 |   () => import('@/lib/pwa-validator').then(mod => {
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:22
+Ecmascript file had an error
+  38 | );
+  39 |
+> 40 | const PWAValidator = dynamic(
+     |                      ^^^^^^^^
+> 41 |   () => import('@/lib/pwa-validator').then(mod => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |     if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |       setTimeout(() => mod.PWAValidator.validatePWA(), 3000);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 44 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     return () => null;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |   }),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |   { ssr: false }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 | );
+     | ^^
+  49 |
+  50 |
+  51 | // Optimize font loading - use fallback font immediately with aggressive caching
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 5.9s
+Time 39.376443
+ ⨯ ./src/app/layout.tsx:20:32
+Ecmascript file had an error
+  18 |
+  19 | // Lazy load diagnostics in development only
+> 20 | const PerformanceDiagnostics = dynamic(
+     |                                ^^^^^^^^
+> 21 |   () => import('@/lib/performance-diagnostics').then(mod => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |     if (typeof window !== 'undefined') {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |       mod.PerformanceDiagnostics.initializeWebVitals();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |     return () => null;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |   }),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |   { ssr: false }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 | );
+     | ^^
+  29 |
+  30 | const SEOOptimizer = dynamic(
+  31 |   () => import('@/lib/seo-optimizer').then(mod => {
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:30:22
+Ecmascript file had an error
+  28 | );
+  29 |
+> 30 | const SEOOptimizer = dynamic(
+     |                      ^^^^^^^^
+> 31 |   () => import('@/lib/seo-optimizer').then(mod => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |     if (typeof window !== 'undefined') {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |       mod.SEOOptimizer.initialize();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     return () => null;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |   }),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |   { ssr: false }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 | );
+     | ^^
+  39 |
+  40 | const PWAValidator = dynamic(
+  41 |   () => import('@/lib/pwa-validator').then(mod => {
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+
+./src/app/layout.tsx:40:22
+Ecmascript file had an error
+  38 | );
+  39 |
+> 40 | const PWAValidator = dynamic(
+     |                      ^^^^^^^^
+> 41 |   () => import('@/lib/pwa-validator').then(mod => {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |     if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |       setTimeout(() => mod.PWAValidator.validatePWA(), 3000);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 44 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |     return () => null;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |   }),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |   { ssr: false }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 | );
+     | ^^
+  49 |
+  50 |
+  51 | // Optimize font loading - use fallback font immediately with aggressive caching
+
+`ssr: false` is not allowed with `next/dynamic` in Server Components. Please move it into a Client Component.
+
+
+Time 2.377889
+ GET / 500 in 71ms
