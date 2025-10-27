@@ -14,6 +14,9 @@ if (typeof window !== 'undefined') {
   (window as any)[SOCIAL_BAR_KEY] = false;
 }
 
+// Declare cleanup timer outside component to persist across re-renders
+let socialBarCleanupTimer: NodeJS.Timeout | null = null;
+
 const SocialBarAdDisplay: React.FC = () => {
   // IMMEDIATE CHECK: Block render if another instance exists
   if (typeof window !== 'undefined' && (window as any)[SOCIAL_BAR_KEY]) {

@@ -1,8 +1,22 @@
 
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import MaximumSecurity from '@/lib/enhanced-security';
+import { APISecurityManager } from '@/lib/api-security';
 
 // IndexNow API endpoint - submits URLs to search engines instantly
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // Apply MAXIMUM security protection
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
+  // Apply API security with strict rate limiting
+  const securityCheck = await APISecurityManager.secureAPIRoute(request, {
+    allowedMethods: ['POST'],
+    rateLimit: { requests: 5, window: 60000 } // Only 5 indexing requests per minute
+  });
+  if (securityCheck) return securityCheck;
+
   try {
     const { urls } = await request.json();
     
@@ -44,7 +58,19 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Only allow in development mode for security
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({
+      success: false,
+      error: 'This endpoint is disabled in production for security. Use POST to submit specific URLs.'
+    }, { status: 403 });
+  }
+
+  // Apply security even in development
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
   try {
     // Automatically submit all blog posts to IndexNow
     const { getAllBlogSlugs } = await import('@/lib/blog-metadata');

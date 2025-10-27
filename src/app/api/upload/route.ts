@@ -1,12 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
+import MaximumSecurity from '@/lib/enhanced-security';
+import { APISecurityManager } from '@/lib/api-security';
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
 const ALLOWED_AUDIO_TYPES = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg'];
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_UPLOADS_PER_DAY = 50; // Storage quota per user
 
 export async function POST(request: NextRequest) {
+  // Apply MAXIMUM security protection
+  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
+  if (enhancedSecurityCheck) return enhancedSecurityCheck;
+
+  // Apply comprehensive API security with strict rate limiting
+  const securityCheck = await APISecurityManager.secureAPIRoute(request, {
+    allowedMethods: ['POST'],
+    rateLimit: { requests: 10, window: 60000 }, // Only 10 uploads per minute
+    requireAuth: false // Would need Supabase auth implementation
+  });
+  if (securityCheck) return securityCheck;
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
