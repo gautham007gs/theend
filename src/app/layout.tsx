@@ -7,10 +7,45 @@ import { AdSettingsProvider } from '@/contexts/AdSettingsContext';
 import { AIProfileProvider } from '@/contexts/AIProfileContext';
 import { GlobalStatusProvider } from '@/contexts/GlobalStatusContext';
 import { AIMediaAssetsProvider } from '@/contexts/AIMediaAssetsContext';
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import OfflineIndicator from '@/components/OfflineIndicator';
 import StructuredData from '@/components/StructuredData';
+import AccessibilityEnhancer from '@/components/AccessibilityEnhancer';
+import dynamic from 'next/dynamic';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 import CookieConsent from '@/components/CookieConsent';
 import '@/lib/emergency-recovery'; // Emergency freeze recovery with auto-reload
+
+// Lazy load diagnostics in development only
+const PerformanceDiagnostics = dynamic(
+  () => import('@/lib/performance-diagnostics').then(mod => {
+    if (typeof window !== 'undefined') {
+      mod.PerformanceDiagnostics.initializeWebVitals();
+    }
+    return () => null;
+  }),
+  { ssr: false }
+);
+
+const SEOOptimizer = dynamic(
+  () => import('@/lib/seo-optimizer').then(mod => {
+    if (typeof window !== 'undefined') {
+      mod.SEOOptimizer.initialize();
+    }
+    return () => null;
+  }),
+  { ssr: false }
+);
+
+const PWAValidator = dynamic(
+  () => import('@/lib/pwa-validator').then(mod => {
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+      setTimeout(() => mod.PWAValidator.validatePWA(), 3000);
+    }
+    return () => null;
+  }),
+  { ssr: false }
+);
 
 
 // Optimize font loading - use fallback font immediately with aggressive caching
@@ -171,6 +206,17 @@ export default function RootLayout({
                 <AIMediaAssetsProvider>
                   {children}
                   <Toaster />
+                  <ServiceWorkerRegistration />
+                  <OfflineIndicator />
+                  <StructuredData />
+                  <AccessibilityEnhancer />
+                  {process.env.NODE_ENV === 'development' && (
+                    <>
+                      <PerformanceDiagnostics />
+                      <SEOOptimizer />
+                      <PWAValidator />
+                    </>
+                  )}
                   <ClientComponentsWrapper />
                   <CookieConsent />
                 </AIMediaAssetsProvider>
