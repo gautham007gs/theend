@@ -120,14 +120,10 @@ const AdminProfilePage: React.FC = () => {
     if (!supabase) {
       toast({ title: "Supabase Error", description: "Supabase client not available. Cannot load some global configurations.", variant: "destructive" });
       setAdSettings(defaultAdSettings);
-      setCurrentGlobalAIProfile(defaultAIProfile); // Ensure fallback
+      setCurrentGlobalAIProfile(defaultAIProfile);
       return;
     }
     try {
-      // Use the external setter from context if available
-      if (setExternalIsLoadingAIProfile) setExternalIsLoadingAIProfile(true);
-
-
       const { data: adConfigData, error: adConfigError } = await supabase
         .from('app_configurations')
         .select('settings')
@@ -158,7 +154,7 @@ const AdminProfilePage: React.FC = () => {
       setManagedContactStatuses(defaultManagedContactStatuses);
       setAiMediaAssets(defaultAIMediaAssetsConfig);
     } finally {
-        if (setExternalIsLoadingAIProfile) setExternalIsLoadingAIProfile(false);
+        // Context manages its own loading state
     }
   }, [toast, fetchAIProfile, fetchGlobalStatuses, fetchMediaAssets]);
 

@@ -15,10 +15,7 @@ interface AIProfileContextType {
   updateAIProfile: (newProfileData: Partial<AIProfile>) => Promise<void>; 
 }
 
-// This global variable approach for a setter is not standard React practice and can lead to issues.
-// It's better for AdminProfilePage to manage its own loading state if it needs to combine context loading with its own.
-// For now, I'll keep the mechanism but comment it out if it's causing confusion or isn't strictly necessary.
-let setIsLoadingContextAIProfileExternal: React.Dispatch<React.SetStateAction<boolean>> | null = null;
+// Removed global setter - components should use the context's isLoadingAIProfile state directly
 
 
 const AIProfileContext = createContext<AIProfileContextType | undefined>(undefined);

@@ -65,14 +65,14 @@ const AdminLoginPage: React.FC = () => {
     if (signInError) {
       setError(signInError.message || 'Invalid login credentials.');
       toast({ title: 'Login Failed', description: signInError.message || 'Incorrect email or password.', variant: 'destructive' });
-    } else if (data.user) {
+    } else if (data.user && data.session) {
       // Successfully authenticated with Supabase
       try {
         if (typeof window !== 'undefined') {
+          // Store both the flag and session info for API verification
           sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
+          // Session token will be automatically managed by Supabase client
         }
-        // Optionally, you could store the user object or a token if needed for further checks,
-        // but for basic route protection, the flag is often sufficient for client-side.
         toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
         // Redirect to the return URL (the page they were trying to access)
         router.push(returnUrl);

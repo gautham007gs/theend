@@ -14,11 +14,18 @@ export async function POST(request: NextRequest) {
   const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
   if (enhancedSecurityCheck) return enhancedSecurityCheck;
 
+  // Verify admin authentication for uploads
+  const { requireAdminAuth } = await import('@/lib/auth-utils');
+  const authCheck = await requireAdminAuth(request);
+  if (!authCheck.authenticated) {
+    return authCheck.response;
+  }
+
   // Apply comprehensive API security with strict rate limiting
   const securityCheck = await APISecurityManager.secureAPIRoute(request, {
     allowedMethods: ['POST'],
-    rateLimit: { requests: 10, window: 60000 }, // Only 10 uploads per minute
-    requireAuth: false // Would need Supabase auth implementation
+    rateLimit: { requests: 10, window: 60000 },
+    requireAuth: true
   });
   if (securityCheck) return securityCheck;
 
@@ -106,6 +113,13 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  // Verify admin authentication for deletions
+  const { requireAdminAuth } = await import('@/lib/auth-utils');
+  const authCheck = await requireAdminAuth(request);
+  if (!authCheck.authenticated) {
+    return authCheck.response;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const path = searchParams.get('path');

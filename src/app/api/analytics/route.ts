@@ -276,13 +276,17 @@ export async function GET(request: NextRequest) {
   const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
   if (enhancedSecurityCheck) return enhancedSecurityCheck;
 
-  // For production, verify Supabase session token for admin access
-  // Currently allowing same-origin requests (admin panel)
+  // Verify admin authentication
+  const { requireAdminAuth } = await import('@/lib/auth-utils');
+  const authCheck = await requireAdminAuth(request);
+  if (!authCheck.authenticated) {
+    return authCheck.response;
+  }
 
   const securityCheck = await APISecurityManager.secureAPIRoute(request, {
     allowedMethods: ['GET'],
-    rateLimit: { requests: 100, window: 60000 }, // 100 requests per minute for admin
-    requireAuth: false // Auth should be checked via Supabase session in production
+    rateLimit: { requests: 100, window: 60000 },
+    requireAuth: true
   });
   if (securityCheck) return securityCheck;
 
