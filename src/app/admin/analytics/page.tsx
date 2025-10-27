@@ -256,7 +256,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
         })
       ]);
 
-      if (process.env.NODE_ENV === 'development') console.log('📊 Analytics data fetched:', { 
+      if (process.env.NODE_ENV === 'development') console.log('📊 Analytics data fetched:', {
         overviewSuccess: overviewData?.success,
         realtimeSuccess: realtimeData?.success,
         enhancedMetrics: !!enhancedMetrics
