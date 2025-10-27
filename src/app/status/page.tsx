@@ -187,7 +187,7 @@ const StatusPage: React.FC = () => {
               className={cn(
                 "h-14 w-14 shadow-sm",
                 hasUpdateRing
-                  ? "ring-[3px] ring-primary ring-offset-2 ring-offset-background p-0.5"
+                  ? "ring-[3px] ring-[#25d366] ring-offset-2 ring-offset-background p-0.5"
                   : isMyStatusStyle && !hasUpdateRing
                     ? "ring-2 ring-muted/50 p-0.5"
                     : "",
@@ -210,7 +210,7 @@ const StatusPage: React.FC = () => {
               </AvatarFallback>
             </Avatar>
             {isMyStatusStyle && !hasUpdateRing && !storyImageUrl && (
-              <div className="absolute -bottom-0.5 -right-0.5 bg-gradient-to-br from-primary to-green-600 text-white rounded-full p-1 border-[3px] border-background shadow-md">
+              <div className="absolute -bottom-0.5 -right-0.5 bg-gradient-to-br from-[#25d366] to-green-600 text-white rounded-full p-1 border-[3px] border-background shadow-md">
                 <PlusCircle size={18} />
               </div>
             )}
@@ -349,7 +349,7 @@ const StatusPage: React.FC = () => {
       ]} />
       <div className="flex flex-col h-screen max-w-3xl mx-auto bg-background shadow-2xl">
       {/* WhatsApp-style Header with Back Navigation */}
-      <div className="bg-primary shadow-md">
+      <div className="bg-[#25d366] shadow-md">
         <div className="px-6 py-4 flex items-center">
           <button
             onClick={() => window.history.back()}
@@ -451,7 +451,7 @@ const StatusPage: React.FC = () => {
         <Button
           variant="default"
           size="lg"
-          className="rounded-full p-4 shadow-xl bg-gradient-to-r from-primary to-green-600 hover:from-primary/90 hover:to-green-700 transition-all hover:scale-105"
+          className="rounded-full p-4 shadow-xl bg-gradient-to-r from-[#25d366] to-green-600 hover:from-[#1faa55] hover:to-green-700 transition-all hover:scale-105"
           onClick={() => alert("Camera access for status - not implemented")}
           aria-label="Add status"
         >

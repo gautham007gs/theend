@@ -44,7 +44,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
       <div
         className={cn(
           "relative rounded-full mr-4 shrink-0",
-          profile.name === "Kruthika" && "border-2 border-primary p-0.5"
+          profile.name === "Kruthika" && "border-2 border-[#25d366] p-0.5"
         )}
          key={`avatar-wrapper-${profile.name}-${avatarUrlToUse || 'default_wrapper_key_cli'}`}
       >

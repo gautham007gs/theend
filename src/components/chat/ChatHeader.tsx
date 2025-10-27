@@ -70,7 +70,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         onClick={onAvatarClick} 
         className={cn(
             "flex items-center focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-chat-header-bg rounded-full p-1 mr-3",
-            aiName === "Kruthika" && "border-2 border-primary p-0.5" 
+            aiName === "Kruthika" && "border-2 border-white p-0.5" 
         )}
         style={{ width: '48px', height: '48px', flexShrink: 0 }}
         key={`avatar-header-wrapper-${aiName}-${avatarUrlToUse || 'default_wrapper_key_ch'}`}
