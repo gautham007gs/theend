@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -33,7 +32,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
         <Link href="/" className="text-xl font-semibold hover:opacity-80 transition-opacity">
           {title}
         </Link>
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
@@ -74,7 +73,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
                 pathname === item.href
                   ? 'text-primary-foreground border-b-2 border-primary-foreground/90'
                   : 'text-primary-foreground/70 hover:text-primary-foreground/90',
-                "hover:bg-primary-foreground/10" 
+                "hover:bg-primary-foreground/10"
               )}
             >
               {item.icon}

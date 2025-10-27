@@ -222,10 +222,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
         <Button 
           type="submit" 
           size="icon" 
-          className="bg-primary hover:bg-primary/90 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
+          className="bg-[#25d366] hover:bg-[#1faa55] self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
           aria-label={isLoading ? "Sending message" : "Send message"}
         >
-          {isLoading ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" /> : <Send className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />}
+          {isLoading ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white" /> : <Send className="h-4 w-4 sm:h-5 sm:w-5 text-white" />}
         </Button>
       ) : (
         <Button 
