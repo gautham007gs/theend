@@ -223,8 +223,11 @@ export class AnalyticsTracker {
 
     this.eventQueue.push(event);
 
-    // For critical events, flush immediately
-    if (['message_sent', 'session_start', 'ad_interaction', 'page_view'].includes(event.eventType)) {
+    // Batch all events except session_start for better performance
+    if (event.eventType === 'session_start') {
+      this.flushEvents();
+    } else if (this.eventQueue.length >= 10) {
+      // Flush when queue reaches 10 events
       this.flushEvents();
     }
   }

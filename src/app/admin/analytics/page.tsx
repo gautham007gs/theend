@@ -69,7 +69,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
-  
+
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     dailyUsers: 0,
     totalMessages: 0,
@@ -156,10 +156,15 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
       if (apiData.success && apiData.data) {
         const data = apiData.data;
 
-        // Get real response time data from messages_log
+        // Get local metrics for immediate data
+        const dailyMessages = parseInt(localStorage.getItem('daily_message_count') || '0');
+        const totalImages = parseInt(localStorage.getItem('total_images_sent') || '0');
+        const sessionStart = parseInt(localStorage.getItem('session_start_time') || Date.now().toString());
+        const currentDuration = parseFloat(localStorage.getItem('current_session_duration') || '0');
+
+        // Only populate with real data when available
         const responseTimeChart = data.responseTimeHistory || [];
         if (responseTimeChart.length === 0) {
-          // Only populate with real data when available
           for (let i = 0; i < 10; i++) {
             responseTimeChart.push({
               time: new Date(Date.now() - (9 - i) * 60000).toLocaleTimeString(),
@@ -182,7 +187,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
           languageUsageChart: data.languageDistribution || [],
           sessionQualityMetrics: {
             averageMessagesPerSession: data.conversationLength || 0,
-            averageSessionLength: data.avgSessionTime || 0,
+            averageSessionLength: currentDuration > 0 ? currentDuration : data.avgSessionTime || 0,
             bounceRate: data.bounceRate || 0,
             retentionRate: data.userRetention || 0
           },
@@ -234,7 +239,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     setIsLoading(true);
     try {
       if (process.env.NODE_ENV === 'development') console.log('🔄 Fetching analytics data...');
-      
+
       // Fetch real analytics data from API with enhanced metrics
       const [overviewData, realtimeData, enhancedMetrics] = await Promise.all([
         analyticsTracker.getAnalyticsOverview('7d').catch(err => {
@@ -397,7 +402,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
       averageSessionDuration: 0,
       topPages: []
     });
-    
+
     setNewRealTimeStats({
       responseTimeChart: [],
       userFlowChart: [],
@@ -438,7 +443,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
   // Enhanced real-time data fetching with Supabase integration
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     setIsClient(true);
     // Initial fetch
     fetchRealTimeData();
@@ -489,6 +494,9 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Kruthika.fun Analytics Dashboard</h1>
         <div className="flex items-center space-x-4">
+          <div className="text-sm font-semibold bg-green-100 text-green-800 px-3 py-1 rounded-full">
+            💰 Revenue Today: ${analytics.adRevenue.toFixed(2)}
+          </div>
           <div className="flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full animate-pulse ${dataSource === 'supabase' ? 'bg-green-500' : dataSource === 'fallback' ? 'bg-yellow-500' : 'bg-gray-400'}`}></div>
             <span className="text-sm text-muted-foreground">

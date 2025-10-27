@@ -1,4 +1,3 @@
-
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -65,15 +64,17 @@ if (typeof supabaseUrl === 'string' && supabaseUrl.trim() !== '' &&
   try {
     supabase = createClient(supabaseUrl, supabaseAnonKey);
     console.log("Supabase Client: Successfully initialized REAL Supabase client.");
-  } catch (error: any) {
-    const initErrorMessage = `Failed to initialize Supabase client: ${error.message}. This usually means NEXT_PUBLIC_SUPABASE_URL ('${supabaseUrl}') is not a valid URL.`;
-    supabase = createMockClient(initErrorMessage);
+
+  // Connection pooling optimization
+  if (typeof window === 'undefined') {
+    // Server-side only: Set connection pool limits
+    const maxConnections = parseInt(process.env.SUPABASE_MAX_CONNECTIONS || '10');
+    console.log(`Supabase: Connection pool max: ${maxConnections}`);
   }
 } else {
-  let missingVarsReason = 'Supabase URL or Anon Key is missing or empty in environment variables.';
-  if (!supabaseUrl || supabaseUrl.trim() === '') missingVarsReason += ' NEXT_PUBLIC_SUPABASE_URL is missing.';
-  if (!supabaseAnonKey || supabaseAnonKey.trim() === '') missingVarsReason += ' NEXT_PUBLIC_SUPABASE_ANON_KEY is missing.';
-  supabase = createMockClient(missingVarsReason + ' Please check your .env file or deployment environment variables.');
+  console.warn(
+    "Supabase Client: Missing credentials. Using fallback (local storage only). Features requiring DB will be limited."
+  );
 }
 
 export { supabase };

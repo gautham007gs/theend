@@ -7,6 +7,19 @@ import { generateBlogMetadata } from '@/lib/blog-metadata';
 
 type Props = {
   params: { slug: string };
+
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kruthika.fun';
+  
+  return {
+    alternates: {
+      canonical: `${baseUrl}/blog/${params.slug}`
+    }
+  };
+}
+
   children: ReactNode;
 };
 

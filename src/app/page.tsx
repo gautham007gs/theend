@@ -7,7 +7,19 @@ import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
-import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, Star, Zap } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+// Lazy load non-critical icons
+const Camera = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Camera })));
+const Search = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Search })));
+const MoreVertical = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MoreVertical })));
+const Share2 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Share2 })));
+const Settings = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Settings })));
+const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })));
+const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })));
+const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })));
+
+import { MessageSquarePlus } from 'lucide-react';
 import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { tryShowRotatedAd } from '@/lib/ad-utils';
@@ -91,6 +103,8 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
 };
 
 
+const PullToRefresh = dynamic(() => import('@/components/PullToRefresh'), { ssr: false });
+
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const { adSettings } = useAdSettings();
@@ -146,6 +160,10 @@ const ChatListPage: React.FC = () => {
 
   return (
     <>
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-[#25d366] focus:text-white focus:px-4 focus:py-2 focus:rounded">
+        Skip to main content
+      </a>
+      <PullToRefresh />
       <div className="flex flex-col h-screen h-[100dvh] max-w-3xl mx-auto bg-background shadow-2xl overflow-hidden">
       {/* WhatsApp-style Header */}
       <header className="bg-[#25d366] shadow-sm sticky top-0 z-10 flex-shrink-0">
@@ -220,7 +238,7 @@ const ChatListPage: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto custom-scrollbar relative bg-gray-50" style={{ minHeight: 0 }}>
+      <main id="main-content" className="flex-1 overflow-y-auto custom-scrollbar relative bg-gray-50" style={{ minHeight: 0 }}>
         {/* Chat Item showing AI profile */}
         <div className="bg-white">
           <Link href="/maya-chat" className="block" aria-label={`Chat with ${effectiveAIProfile.name}, ${unreadCount ? `${unreadCount} unread message` : 'online now'}`}>

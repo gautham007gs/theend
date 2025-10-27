@@ -7,16 +7,16 @@ import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
 
 // GLOBAL singleton flag - only ONE social bar EVER
-if (typeof window !== 'undefined') {
-  (window as any).__SOCIAL_BAR_MOUNTED__ = (window as any).__SOCIAL_BAR_MOUNTED__ || false;
-}
+const SOCIAL_BAR_KEY = '__KRUTHIKA_SOCIAL_BAR_MOUNTED__';
+const CLEANUP_TIMER_KEY = '__KRUTHIKA_SOCIAL_BAR_CLEANUP__';
 
-let socialBarCleanupTimer: NodeJS.Timeout | null = null;
+if (typeof window !== 'undefined') {
+  (window as any)[SOCIAL_BAR_KEY] = false;
+}
 
 const SocialBarAdDisplay: React.FC = () => {
   // IMMEDIATE CHECK: Block render if another instance exists
-  if (typeof window !== 'undefined' && (window as any).__SOCIAL_BAR_MOUNTED__) {
-    console.warn('Social Bar: Rendering blocked - instance already exists');
+  if (typeof window !== 'undefined' && (window as any)[SOCIAL_BAR_KEY]) {
     return null;
   }
 
