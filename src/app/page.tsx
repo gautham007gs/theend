@@ -87,11 +87,11 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
           <span className="text-xs text-green-700 font-medium">Online</span>
         </div>
       </div>
-      <div className="flex flex-col items-end text-xs ml-2 shrink-0 gap-1">
-        <span className="text-muted-foreground">{timestamp}</span>
+      <div className="flex flex-col items-end justify-between text-xs ml-2 shrink-0 min-w-[60px] h-full py-1">
+        <span className="text-muted-foreground text-xs">{timestamp}</span>
         {unreadCount && unreadCount > 0 && (
-          <div className="w-5 h-5 bg-[#25d366] rounded-full flex items-center justify-center">
-            <span className="text-xs font-semibold text-white">1</span>
+          <div className="w-5 h-5 bg-[#25d366] rounded-full flex items-center justify-center mt-auto">
+            <span className="text-xs font-bold text-white leading-none">{unreadCount}</span>
           </div>
         )}
       </div>
@@ -108,11 +108,19 @@ const PullToRefresh = dynamic(() => import('@/components/PullToRefresh'), {
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const { adSettings } = useAdSettings();
-  const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
+  const [lastMessageTime, setLastMessageTime] = useState<string>("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const unreadCount = 1;
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Prevent hydration errors by only running on client
+    if (typeof window === 'undefined') return;
+
     const updateLastMessageTime = () => {
       const lastInteraction = localStorage.getItem('messages_kruthika');
       if (lastInteraction) {
@@ -152,10 +160,11 @@ const ChatListPage: React.FC = () => {
       }
     };
 
+    // Initial update after mount
     updateLastMessageTime();
     
-    // Update every minute to keep timestamp fresh
-    const interval = setInterval(updateLastMessageTime, 60000);
+    // Update every 10 seconds to show real-time
+    const interval = setInterval(updateLastMessageTime, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -266,7 +275,7 @@ const ChatListPage: React.FC = () => {
             <ChatListItem
               profile={effectiveAIProfile}
               lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
-              timestamp={lastMessageTime || "07:21 PM"}
+              timestamp={isMounted && lastMessageTime ? lastMessageTime : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
               unreadCount={1}
             />
           </Link>
