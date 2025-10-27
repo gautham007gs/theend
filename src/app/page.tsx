@@ -87,13 +87,11 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
           <span className="text-xs text-green-700 font-medium">Online</span>
         </div>
       </div>
-      <div className="flex flex-col items-end text-xs ml-2 shrink-0">
-        <span className="text-muted-foreground mb-1">{timestamp}</span>
+      <div className="flex flex-col items-end text-xs ml-2 shrink-0 gap-1">
+        <span className="text-muted-foreground">{timestamp}</span>
         {unreadCount && unreadCount > 0 && (
-          <div className="relative">
-            <div className="absolute -top-2 -left-2 w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center border-2 border-green-400 shadow-lg shadow-green-500/50">
-                    <span className="text-xs font-bold text-white">1</span>
-                  </div>
+          <div className="w-5 h-5 bg-[#25d366] rounded-full flex items-center justify-center">
+            <span className="text-xs font-semibold text-white">1</span>
           </div>
         )}
       </div>
@@ -110,35 +108,56 @@ const PullToRefresh = dynamic(() => import('@/components/PullToRefresh'), {
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const { adSettings } = useAdSettings();
-  const [lastMessageTime, setLastMessageTime] = useState<string | null>("9:15 AM");
+  const [lastMessageTime, setLastMessageTime] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const unreadCount = 1;
 
   useEffect(() => {
-    const lastInteraction = localStorage.getItem('messages_kruthika');
-    if (lastInteraction) {
-      try {
-        const messagesArray = JSON.parse(lastInteraction);
-        const lastMsg = messagesArray[messagesArray.length - 1];
-        if (lastMsg && lastMsg.timestamp) {
-          const date = new Date(lastMsg.timestamp);
-          const today = new Date();
-          if (date.toDateString() === today.toDateString()) {
-            setLastMessageTime(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+    const updateLastMessageTime = () => {
+      const lastInteraction = localStorage.getItem('messages_kruthika');
+      if (lastInteraction) {
+        try {
+          const messagesArray = JSON.parse(lastInteraction);
+          const lastMsg = messagesArray[messagesArray.length - 1];
+          if (lastMsg && lastMsg.timestamp) {
+            const date = new Date(lastMsg.timestamp);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            if (date.toDateString() === today.toDateString()) {
+              // Today - show time
+              setLastMessageTime(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+            } else if (date.toDateString() === yesterday.toDateString()) {
+              // Yesterday
+              setLastMessageTime("Yesterday");
+            } else {
+              // Older - show date
+              setLastMessageTime(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
+            }
           } else {
-             setLastMessageTime(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
+            // Default to current time if no messages
+            const now = new Date();
+            setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
           }
-        } else {
-          setLastMessageTime("9:15 AM");
+        } catch (e) {
+          console.warn("Could not parse last message time from localStorage", e);
+          const now = new Date();
+          setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
         }
-      } catch (e) {
-        console.warn("Could not parse last message time from localStorage", e);
-        setLastMessageTime("9:15 AM");
+      } else {
+        // No messages yet - show current time
+        const now = new Date();
+        setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
       }
-    } else {
-      setLastMessageTime("9:15 AM");
-    }
-  }, [lastMessageTime]);
+    };
+
+    updateLastMessageTime();
+    
+    // Update every minute to keep timestamp fresh
+    const interval = setInterval(updateLastMessageTime, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const effectiveAIProfile = globalAIProfile || defaultAIProfile;
 
