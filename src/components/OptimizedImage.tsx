@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -31,10 +31,39 @@ export default function OptimizedImage({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(priority);
+  const imgRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (priority || isVisible) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '50px',
+        threshold: 0.01,
+      }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [priority, isVisible]);
+
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
@@ -70,22 +99,28 @@ export default function OptimizedImage({
       };
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      {...imageProps}
-      priority={priority}
-      quality={quality}
-      className={`${className} ${isLoading ? 'blur-sm' : 'blur-0'} transition-all duration-300`}
-      onError={handleError}
-      onLoad={handleLoadingComplete}
-      loading={priority ? 'eager' : 'lazy'}
-      placeholder="blur"
-      blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Cimage width='100%25' height='100%25' filter='url(%23b)' href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='/%3E%3C/svg%3E"
-      style={{
-        objectFit: 'cover',
-        aspectRatio: width && height ? `${width}/${height}` : undefined,
-      }}
-    />
+    <div ref={imgRef} className={className}>
+      {isVisible ? (
+        <Image
+          src={src}
+          alt={alt}
+          {...imageProps}
+          priority={priority}
+          quality={quality}
+          className={`${className} ${isLoading ? 'blur-sm' : 'blur-0'} transition-all duration-300`}
+          onError={handleError}
+          onLoad={handleLoadingComplete}
+          loading={priority ? 'eager' : 'lazy'}
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='20'/%3E%3C/filter%3E%3Cimage width='100%25' height='100%25' filter='url(%23b)' href='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mN8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='/%3E%3C/svg%3E"
+          style={{
+            objectFit: 'cover',
+            aspectRatio: width && height ? `${width}/${height}` : undefined,
+          }}
+        />
+      ) : (
+        <div className="bg-muted animate-pulse" style={{ width, height }} />
+      )}
+    </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useToast } from '@/components/ui/use-toast';
 
 interface MessageBubbleProps {
   message: Message;
@@ -27,6 +28,7 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd, onAvatarClick }) => {
+  const { toast } = useToast(); // Added toast hook
   const isUser = message.sender === 'user';
   const isAd = message.isNativeAd;
   const timestamp = new Date(message.timestamp);
@@ -46,6 +48,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
   const lastTapRef = useRef<number>(0);
   const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const DOUBLE_TAP_DELAY = 300;
+
+  // Reaction picker state
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const [reactionPickerPosition, setReactionPickerPosition] = useState({ x: 0, y: 0 });
 
   // Quick reply options based on message content and sender
   const getQuickReplies = () => {
@@ -432,7 +438,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     // WhatsApp-style compact bubble
     return (
       <>
-        <div 
+        <div
           className={cn(
             "inline-flex items-center gap-1 py-0.5 px-1 cursor-pointer select-none rounded-md max-w-[120px]",
             !isViewed && "hover:opacity-90 transition-opacity"
@@ -507,9 +513,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
                   width={600}
                   height={600}
                   className="max-w-full max-h-[60vh] w-auto h-auto object-contain rounded-lg select-none"
-                  style={{ 
-                    userSelect: 'none', 
-                    WebkitUserSelect: 'none', 
+                  style={{
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
                     WebkitTouchCallout: 'none'
                   }}
                   onContextMenu={(e) => e.preventDefault()}
@@ -525,6 +531,185 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           </DialogContent>
         </Dialog>
       </>
+    );
+  };
+
+
+  // Reaction picker component
+  const ReactionPicker: React.FC<{ messageId: string }> = ({ messageId }) => {
+    const reactions: MessageReaction[] = ['❤️', '👍', '😂', '😮', '😢', '😠'];
+
+    const handleReactionClick = (reaction: MessageReaction) => {
+      if (onReactToMessage) {
+        onReactToMessage(messageId, reaction);
+      }
+      setShowReactionPicker(false);
+    };
+
+    return (
+      <div
+        className="absolute z-50 flex items-center gap-2 p-2 bg-background/95 border border-border rounded-full shadow-lg backdrop-blur-md animate-in slide-in-from-bottom-2 fade-in-0 duration-200"
+        style={{ top: reactionPickerPosition.y, left: reactionPickerPosition.x }}
+      >
+        {reactions.map((reaction) => (
+          <button
+            key={reaction}
+            className="text-2xl p-1 hover:scale-110 transition-transform duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded-full"
+            onClick={() => handleReactionClick(reaction)}
+            aria-label={`React with ${reaction}`}
+          >
+            {reaction}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const handleLongPress = (e: React.TouchEvent | React.MouseEvent, messageId: string) => {
+    e.preventDefault();
+    const targetElement = e.target as HTMLElement;
+    const rect = targetElement.getBoundingClientRect();
+
+    // Adjust position to be above and centered, or adjust as needed
+    let xPos = rect.left + (rect.width / 2);
+    let yPos = rect.top - 60; // 60px above the element
+
+    // Ensure it doesn't go off-screen left
+    if (xPos < 100) xPos = 100;
+
+    setReactionPickerPosition({ x: xPos, y: yPos });
+    setShowReactionPicker(true);
+    if (navigator.vibrate) navigator.vibrate(50);
+  };
+
+
+  const renderMessage = () => {
+    // Render the reaction picker if active for this message
+    if (showReactionPicker && message.id === 'currently_reacting_message_id') { // Placeholder for actual message ID logic
+      return <ReactionPicker messageId={message.id} />;
+    }
+
+    return (
+      <div
+        className={cn(
+          'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
+          isUser
+            ? 'bg-chat-bg-user text-chat-text-user rounded-lg rounded-br-sm'
+            : isAd
+            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
+            : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
+        )}
+        style={{
+          transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
+          transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+          contain: 'layout style paint',
+          willChange: isDragging ? 'transform' : 'auto'
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        // Use onClick for tap and onContextMenu/longpress for reactions
+        onClick={!isAd ? handleTap : undefined}
+        onContextMenu={(e) => {
+            if (!isUser && !isAd) { // Only allow reactions on AI messages
+                handleLongPress(e, message.id);
+            }
+        }}
+        onTouchStartCapture={(e) => { // Use touchStartCapture for mobile long press
+            if (!isUser && !isAd) {
+                // Implement a simple long press detection
+                const touch = e.touches[0];
+                const messageElement = e.currentTarget as HTMLElement;
+                const startX = touch.clientX;
+                const startY = touch.clientY;
+                const startTime = Date.now();
+
+                const handleMove = (moveEvent: TouchEvent) => {
+                    const deltaX = moveEvent.touches[0].clientX - startX;
+                    const deltaY = moveEvent.touches[0].clientY - startY;
+                    if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+                        messageElement.removeEventListener('touchmove', handleMove);
+                        messageElement.removeEventListener('touchend', handleEnd);
+                    }
+                };
+
+                const handleEnd = () => {
+                    messageElement.removeEventListener('touchmove', handleMove);
+                    messageElement.removeEventListener('touchend', handleEnd);
+                };
+
+                messageElement.addEventListener('touchmove', handleMove);
+                messageElement.addEventListener('touchend', handleEnd);
+
+                const longPressTimer = setTimeout(() => {
+                    messageElement.removeEventListener('touchmove', handleMove);
+                    messageElement.removeEventListener('touchend', handleEnd);
+                    handleLongPress(e as any, message.id); // Pass the original event
+                }, 700); // 700ms for long press
+
+                messageElement.addEventListener('touchend', () => clearTimeout(longPressTimer));
+            }
+        }}
+      >
+        {/* Only show regular images if NOT view-once */}
+        {isValidImageSrc && imageToShowUrl && !message.isViewOnce && (
+          <Image
+            src={imageToShowUrl}
+            alt="Sent image"
+            width={200}
+            height={200}
+            className="rounded-md mb-1 max-w-full h-auto"
+            data-ai-hint={imageHint}
+            key={`${message.id}-content-img-${imageToShowUrl}`}
+            onError={handleContentImageError}
+            priority={false}
+            loading="lazy"
+          />
+        )}
+        {message.audioUrl && (
+          <audio controls src={message.audioUrl} className="w-full my-1">
+            Your browser does not support the audio element.
+          </audio>
+        )}
+        {renderMessageContent()}
+        {!isAd && (
+          <div className="flex items-center justify-end mt-1">
+            <span className={cn('text-xs',
+              isUser ? 'text-chat-text-user/70' : 'text-muted-foreground/90'
+            )}>
+              {formatTime(timestamp)}
+            </span>
+            {renderTicks(message.status)}
+            {message.isLiked && (
+              <Heart className="h-3 w-3 text-red-500 ml-1 fill-current" />
+            )}
+            {/* Display reaction if present */}
+            {message.reaction && (
+              <span className="ml-1 text-lg">{message.reaction}</span>
+            )}
+          </div>
+        )}
+        {isAd && (
+          <div className="flex items-center justify-center mt-2">
+            <span className="text-xs text-muted-foreground/60">
+              Advertisement
+            </span>
+          </div>
+        )}
+
+        {/* Heart animation overlay for double-tap */}
+        {showHeartAnimation && !isUser && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <Heart
+              className="h-8 w-8 text-red-500 fill-current animate-ping"
+              style={{
+                animationDuration: '0.5s',
+                animationIterationCount: '4'
+              }}
+            />
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -584,81 +769,8 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           </div>
         )}
 
-        <div
-          className={cn(
-            'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
-            isUser
-              ? 'bg-chat-bg-user text-chat-text-user rounded-lg rounded-br-sm'
-              : isAd
-              ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
-              : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
-          )}
-          style={{
-            transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
-            transition: isDragging ? 'none' : 'transform 0.2s ease-out',
-            contain: 'layout style paint',
-            willChange: isDragging ? 'transform' : 'auto'
-          }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onClick={!isAd ? handleTap : undefined}
-        >
-          {/* Only show regular images if NOT view-once */}
-          {isValidImageSrc && imageToShowUrl && !message.isViewOnce && (
-            <Image
-              src={imageToShowUrl}
-              alt="Sent image"
-              width={200}
-              height={200}
-              className="rounded-md mb-1 max-w-full h-auto"
-              data-ai-hint={imageHint}
-              key={`${message.id}-content-img-${imageToShowUrl}`}
-              onError={handleContentImageError}
-              priority={false}
-              loading="lazy"
-            />
-          )}
-          {message.audioUrl && (
-            <audio controls src={message.audioUrl} className="w-full my-1">
-              Your browser does not support the audio element.
-            </audio>
-          )}
-          {renderMessageContent()}
-          {!isAd && (
-            <div className="flex items-center justify-end mt-1">
-              <span className={cn('text-xs',
-                isUser ? 'text-chat-text-user/70' : 'text-muted-foreground/90'
-              )}>
-                {formatTime(timestamp)}
-              </span>
-              {renderTicks(message.status)}
-              {message.isLiked && (
-                <Heart className="h-3 w-3 text-red-500 ml-1 fill-current" />
-              )}
-            </div>
-          )}
-          {isAd && (
-            <div className="flex items-center justify-center mt-2">
-              <span className="text-xs text-muted-foreground/60">
-                Advertisement
-              </span>
-            </div>
-          )}
+        {renderMessage()}
 
-          {/* Heart animation overlay for double-tap */}
-          {showHeartAnimation && !isUser && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <Heart
-                className="h-8 w-8 text-red-500 fill-current animate-ping"
-                style={{
-                  animationDuration: '0.5s',
-                  animationIterationCount: '4'
-                }}
-              />
-            </div>
-          )}
-        </div>
 
         {/* Enhanced Quick Reply Options with WhatsApp-like styling */}
         {showQuickReplies && !isUser && !isAd && (
