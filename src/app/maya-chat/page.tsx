@@ -53,7 +53,7 @@ import { MessageSquare, Phone, Video, Info, X, ArrowLeft, MoreVertical } from "l
 import dynamic from "next/dynamic";
 import { ScreenshotProtection } from "@/components/ScreenshotProtection";
 import { DevToolsBlocker } from "@/components/DevToolsBlocker";
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 

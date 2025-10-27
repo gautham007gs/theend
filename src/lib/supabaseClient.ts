@@ -61,9 +61,8 @@ const createMockClient = (reason: string): SupabaseClient => {
 
 if (typeof supabaseUrl === 'string' && supabaseUrl.trim() !== '' &&
     typeof supabaseAnonKey === 'string' && supabaseAnonKey.trim() !== '') {
-  try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log("Supabase Client: Successfully initialized REAL Supabase client.");
+  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  console.log("Supabase Client: Successfully initialized REAL Supabase client.");
 
   // Connection pooling optimization
   if (typeof window === 'undefined') {
@@ -72,6 +71,7 @@ if (typeof supabaseUrl === 'string' && supabaseUrl.trim() !== '' &&
     console.log(`Supabase: Connection pool max: ${maxConnections}`);
   }
 } else {
+  supabase = createMockClient("Missing credentials");
   console.warn(
     "Supabase Client: Missing credentials. Using fallback (local storage only). Features requiring DB will be limited."
   );

@@ -7,7 +7,6 @@ import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
-import dynamic from 'next/dynamic';
 
 // Lazy load non-critical icons
 const Camera = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Camera })));
