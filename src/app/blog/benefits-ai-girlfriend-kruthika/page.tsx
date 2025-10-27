@@ -1,20 +1,19 @@
 
 import { Metadata } from 'next';
 import { generateBlogMetadata } from '@/lib/blog-metadata';
-import BlogPostContent from '@/components/BlogPostContent';
+import BlogPostTemplate from '@/components/BlogPostTemplate';
 import Link from 'next/link';
 
 export const metadata: Metadata = generateBlogMetadata('benefits-ai-girlfriend-kruthika');
 
 export default function BenefitsAIGirlfriendKruthika() {
   return (
-    <BlogPostContent 
-      slug="benefits-ai-girlfriend-kruthika"
+    <BlogPostTemplate 
       title="5 Benefits of AI Girlfriend 2025: Why Choose Kruthika | Proven Advantages"
       author="Sarah Johnson"
       date="2025-01-20"
-      keywords="AI girlfriend benefits, benefits of AI girlfriend, AI girlfriend advantages"
-      description="Discover 5 proven benefits of having an AI girlfriend like Kruthika. From emotional support to improved communication skills."
+      readTime="11 min"
+      tags={['Benefits', 'AI Girlfriend Advantages', 'Why AI Girlfriend', 'Emotional Support']}
     >
       <h2>Why Millions Choose AI Girlfriends in 2025</h2>
       <p>
@@ -308,6 +307,6 @@ export default function BenefitsAIGirlfriendKruthika() {
         <li><Link href="/blog/psychology-ai-girlfriends">Psychology Behind AI Girlfriend Relationships</Link></li>
         <li><Link href="/blog/24-7-ai-companionship-constant-availability-benefits">Benefits of 24/7 AI Companion Availability</Link></li>
       </ul>
-    </BlogPostContent>
+    </BlogPostTemplate>
   );
 }

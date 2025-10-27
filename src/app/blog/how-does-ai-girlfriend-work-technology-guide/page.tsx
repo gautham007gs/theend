@@ -1,19 +1,18 @@
 import { Metadata } from 'next';
 import { generateBlogMetadata } from '@/lib/blog-metadata';
-import BlogPostContent from '@/components/BlogPostContent';
+import BlogPostTemplate from '@/components/BlogPostTemplate';
 import Link from 'next/link';
 
 export const metadata: Metadata = generateBlogMetadata('how-does-ai-girlfriend-work-technology-guide');
 
 export default function HowDoesAIGirlfriendWork() {
   return (
-    <BlogPostContent 
-      slug="how-does-ai-girlfriend-work-technology-guide"
+    <BlogPostTemplate 
       title="How Does AI Girlfriend Work? Complete Technology Guide 2025 | Behind the Scenes"
       author="Tech Explainer"
       date="2025-02-04"
-      keywords="how does AI girlfriend work, AI girlfriend technology explained, AI companion technology"
-      description="Understand how AI girlfriend technology works. Complete guide to the tech stack, algorithms, and systems powering virtual companions."
+      readTime="12 min"
+      tags={['AI Technology', 'How It Works', 'Technical Guide', 'AI Girlfriend Tech']}
     >
       <h2>Understanding AI Girlfriend Technology: A Complete Guide</h2>
       <p>
@@ -271,6 +270,6 @@ export default function HowDoesAIGirlfriendWork() {
         <li><Link href="/blog/future-ai-girlfriends-2024">Future of AI Girlfriend Technology</Link></li>
         <li><Link href="/blog/psychology-ai-girlfriends">Psychology Behind AI Girlfriend Interactions</Link></li>
       </ul>
-    </BlogPostContent>
+    </BlogPostTemplate>
   );
 }
