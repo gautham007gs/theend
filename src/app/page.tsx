@@ -102,7 +102,10 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
 };
 
 
-const PullToRefresh = dynamic(() => import('@/components/PullToRefresh'), { ssr: false });
+const PullToRefresh = dynamic(() => import('@/components/PullToRefresh'), { 
+  ssr: false,
+  loading: () => null 
+});
 
 const ChatListPage: React.FC = () => {
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();

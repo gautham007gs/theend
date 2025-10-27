@@ -38,20 +38,22 @@ export const lazy = <T extends React.ComponentType<any>>(
 export const preloadCriticalResources = () => {
   if (typeof window === 'undefined') return;
   
-  const criticalResources = [
-    { href: '/chat-bg.png', as: 'image', type: 'image/png' },
-    { href: '/og-image.png', as: 'image', type: 'image/png' },
-    { href: '/_next/static/css/', as: 'style' },
-  ];
-  
-  criticalResources.forEach(resource => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = resource.href;
-    link.as = resource.as;
-    if (resource.type) link.type = resource.type;
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
+  // Defer preloading to after initial render
+  requestIdleCallback(() => {
+    const criticalResources = [
+      { href: '/chat-bg.png', as: 'image', type: 'image/png' },
+      { href: '/og-image.png', as: 'image', type: 'image/png' },
+    ];
+    
+    criticalResources.forEach(resource => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.href = resource.href;
+      link.as = resource.as;
+      if (resource.type) link.type = resource.type;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+    });
   });
 };
 

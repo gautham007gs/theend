@@ -198,8 +198,12 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, [toast, aiProfile, fetchAIProfile]); 
 
   useEffect(() => {
-    fetchAIProfile();
-  }, [fetchAIProfile]);
+    // Defer profile fetch to prevent blocking initial render
+    const timer = setTimeout(() => {
+      fetchAIProfile();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <AIProfileContext.Provider value={{ aiProfile, isLoadingAIProfile, fetchAIProfile, updateAIProfile }}>

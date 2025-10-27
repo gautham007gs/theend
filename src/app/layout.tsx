@@ -13,7 +13,7 @@ import StructuredData from '@/components/StructuredData';
 import AccessibilityEnhancer from '@/components/AccessibilityEnhancer';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 import CookieConsent from '@/components/CookieConsent';
-import DevDiagnostics from '@/components/DevDiagnostics';
+import dynamic from 'next/dynamic';
 import '@/lib/emergency-recovery'; // Emergency freeze recovery with auto-reload
 
 // Optimize font loading - use fallback font immediately with aggressive caching
@@ -97,6 +97,11 @@ export const metadata: Metadata = {
   },
 };
 
+// Dynamically import DevDiagnostics
+const DevDiagnosticsLazy = dynamic(() => import('@/components/DevDiagnostics'), {
+  ssr: false, // Disable server-side rendering for this component
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -178,7 +183,7 @@ export default function RootLayout({
                   <OfflineIndicator />
                   <StructuredData />
                   <AccessibilityEnhancer />
-                  <DevDiagnostics />
+                  <DevDiagnosticsLazy />
                   <ClientComponentsWrapper />
                   <CookieConsent />
                 </AIMediaAssetsProvider>
