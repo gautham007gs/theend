@@ -161,11 +161,6 @@ export default function RootLayout({
 
         {/* NO ad scripts in head - all handled by components */}
 
-        {/* Inline critical CSS - Minified */}
-        <style dangerouslySetInnerHTML={{
-          __html: `@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2) format('woff2')}@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2) format('woff2')}*{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}body{font-family:Inter,-apple-system,sans-serif;line-height:1.5;background:#F2EDE4;min-height:100vh}img{max-width:100%;height:auto;display:block;content-visibility:auto}.chat-header{height:64px;background:#075E54;position:sticky;top:0;z-index:10}button,input,textarea{font:inherit}main{min-height:calc(100vh - 64px)}@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}`
-        }} />
-
         <StructuredData />
         
         {/* Enhanced structured data for better search visibility */}

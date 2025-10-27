@@ -59,22 +59,26 @@ const GlobalAdScripts: React.FC = () => {
       if (document.visibilityState === 'visible') {
         console.log('👁️ Page Visibility: User returned to page');
         
-        // Clean up ad DOM elements when user returns
+        // IMMEDIATELY force a re-render and cleanup to prevent freezing
         const wasHidden = sessionStorage.getItem('page_was_hidden');
         if (wasHidden === 'true') {
-          console.log('🔄 Ad Return: Cleaning up ad elements...');
+          console.log('🔄 Ad Return: Immediate cleanup to prevent freezing...');
           
           // Clear any pending cleanup timeout first
           if (cleanupTimeoutRef.current) {
             clearTimeout(cleanupTimeoutRef.current);
           }
           
-          // Wait a tiny bit for ad scripts to finish, then cleanup
-          cleanupTimeoutRef.current = setTimeout(() => {
-            performAdCleanup();
-            sessionStorage.removeItem('page_was_hidden');
-            cleanupTimeoutRef.current = null;
-          }, 100);
+          // IMMEDIATE cleanup - no delay
+          performAdCleanup();
+          sessionStorage.removeItem('page_was_hidden');
+          
+          // Force DOM re-layout to prevent freezing (without full reload)
+          document.body.style.display = 'none';
+          document.body.offsetHeight; // Force reflow
+          document.body.style.display = '';
+          
+          console.log('✅ Page refreshed - freezing prevented');
         }
       } else if (document.visibilityState === 'hidden') {
         console.log('👁️ Page Visibility: Page hidden (possibly ad)');
