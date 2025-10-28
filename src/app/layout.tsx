@@ -103,7 +103,7 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#0d8043" />
@@ -161,7 +161,6 @@ export default function RootLayout({
                   <Toaster />
                   <ServiceWorkerRegistration />
                   <OfflineIndicator />
-                  <StructuredData />
                   <AccessibilityEnhancer />
                   <ClientComponentsWrapper />
                   <CookieConsent />
