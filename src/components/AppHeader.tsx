@@ -67,7 +67,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
           {navItems.map((item) => (
             <Link
               key={item.name}
-              href={item.href}
+              href={item.href as any}
               className={cn(
                 "flex-1 py-3 text-center text-sm font-medium flex flex-col items-center gap-1 transition-colors",
                 pathname === item.href

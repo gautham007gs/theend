@@ -18,6 +18,7 @@ interface BlogPostContentProps {
   date: string;
   keywords: string;
   description: string;
+  children?: React.ReactNode;
 }
 
 export default function BlogPostContent({ 

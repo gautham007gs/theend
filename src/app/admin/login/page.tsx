@@ -35,7 +35,7 @@ const AdminLoginPage: React.FC = () => {
         const isAuth = sessionStorage.getItem(ADMIN_AUTH_KEY);
         if (isAuth === 'true') {
           // Already logged in, redirect to return URL
-          router.replace(returnUrl);
+          router.replace(returnUrl as any);
         }
       }
     } catch (error) {
@@ -75,7 +75,7 @@ const AdminLoginPage: React.FC = () => {
         }
         toast({ title: 'Login Successful', description: "Welcome to the Admin Panel!" });
         // Redirect to the return URL (the page they were trying to access)
-        router.push(returnUrl);
+        router.push(returnUrl as any);
       } catch (sessionError: any) {
           console.error("Error setting sessionStorage:", sessionError);
           setError(`Failed to initiate session. Please ensure cookies/session storage are enabled. ${sessionError.message || ''}`);

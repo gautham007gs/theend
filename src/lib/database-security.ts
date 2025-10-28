@@ -1,5 +1,5 @@
 
-import { Logger } from '@/utils/logger';
+import { logger } from '@/utils/logger';
 
 export class DatabaseSecurity {
   // SQL injection prevention for dynamic queries
@@ -40,7 +40,7 @@ export class DatabaseSecurity {
   
   // Log database security events
   static logSecurityEvent(event: string, details: any): void {
-    Logger.warn(`Database Security Event: ${event}`, {
+    logger.warn(`Database Security Event: ${event}`, {
       ...details,
       timestamp: new Date().toISOString(),
       category: 'database_security'

@@ -1,5 +1,5 @@
 
-import { Logger } from '@/utils/logger';
+import { logger } from '@/utils/logger';
 
 interface SecurityEvent {
   type: 'rate_limit' | 'sql_injection' | 'xss_attempt' | 'malicious_upload' | 'suspicious_activity';
@@ -30,7 +30,7 @@ export class SecurityMonitoring {
     this.events.push(securityEvent);
     
     // Log to system
-    Logger.warn(`Security Event: ${event.type}`, {
+    logger.warn(`Security Event: ${event.type}`, {
       severity: event.severity,
       clientIP: event.clientIP,
       details: event.details
@@ -61,7 +61,7 @@ export class SecurityMonitoring {
   
   // Trigger security alert
   private static triggerSecurityAlert(event: SecurityEvent, eventCount: number): void {
-    Logger.error(`SECURITY ALERT: Multiple ${event.type} events`, {
+    logger.error(`SECURITY ALERT: Multiple ${event.type} events`, {
       clientIP: event.clientIP,
       eventCount,
       severity: 'CRITICAL',

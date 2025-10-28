@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 
 // Generate metadata for SEO (server-side)
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = params;
   
   if (!blogPostsMetadata[slug]) {
     return {
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Server Component - Google can crawl this!
 export default async function BlogPost({ params }: Props) {
-  const { slug } = await params;
+  const { slug } = params;
   
   // Validate slug exists
   if (!blogPostsMetadata[slug]) {

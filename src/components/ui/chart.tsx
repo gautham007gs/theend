@@ -12,7 +12,7 @@ const THEMES = { light: "", dark: ".dark" } as const
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode
-    icon?: React.ComponentType
+    icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
@@ -101,11 +101,14 @@ ${colorConfig
   )
 }
 
-const ChartLegend = React.forwardRef<
-  HTMLDivElement,
+const ChartLegend = React.forwardRef<any,
+
   React.ComponentProps<typeof RechartsPrimitive.Legend> & {
+
     hideIcon?: boolean
+
   }
+
 >(({ className, hideIcon, ...props }, ref) => {
   const { config } = useChart()
 
@@ -117,7 +120,7 @@ const ChartLegend = React.forwardRef<
       formatter={(value: keyof ChartConfig, entry) => {
         const payloadColor = entry.color
         const item = config[value] || {}
-        const icon = item.icon
+        const Icon = item.icon
 
         return (
           <div
@@ -126,8 +129,8 @@ const ChartLegend = React.forwardRef<
               hideIcon && "-mt-1.5"
             )}
           >
-            {icon && !hideIcon ? (
-              <item.icon
+            {Icon && !hideIcon ? (
+              <Icon
                 className="size-3.5"
                 style={{
                   color: payloadColor,

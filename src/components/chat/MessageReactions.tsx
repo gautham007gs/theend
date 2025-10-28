@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Heart, Smile, ThumbsUp, Fire, Star } from 'lucide-react';
+import { Heart, Smile, ThumbsUp, Flame, Star } from 'lucide-react';
 
 interface MessageReactionsProps {
   messageId: string;
@@ -14,7 +14,7 @@ const reactions = [
   { emoji: '❤️', icon: Heart, label: 'Love' },
   { emoji: '😊', icon: Smile, label: 'Happy' },
   { emoji: '👍', icon: ThumbsUp, label: 'Like' },
-  { emoji: '🔥', icon: Fire, label: 'Fire' },
+  { emoji: '🔥', icon: Flame, label: 'Fire' },
   { emoji: '⭐', icon: Star, label: 'Star' }
 ];
 

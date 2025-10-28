@@ -97,7 +97,9 @@ class ConnectionPool {
   private setCachedResult(cacheKey: string, data: any, ttl: number = CACHE_TTL): void {
     if (queryCache.size >= MAX_CACHE_ENTRIES) {
       const firstKey = queryCache.keys().next().value;
-      queryCache.delete(firstKey);
+      if (firstKey) {
+        queryCache.delete(firstKey);
+      }
     }
     queryCache.set(cacheKey, { data, timestamp: Date.now(), ttl });
   }

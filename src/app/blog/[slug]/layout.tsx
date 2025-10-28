@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Home } from 'lucide-react';
@@ -7,25 +6,20 @@ import { generateBlogMetadata } from '@/lib/blog-metadata';
 
 type Props = {
   params: { slug: string };
-
-import { Metadata } from 'next';
+  children: ReactNode;
+};
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = params;
+  const metadata = await generateBlogMetadata(slug);
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://kruthika.fun';
   
   return {
+    ...metadata,
     alternates: {
       canonical: `${baseUrl}/blog/${params.slug}`
     }
   };
-}
-
-  children: ReactNode;
-};
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  return generateBlogMetadata(slug);
 }
 
 export default function BlogPostLayout({ children }: { children: ReactNode }) {

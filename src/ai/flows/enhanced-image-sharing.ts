@@ -74,7 +74,7 @@ export function getImageSharingResponse(context: ImageSharingContext): ImageShar
   }
 
   // Language-specific responses
-  const responses = {
+  const responses: Record<string, Record<string, string>> = {
     hindi: {
       inappropriate_decline: "arre yaar, aise baat nahi karte 😤",
       new_friend_decline: "abhi toh naya dost hun, pics nahi share karti",
@@ -110,7 +110,7 @@ export function getImageSharingResponse(context: ImageSharingContext): ImageShar
     }
   };
 
-  const langResponses = responses[userLanguage] || responses.english;
+  const langResponses = responses[userLanguage as keyof typeof responses] || responses.english;
   const responseMessage = langResponses[responseType] || langResponses.shy_decline;
 
   // If sharing, determine image type and URL
@@ -182,7 +182,7 @@ export function getProactiveImageShare(
   // Random chance for proactive sharing (5% chance)
   if (Math.random() > 0.05) return null;
 
-  const proactiveMessages = {
+  const proactiveMessages: Record<string, Record<string, string>> = {
     hindi: {
       morning: "good morning! dekho aaj ka fit 😊",
       afternoon: "college mein bore ho rahi, selfie leli",
@@ -203,7 +203,7 @@ export function getProactiveImageShare(
     }
   };
 
-  const langMessages = proactiveMessages[language] || proactiveMessages.english;
+  const langMessages = proactiveMessages[language as keyof typeof proactiveMessages] || proactiveMessages.english;
   const message = langMessages[timeOfDay];
   
   // Choose appropriate image type for time

@@ -69,7 +69,6 @@ const jsonLd = {
 export default function BlogPage() {
   const blogSlugs = getAllBlogSlugs();
   const blogPosts = blogSlugs.map(slug => ({
-    slug,
     ...blogPostsMetadata[slug]
   }));
 
@@ -117,10 +116,10 @@ export default function BlogPage() {
         <div className="max-w-4xl mx-auto px-4 py-12">
           {/* Removed the old section and replaced with the new one with optimizations */}
           <section className="text-center mb-16">
-            <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent leading-tight" style={{ fontDisplay: 'swap', contain: 'layout paint' }}>
+            <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent leading-tight" style={{ contain: 'layout paint' }}>
               AI Girlfriend Insights & Guides
             </h1>
-            <p className="text-xl text-gray-800 max-w-3xl mx-auto mb-8 leading-relaxed font-medium" style={{ fontDisplay: 'swap', contain: 'layout paint' }}>
+            <p className="text-xl text-gray-800 max-w-3xl mx-auto mb-8 leading-relaxed font-medium" style={{ contain: 'layout paint' }}>
               Welcome to the ultimate resource for AI girlfriend insights, virtual companions, emotional support technology, and the future of digital relationships in 2025.
             </p>
           </section>

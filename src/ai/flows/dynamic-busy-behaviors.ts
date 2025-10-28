@@ -74,7 +74,7 @@ export function getContextualBusyReason(input: ContextualBusyInput): BusyRespons
   
   // Language-specific present-tense warning messages
   const getWarningMessage = (reason: string): string => {
-    const warnings = {
+    const warnings: Record<string, Record<string, string>> = {
       hindi: {
         getting_ready: "arre wait yaar, ready ho rahi hun",
         college_travel: "mumbai local mein hun, signal weak hai",
@@ -107,7 +107,7 @@ export function getContextualBusyReason(input: ContextualBusyInput): BusyRespons
       }
     };
     
-    const langWarnings = warnings[userLanguage] || warnings.english;
+    const langWarnings = warnings[userLanguage as keyof typeof warnings] || warnings.english;
     return langWarnings[reason] || langWarnings.getting_ready;
   };
 
@@ -157,7 +157,7 @@ export function getComebackMessage(
   language: string, 
   wasAwayMinutes: number
 ): string {
-  const comebacks = {
+  const comebacks: Record<string, Record<string, string>> = {
     hindi: {
       getting_ready: "back! finally ready ho gayi",
       college_travel: "phew! mumbai local se nikal gayi",
@@ -193,7 +193,7 @@ export function getComebackMessage(
     }
   };
 
-  const langComebacks = comebacks[language] || comebacks.english;
+  const langComebacks = comebacks[language as keyof typeof comebacks] || comebacks.english;
   return langComebacks[busyReason] || langComebacks.general_busy;
 }
 

@@ -207,7 +207,7 @@ const StatusPage: React.FC = () => {
                 data-ai-hint={dataAiHint || "profile person"}
                 className="object-cover"
                 loading={isKruthikaProfile || isMyStatusStyle ? "eager" : "lazy"}
-                fetchpriority={isKruthikaProfile || isMyStatusStyle ? "high" : "auto"}
+                fetchPriority={isKruthikaProfile || isMyStatusStyle ? "high" : "auto"}
                 key={`${statusKey}-avatar-img-${avatarUrlToUse || "no_avatar_fallback_img_sp"}`}
                 onError={(e) => handleAvatarError(e, "List")}
               />
@@ -222,10 +222,10 @@ const StatusPage: React.FC = () => {
             )}
           </div>
           <div className="ml-4 flex-grow overflow-hidden">
-            <h2 className="font-semibold text-base truncate text-foreground group-hover:text-primary transition-colors" style={{ fontDisplay: 'swap', contain: 'layout' }}>
+            <h2 className="font-semibold text-base truncate text-foreground group-hover:text-primary transition-colors" style={{ contain: 'layout' }}>
               {displayName}
             </h2>
-            <p className="text-sm text-muted-foreground truncate mt-0.5" style={{ fontDisplay: 'swap', contain: 'layout' }}>
+            <p className="text-sm text-muted-foreground truncate mt-0.5" style={{ contain: 'layout' }}>
               {statusText}
             </p>
           </div>

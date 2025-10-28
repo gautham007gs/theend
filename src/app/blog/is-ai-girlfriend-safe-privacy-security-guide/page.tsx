@@ -2,6 +2,7 @@
 import { Metadata } from 'next';
 import { generateBlogMetadata } from '@/lib/blog-metadata';
 import BlogPostContent from '@/components/BlogPostContent';
+import Link from 'next/link';
 
 export const metadata: Metadata = generateBlogMetadata('is-ai-girlfriend-safe-privacy-security-guide');
 
