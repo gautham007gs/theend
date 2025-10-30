@@ -592,12 +592,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     return (
       <div
         className={cn(
-          'px-3 py-2 break-words transition-transform duration-100 relative min-w-[80px] max-w-[85%]',
+          'px-[7px] py-[6px] break-words transition-transform duration-100 relative min-w-[60px]',
           isUser
-            ? 'bg-[#D9FDD3] text-[#111B21] rounded-tl-[7.5px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[0px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'
+            ? 'bg-[#DCF8C6] text-[#000000] rounded-tl-[7.5px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[0px] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
             : isAd
             ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
-            : 'bg-[#FFFFFF] dark:bg-[#202C33] text-[#111B21] dark:text-[#E9EDEF] rounded-tl-[0px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[7.5px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'
+            : 'bg-white dark:bg-gray-800 text-[#000000] dark:text-gray-100 rounded-tl-[0px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[7.5px] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
         )}
         style={{
           transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
@@ -658,7 +658,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             alt="Sent image"
             width={200}
             height={200}
-            className="rounded-md mb-2 max-w-full h-auto"
+            className="rounded-md mb-1 max-w-full h-auto"
             data-ai-hint={imageHint}
             key={`${message.id}-content-img-${imageToShowUrl}`}
             onError={handleContentImageError}
@@ -671,13 +671,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             Your browser does not support the audio element.
           </audio>
         )}
-        <div className="relative min-h-[20px]">
-          {/* Message content with proper spacing for time - using padding-bottom for space */}
-          <div className="pb-[20px] pr-[8px]">{renderMessageContent()}</div>
+        <div className="relative">
+          <div className={cn("pb-[18px]", isUser && "pr-[65px]")}>{renderMessageContent()}</div>
           {!isAd && (
-            <div className="absolute bottom-[2px] right-[4px] flex items-center gap-[4px] whitespace-nowrap">
-              <span className={cn('text-[11px] leading-[15px]',
-                isUser ? 'text-[#667781]' : 'text-[#667781] dark:text-[#8696A0]'
+            <div className="absolute bottom-[2px] right-[6px] flex items-center gap-[3px] whitespace-nowrap">
+              <span className={cn('text-[11px] leading-none',
+                isUser ? 'text-gray-600' : 'text-gray-500'
               )}>
                 {formatTime(timestamp)}
               </span>

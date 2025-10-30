@@ -62,7 +62,7 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
 
   return (
     <div 
-      className="p-3 space-y-2 bg-chat-bg-default custom-scrollbar"
+      className="p-3 sm:p-4 space-y-3 sm:space-y-4 bg-chat-bg-default custom-scrollbar"
       data-chat-container="true"
       style={{ minHeight: '100%', paddingBottom: '1rem' }}
     >
