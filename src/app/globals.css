@@ -242,7 +242,7 @@ img {
 
 .chat-header {
   height: 64px;
-  background: #075E54;
+  background: #25d366;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -308,7 +308,7 @@ main {
   background-color: #E5DDD5; /* Light beige for default/system messages */
 }
 .chat-header-bg {
-  background-color: #075E54; /* WhatsApp green header */
+  background-color: #25d366; /* WhatsApp bright green header */
 }
 .chat-header-text {
   color: #FFFFFF; /* White text for header */
