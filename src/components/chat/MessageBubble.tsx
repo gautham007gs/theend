@@ -592,12 +592,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     return (
       <div
         className={cn(
-          'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
+          'px-2 py-1.5 break-words transition-transform duration-100 relative',
           isUser
-            ? 'bg-[#DCF8C6] text-gray-900 rounded-lg rounded-br-sm'
+            ? 'bg-[#DCF8C6] text-[#000000] rounded-tl-lg rounded-tr-lg rounded-bl-lg shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
             : isAd
             ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
-            : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg rounded-bl-sm border border-gray-200 dark:border-gray-700'
+            : 'bg-white dark:bg-gray-800 text-[#000000] dark:text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
         )}
         style={{
           transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
@@ -671,24 +671,26 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             Your browser does not support the audio element.
           </audio>
         )}
-        {renderMessageContent()}
-        {!isAd && (
-          <div className="flex items-center justify-end mt-1">
-            <span className={cn('text-xs',
-              isUser ? 'text-gray-600' : 'text-muted-foreground/90'
-            )}>
-              {formatTime(timestamp)}
-            </span>
-            {renderTicks(message.status)}
-            {message.isLiked && (
-              <Heart className="h-3 w-3 text-red-500 ml-1 fill-current" />
-            )}
-            {/* Display reaction if present */}
-            {message.reaction && (
-              <span className="ml-1 text-lg">{message.reaction}</span>
-            )}
-          </div>
-        )}
+        <div className="flex items-end gap-1">
+          <div className="flex-1">{renderMessageContent()}</div>
+          {!isAd && (
+            <div className="flex items-center flex-shrink-0 self-end ml-2 gap-0.5 pb-0.5">
+              <span className={cn('text-[11px] leading-none',
+                isUser ? 'text-gray-600/80' : 'text-gray-500/80'
+              )}>
+                {formatTime(timestamp)}
+              </span>
+              {renderTicks(message.status)}
+              {message.isLiked && (
+                <Heart className="h-3 w-3 text-red-500 ml-0.5 fill-current" />
+              )}
+              {/* Display reaction if present */}
+              {message.reaction && (
+                <span className="ml-0.5 text-base">{message.reaction}</span>
+              )}
+            </div>
+          )}
+        </div>
         {isAd && (
           <div className="flex items-center justify-center mt-2">
             <span className="text-xs text-muted-foreground/60">

@@ -197,66 +197,68 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isAiTyping }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-end p-2 sm:p-3 bg-chat-input-bg border-t border-border gap-1 sm:gap-2"
+      className="flex items-end p-2 bg-[#F0F0F0] dark:bg-gray-900 gap-2"
     >
       <Button 
         type="button" 
         variant="ghost" 
         size="icon" 
         onClick={() => setShowEmojiPicker(!showEmojiPicker)} 
-        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
+        className="text-gray-600 hover:text-gray-700 self-end shrink-0 h-10 w-10 rounded-full"
         aria-label={showEmojiPicker ? "Close emoji picker" : "Open emoji picker"}
       >
-        <Smile className="h-4 w-4 sm:h-5 sm:w-5" />
+        <Smile className="h-6 w-6" />
       </Button>
-      <Textarea
-        ref={textareaRef}
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
-        className="flex-1 resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-card rounded-lg shadow-sm custom-scrollbar py-2 px-3 text-sm leading-tight max-h-20 sm:max-h-24 min-h-[2.25rem]" 
-        rows={1}
-      />
+      <div className="flex flex-1 items-center bg-white dark:bg-gray-800 rounded-[24px] px-3 py-1.5 gap-2">
+        <Textarea
+          ref={textareaRef}
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Message"
+          className="flex-1 resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent custom-scrollbar py-2 text-[15px] leading-tight max-h-20 min-h-[2rem] placeholder:text-gray-500" 
+          rows={1}
+        />
+        <input 
+          ref={fileInputRef} 
+          type="file" 
+          accept="image/jpeg,image/png,image/webp,image/gif" 
+          className="hidden" 
+          onChange={handleImageChange} 
+          id="file-upload-input"
+          aria-label="Upload image file"
+        />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          type="button" 
+          className="text-gray-600 hover:text-gray-700 self-end shrink-0 h-9 w-9 p-0"
+          onClick={() => fileInputRef.current?.click()}
+          aria-label="Attach image to message"
+        >
+          <Paperclip className="h-5 w-5" />
+        </Button>
+      </div>
       {inputValue.trim() || selectedImage ? (
         <Button 
           type="submit" 
           size="icon" 
-          className="bg-[#25d366] hover:bg-[#1faa55] self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
+          className="bg-[#25d366] hover:bg-[#1faa55] self-end shrink-0 h-12 w-12 rounded-full"
           aria-label={isLoading ? "Sending message" : "Send message"}
         >
-          {isLoading ? <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin text-white" /> : <Send className="h-4 w-4 sm:h-5 sm:w-5 text-white" />}
+          {isLoading ? <Loader2 className="h-5 w-5 animate-spin text-white" /> : <Send className="h-5 w-5 text-white" />}
         </Button>
       ) : (
         <Button 
           variant="ghost" 
           size="icon" 
           type="button" 
-          className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
+          className="bg-[#25d366] hover:bg-[#1faa55] text-white self-end shrink-0 h-12 w-12 rounded-full"
           aria-label="Open microphone input"
         >
-          <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
+          <Mic className="h-5 w-5" />
         </Button>
       )}
-       <input 
-        ref={fileInputRef} 
-        type="file" 
-        accept="image/jpeg,image/png,image/webp,image/gif" 
-        className="hidden" 
-        onChange={handleImageChange} 
-        id="file-upload-input"
-        aria-label="Upload image file"
-      />
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        type="button" 
-        className="text-muted-foreground hover:text-foreground/80 self-end shrink-0 h-9 w-9 sm:h-10 sm:w-10"
-        onClick={() => fileInputRef.current?.click()}
-        aria-label="Attach image to message"
-      >
-        <Paperclip className="h-4 w-4 sm:h-5 sm:w-5" />
-      </Button>
     </form>
   );
 };

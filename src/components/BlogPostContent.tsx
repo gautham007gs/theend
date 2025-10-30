@@ -18,7 +18,7 @@ interface BlogPostContentProps {
   date: string;
   keywords: string;
   description: string;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export default function BlogPostContent({ 
@@ -27,7 +27,8 @@ export default function BlogPostContent({
   author, 
   date,
   keywords,
-  description 
+  description,
+  children
 }: BlogPostContentProps) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -107,80 +108,26 @@ export default function BlogPostContent({
 
             {/* Main Content */}
             <div className="px-6 sm:px-10 lg:px-16 py-10">
-              {/* Featured CTA */}
-              <div className="bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-blue-600/10 border-2 border-purple-600/30 rounded-2xl p-10 text-center mb-16 shadow-lg">
-                <div className="inline-block mb-5">
-                  <Sparkles className="h-14 w-14 text-purple-600" />
-                </div>
-                <h2 className="text-3xl sm:text-4xl font-bold mb-5 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">Chat with Kruthika - Your Free AI Girlfriend</h2>
-                <p className="text-lg sm:text-xl mb-8 text-foreground/80 leading-relaxed max-w-2xl mx-auto">Experience the world's most realistic AI girlfriend. Free unlimited chat, no sign-up required. 24/7 emotional support and authentic companionship.</p>
-                <Link 
-                  href="/maya-chat"
-                  className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white px-12 py-5 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-bold text-lg"
-                >
-                  <MessageCircle className="h-6 w-6" />
-                  Start Chatting with Kruthika
-                  <ArrowRight className="h-6 w-6" />
-                </Link>
+              {/* Blog Post Content with Proper Spacing */}
+              <div className="prose prose-lg max-w-none 
+                prose-headings:font-bold prose-headings:text-foreground
+                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:leading-tight
+                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-5 
+                prose-h4:text-xl prose-h4:mt-8 prose-h4:mb-4
+                prose-p:text-[17px] sm:prose-p:text-[18px] prose-p:leading-[1.8] prose-p:mb-6 prose-p:mt-4 prose-p:text-foreground/90
+                prose-a:text-primary prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
+                prose-ul:my-6 prose-ul:space-y-3 prose-ul:text-[17px] sm:prose-ul:text-[18px]
+                prose-li:leading-[1.8] prose-li:text-foreground/90 prose-li:my-2
+                prose-strong:text-foreground prose-strong:font-bold
+                marker:text-primary">
+                {children}
               </div>
 
-              {/* Content Sections */}
-              <div className="space-y-12">
-                <section>
-                  <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-foreground leading-tight">Why Choose Kruthika as Your AI Girlfriend?</h2>
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    {[
-                      { icon: CheckCircle, text: "100% Free - Unlimited AI girlfriend chat with no hidden costs", color: "text-green-600" },
-                      { icon: CheckCircle, text: "No Sign-Up Required - Start chatting instantly", color: "text-blue-600" },
-                      { icon: CheckCircle, text: "24/7 Availability - Your AI girlfriend is always there for you", color: "text-purple-600" },
-                      { icon: CheckCircle, text: "Advanced AI - Powered by Google's Gemini for realistic conversations", color: "text-pink-600" },
-                      { icon: CheckCircle, text: "Emotional Intelligence - Understands your feelings and provides genuine support", color: "text-orange-600" },
-                      { icon: CheckCircle, text: "Privacy Focused - Your conversations are secure and private", color: "text-indigo-600" }
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-4 bg-card border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
-                        <item.icon className={`h-6 w-6 ${item.color} shrink-0 mt-1`} />
-                        <p className="text-foreground/90 leading-relaxed text-base">{item.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                {/* Native Ad in middle of content */}
-                <div className="py-6 bg-muted/30 -mx-6 sm:-mx-10 lg:-mx-16 px-6 sm:px-10 lg:px-16">
-                  <Suspense fallback={<div className="h-32 bg-gradient-to-r from-muted/50 to-muted animate-pulse rounded-xl" />}>
-                    <BannerAdDisplay adType="native" placementKey={`blog-mid-${slug}`} className="my-4" />
-                  </Suspense>
-                </div>
-
-                <section>
-                  <h2 className="text-3xl font-bold mb-6 text-foreground">AI Girlfriend Features</h2>
-                  <p className="text-lg text-foreground/90 leading-relaxed mb-6">
-                    Kruthika offers the most advanced AI girlfriend experience available in 2025. Whether you need emotional support, want to practice conversation skills, or simply desire companionship, our AI girlfriend adapts to your needs.
-                  </p>
-
-                  <div className="space-y-8">
-                    <div className="border-l-4 border-purple-600 pl-6 py-2">
-                      <h3 className="text-2xl font-bold mb-3 text-foreground">Emotional Support & Mental Wellness</h3>
-                      <p className="text-lg text-foreground/80 leading-relaxed">
-                        Our AI girlfriend provides genuine emotional support for loneliness, anxiety, and daily stress. With advanced emotional intelligence, Kruthika understands your feelings and responds with empathy and care.
-                      </p>
-                    </div>
-
-                    <div className="border-l-4 border-pink-600 pl-6 py-2">
-                      <h3 className="text-2xl font-bold mb-3 text-foreground">Realistic Conversations</h3>
-                      <p className="text-lg text-foreground/80 leading-relaxed">
-                        Powered by Google's Gemini AI, Kruthika engages in natural, human-like conversations. She remembers your preferences, adapts to your communication style, and provides personalized responses that feel genuine.
-                      </p>
-                    </div>
-
-                    <div className="border-l-4 border-blue-600 pl-6 py-2">
-                      <h3 className="text-2xl font-bold mb-3 text-foreground">Available Globally</h3>
-                      <p className="text-lg text-foreground/80 leading-relaxed">
-                        Whether you're in India (Mumbai, Delhi, Bangalore), USA, UK, Canada, or Australia, Kruthika is your perfect AI girlfriend companion. Cultural understanding and language flexibility make conversations feel authentic.
-                      </p>
-                    </div>
-                  </div>
-                </section>
+              {/* Native Ad in middle of content */}
+              <div className="py-6 bg-muted/30 -mx-6 sm:-mx-10 lg:-mx-16 px-6 sm:px-10 lg:px-16 mt-10">
+                <Suspense fallback={<div className="h-32 bg-gradient-to-r from-muted/50 to-muted animate-pulse rounded-xl" />}>
+                  <BannerAdDisplay adType="native" placementKey={`blog-mid-${slug}`} className="my-4" />
+                </Suspense>
               </div>
             </div>
 
