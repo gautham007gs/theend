@@ -388,7 +388,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       }
     }
 
-    return message.text && <p className="text-sm whitespace-pre-wrap">{message.text}</p>;
+    return message.text && <p className="text-[14.2px] leading-[19px] whitespace-pre-wrap pr-[50px]">{message.text}</p>;
   };
 
   // WhatsApp-style View Once Image Component with Dialog - Similar to DP zoom
@@ -592,12 +592,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     return (
       <div
         className={cn(
-          'px-2 py-1.5 break-words transition-transform duration-100 relative',
+          'px-[7px] py-[6px] break-words transition-transform duration-100 relative min-w-[60px]',
           isUser
-            ? 'bg-[#DCF8C6] text-[#000000] rounded-tl-lg rounded-tr-lg rounded-bl-lg shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
+            ? 'bg-[#DCF8C6] text-[#000000] rounded-tl-[7.5px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[0px] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
             : isAd
             ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
-            : 'bg-white dark:bg-gray-800 text-[#000000] dark:text-gray-100 rounded-tl-lg rounded-tr-lg rounded-br-lg shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
+            : 'bg-white dark:bg-gray-800 text-[#000000] dark:text-gray-100 rounded-tl-[0px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[7.5px] shadow-[0_1px_0.5px_rgba(0,0,0,0.13)]'
         )}
         style={{
           transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
@@ -671,12 +671,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             Your browser does not support the audio element.
           </audio>
         )}
-        <div className="flex items-end gap-1">
-          <div className="flex-1">{renderMessageContent()}</div>
+        <div className="relative">
+          <div className="pb-[18px]">{renderMessageContent()}</div>
           {!isAd && (
-            <div className="flex items-center flex-shrink-0 self-end ml-2 gap-0.5 pb-0.5">
+            <div className="absolute bottom-[2px] right-[6px] flex items-center gap-[3px]">
               <span className={cn('text-[11px] leading-none',
-                isUser ? 'text-gray-600/80' : 'text-gray-500/80'
+                isUser ? 'text-gray-600' : 'text-gray-500'
               )}>
                 {formatTime(timestamp)}
               </span>
