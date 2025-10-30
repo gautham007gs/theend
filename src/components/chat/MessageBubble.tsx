@@ -673,9 +673,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         )}
         <div className="relative">
           {/* Message content with proper spacing for time */}
-          <div className="pr-[58px] pb-[15px]">{renderMessageContent()}</div>
+          <div className="pr-[58px]">{renderMessageContent()}</div>
           {!isAd && (
-            <div className="absolute bottom-[4px] right-[7px] flex items-center gap-[3px] whitespace-nowrap">
+            <div className="absolute bottom-[2px] right-[7px] flex items-center gap-[3px] whitespace-nowrap">
               <span className={cn('text-[11px] leading-[15px]',
                 isUser ? 'text-[#667781]' : 'text-[#667781] dark:text-[#8696A0]'
               )}>
