@@ -27,7 +27,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
   ];
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md">
+    <header className="bg-[#25d366] text-white shadow-md">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center max-w-3xl">
         <Link href="/" className="text-xl font-semibold hover:opacity-80 transition-opacity">
           {title}
@@ -35,7 +35,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-primary-foreground/10">
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
               <MoreVertical size={24} />
             </Button>
           </DropdownMenuTrigger>
@@ -62,7 +62,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <nav className="bg-primary">
+      <nav className="bg-[#25d366] border-t border-[#1faa55]">
         <div className="container mx-auto flex justify-around items-center max-w-3xl">
           {navItems.map((item) => (
             <Link
@@ -71,9 +71,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
               className={cn(
                 "flex-1 py-3 text-center text-sm font-medium flex flex-col items-center gap-1 transition-colors",
                 pathname === item.href
-                  ? 'text-primary-foreground border-b-2 border-primary-foreground/90'
-                  : 'text-primary-foreground/70 hover:text-primary-foreground/90',
-                "hover:bg-primary-foreground/10"
+                  ? 'text-white border-b-2 border-white/90'
+                  : 'text-white/70 hover:text-white/90',
+                "hover:bg-white/10"
               )}
             >
               {item.icon}

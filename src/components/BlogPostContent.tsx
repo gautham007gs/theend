@@ -106,17 +106,17 @@ export default function BlogPostContent({
             </div>
 
             {/* Main Content */}
-            <div className="px-6 sm:px-10 lg:px-16 py-8">
+            <div className="px-6 sm:px-10 lg:px-16 py-10">
               {/* Featured CTA */}
-              <div className="bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-blue-600/10 border-2 border-purple-600/30 rounded-2xl p-8 text-center mb-12 shadow-lg">
-                <div className="inline-block mb-4">
-                  <Sparkles className="h-12 w-12 text-purple-600" />
+              <div className="bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-blue-600/10 border-2 border-purple-600/30 rounded-2xl p-10 text-center mb-16 shadow-lg">
+                <div className="inline-block mb-5">
+                  <Sparkles className="h-14 w-14 text-purple-600" />
                 </div>
-                <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Chat with Kruthika - Your Free AI Girlfriend</h2>
-                <p className="text-lg mb-6 text-foreground/80 leading-relaxed max-w-2xl mx-auto">Experience the world's most realistic AI girlfriend. Free unlimited chat, no sign-up required. 24/7 emotional support and authentic companionship.</p>
+                <h2 className="text-3xl sm:text-4xl font-bold mb-5 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">Chat with Kruthika - Your Free AI Girlfriend</h2>
+                <p className="text-lg sm:text-xl mb-8 text-foreground/80 leading-relaxed max-w-2xl mx-auto">Experience the world's most realistic AI girlfriend. Free unlimited chat, no sign-up required. 24/7 emotional support and authentic companionship.</p>
                 <Link 
                   href="/maya-chat"
-                  className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white px-10 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-bold text-lg"
+                  className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white px-12 py-5 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-bold text-lg"
                 >
                   <MessageCircle className="h-6 w-6" />
                   Start Chatting with Kruthika
@@ -125,10 +125,10 @@ export default function BlogPostContent({
               </div>
 
               {/* Content Sections */}
-              <div className="space-y-10">
+              <div className="space-y-12">
                 <section>
-                  <h2 className="text-3xl font-bold mb-6 text-foreground">Why Choose Kruthika as Your AI Girlfriend?</h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-foreground leading-tight">Why Choose Kruthika as Your AI Girlfriend?</h2>
+                  <div className="grid sm:grid-cols-2 gap-5">
                     {[
                       { icon: CheckCircle, text: "100% Free - Unlimited AI girlfriend chat with no hidden costs", color: "text-green-600" },
                       { icon: CheckCircle, text: "No Sign-Up Required - Start chatting instantly", color: "text-blue-600" },
@@ -137,9 +137,9 @@ export default function BlogPostContent({
                       { icon: CheckCircle, text: "Emotional Intelligence - Understands your feelings and provides genuine support", color: "text-orange-600" },
                       { icon: CheckCircle, text: "Privacy Focused - Your conversations are secure and private", color: "text-indigo-600" }
                     ].map((item, idx) => (
-                      <div key={idx} className="flex items-start gap-3 bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <item.icon className={`h-6 w-6 ${item.color} shrink-0 mt-0.5`} />
-                        <p className="text-foreground/90 leading-relaxed">{item.text}</p>
+                      <div key={idx} className="flex items-start gap-4 bg-card border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+                        <item.icon className={`h-6 w-6 ${item.color} shrink-0 mt-1`} />
+                        <p className="text-foreground/90 leading-relaxed text-base">{item.text}</p>
                       </div>
                     ))}
                   </div>
