@@ -294,18 +294,21 @@ main {
 /* WhatsApp-style chat colors */
 .chat-bg-user {
   background-color: #DCF8C6; /* WhatsApp green */
+  box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
 }
 .chat-text-user {
-  color: #1f2937; /* Dark text for contrast */
+  color: #000000; /* Pure black for better WhatsApp-style contrast */
 }
 .chat-bg-ai {
   background-color: #FFFFFF; /* White for AI messages */
+  box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
 }
 .chat-text-ai {
-  color: #1f2937; /* Dark text for contrast */
+  color: #000000; /* Pure black for better contrast */
 }
 .chat-bg-default {
-  background-color: #E5DDD5; /* Light beige for default/system messages */
+  background-color: #E5DDD5; /* WhatsApp beige background */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" opacity="0.06"><path d="M0 0h512v512H0z" fill="%23d9d9d9"/></svg>'); /* WhatsApp-like subtle pattern */
 }
 .chat-header-bg {
   background-color: #25d366; /* WhatsApp bright green header */
