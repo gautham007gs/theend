@@ -592,7 +592,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
     return (
       <div
         className={cn(
-          'px-2 py-1.5 break-words transition-transform duration-100 relative min-w-[60px] max-w-[85%]',
+          'px-3 py-2 break-words transition-transform duration-100 relative min-w-[80px] max-w-[85%]',
           isUser
             ? 'bg-[#D9FDD3] text-[#111B21] rounded-tl-[7.5px] rounded-tr-[7.5px] rounded-bl-[7.5px] rounded-br-[0px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]'
             : isAd
@@ -658,7 +658,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             alt="Sent image"
             width={200}
             height={200}
-            className="rounded-md mb-1 max-w-full h-auto"
+            className="rounded-md mb-2 max-w-full h-auto"
             data-ai-hint={imageHint}
             key={`${message.id}-content-img-${imageToShowUrl}`}
             onError={handleContentImageError}
@@ -671,11 +671,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
             Your browser does not support the audio element.
           </audio>
         )}
-        <div className="relative">
-          {/* Message content with proper spacing for time */}
-          <div className="inline-block pr-[70px] pb-[4px]">{renderMessageContent()}</div>
+        <div className="relative min-h-[20px]">
+          {/* Message content with proper spacing for time - using padding-bottom for space */}
+          <div className="pb-[20px] pr-[8px]">{renderMessageContent()}</div>
           {!isAd && (
-            <div className="absolute bottom-0 right-[7px] flex items-center gap-[3px] whitespace-nowrap">
+            <div className="absolute bottom-[2px] right-[4px] flex items-center gap-[4px] whitespace-nowrap">
               <span className={cn('text-[11px] leading-[15px]',
                 isUser ? 'text-[#667781]' : 'text-[#667781] dark:text-[#8696A0]'
               )}>
