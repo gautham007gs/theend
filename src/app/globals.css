@@ -269,3 +269,50 @@ main {
     height: -webkit-fill-available;
   }
 }
+
+/* Explicitly map chat-specific CSS variables for Tailwind */
+.chat-message-user {
+  @apply bg-chat-bg-user text-chat-text-user;
+}
+
+.chat-message-ai {
+  @apply bg-chat-bg-ai text-chat-text-ai;
+}
+
+.chat-message-default {
+  @apply bg-chat-bg-default;
+}
+
+.chat-header {
+  @apply bg-chat-header-bg text-chat-header-text;
+}
+
+.chat-input {
+  @apply bg-chat-input-bg;
+}
+
+/* WhatsApp-style chat colors */
+.chat-bg-user {
+  background-color: #DCF8C6; /* WhatsApp green */
+}
+.chat-text-user {
+  color: #1f2937; /* Dark text for contrast */
+}
+.chat-bg-ai {
+  background-color: #FFFFFF; /* White for AI messages */
+}
+.chat-text-ai {
+  color: #1f2937; /* Dark text for contrast */
+}
+.chat-bg-default {
+  background-color: #E5DDD5; /* Light beige for default/system messages */
+}
+.chat-header-bg {
+  background-color: #075E54; /* WhatsApp green header */
+}
+.chat-header-text {
+  color: #FFFFFF; /* White text for header */
+}
+.chat-input-bg {
+  background-color: #F0F0F0; /* Light gray for input background */
+}

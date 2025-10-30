@@ -594,10 +594,10 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         className={cn(
           'px-3 py-2 shadow-md break-words transition-transform duration-100 relative',
           isUser
-            ? 'bg-chat-bg-user text-chat-text-user rounded-lg rounded-br-sm'
+            ? 'bg-[#DCF8C6] text-gray-900 rounded-lg rounded-br-sm'
             : isAd
             ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 text-foreground rounded-lg border border-blue-200 dark:border-blue-800'
-            : 'bg-chat-bg-ai text-chat-text-ai rounded-lg rounded-bl-sm'
+            : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg rounded-bl-sm border border-gray-200 dark:border-gray-700'
         )}
         style={{
           transform: !isUser && !isAd ? `translateX(${swipeOffset}px)` : 'none',
@@ -675,7 +675,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         {!isAd && (
           <div className="flex items-center justify-end mt-1">
             <span className={cn('text-xs',
-              isUser ? 'text-chat-text-user/70' : 'text-muted-foreground/90'
+              isUser ? 'text-gray-600' : 'text-muted-foreground/90'
             )}>
               {formatTime(timestamp)}
             </span>

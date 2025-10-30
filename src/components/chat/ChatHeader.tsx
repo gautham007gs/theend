@@ -52,7 +52,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center p-3 bg-[#25d366] border-b border-border shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
+    <header className="flex items-center p-3 bg-[#075E54] border-b border-[#064e46] shadow-md" style={{ minHeight: '64px', maxHeight: '64px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
@@ -60,7 +60,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           e.preventDefault();
           router.push('/');
         }} 
-        className="text-white hover:bg-white/10 mr-2" 
+        className="text-white hover:bg-white/20 mr-2 rounded-full transition-all" 
         style={{ width: '40px', height: '40px', flexShrink: 0 }}
         aria-label="Go back"
       >
@@ -105,7 +105,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/10" 
+        className="text-white hover:bg-white/20 rounded-full transition-all" 
         aria-label="Camera" 
         onClick={() => {
           tryShowRotatedAd(adSettings);
@@ -117,7 +117,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/10" 
+        className="text-white hover:bg-white/20 rounded-full transition-all" 
         aria-label="Video call" 
         onClick={() => {
           tryShowRotatedAd(adSettings);
@@ -129,7 +129,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/10 mr-1" 
+        className="text-white hover:bg-white/20 rounded-full transition-all mr-1" 
         aria-label="Call" 
         onClick={() => {
           tryShowRotatedAd(adSettings);
@@ -144,7 +144,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:bg-white/10" 
+            className="text-white hover:bg-white/20 rounded-full transition-all" 
             aria-label="More options"
             onClick={() => tryShowRotatedAd(adSettings)}
           >

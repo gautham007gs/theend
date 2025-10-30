@@ -2327,7 +2327,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       <DevToolsBlocker />
       <ChatStructuredData />
       <AIGirlfriendFAQSchema />
-      <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-chat-bg-default shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
+      <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-[#E5DDD5] dark:bg-[#0D1418] shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
         <div className="flex-shrink-0 sticky top-0 z-10">
           <ChatHeader
             aiName={displayAIProfile.name}
@@ -2338,7 +2338,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             onVideoClick={handleCallVideoClick}
           />
         </div>
-        <div className="flex-1 overflow-y-auto" style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 overflow-y-auto bg-[#E5DDD5] dark:bg-[#0D1418]" style={{ minHeight: 0, WebkitOverflowScrolling: 'touch', backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M0 0h100v100H0z\' fill=\'%23E5DDD5\'/%3E%3Cpath d=\'M10 10h5v5h-5zM20 20h5v5h-5zM30 30h5v5h-5z\' fill=\'%23D9D0C8\' fill-opacity=\'0.3\'/%3E%3C/svg%3E")', backgroundSize: '100px 100px' }}>
           <ErrorBoundary>
             <ChatView
               messages={messages}
