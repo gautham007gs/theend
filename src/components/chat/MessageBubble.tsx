@@ -388,7 +388,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
       }
     }
 
-    return message.text && <p className="text-[14.2px] leading-[19px] whitespace-pre-wrap pr-[50px]">{message.text}</p>;
+    return message.text && <p className="text-[14.2px] leading-[19px] whitespace-pre-wrap">{message.text}</p>;
   };
 
   // WhatsApp-style View Once Image Component with Dialog - Similar to DP zoom
@@ -672,9 +672,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
           </audio>
         )}
         <div className="relative">
-          <div className="pb-[18px]">{renderMessageContent()}</div>
+          <div className={cn("pb-[18px]", isUser && "pr-[65px]")}>{renderMessageContent()}</div>
           {!isAd && (
-            <div className="absolute bottom-[2px] right-[6px] flex items-center gap-[3px]">
+            <div className="absolute bottom-[2px] right-[6px] flex items-center gap-[3px] whitespace-nowrap">
               <span className={cn('text-[11px] leading-none',
                 isUser ? 'text-gray-600' : 'text-gray-500'
               )}>
