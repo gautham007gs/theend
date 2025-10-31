@@ -2,6 +2,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 
 const CookieConsent = dynamic(() => import('./CookieConsent'), {
   ssr: false,
@@ -13,7 +14,7 @@ const ServiceWorkerRegistration = dynamic(() => import('./ServiceWorkerRegistrat
   loading: () => null
 });
 
-const GlobalAdScripts = dynamic(() => import('./GlobalAdScripts'), {
+const GlobalAdScripts = dynamic(() => import('./GlobalAdScripts').then(mod => ({ default: mod.default })), {
   ssr: false,
   loading: () => null
 });
@@ -38,7 +39,9 @@ export default function ClientComponentsWrapper() {
     <>
       <CookieConsent />
       <ServiceWorkerRegistration />
-      <GlobalAdScripts />
+      <Suspense fallback={null}>
+        <GlobalAdScripts />
+      </Suspense>
       <SocialBarAdDisplay />
       <DevDiagnostics />
       <GoogleAnalytics />
