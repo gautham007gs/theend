@@ -1,0 +1,70 @@
+✓ Starting...
+ ✓ Ready in 2.5s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1431ms (160 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 12.4s (1108 modules)
+Supabase Client: Successfully initialized REAL Supabase client.
+Supabase: Connection pool max: 10
+ GET / 200 in 13385ms
+ ✓ Compiled in 1531ms (453 modules)
+ ○ Compiling /maya-chat ...
+ ⨯ ./src/app/maya-chat/page.tsx
+Error:   × Expected ';', '}' or <eof>
+     ╭─[/home/runner/workspace/src/app/maya-chat/page.tsx:942:1]
+ 939 │       selectedCode = adSettings.adsterraBannerCode;
+ 940 │     } else if (hasMonatagBanner) {
+ 941 │       selectedCode = adSettings.monetagBannerCode;
+ 942 │     }Network);
+     ·      ───┬────
+     ·         ╰── This is the expression part of an expression statement
+ 943 │ 
+ 944 │     // Create banner ad message
+ 945 │     const bannerId = `banner_ad_${Date.now()}`;
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/maya-chat/page.tsx
+ ⨯ ./src/app/maya-chat/page.tsx
+Error:   × Expected ';', '}' or <eof>
+     ╭─[/home/runner/workspace/src/app/maya-chat/page.tsx:942:1]
+ 939 │       selectedCode = adSettings.adsterraBannerCode;
+ 940 │     } else if (hasMonatagBanner) {
+ 941 │       selectedCode = adSettings.monetagBannerCode;
+ 942 │     }Network);
+     ·      ───┬────
+     ·         ╰── This is the expression part of an expression statement
+ 943 │ 
+ 944 │     // Create banner ad message
+ 945 │     const bannerId = `banner_ad_${Date.now()}`;
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/maya-chat/page.tsx
+ ⨯ ./src/app/maya-chat/page.tsx
+Error:   × Expected ';', '}' or <eof>
+     ╭─[/home/runner/workspace/src/app/maya-chat/page.tsx:942:1]
+ 939 │       selectedCode = adSettings.adsterraBannerCode;
+ 940 │     } else if (hasMonatagBanner) {
+ 941 │       selectedCode = adSettings.monetagBannerCode;
+ 942 │     }Network);
+     ·      ───┬────
+     ·         ╰── This is the expression part of an expression statement
+ 943 │ 
+ 944 │     // Create banner ad message
+ 945 │     const bannerId = `banner_ad_${Date.now()}`;
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/maya-chat/page.tsx
+Time 8.729559
+ GET /maya-chat 500 in 10252ms
