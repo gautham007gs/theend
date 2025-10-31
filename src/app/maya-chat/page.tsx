@@ -934,12 +934,17 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
     // Simple selection - prefer Adsterra, fallback to Monetag
     let selectedCode = "";
+    let selectedNetwork = "";
 
     if (hasAdsterraBanner) {
       selectedCode = adSettings.adsterraBannerCode;
+      selectedNetwork = "adsterra";
     } else if (hasMonatagBanner) {
       selectedCode = adSettings.monetagBannerCode;
-    }Network);
+      selectedNetwork = "monetag";
+    }
+
+    localStorage.setItem("last_banner_ad_network", selectedNetwork);
 
     // Create banner ad message
     const bannerId = `banner_ad_${Date.now()}`;
