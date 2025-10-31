@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -41,17 +42,13 @@ const SocialBarAdDisplay: React.FC = () => {
     if (adCodeToInject && adContainerRef.current && !scriptInjectedRef.current) {
       adContainerRef.current.innerHTML = '';
 
-      setTimeout(() => {
-        if (!adContainerRef.current) return;
-
-        try {
-          const fragment = document.createRange().createContextualFragment(adCodeToInject);
-          adContainerRef.current.appendChild(fragment);
-          scriptInjectedRef.current = true;
-        } catch (e) {
-          console.error("Error injecting social bar ad:", e);
-        }
-      }, 500);
+      try {
+        const fragment = document.createRange().createContextualFragment(adCodeToInject);
+        adContainerRef.current.appendChild(fragment);
+        scriptInjectedRef.current = true;
+      } catch (e) {
+        console.error("Error injecting social bar ad:", e);
+      }
     }
   }, [adCodeToInject]);
 

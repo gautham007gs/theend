@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -59,15 +60,11 @@ const GlobalAdScripts: React.FC = () => {
     };
 
     if (adSettings.adsterraPopunderEnabled && !adsterraPopunderInjected.current) {
-      setTimeout(() => {
-        injectScript(adSettings.adsterraPopunderCode, "Adsterra Popunder", adsterraPopunderInjected);
-      }, 5000);
+      injectScript(adSettings.adsterraPopunderCode, "Adsterra Popunder", adsterraPopunderInjected);
     }
 
     if (adSettings.monetagPopunderEnabled && !monetagPopunderInjected.current) {
-      setTimeout(() => {
-        injectScript(adSettings.monetagPopunderCode, "Monetag Popunder", monetagPopunderInjected);
-      }, 7000);
+      injectScript(adSettings.monetagPopunderCode, "Monetag Popunder", monetagPopunderInjected);
     }
   }, [adSettings, isLoadingAdSettings, isClient]);
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -77,13 +78,9 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
     <div
       ref={adContainerRef}
       className={cn(
-        "flex justify-center items-center w-full overflow-visible sticky bottom-0 z-20",
-        "min-h-[90px]",
+        "flex justify-center items-center w-full overflow-visible",
         className
       )}
-      style={{
-        minHeight: adType === 'native' ? '100px' : '90px'
-      }}
       data-ad-placement={placementKey}
       data-ad-type={adType}
     />

@@ -46,8 +46,4 @@ export class ABTestingFramework {
   static getGreetingStyle(): 'casual' | 'romantic' | 'enthusiastic' {
     return this.getVariant('greeting_style', ['casual', 'romantic', 'enthusiastic']) as any;
   }
-
-  static getAdFrequency(): 'low' | 'medium' | 'high' {
-    return this.getVariant('ad_frequency', ['low', 'medium', 'high']) as any;
-  }
 }

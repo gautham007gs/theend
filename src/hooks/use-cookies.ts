@@ -1,7 +1,5 @@
-
 import { useEffect, useState } from 'react';
 import { CookieManager, AIGirlfriendCookies, type UserBehaviorCookies, type CookiePreferences } from '@/lib/cookie-manager';
-import { CookiePerformanceOptimizer } from '@/lib/cookie-performance-optimizer';
 
 export const useCookies = () => {
   const [consentGiven, setConsentGiven] = useState<CookiePreferences | null>(null);
@@ -16,7 +14,7 @@ export const useCookies = () => {
       // Load user behavior data from cookies
       const behavior = AIGirlfriendCookies.getPersonalizedBehavior();
       setUserBehavior(behavior);
-      
+
       // Initialize new user if no data exists
       if (!behavior.relationshipStage) {
         AIGirlfriendCookies.initializeNewUser();
@@ -31,21 +29,11 @@ export const useCookies = () => {
     }
   };
 
-  const trackAdInteraction = (adType: string, action: 'view' | 'click' | 'close') => {
-    if (consentGiven?.advertising) {
-      CookieManager.trackAdInteraction(adType, action);
-    }
-  };
-
   const updateRelationshipStage = (stage: UserBehaviorCookies['relationshipStage']) => {
     if (consentGiven?.personalization) {
       CookieManager.updateRelationshipStage(stage);
       setUserBehavior(prev => ({ ...prev, relationshipStage: stage }));
     }
-  };
-
-  const getOptimalAdTiming = () => {
-    return CookieManager.getOptimalAdTiming();
   };
 
   const trackUserValue = (messageCount: number, sessionDuration: number, imagesSent: number) => {
@@ -67,21 +55,14 @@ export const useCookies = () => {
     return null;
   };
 
-  const analyzeCookiePerformance = () => {
-    return CookiePerformanceOptimizer.analyzeCookieUsage();
-  };
-
   return {
     consentGiven,
     userBehavior,
     updateChatBehavior,
-    trackAdInteraction,
     updateRelationshipStage,
-    getOptimalAdTiming,
     trackUserValue,
     trackSEO,
     getAIPersonality,
-    analyzeCookiePerformance,
     
     // Utility functions
     hasConsent: (type: keyof CookiePreferences) => consentGiven?.[type] || false,
