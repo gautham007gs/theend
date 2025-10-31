@@ -136,72 +136,27 @@ export const useAnalyticsTracking = () => {
       console.log('📊 Analytics: Observing document body as fallback');
     }
 
-    // Enhanced ad tracking
+    // Simple ad presence tracking (no optimization)
     const setupAdTracking = () => {
-      // Track existing ads
-      const adElements = document.querySelectorAll('[data-ad-type], .ad-banner, .ad-container, iframe[src*="ads"]');
+      const adElements = document.querySelectorAll('[data-ad-type]');
       
       adElements.forEach(adElement => {
-        const adType = adElement.getAttribute('data-ad-type') || 
-                      adElement.getAttribute('data-ad-network') ||
-                      'banner';
+        const adType = adElement.getAttribute('data-ad-type') || 'banner';
         
-        // Track ad impressions using Intersection Observer
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-              analyticsTracker.trackAdInteractionPublic(adType, 'view');
-              console.log('📊 Analytics: Ad viewed', adType);
-              observer.unobserve(entry.target);
-            }
-          });
-        }, { 
-          threshold: 0.5,
-          rootMargin: '0px 0px -50px 0px' // Only count when significantly visible
+        // Simple click tracking only
+        adElement.addEventListener('click', () => {
+          console.log('Ad clicked:', adType);
         });
-
-        observer.observe(adElement);
-
-        // Track ad clicks
-        adElement.addEventListener('click', (e) => {
-          analyticsTracker.trackAdInteractionPublic(adType, 'click');
-          console.log('📊 Analytics: Ad clicked', adType);
-        });
-      });
-
-      // Track dynamic ad elements that might be added later
-      const adMutationObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === 1) {
-              const element = node as HTMLElement;
-              const isAd = element.matches('[data-ad-type], .ad-banner, .ad-container') ||
-                          element.querySelector('[data-ad-type], .ad-banner, .ad-container');
-              
-              if (isAd) {
-                setTimeout(() => setupAdTracking(), 1000); // Re-run setup for new ads
-              }
-            }
-          });
-        });
-      });
-
-      adMutationObserver.observe(document.body, {
-        childList: true,
-        subtree: true
       });
     };
 
-    // Set up ad tracking after a delay to ensure ads are loaded
+    // Simple one-time setup
     setTimeout(setupAdTracking, 2000);
-    // Re-run periodically to catch dynamically loaded ads
-    const adTrackingInterval = setInterval(setupAdTracking, 30000);
 
     // Cleanup function
     return () => {
       messageObserver.disconnect();
       clearInterval(sessionInterval);
-      clearInterval(adTrackingInterval);
       
       activityEvents.forEach(event => {
         document.removeEventListener(event, throttledTrackActivity);

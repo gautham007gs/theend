@@ -103,7 +103,7 @@ export class CookiePerformanceOptimizer {
     this.cookieCache.clear();
   }
 
-  // Enhanced cookie usage analysis with performance impact scoring
+  // Cookie usage analysis with performance impact scoring
   static analyzeCookieUsage(): {
     totalSize: number;
     cookieCount: number;

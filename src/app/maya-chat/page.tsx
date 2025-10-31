@@ -932,28 +932,14 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       return;
     }
 
-    // Rotate between networks
-    const lastShownNetwork = localStorage.getItem("last_banner_ad_network") || "";
+    // Simple selection - prefer Adsterra, fallback to Monetag
     let selectedCode = "";
-    let selectedNetwork = "";
 
-    if (hasAdsterraBanner && hasMonatagBanner) {
-      if (lastShownNetwork === "adsterra") {
-        selectedCode = adSettings.monetagBannerCode;
-        selectedNetwork = "monetag";
-      } else {
-        selectedCode = adSettings.adsterraBannerCode;
-        selectedNetwork = "adsterra";
-      }
-    } else if (hasAdsterraBanner) {
+    if (hasAdsterraBanner) {
       selectedCode = adSettings.adsterraBannerCode;
-      selectedNetwork = "adsterra";
     } else if (hasMonatagBanner) {
       selectedCode = adSettings.monetagBannerCode;
-      selectedNetwork = "monetag";
-    }
-
-    localStorage.setItem("last_banner_ad_network", selectedNetwork);
+    }Network);
 
     // Create banner ad message
     const bannerId = `banner_ad_${Date.now()}`;
