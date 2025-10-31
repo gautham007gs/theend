@@ -34,22 +34,39 @@ export const setupAdLazyLoading = (adElementId: string, onVisible: () => void): 
   return observer;
 };
 
-// Track viewability for analytics only
+// Track viewability for analytics and ad network reporting
 export const setupViewabilityTracking = (adElementId: string, onViewable: () => void): IntersectionObserver | null => {
   if (typeof window === 'undefined') return null;
 
   const element = document.getElementById(adElementId);
   if (!element) return null;
 
+  let viewableTimer: NodeJS.Timeout | null = null;
+  let isCurrentlyViewable = false;
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && entry.intersectionRatio >= AD_VIEWABILITY_CONFIG.THRESHOLD) {
-          setTimeout(() => {
-            if (entry.isIntersecting) {
-              onViewable();
-            }
-          }, AD_VIEWABILITY_CONFIG.DURATION);
+          // Ad became viewable
+          if (!isCurrentlyViewable) {
+            isCurrentlyViewable = true;
+            viewableTimer = setTimeout(() => {
+              if (isCurrentlyViewable) {
+                onViewable();
+                // Mark as viewable in DOM for ad network scripts
+                element.setAttribute('data-viewable', 'true');
+                element.setAttribute('data-viewable-at', Date.now().toString());
+              }
+            }, AD_VIEWABILITY_CONFIG.DURATION);
+          }
+        } else {
+          // Ad is no longer viewable
+          if (viewableTimer) {
+            clearTimeout(viewableTimer);
+            viewableTimer = null;
+          }
+          isCurrentlyViewable = false;
         }
       });
     },

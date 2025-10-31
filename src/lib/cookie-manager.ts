@@ -211,10 +211,10 @@ export class CookieManager {
     }
   }
 
-  // Enhanced revenue optimization for ads
+  // Enhanced revenue optimization for ads - AGGRESSIVE CPM BOOST
   static getOptimalAdTiming(): number {
     const preferences = this.getConsentPreferences();
-    if (!preferences?.advertising) return 30000; // Default 30 seconds
+    if (!preferences?.advertising) return 45000; // Longer default = better viewability
     
     const userActiveHours = this.getCookie('active_hours');
     const currentHour = new Date().getHours();
@@ -222,8 +222,8 @@ export class CookieManager {
     const userEngagement = this.getCookie('engagement_score') || '0.5';
     const avgSessionTime = this.getCookie('avg_session_time') || '300';
     
-    // Calculate base timing based on multiple factors
-    let baseTiming = 30000;
+    // Calculate base timing - LONGER for premium ad placement
+    let baseTiming = 45000; // Increased from 30s to 45s
     
     // Active hours adjustment
     if (userActiveHours && userActiveHours.includes(currentHour.toString())) {
