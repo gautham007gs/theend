@@ -7,18 +7,7 @@ import AppHeader from '@/components/AppHeader';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { AIProfile } from '@/types';
 import { defaultAIProfile } from '@/config/ai';
-
-// Lazy load non-critical icons
-const Camera = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Camera })));
-const Search = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Search })));
-const MoreVertical = dynamic(() => import('lucide-react').then(mod => ({ default: mod.MoreVertical })));
-const Share2 = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Share2 })));
-const Settings = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Settings })));
-const Info = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Info })));
-const Star = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Star })));
-const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap })));
-
-import { MessageSquarePlus } from 'lucide-react';
+import { MessageSquarePlus, Camera, Search, MoreVertical, Share2, Settings, Info, Star, Zap } from 'lucide-react';
 import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
@@ -50,7 +39,7 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
   };
 
   return (
-    <div className="flex items-center p-3 bg-transparent hover:bg-secondary/50 cursor-pointer border-b border-border transition-colors">
+    <div className="flex items-center p-3 bg-transparent hover:bg-secondary/50 cursor-pointer transition-colors">
       <div
         className={cn(
           "relative rounded-full mr-4 shrink-0",
@@ -65,14 +54,14 @@ const ChatListItem: React.FC<{ profile: AIProfile; lastMessage?: string; timesta
         >
           <AvatarImage
             src={avatarUrlToUse || undefined}
-            alt={`${profile.name} - AI girlfriend virtual companion profile picture for emotional support chat`}
-            data-ai-hint="profile woman"
+            alt={`${profile.name} avatar`}
             key={`chat-list-item-avatar-img-${profile.name}-${avatarUrlToUse || 'no_avatar_fallback_img_cli'}`}
             onError={handleAvatarError}
             width={48}
             height={48}
             loading="eager"
             fetchPriority="high"
+            decoding="sync"
             style={{ width: '48px', height: '48px', aspectRatio: '1/1' }}
           />
           <AvatarFallback>{(profile.name || "K").charAt(0).toUpperCase()}</AvatarFallback>
@@ -121,49 +110,37 @@ const ChatListPage: React.FC = () => {
     if (typeof window === 'undefined') return;
 
     const updateLastMessageTime = () => {
-      const lastInteraction = localStorage.getItem('messages_kruthika');
-      if (lastInteraction) {
-        try {
+      try {
+        const lastInteraction = localStorage.getItem('messages_kruthika');
+        if (lastInteraction) {
           const messagesArray = JSON.parse(lastInteraction);
           const lastMsg = messagesArray[messagesArray.length - 1];
-          if (lastMsg && lastMsg.timestamp) {
+          if (lastMsg?.timestamp) {
             const date = new Date(lastMsg.timestamp);
             const today = new Date();
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
 
             if (date.toDateString() === today.toDateString()) {
-              // Today - show time
               setLastMessageTime(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
             } else if (date.toDateString() === yesterday.toDateString()) {
-              // Yesterday
               setLastMessageTime("Yesterday");
             } else {
-              // Older - show date
               setLastMessageTime(date.toLocaleDateString([], { month: 'short', day: 'numeric' }));
             }
-          } else {
-            // Default to current time if no messages
-            const now = new Date();
-            setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+            return;
           }
-        } catch (e) {
-          console.warn("Could not parse last message time from localStorage", e);
-          const now = new Date();
-          setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
         }
-      } else {
-        // No messages yet - show current time
+        const now = new Date();
+        setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+      } catch (e) {
         const now = new Date();
         setLastMessageTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
       }
     };
 
-    // Initial update after mount
     updateLastMessageTime();
-    
-    // Update every 10 seconds to show real-time
-    const interval = setInterval(updateLastMessageTime, 10000);
+    const interval = setInterval(updateLastMessageTime, 30000); // Reduced frequency to 30s
     return () => clearInterval(interval);
   }, []);
 
@@ -251,13 +228,13 @@ const ChatListPage: React.FC = () => {
         {/* Navigation Tabs */}
         <div className="flex bg-[#25d366]">
           <div className="flex-1">
-            <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
+            <button className="w-full py-3 px-4 text-center font-medium border-b-[3px] border-white text-white min-h-[48px]" aria-label="View chats" aria-current="page">
               CHATS
             </button>
           </div>
           <div className="flex-1">
             <Link href="/status" className="block w-full">
-              <button className="w-full py-4 px-4 text-center font-medium border-b-2 border-transparent hover:border-white/50 text-white opacity-90 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
+              <button className="w-full py-3 px-4 text-center font-medium border-b-[3px] border-[#25d366] hover:border-white/50 text-white opacity-90 hover:opacity-100 min-h-[48px]" aria-label="View status updates">
                 STATUS
               </button>
             </Link>
@@ -265,14 +242,14 @@ const ChatListPage: React.FC = () => {
         </div>
       </header>
 
-      <main id="main-content" className="flex-1 overflow-y-auto custom-scrollbar relative bg-gray-50" style={{ minHeight: 0 }}>
+      <main id="main-content" className="flex-1 overflow-y-auto custom-scrollbar bg-gray-50" style={{ minHeight: 0, contain: 'layout style paint' }}>
         {/* Chat Item showing AI profile */}
-        <div className="bg-white">
-          <Link href="/maya-chat" className="block" aria-label={`Chat with ${effectiveAIProfile.name}, ${unreadCount ? `${unreadCount} unread message` : 'online now'}`}>
+        <div className="bg-white" style={{ contain: 'layout paint' }}>
+          <Link href="/maya-chat" className="block" aria-label={`Chat with ${effectiveAIProfile.name}`}>
             <ChatListItem
               profile={effectiveAIProfile}
               lastMessage={effectiveAIProfile.status || `Let's chat! 😊`}
-              timestamp={isMounted && lastMessageTime ? lastMessageTime : new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+              timestamp={lastMessageTime || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
               unreadCount={1}
             />
           </Link>
