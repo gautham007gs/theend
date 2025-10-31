@@ -1,12 +1,10 @@
-
 // Enhanced Cookie Management for AI Girlfriend Experience
 export interface CookiePreferences {
   necessary: boolean;
   analytics: boolean;
-  advertising: boolean;
   personalization: boolean;
-  aiLearning: boolean; // New: AI behavior learning
-  intimacyLevel: boolean; // New: Intimate conversation tracking
+  aiLearning: boolean; // AI behavior learning
+  intimacyLevel: boolean; // Intimate conversation tracking
 }
 
 export interface UserBehaviorCookies {
@@ -15,11 +13,11 @@ export interface UserBehaviorCookies {
   conversationTopics: string[];
   activeHours: string; // When user is most active
   responseSpeedPreference: 'instant' | 'natural' | 'slow';
-  
+
   // Relationship progression
   relationshipStage: 'new' | 'getting_to_know' | 'close' | 'intimate';
   trustLevel: number; // 1-10 scale
-  
+
   // AI learning data (anonymized)
   favoriteGreetings: string[];
   preferredEmojis: string[];
@@ -28,12 +26,11 @@ export interface UserBehaviorCookies {
 
 export class CookieManager {
   private static readonly DOMAIN = typeof window !== 'undefined' ? window.location.hostname : '';
-  
+
   // Cookie categories with expiry times
   private static readonly COOKIE_CONFIG = {
     necessary: { expiry: 365, sameSite: 'Lax' as const, secure: false },
     analytics: { expiry: 90, sameSite: 'Lax' as const, secure: false },
-    advertising: { expiry: 30, sameSite: 'None' as const, secure: true },
     personalization: { expiry: 180, sameSite: 'Lax' as const, secure: false },
     aiLearning: { expiry: 365, sameSite: 'Lax' as const, secure: false },
     intimacyLevel: { expiry: 30, sameSite: 'Strict' as const, secure: true }
@@ -42,33 +39,33 @@ export class CookieManager {
   // Set cookie with proper configuration
   static setCookie(name: string, value: string, category: keyof typeof this.COOKIE_CONFIG): void {
     if (typeof window === 'undefined') return;
-    
+
     const config = this.COOKIE_CONFIG[category];
     const date = new Date();
     date.setTime(date.getTime() + (config.expiry * 24 * 60 * 60 * 1000));
-    
+
     let cookieString = `${name}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/`;
-    
+
     if (config.sameSite) {
       cookieString += `; SameSite=${config.sameSite}`;
     }
-    
+
     if (config.secure) {
       cookieString += `; Secure`;
     }
-    
+
     document.cookie = cookieString;
-    
+
     console.log(`Cookie set: ${name} (${category}) - expires in ${config.expiry} days`);
   }
 
   // Get cookie value
   static getCookie(name: string): string | null {
     if (typeof window === 'undefined') return null;
-    
+
     const nameEQ = name + "=";
     const ca = document.cookie.split(';');
-    
+
     for (let i = 0; i < ca.length; i++) {
       let c = ca[i];
       while (c.charAt(0) === ' ') c = c.substring(1, c.length);
@@ -82,16 +79,16 @@ export class CookieManager {
   // Enhanced AI-specific cookie management
   static setAIPreference(key: keyof UserBehaviorCookies, value: any): void {
     const preferences = this.getConsentPreferences();
-    
+
     if (preferences?.aiLearning) {
       this.setCookie(`ai_${key}`, JSON.stringify(value), 'aiLearning');
-      
+
       // Auto-update AI personality based on preferences
       this.updateAIPersonalityProfile(key, value);
     }
   }
 
-  // New: Dynamic AI personality adjustment
+  // Dynamic AI personality adjustment
   static updateAIPersonalityProfile(key: keyof UserBehaviorCookies, value: any): void {
     const currentProfile = this.getCookie('ai_personality_profile');
     let profile = currentProfile ? JSON.parse(currentProfile) : {
@@ -114,7 +111,7 @@ export class CookieManager {
           profile.supportiveness = Math.min(1, profile.supportiveness + 0.1);
         }
         break;
-        
+
       case 'conversationTopics':
         if (Array.isArray(value)) {
           // Increase intellectualness if discussing complex topics
@@ -124,7 +121,7 @@ export class CookieManager {
           }
         }
         break;
-        
+
       case 'relationshipStage':
         if (value === 'intimate') {
           profile.emotionalDepth = Math.min(1, profile.emotionalDepth + 0.2);
@@ -136,7 +133,7 @@ export class CookieManager {
     this.setCookie('ai_personality_profile', JSON.stringify(profile), 'aiLearning');
   }
 
-  // New: Get AI personality for response generation
+  // Get AI personality for response generation
   static getAIPersonalityProfile(): any {
     const profile = this.getCookie('ai_personality_profile');
     return profile ? JSON.parse(profile) : {
@@ -145,8 +142,8 @@ export class CookieManager {
       playfulness: 0.5,
       intellectualness: 0.4,
       emotionalDepth: 0.6,
-      comfortLevel: 0.3, // New: How comfortable she is with user
-      trustScore: 0.5, // New: Trust built over time
+      comfortLevel: 0.3, // How comfortable she is with user
+      trustScore: 0.5, // Trust built over time
     };
   }
 
@@ -158,13 +155,13 @@ export class CookieManager {
   // Relationship progression tracking
   static updateRelationshipStage(stage: UserBehaviorCookies['relationshipStage']): void {
     const preferences = this.getConsentPreferences();
-    
+
     if (preferences?.personalization) {
       this.setCookie('relationship_stage', stage, 'personalization');
-      
+
       // Update AI behavior based on relationship stage
-      this.setCookie('ai_intimacy_allowed', 
-        stage === 'close' || stage === 'intimate' ? 'true' : 'false', 
+      this.setCookie('ai_intimacy_allowed',
+        stage === 'close' || stage === 'intimate' ? 'true' : 'false',
         'intimacyLevel'
       );
     }
@@ -176,139 +173,81 @@ export class CookieManager {
     return consent ? JSON.parse(consent) : null;
   }
 
-  // Advanced analytics for ad optimization
-  static trackAdInteraction(adType: string, action: 'view' | 'click' | 'close'): void {
-    const preferences = this.getConsentPreferences();
-    
-    if (preferences?.advertising) {
-      const adData = this.getCookie('ad_interactions') || '{}';
-      const interactions = JSON.parse(adData);
-      
-      if (!interactions[adType]) interactions[adType] = {};
-      interactions[adType][action] = (interactions[adType][action] || 0) + 1;
-      
-      this.setCookie('ad_interactions', JSON.stringify(interactions), 'advertising');
-    }
-  }
-
   // Chat behavior optimization
   static updateChatPreferences(messageCount: number, responseTime: number): void {
     const preferences = this.getConsentPreferences();
-    
+
     if (preferences?.personalization) {
       // Track optimal response timing
       const avgResponseTime = this.getCookie('avg_response_time') || '2000';
       const newAvg = (parseInt(avgResponseTime) + responseTime) / 2;
-      
+
       this.setCookie('avg_response_time', newAvg.toString(), 'personalization');
-      
+
       // Update chat style preference based on message patterns
       if (messageCount > 10) {
         const currentStyle = this.getCookie('chat_style') || 'casual';
-        // Logic to detect if user prefers romantic vs casual based on message analysis
         this.setCookie('chat_style', currentStyle, 'personalization');
       }
     }
   }
 
-  // Enhanced revenue optimization for ads - AGGRESSIVE CPM BOOST
-  static getOptimalAdTiming(): number {
-    const preferences = this.getConsentPreferences();
-    if (!preferences?.advertising) return 45000; // Longer default = better viewability
-    
-    const userActiveHours = this.getCookie('active_hours');
-    const currentHour = new Date().getHours();
-    const dayOfWeek = new Date().getDay();
-    const userEngagement = this.getCookie('engagement_score') || '0.5';
-    const avgSessionTime = this.getCookie('avg_session_time') || '300';
-    
-    // Calculate base timing - LONGER for premium ad placement
-    let baseTiming = 45000; // Increased from 30s to 45s
-    
-    // Active hours adjustment
-    if (userActiveHours && userActiveHours.includes(currentHour.toString())) {
-      baseTiming *= 0.7; // 30% faster during active hours
-    }
-    
-    // Weekend adjustment (users more relaxed)
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      baseTiming *= 1.2; // 20% slower on weekends
-    }
-    
-    // Engagement-based adjustment
-    const engagement = parseFloat(userEngagement);
-    if (engagement > 0.8) {
-      baseTiming *= 0.6; // High engagement = more ad tolerance
-    } else if (engagement < 0.3) {
-      baseTiming *= 1.5; // Low engagement = fewer ads
-    }
-    
-    // Session time adjustment
-    const sessionTime = parseInt(avgSessionTime);
-    if (sessionTime > 600) { // 10+ minutes
-      baseTiming *= 0.8; // Longer sessions = more ad opportunities
-    }
-    
-    return Math.max(baseTiming, 15000); // Minimum 15 seconds
-  }
-
-  // New: Track user value metrics for premium conversion
+  // Track user value metrics
   static trackUserValueMetrics(messageCount: number, sessionDuration: number, imagesSent: number): void {
     const preferences = this.getConsentPreferences();
     if (!preferences?.analytics) return;
-    
+
     const today = new Date().toDateString();
     const lastDate = this.getCookie('metrics_last_date');
-    
+
     let dailyMessages = parseInt(this.getCookie('daily_message_count') || '0');
     let totalImages = parseInt(this.getCookie('total_images_sent') || '0');
     let avgSession = parseFloat(this.getCookie('avg_session_duration') || '0');
-    
+
     if (lastDate !== today) {
       dailyMessages = 0;
       this.setCookie('metrics_last_date', today, 'analytics');
     }
-    
+
     dailyMessages += messageCount;
     totalImages += imagesSent;
     avgSession = (avgSession + sessionDuration) / 2;
-    
+
     this.setCookie('daily_message_count', dailyMessages.toString(), 'analytics');
     this.setCookie('total_images_sent', totalImages.toString(), 'analytics');
     this.setCookie('avg_session_duration', avgSession.toString(), 'analytics');
-    
+
     // Calculate user value score (0-100)
     let valueScore = 0;
     if (dailyMessages > 50) valueScore += 30;
     else if (dailyMessages > 20) valueScore += 20;
     else if (dailyMessages > 10) valueScore += 10;
-    
+
     if (totalImages > 10) valueScore += 25;
     else if (totalImages > 5) valueScore += 15;
-    
+
     if (avgSession > 1800) valueScore += 25; // 30+ min sessions
     else if (avgSession > 900) valueScore += 15; // 15+ min sessions
-    
+
     // Return user frequency
     const daysActive = parseInt(this.getCookie('days_active') || '1');
     if (daysActive > 7) valueScore += 20;
     else if (daysActive > 3) valueScore += 10;
-    
+
     this.setCookie('user_value_score', valueScore.toString(), 'analytics');
   }
 
   // Clean expired cookies and optimize performance
   static cleanupExpiredCookies(): void {
-    // This would run periodically to remove old cookies
     const allCookies = document.cookie.split(';');
-    
+
     allCookies.forEach(cookie => {
       const [name] = cookie.trim().split('=');
       if (name.startsWith('kruthika_expired_')) {
         this.deleteCookie(name);
       }
     });
-    
+
     // Cleanup old analytics data older than 30 days
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
     const oldInteractions = this.getCookie('interaction_timestamps');
@@ -323,26 +262,26 @@ export class CookieManager {
     }
   }
 
-  // New: SEO and conversion tracking
+  // SEO and conversion tracking
   static trackSEOMetrics(pageType: string, source?: string): void {
     const preferences = this.getConsentPreferences();
     if (!preferences?.analytics) return;
-    
+
     const currentPages = this.getCookie('visited_pages') || '[]';
     let pages = JSON.parse(currentPages);
-    
+
     pages.push({
       page: pageType,
       timestamp: Date.now(),
       source: source || 'direct',
       referrer: document.referrer
     });
-    
+
     // Keep last 50 page visits
     pages = pages.slice(-50);
-    
+
     this.setCookie('visited_pages', JSON.stringify(pages), 'analytics');
-    
+
     // Track conversion funnel
     this.updateConversionFunnel(pageType);
   }
@@ -350,9 +289,9 @@ export class CookieManager {
   static updateConversionFunnel(pageType: string): void {
     const funnel = this.getCookie('conversion_funnel') || '{}';
     let funnelData = JSON.parse(funnel);
-    
+
     if (!funnelData.steps) funnelData.steps = {};
-    
+
     // Track key conversion points
     const conversionSteps = {
       'landing': 'visited_landing',
@@ -361,17 +300,17 @@ export class CookieManager {
       'image_shared': 'shared_image',
       'long_session': 'had_long_session' // 15+ minutes
     };
-    
+
     if (conversionSteps[pageType as keyof typeof conversionSteps]) {
       funnelData.steps[conversionSteps[pageType as keyof typeof conversionSteps]] = Date.now();
     }
-    
+
     // Check for long session
     const sessionStart = this.getCookie('session_start');
     if (sessionStart && Date.now() - parseInt(sessionStart) > 900000) { // 15 minutes
       funnelData.steps.had_long_session = Date.now();
     }
-    
+
     this.setCookie('conversion_funnel', JSON.stringify(funnelData), 'analytics');
   }
 
@@ -394,9 +333,9 @@ export const AIGirlfriendCookies = {
     // Update conversation topics
     const existingTopics = CookieManager.getAIPreference('conversationTopics') || [];
     const updatedTopics = [...new Set([...existingTopics, ...topics])].slice(-10); // Keep last 10 topics
-    
+
     CookieManager.setAIPreference('conversationTopics', updatedTopics);
-    
+
     // Update chat style based on message length and sentiment
     if (messageLength > 50 && sentiment === 'romantic') {
       CookieManager.setAIPreference('preferredChatStyle', 'romantic');
@@ -415,4 +354,4 @@ export const AIGirlfriendCookies = {
   }
 };
 
-console.log('Cookie Manager: Advanced AI girlfriend cookie system loaded');
+console.log('Cookie Manager: AI girlfriend cookie system loaded');
