@@ -21,7 +21,6 @@ const Zap = dynamic(() => import('lucide-react').then(mod => ({ default: mod.Zap
 import { MessageSquarePlus } from 'lucide-react';
 import { useAIProfile } from '@/contexts/AIProfileContext';
 import { useAdSettings } from '@/contexts/AdSettingsContext';
-import { tryShowRotatedAd } from '@/lib/ad-utils';
 import { cn } from '@/lib/utils';
 
 const BannerAdDisplay = dynamic(() => import('@/components/chat/BannerAdDisplay'), {
@@ -203,7 +202,6 @@ const ChatListPage: React.FC = () => {
             <button 
               className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center" 
               aria-label="Open camera"
-              onClick={() => tryShowRotatedAd(adSettings)}
             >
               <Camera size={20} className="text-white" />
             </button>
@@ -214,7 +212,6 @@ const ChatListPage: React.FC = () => {
               <button
                 className="hover:bg-[#1faa55] rounded-full p-2 transition-colors min-w-[48px] min-h-[48px] flex items-center justify-center"
                 onClick={() => {
-                  tryShowRotatedAd(adSettings);
                   setShowDropdown(!showDropdown);
                 }}
                 aria-label="Open menu"

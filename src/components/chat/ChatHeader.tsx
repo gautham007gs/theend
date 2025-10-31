@@ -15,8 +15,7 @@ import {
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { defaultAIProfile } from '@/config/ai';
-import { useAdSettings } from '@/contexts/AdSettingsContext';
-import { tryShowRotatedAd } from '@/lib/ad-utils'; 
+import { useAdSettings } from '@/contexts/AdSettingsContext'; 
 
 interface ChatHeaderProps {
   aiName: string;
@@ -108,7 +107,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         className="text-white hover:bg-white/20 rounded-full transition-all" 
         aria-label="Camera" 
         onClick={() => {
-          tryShowRotatedAd(adSettings);
           router.push('/status');
         }}
       >
@@ -120,7 +118,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         className="text-white hover:bg-white/20 rounded-full transition-all" 
         aria-label="Video call" 
         onClick={() => {
-          tryShowRotatedAd(adSettings);
           onVideoClick();
         }}
       >
@@ -132,7 +129,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         className="text-white hover:bg-white/20 rounded-full transition-all mr-1" 
         aria-label="Call" 
         onClick={() => {
-          tryShowRotatedAd(adSettings);
           onCallClick();
         }}
       >
@@ -146,14 +142,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             size="icon" 
             className="text-white hover:bg-white/20 rounded-full transition-all" 
             aria-label="More options"
-            onClick={() => tryShowRotatedAd(adSettings)}
           >
             <MoreVertical className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => {
-            tryShowRotatedAd(adSettings);
             onAvatarClick();
           }}>
             <span>View Contact</span>

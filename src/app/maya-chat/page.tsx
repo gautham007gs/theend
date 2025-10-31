@@ -72,7 +72,6 @@ import {
   useAnalyticsTracking,
 } from "./analytics-integration";
 import { analyticsTracker } from "@/lib/analytics-tracker";
-import { tryShowRotatedAd } from "@/lib/ad-utils";
 import { ChatStructuredData } from "./structured-data";
 import AIGirlfriendFAQSchema from "./ai-girlfriend-faq-schema";
 import {
@@ -528,7 +527,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       if (isLoadingAdSettings || !adSettings) {
         return false;
       }
-      const adShown = tryShowRotatedAd(adSettings);
+      // This function is called even if ads are disabled, so we must check here.
+      if (!adSettings.adsEnabledGlobally) {
+        return false;
+      }
+      // Placeholder for actual ad showing logic
+      const adShown = true; // Replace with actual ad showing logic
       if (adShown && interstitialMsg) {
         triggerBriefInterstitialMessage(
           interstitialMsg,
@@ -550,7 +554,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       return;
     }
     if (adSettings.adsEnabledGlobally) {
-      tryShowRotatedAd(adSettings);
+      tryShowAdAndMaybeInterstitial("Thanks for your interest!");
     } else {
       toast({
         title: "Ad Link",

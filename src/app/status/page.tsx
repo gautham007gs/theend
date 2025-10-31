@@ -32,7 +32,6 @@ import {
   defaultAdminStatusDisplay,
   defaultManagedContactStatuses,
 } from "@/config/ai";
-import { tryShowRotatedAd } from "@/lib/ad-utils";
 import BannerAdDisplay from "@/components/chat/BannerAdDisplay";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import { useAIProfile } from "@/contexts/AIProfileContext";
