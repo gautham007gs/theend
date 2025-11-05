@@ -28,36 +28,22 @@ export const defaultManagedContactStatuses: ManagedContactStatus[] = [
   { id: "demo3", name: "Sneha 😊", avatarUrl: "https://placehold.co/100x100.png/03A9F4/FFFFFF?text=S", statusText: "Seen 2 hours ago", hasUpdate: false, dataAiHint: "female portrait", statusImageUrl: undefined },
 ];
 
-export const DEFAULT_ADSTERRA_DIRECT_LINK = "https://judicialphilosophical.com/zd46rhxy0?key=3dad0e700ddba4c8c8ace4396dd31e8a";
-export const DEFAULT_MONETAG_DIRECT_LINK = "https://otieu.com/4/9403276";
-
 export const defaultAdSettings: AdSettings = {
   adsEnabledGlobally: true,
   
-  adsterraDirectLink: DEFAULT_ADSTERRA_DIRECT_LINK,
-  adsterraDirectLinkEnabled: true,
   adsterraBannerCode: "<!-- Adsterra Banner Code Placeholder: Paste full script here -->",
   adsterraBannerEnabled: true,
   adsterraNativeBannerCode: "<!-- Adsterra Native Banner Code Placeholder: Paste full script here -->",
   adsterraNativeBannerEnabled: true,
-  adsterraSocialBarCode: "<!-- Adsterra Social Bar Code Placeholder: Paste full script here -->",
-  adsterraSocialBarEnabled: true,
   adsterraPopunderCode: "<!-- Adsterra Pop-under Script Placeholder: Paste full script here -->",
   adsterraPopunderEnabled: true,
 
-  monetagDirectLink: DEFAULT_MONETAG_DIRECT_LINK,
-  monetagDirectLinkEnabled: true,
   monetagBannerCode: "<!-- Monetag Banner Code Placeholder: Paste full script here -->",
   monetagBannerEnabled: true,
   monetagNativeBannerCode: "<!-- Monetag Native Banner Code Placeholder: Paste full script here -->",
   monetagNativeBannerEnabled: true,
-  monetagSocialBarCode: "<!-- Monetag Social Bar Code Placeholder: Paste full script here -->",
-  monetagSocialBarEnabled: true,
   monetagPopunderCode: "<!-- Monetag Pop-under Script Placeholder: Paste full script here -->",
   monetagPopunderEnabled: true,
-
-  maxDirectLinkAdsPerDay: 50,
-  maxDirectLinkAdsPerSession: 20,
 };
 
 // Strategic media assets for psychological engagement

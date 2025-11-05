@@ -66,31 +66,19 @@ export interface ManagedContactStatus {
 export interface AdSettings {
   adsEnabledGlobally: boolean;
 
-  adsterraDirectLink: string;
-  adsterraDirectLinkEnabled: boolean;
   adsterraBannerCode: string;
   adsterraBannerEnabled: boolean;
   adsterraNativeBannerCode: string;
   adsterraNativeBannerEnabled: boolean;
-  adsterraSocialBarCode: string;
-  adsterraSocialBarEnabled: boolean;
   adsterraPopunderCode: string;
   adsterraPopunderEnabled: boolean;
 
-  monetagDirectLink: string;
-  monetagDirectLinkEnabled: boolean;
   monetagBannerCode: string;
   monetagBannerEnabled: boolean;
   monetagNativeBannerCode: string;
   monetagNativeBannerEnabled: boolean;
-  monetagSocialBarCode: string;
-  monetagSocialBarEnabled: boolean;
   monetagPopunderCode: string;
   monetagPopunderEnabled: boolean;
-
-  // New fields for controlling ad frequency
-  maxDirectLinkAdsPerDay: number;
-  maxDirectLinkAdsPerSession: number;
 }
 
 export interface AIMediaAsset {

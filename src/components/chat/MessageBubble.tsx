@@ -17,7 +17,6 @@ interface MessageBubbleProps {
   message: Message;
   aiAvatarUrl: string;
   aiName: string;
-  onTriggerAd?: () => void;
   onQuickReply?: (replyText: string, originalMessage: Message) => void;
   onLikeMessage?: (messageId: string) => void;
   onReactToMessage?: (messageId: string, reaction: MessageReaction) => void;
@@ -27,7 +26,7 @@ interface MessageBubbleProps {
   onAvatarClick?: () => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd, onAvatarClick }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiName, onQuickReply, onLikeMessage, onReactToMessage, currentlySwipingMessageId, onSwipeStart, onSwipeEnd, onAvatarClick }) => {
   const { toast } = useToast(); // Added toast hook
   const isUser = message.sender === 'user';
   const isAd = message.isNativeAd;
@@ -362,14 +361,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, aiAvatarUrl, aiN
         }
         const linkText = match[1];
         parts.push(
-          <Button
+          <span
             key={`adlink-${match.index}`}
-            variant="link"
-            className="text-sm p-0 h-auto inline whitespace-normal text-left hover:underline text-accent-foreground/90 dark:text-accent-foreground"
-            onClick={onTriggerAd}
+            className="text-sm text-accent-foreground/90 dark:text-accent-foreground"
           >
             {linkText}
-          </Button>
+          </span>
         );
         lastIndex = match.index + match[0].length;
       }

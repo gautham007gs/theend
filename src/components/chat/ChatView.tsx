@@ -9,14 +9,13 @@ interface ChatViewProps {
   aiAvatarUrl: string;
   aiName: string;
   isAiTyping: boolean;
-  onTriggerAd?: () => void;
   onQuickReply?: (replyText: string, originalMessage: Message) => void;
   onLikeMessage?: (messageId: string) => void;
   onReactToMessage?: (messageId: string, reaction: MessageReaction) => void;
   onAvatarClick?: () => void;
 }
 
-const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onTriggerAd, onQuickReply, onLikeMessage, onReactToMessage, onAvatarClick }) => {
+const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAiTyping, onQuickReply, onLikeMessage, onReactToMessage, onAvatarClick }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentlySwipingMessageId, setCurrentlySwipingMessageId] = useState<string | null>(null);
 
@@ -72,7 +71,6 @@ const ChatView: React.FC<ChatViewProps> = ({ messages, aiAvatarUrl, aiName, isAi
             message={msg} 
             aiAvatarUrl={aiAvatarUrl} 
             aiName={aiName} 
-            onTriggerAd={onTriggerAd}
             onQuickReply={onQuickReply}
             onLikeMessage={onLikeMessage}
             onReactToMessage={onReactToMessage}

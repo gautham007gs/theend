@@ -19,17 +19,17 @@ const GlobalAdScripts = dynamic(() => import('./GlobalAdScripts').then(mod => ({
   loading: () => null
 });
 
-const SocialBarAdDisplay = dynamic(() => import('./SocialBarAdDisplay'), {
-  ssr: false,
-  loading: () => null
-});
-
 const DevDiagnostics = dynamic(() => import('./DevDiagnostics'), {
   ssr: false,
   loading: () => null
 });
 
 const GoogleAnalytics = dynamic(() => import('./GoogleAnalytics'), {
+  ssr: false,
+  loading: () => null
+});
+
+const OneSignalInit = dynamic(() => import('./OneSignalInit'), {
   ssr: false,
   loading: () => null
 });
@@ -42,9 +42,9 @@ export default function ClientComponentsWrapper() {
       <Suspense fallback={null}>
         <GlobalAdScripts />
       </Suspense>
-      <SocialBarAdDisplay />
       <DevDiagnostics />
       <GoogleAnalytics />
+      <OneSignalInit />
     </>
   );
 }

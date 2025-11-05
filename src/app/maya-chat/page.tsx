@@ -24,8 +24,6 @@ import {
   defaultAIProfile,
   defaultAdSettings,
   defaultAIMediaAssetsConfig,
-  DEFAULT_ADSTERRA_DIRECT_LINK,
-  DEFAULT_MONETAG_DIRECT_LINK,
 } from "@/config/ai";
 import type {
   EmotionalStateInput,
@@ -57,7 +55,6 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { ChatSkeleton } from '@/components/LoadingSkeleton';
 
 
-const SimulatedAdPlaceholder = dynamic(() => import("@/components/chat/SimulatedAdPlaceholder"), { ssr: false });
 const BannerAdDisplay = dynamic(() => import("@/components/chat/BannerAdDisplay"), { 
   ssr: false,
   loading: () => <div className="h-24" />
@@ -82,20 +79,6 @@ import {
 const AI_DISCLAIMER_SHOWN_KEY = "ai_disclaimer_shown_kruthika_chat_v2";
 const AI_DISCLAIMER_DURATION = 2000;
 
-// These constants will now be effectively overridden by AdSettings from context
-// const MAX_ADS_PER_DAY = 6;
-// const MAX_ADS_PER_SESSION = 3;
-const MESSAGES_PER_AD_TRIGGER = 8; // Optimized for better ad frequency
-const INACTIVITY_AD_TIMEOUT_MS = 60000; // 1 minute
-const INACTIVITY_AD_CHANCE = 0.2; // 20% chance
-const REWARD_AD_INTERSTITIAL_DURATION_MS = 3000; // 3 seconds
-const USER_MEDIA_INTERSTITIAL_CHANCE = 0.3; // 30% chance to show ad after user sends media
-
-const APP_ADS_DAILY_COUNT_KEY = "app_ads_daily_count_kruthika_chat";
-const APP_ADS_LAST_SHOWN_DATE_KEY = "app_ads_last_shown_date_kruthika_chat";
-const APP_ADS_SESSION_COUNT_KEY = "app_ads_session_count_kruthika_chat";
-const APP_ADS_LAST_SHOWN_NETWORK_KEY =
-  "app_ads_last_shown_network_kruthika_chat";
 
 const USER_PSEUDO_ID_KEY = "kruthika_chat_user_pseudo_id";
 const LAST_ACTIVE_DATE_KEY = "kruthika_chat_last_active_date";
@@ -496,73 +479,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     null,
   );
 
-  const [messageCountSinceLastAd, setMessageCountSinceLastAd] = useState(0);
-  const [showInterstitialAd, setShowInterstitialAd] = useState(false);
-  const [interstitialAdMessage, setInterstitialAdMessage] =
-    useState("Loading content...");
-
-  const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const interstitialAdTimerRef = useRef<NodeJS.Timeout | null>(null);
   const proactiveMessageTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [lastUserMessageTime, setLastUserMessageTime] = useState<number>(
     Date.now(),
   );
   const userSentMediaThisTurnRef = useRef(false);
 
-  const triggerBriefInterstitialMessage = (
-    message: string,
-    duration: number = REWARD_AD_INTERSTITIAL_DURATION_MS,
-  ) => {
-    setInterstitialAdMessage(message);
-    setShowInterstitialAd(true);
-    if (interstitialAdTimerRef.current)
-      clearTimeout(interstitialAdTimerRef.current);
-    interstitialAdTimerRef.current = setTimeout(() => {
-      setShowInterstitialAd(false);
-    }, duration);
-  };
-
-  const tryShowAdAndMaybeInterstitial = useCallback(
-    (interstitialMsg?: string): boolean => {
-      if (isLoadingAdSettings || !adSettings) {
-        return false;
-      }
-      // This function is called even if ads are disabled, so we must check here.
-      if (!adSettings.adsEnabledGlobally) {
-        return false;
-      }
-      // Placeholder for actual ad showing logic
-      const adShown = true; // Replace with actual ad showing logic
-      if (adShown && interstitialMsg) {
-        triggerBriefInterstitialMessage(
-          interstitialMsg,
-          REWARD_AD_INTERSTITIAL_DURATION_MS,
-        );
-      }
-      return adShown;
-    },
-    [adSettings, isLoadingAdSettings],
-  );
-
-  const handleBubbleAdTrigger = useCallback(() => {
-    if (isLoadingAdSettings || !adSettings) {
-      toast({
-        title: "Ad Link",
-        description: "Ad settings are loading. Try again shortly.",
-        duration: 3000,
-      });
-      return;
-    }
-    if (adSettings.adsEnabledGlobally) {
-      tryShowAdAndMaybeInterstitial("Thanks for your interest!");
-    } else {
-      toast({
-        title: "Ad Link",
-        description: "This link would normally open an ad if enabled.",
-        duration: 3000,
-      });
-    }
-  }, [adSettings, isLoadingAdSettings]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && supabase) {
@@ -750,42 +672,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     return { hour: istDate.getHours(), minutes: istDate.getMinutes() };
   };
 
-  const maybeTriggerAdOnMessageCount = useCallback(() => {
-    if (isLoadingAdSettings || !adSettings || !adSettings.adsEnabledGlobally)
-      return;
-    setMessageCountSinceLastAd((prev) => {
-      const newCount = prev + 1;
-      if (newCount >= MESSAGES_PER_AD_TRIGGER) {
-        tryShowAdAndMaybeInterstitial("Thanks for chatting!");
-        return 0;
-      }
-      return newCount;
-    });
-  }, [tryShowAdAndMaybeInterstitial, adSettings, isLoadingAdSettings]);
-
-  const resetInactivityTimer = useCallback(() => {
-    if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-    if (adSettings && adSettings.adsEnabledGlobally) {
-      inactivityTimerRef.current = setTimeout(() => {
-        if (Math.random() < INACTIVITY_AD_CHANCE) {
-          tryShowAdAndMaybeInterstitial(
-            "Still there? Here's something interesting!",
-          );
-        }
-      }, INACTIVITY_AD_TIMEOUT_MS);
-    }
-  }, [tryShowAdAndMaybeInterstitial, adSettings]);
-
   useEffect(() => {
-    resetInactivityTimer();
     return () => {
-      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
-      if (interstitialAdTimerRef.current)
-        clearTimeout(interstitialAdTimerRef.current);
       if (proactiveMessageTimerRef.current)
         clearTimeout(proactiveMessageTimerRef.current);
     };
-  }, [messages, resetInactivityTimer]);
+  }, [messages]);
 
   // Set up proactive messaging timer
   useEffect(() => {
@@ -1087,8 +979,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     // Gather user type data for intelligent AI behavior
     const userTypeData = getUserTypeData();
 
-    resetInactivityTimer();
-
     let imageAttemptedAndAllowed = false;
 
     if (currentImageUri) {
@@ -1121,8 +1011,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     userSentMediaThisTurnRef.current = !!currentImageUri;
 
     setMessages((prev) => [...prev, newUserMessage]);
-    if (adSettings && adSettings.adsEnabledGlobally)
-      maybeTriggerAdOnMessageCount();
 
     // Track total message count for native ad (6 messages total)
     setTotalMessageCount(prev => prev + 1);
@@ -1362,11 +1250,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       }
 
       if (aiResult.proactiveImageUrl || aiResult.proactiveAudioUrl) {
-        if (adSettings && adSettings.adsEnabledGlobally) {
-          tryShowAdAndMaybeInterstitial(
-            `Loading ${currentEffectiveAIProfile.name}'s share...`,
-          );
-        }
         await new Promise((resolve) => setTimeout(resolve, 200));
       }
 
@@ -1456,8 +1339,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         // Schedule realistic read receipt after AI starts typing (not immediate)
         const readReceiptDelay = Math.random() * 3000 + 1000; // 1-4 seconds delay
         scheduleReadReceipt(newUserMessage.id, readReceiptDelay);
-        if (adSettings && adSettings.adsEnabledGlobally)
-          maybeTriggerAdOnMessageCount();
 
         // Track total messages and show native ad after exactly 6 messages
         setTotalMessageCount(prev => {
@@ -1523,9 +1404,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         if (mediaType === "image") {
           markImageAsSent(url);
         }
-
-        if (adSettings && adSettings.adsEnabledGlobally)
-          maybeTriggerAdOnMessageCount();
 
         // Track total messages
         setTotalMessageCount(prev => {
@@ -1680,13 +1558,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       }
 
       if (userSentMediaThisTurnRef.current) {
-        if (
-          adSettings &&
-          adSettings.adsEnabledGlobally &&
-          Math.random() < USER_MEDIA_INTERSTITIAL_CHANCE
-        ) {
-          tryShowAdAndMaybeInterstitial("Just a moment...");
-        }
         userSentMediaThisTurnRef.current = false;
       }
     } catch (error: any) {
@@ -1720,8 +1591,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         );
         return [...updatedMessages, errorAiMessage];
       });
-      if (adSettings && adSettings.adsEnabledGlobally)
-        maybeTriggerAdOnMessageCount();
       setIsAiTyping(false);
       userSentMediaThisTurnRef.current = false;
     }
@@ -1783,8 +1652,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             status: "read",
           };
           setMessages((prev) => [...prev, offlineMessage]);
-          if (adSettings && adSettings.adsEnabledGlobally)
-            maybeTriggerAdOnMessageCount();
           setRecentInteractions((prev) =>
             [...prev, `AI: ${offlineResult.message}`].slice(-10),
           );
@@ -1833,7 +1700,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
     recentInteractions,
     isLoadingChatState,
     toast,
-    maybeTriggerAdOnMessageCount,
     isLoadingAdSettings,
     isLoadingAIProfile,
     isLoadingMediaAssets,
@@ -2007,16 +1873,11 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   };
 
   const handleCallVideoClick = () => {
-    if (isLoadingAdSettings || !adSettings) return;
-    if (adSettings && adSettings.adsEnabledGlobally) {
-      tryShowAdAndMaybeInterstitial("Connecting...");
-    } else {
-      toast({
-        title: "Call Feature",
-        description: "Calls are simulated and may trigger ads if enabled.",
-        duration: 3000,
-      });
-    }
+    toast({
+      title: "Call Feature",
+      description: "Calls are simulated.",
+      duration: 3000,
+    });
   };
 
   const handleQuickReply = (replyText: string, originalMessage: Message) => {
@@ -2340,7 +2201,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
               aiAvatarUrl={displayAIProfile.avatarUrl}
               aiName={displayAIProfile.name}
               isAiTyping={isAiTyping}
-              onTriggerAd={handleBubbleAdTrigger}
               onQuickReply={handleQuickReply}
               onLikeMessage={handleLikeMessage}
               onReactToMessage={handleReactToMessage}
@@ -2348,19 +2208,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             />
           </ErrorBoundary>
         </div>
-
-        {showInterstitialAd && (
-          <SimulatedAdPlaceholder
-            type="interstitial"
-            onClose={() => {
-              setShowInterstitialAd(false);
-              if (interstitialAdTimerRef.current)
-                clearTimeout(interstitialAdTimerRef.current);
-            }}
-            message={interstitialAdMessage}
-            duration={REWARD_AD_INTERSTITIAL_DURATION_MS}
-          />
-        )}
 
         {/* Banner Ad above input */}
         <div className="flex-shrink-0 border-t border-border/30 sticky bottom-16 z-10 bg-chat-bg-default">

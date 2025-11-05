@@ -448,8 +448,25 @@ const AdminProfilePage: React.FC = () => {
     // If asset has storage metadata, delete from Supabase Storage first
     if (asset.storagePath && asset.storageBucket) {
       try {
+        if (!supabase) {
+          toast({ title: "Error", description: "Supabase client not available", variant: "destructive" });
+          return;
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          toast({ title: "Error", description: "Not authenticated. Please login again.", variant: "destructive" });
+          router.replace('/admin/login?returnUrl=/admin/profile');
+          return;
+        }
+
         const response = await fetch(`/api/upload?path=${encodeURIComponent(asset.storagePath)}&bucket=${encodeURIComponent(asset.storageBucket)}`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -499,6 +516,16 @@ const AdminProfilePage: React.FC = () => {
     setUploadProgress(`Uploading ${file.name}...`);
 
     try {
+      if (!supabase) {
+        throw new Error('Supabase client not available');
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Not authenticated. Please login again.');
+      }
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('type', type);
@@ -506,6 +533,10 @@ const AdminProfilePage: React.FC = () => {
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
