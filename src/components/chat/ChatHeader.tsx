@@ -51,7 +51,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center p-3 bg-[#25d366] border-b border-[#1faa55] shadow-md" style={{ minHeight: '64px', maxHeight: '64px' }}>
+    <header className="flex items-center p-3 bg-[#F0F2F5] border-b border-[#E4E6EB] shadow-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
@@ -59,7 +59,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           e.preventDefault();
           router.push('/');
         }} 
-        className="text-white hover:bg-white/20 mr-2 rounded-full transition-all" 
+        className="text-[#54656F] hover:bg-[#E4E6EB] mr-2 rounded-full transition-all" 
         style={{ width: '40px', height: '40px', flexShrink: 0 }}
         aria-label="Go back"
       >
@@ -68,8 +68,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <button 
         onClick={onAvatarClick} 
         className={cn(
-            "flex items-center focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-chat-header-bg rounded-full p-1 mr-3",
-            aiName === "Kruthika" && "border-2 border-white p-0.5" 
+            "flex items-center focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-[#F0F2F5] rounded-full p-1 mr-3",
+            aiName === "Kruthika" && "border-2 border-[#00A884] p-0.5" 
         )}
         style={{ width: '48px', height: '48px', flexShrink: 0 }}
         key={`avatar-header-wrapper-${aiName}-${avatarUrlToUse || 'default_wrapper_key_ch'}`}
@@ -97,14 +97,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </Avatar>
       </button>
       <div className="flex-grow cursor-pointer" onClick={onAvatarClick}>
-        <h1 className="font-semibold text-lg text-white">{aiName}</h1>
-        <p className="text-xs text-white/80">{onlineStatus}</p>
+        <h1 className="font-semibold text-base text-[#111B21]">{aiName}</h1>
+        <p className="text-xs text-[#667781]">{onlineStatus}</p>
       </div >
 
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/20 rounded-full transition-all" 
+        className="text-[#54656F] hover:bg-[#E4E6EB] rounded-full transition-all" 
         aria-label="Camera" 
         onClick={() => {
           router.push('/status');
@@ -115,7 +115,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/20 rounded-full transition-all" 
+        className="text-[#54656F] hover:bg-[#E4E6EB] rounded-full transition-all" 
         aria-label="Video call" 
         onClick={() => {
           onVideoClick();
@@ -126,7 +126,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/20 rounded-full transition-all mr-1" 
+        className="text-[#54656F] hover:bg-[#E4E6EB] rounded-full transition-all mr-1" 
         aria-label="Call" 
         onClick={() => {
           onCallClick();
@@ -140,7 +140,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:bg-white/20 rounded-full transition-all" 
+            className="text-[#54656F] hover:bg-[#E4E6EB] rounded-full transition-all" 
             aria-label="More options"
           >
             <MoreVertical className="h-5 w-5" />

@@ -2236,7 +2236,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         directLinkUrl={directLinkUrl} 
         onClose={closeDirectLinkAd} 
       />
-      <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-[#ECE5DD] dark:bg-[#0D1418] shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
+      <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-[#EFEAE2] dark:bg-[#0D1418] shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
         <div className="flex-shrink-0 sticky top-0 z-10">
           <ChatHeader
             aiName={displayAIProfile.name}
@@ -2247,7 +2247,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
             onVideoClick={handleCallVideoClick}
           />
         </div>
-        <div className="flex-1 overflow-y-auto bg-[#ECE5DD] dark:bg-[#0D1418]" style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 overflow-y-auto bg-[#EFEAE2] dark:bg-[#0D1418]" style={{ minHeight: 0, WebkitOverflowScrolling: 'touch' }}>
           <ErrorBoundary>
             <ChatView
               messages={messages}
