@@ -125,20 +125,17 @@
   @apply bg-muted px-2 py-1 rounded text-sm font-mono;
 }
 
-/* Enhanced chat background - soft, eye-friendly gradient */
+/* WhatsApp-style clean background - no animations for performance */
 .bg-grid-pattern {
-  background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 25%, #fbcfe8 50%, #fce7f3 75%, #fdf2f8 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background: #ECE5DD;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* Removed animation for better performance */
 
-/* Alternative WhatsApp-style pattern overlay */
+/* WhatsApp-style subtle texture overlay */
 .chat-container {
   position: relative;
 }
@@ -151,10 +148,9 @@
   right: 0;
   bottom: 0;
   background-image: 
-    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(236, 72, 153, 0.02) 10px, rgba(236, 72, 153, 0.02) 20px),
-    repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(219, 39, 119, 0.02) 10px, rgba(219, 39, 119, 0.02) 20px);
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h60v60H0z' fill='%23ECE5DD'/%3E%3Cpath d='M30 30m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0' fill='%23D9D0C8' fill-opacity='0.15'/%3E%3C/svg%3E");
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.4;
 }
 
 /* Native ad styling in chat */
@@ -331,8 +327,7 @@ main {
   color: #000000; /* Pure black for better contrast */
 }
 .chat-bg-default {
-  background-color: #E5DDD5; /* WhatsApp beige background */
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" opacity="0.06"><path d="M0 0h512v512H0z" fill="%23d9d9d9"/></svg>'); /* WhatsApp-like subtle pattern */
+  background-color: #ECE5DD; /* Cleaner WhatsApp beige background */
 }
 .chat-header-bg {
   background-color: #25d366; /* WhatsApp bright green header */

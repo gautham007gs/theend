@@ -99,8 +99,8 @@ const nextConfig: NextConfig = {
   compress: true, // Enable Gzip/Brotli compression
   poweredByHeader: false,
   reactStrictMode: true,
-  productionBrowserSourceMaps: true, // Enable source maps for better debugging
-  typedRoutes: true, // Enable typed routes for better type safety
+  productionBrowserSourceMaps: false, // Disable for faster builds
+  typedRoutes: false, // Disable for faster compilation
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
@@ -108,6 +108,11 @@ const nextConfig: NextConfig = {
     reactRemoveProperties: process.env.NODE_ENV === 'production' ? {
       properties: ['^data-test', '^data-testid']
     } : false,
+  },
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{member}}',
+    },
   },
 
   // Performance optimizations for large scale
@@ -150,6 +155,11 @@ const nextConfig: NextConfig = {
     webpackBuildWorker: true,
     cssChunking: 'strict',
     inlineCss: true,
+    turbo: {
+      resolveAlias: {
+        'lucide-react': 'lucide-react/dist/esm/lucide-react.js'
+      }
+    },
   },
 
   // Turbopack configuration 
