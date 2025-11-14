@@ -295,7 +295,7 @@ export default function FAQPage() {
             </div>
           </header>
 
-          <BannerAdDisplay adType="standard" placementKey="faq-header" className="mb-8" />
+          <BannerAdDisplay placementKey="faq-header" className="mb-8" />
 
           <div className="space-y-4 mb-12">
             {filteredFaqs.map((faq, index) => (
@@ -329,7 +329,7 @@ export default function FAQPage() {
             </div>
           )}
 
-          <BannerAdDisplay adType="native" placementKey="faq-middle" className="mb-12" />
+          <BannerAdDisplay placementKey="faq-middle" className="mb-12" />
 
           <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-200 rounded-lg p-8 text-center mb-12">
             <h2 className="text-2xl font-bold mb-4">Still Have Questions?</h2>

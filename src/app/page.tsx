@@ -292,7 +292,7 @@ const ChatListPage: React.FC = () => {
 
         {/* Banner Ad - Footer */}
         <div className="bg-white mt-4 pb-4">
-          <BannerAdDisplay adType="standard" placementKey="homepage-footer" className="py-2" />
+          <BannerAdDisplay placementKey="homepage-footer" className="py-2" />
         </div>
       </main>
 

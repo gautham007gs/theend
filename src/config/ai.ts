@@ -28,22 +28,35 @@ export const defaultManagedContactStatuses: ManagedContactStatus[] = [
   { id: "demo3", name: "Sneha 😊", avatarUrl: "https://placehold.co/100x100.png/03A9F4/FFFFFF?text=S", statusText: "Seen 2 hours ago", hasUpdate: false, dataAiHint: "female portrait", statusImageUrl: undefined },
 ];
 
+// Default direct link URLs for ad networks
+export const DEFAULT_ADSTERRA_DIRECT_LINK = "https://www.profitablecpmrate.com/cfe28perz?key=8b84a37b0c3f0e8a9c5d6e7f8a9b0c1d";
+export const DEFAULT_MONETAG_DIRECT_LINK = "https://www.monetag.com/c/default?key=1a2b3c4d5e6f7g8h9i0j";
+
 export const defaultAdSettings: AdSettings = {
   adsEnabledGlobally: true,
   
   adsterraBannerCode: "<!-- Adsterra Banner Code Placeholder: Paste full script here -->",
   adsterraBannerEnabled: true,
-  adsterraNativeBannerCode: "<!-- Adsterra Native Banner Code Placeholder: Paste full script here -->",
-  adsterraNativeBannerEnabled: true,
   adsterraPopunderCode: "<!-- Adsterra Pop-under Script Placeholder: Paste full script here -->",
   adsterraPopunderEnabled: true,
+  adsterraSocialBarCode: "<!-- Adsterra Social Bar Code Placeholder: Paste full script here -->",
+  adsterraSocialBarEnabled: false,
+  adsterraDirectLink: DEFAULT_ADSTERRA_DIRECT_LINK,
+  adsterraDirectLinkEnabled: false,
 
   monetagBannerCode: "<!-- Monetag Banner Code Placeholder: Paste full script here -->",
   monetagBannerEnabled: true,
-  monetagNativeBannerCode: "<!-- Monetag Native Banner Code Placeholder: Paste full script here -->",
-  monetagNativeBannerEnabled: true,
   monetagPopunderCode: "<!-- Monetag Pop-under Script Placeholder: Paste full script here -->",
   monetagPopunderEnabled: true,
+  monetagSocialBarCode: "<!-- Monetag Social Bar Code Placeholder: Paste full script here -->",
+  monetagSocialBarEnabled: false,
+  monetagDirectLink: DEFAULT_MONETAG_DIRECT_LINK,
+  monetagDirectLinkEnabled: false,
+
+  maxDirectLinkAdsPerDay: 3,
+  maxDirectLinkAdsPerSession: 2,
+  directLinkMessageInterval: 10,
+  directLinkInactivityMinutes: 2,
 };
 
 // Strategic media assets for psychological engagement

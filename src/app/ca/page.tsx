@@ -46,7 +46,7 @@ export default function CanadaPage() {
             </Link>
           </div>
 
-          <BannerAdDisplay adType="standard" placementKey="ca-hero" className="mb-12" />
+          <BannerAdDisplay placementKey="ca-hero" className="mb-12" />
 
           <section className="mb-16">
             <h2 className="text-3xl font-bold text-center mb-8">Why Canadians Choose Kruthika</h2>

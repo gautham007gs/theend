@@ -86,7 +86,7 @@ export default function BlogPostTemplate({
 
           {/* Top Banner Ad */}
           <div className="px-6 sm:px-10 lg:px-16 pt-8">
-            <BannerAdDisplay adType="standard" placementKey="blog-top" className="mb-6" />
+            <BannerAdDisplay placementKey="blog-top" className="mb-6" />
           </div>
 
           {/* Main Content */}
@@ -98,7 +98,7 @@ export default function BlogPostTemplate({
 
           {/* Mid-content Native Banner Ad - Better Positioned */}
           <div className="px-6 sm:px-10 lg:px-16 py-6 bg-muted/30">
-            <BannerAdDisplay adType="native" placementKey="blog-mid-native" className="my-4" />
+            <BannerAdDisplay placementKey="blog-mid-native" className="my-4" />
           </div>
 
           {/* FAQ Section */}
@@ -182,8 +182,8 @@ export default function BlogPostTemplate({
 
         {/* Bottom Banner Ads - After article */}
         <div className="mt-8 space-y-6">
-          <BannerAdDisplay adType="standard" placementKey="blog-bottom" className="rounded-xl overflow-hidden" />
-          <BannerAdDisplay adType="native" placementKey="blog-bottom-native" className="rounded-xl overflow-hidden" />
+          <BannerAdDisplay placementKey="blog-bottom" className="rounded-xl overflow-hidden" />
+          <BannerAdDisplay placementKey="blog-bottom-native" className="rounded-xl overflow-hidden" />
         </div>
       </div>
     </div>

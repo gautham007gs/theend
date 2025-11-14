@@ -140,8 +140,8 @@ export default function BlogPage() {
         </div>
 
         {/* Banner Ads */}
-        <BannerAdDisplay adType="standard" placementKey="blog-header" className="mb-8" />
-        <BannerAdDisplay adType="native" placementKey="blog-header-native" className="mb-12" />
+        <BannerAdDisplay placementKey="blog-header" className="mb-8" />
+        <BannerAdDisplay placementKey="blog-header-native" className="mb-12" />
 
         <div className="max-w-4xl mx-auto px-4">
           <div className="grid gap-8">
@@ -188,7 +188,7 @@ export default function BlogPage() {
           </div>
 
           {/* Mid-content Banner Ad */}
-          <BannerAdDisplay adType="native" placementKey="blog-middle" className="my-8" />
+          <BannerAdDisplay placementKey="blog-middle" className="my-8" />
 
           {/* Mid-content CTA */}
           <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-200 rounded-lg p-8 text-center my-8">
@@ -256,8 +256,8 @@ export default function BlogPage() {
           </div>
 
           {/* Footer Banner Ads */}
-          <BannerAdDisplay adType="standard" placementKey="blog-footer" className="mt-8 mb-4" />
-          <BannerAdDisplay adType="native" placementKey="blog-footer-native" className="mt-4 mb-8" />
+          <BannerAdDisplay placementKey="blog-footer" className="mt-8 mb-4" />
+          <BannerAdDisplay placementKey="blog-footer-native" className="mt-4 mb-8" />
 
           {/* Enhanced Final CTA */}
           <div className="text-center mt-12">

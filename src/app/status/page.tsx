@@ -442,12 +442,10 @@ const StatusPage: React.FC = () => {
       {/* Banner Ads - Fixed to Bottom */}
       <div className="flex-shrink-0 sticky bottom-0 z-10 bg-white border-t border-border/30">
         <BannerAdDisplay
-          adType="standard"
           placementKey="status-banner"
           className="mb-0"
         />
         <BannerAdDisplay
-          adType="native"
           placementKey="status-native"
           className="mb-0"
         />

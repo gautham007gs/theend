@@ -68,17 +68,26 @@ export interface AdSettings {
 
   adsterraBannerCode: string;
   adsterraBannerEnabled: boolean;
-  adsterraNativeBannerCode: string;
-  adsterraNativeBannerEnabled: boolean;
   adsterraPopunderCode: string;
   adsterraPopunderEnabled: boolean;
+  adsterraSocialBarCode: string;
+  adsterraSocialBarEnabled: boolean;
+  adsterraDirectLink: string;
+  adsterraDirectLinkEnabled: boolean;
 
   monetagBannerCode: string;
   monetagBannerEnabled: boolean;
-  monetagNativeBannerCode: string;
-  monetagNativeBannerEnabled: boolean;
   monetagPopunderCode: string;
   monetagPopunderEnabled: boolean;
+  monetagSocialBarCode: string;
+  monetagSocialBarEnabled: boolean;
+  monetagDirectLink: string;
+  monetagDirectLinkEnabled: boolean;
+
+  maxDirectLinkAdsPerDay: number;
+  maxDirectLinkAdsPerSession: number;
+  directLinkMessageInterval: number;
+  directLinkInactivityMinutes: number;
 }
 
 export interface AIMediaAsset {

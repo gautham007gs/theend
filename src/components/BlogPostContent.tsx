@@ -102,7 +102,7 @@ export default function BlogPostContent({
             {/* Top Ad */}
             <div className="px-6 sm:px-10 lg:px-16 pt-8">
               <Suspense fallback={<div className="h-32 bg-gradient-to-r from-muted/50 to-muted animate-pulse rounded-xl mb-6" />}>
-                <BannerAdDisplay adType="standard" placementKey={`blog-header-${slug}`} className="mb-6" />
+                <BannerAdDisplay placementKey={`blog-header-${slug}`} className="mb-6" />
               </Suspense>
             </div>
 
@@ -126,7 +126,7 @@ export default function BlogPostContent({
               {/* Native Ad in middle of content */}
               <div className="py-6 bg-muted/30 -mx-6 sm:-mx-10 lg:-mx-16 px-6 sm:px-10 lg:px-16 mt-10">
                 <Suspense fallback={<div className="h-32 bg-gradient-to-r from-muted/50 to-muted animate-pulse rounded-xl" />}>
-                  <BannerAdDisplay adType="native" placementKey={`blog-mid-${slug}`} className="my-4" />
+                  <BannerAdDisplay placementKey={`blog-mid-${slug}`} className="my-4" />
                 </Suspense>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function BlogPostContent({
             {/* Bottom Ad */}
             <div className="px-6 sm:px-10 lg:px-16 pb-8">
               <Suspense fallback={<div className="h-32 bg-gradient-to-r from-muted/50 to-muted animate-pulse rounded-xl" />}>
-                <BannerAdDisplay adType="standard" placementKey={`blog-footer-${slug}`} className="my-6" />
+                <BannerAdDisplay placementKey={`blog-footer-${slug}`} className="my-6" />
               </Suspense>
             </div>
 

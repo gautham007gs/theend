@@ -6,12 +6,11 @@ import { useAdSettings } from '@/contexts/AdSettingsContext';
 import { cn } from '@/lib/utils';
 
 interface BannerAdDisplayProps {
-  adType: 'standard' | 'native';
   placementKey: string;
   className?: string;
 }
 
-const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey, className }) => {
+const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ placementKey, className }) => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const [isVisible, setIsVisible] = useState(false);
   const [adCodeToInject, setAdCodeToInject] = useState<string | null>(null);
@@ -28,18 +27,11 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
 
     let selectedAdCode = "";
 
-    if (adType === 'standard') {
-      if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode) {
-        selectedAdCode = adSettings.adsterraBannerCode;
-      } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode) {
-        selectedAdCode = adSettings.monetagBannerCode;
-      }
-    } else if (adType === 'native') {
-      if (adSettings.adsterraNativeBannerEnabled && adSettings.adsterraNativeBannerCode) {
-        selectedAdCode = adSettings.adsterraNativeBannerCode;
-      } else if (adSettings.monetagNativeBannerEnabled && adSettings.monetagNativeBannerCode) {
-        selectedAdCode = adSettings.monetagNativeBannerCode;
-      }
+    // Only standard banners - prioritize Adsterra, fall back to Monetag
+    if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode) {
+      selectedAdCode = adSettings.adsterraBannerCode;
+    } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode) {
+      selectedAdCode = adSettings.monetagBannerCode;
     }
 
     if (selectedAdCode.trim()) {
@@ -50,7 +42,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
       setIsVisible(false);
       scriptInjectedRef.current = false;
     }
-  }, [adSettings, isLoadingAdSettings, adType]);
+  }, [adSettings, isLoadingAdSettings]);
 
   useEffect(() => {
     if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings) {
@@ -65,10 +57,10 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         adContainerRef.current.appendChild(fragment);
         scriptInjectedRef.current = true;
       } catch (e) {
-        console.error(`Error injecting ${adType} banner ad:`, e);
+        console.error(`Error injecting banner ad:`, e);
       }
     }
-  }, [adCodeToInject, isVisible, adType, isLoadingAdSettings]);
+  }, [adCodeToInject, isVisible, isLoadingAdSettings]);
 
   if (isLoadingAdSettings || !isVisible || !adCodeToInject) {
     return null;
@@ -82,7 +74,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ adType, placementKey,
         className
       )}
       data-ad-placement={placementKey}
-      data-ad-type={adType}
+      data-ad-type="standard"
     />
   );
 };

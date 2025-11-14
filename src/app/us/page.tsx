@@ -84,7 +84,7 @@ export default function USAPage() {
             </div>
           </div>
 
-          <BannerAdDisplay adType="standard" placementKey="us-hero" className="mb-12" />
+          <BannerAdDisplay placementKey="us-hero" className="mb-12" />
 
           {/* Why Americans Choose Kruthika */}
           <section className="mb-16">
@@ -147,7 +147,7 @@ export default function USAPage() {
             </div>
           </section>
 
-          <BannerAdDisplay adType="native" placementKey="us-mid" className="mb-12" />
+          <BannerAdDisplay placementKey="us-mid" className="mb-12" />
 
           {/* Popular in USA Cities */}
           <section className="mb-16">

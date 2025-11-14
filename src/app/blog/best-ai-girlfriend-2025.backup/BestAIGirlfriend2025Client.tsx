@@ -32,7 +32,7 @@ export default function BestAIGirlfriend2025Client() {
               </p>
             </header>
 
-            <BannerAdDisplay adType="standard" placementKey="blog-best-2025" className="mb-8" />
+            <BannerAdDisplay placementKey="blog-best-2025" className="mb-8" />
 
             <div className="prose prose-lg max-w-none">
               <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">

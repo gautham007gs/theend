@@ -133,11 +133,22 @@ const AdminProfilePage: React.FC = () => {
       if (adConfigError && adConfigError.code !== 'PGRST116') throw adConfigError;
       const adSettingsData = adConfigData?.settings;
 
-      const mergedAdSettings = {
+      const mergedAdSettings: AdSettings = {
         ...defaultAdSettings,
         ...(adSettingsData as Partial<AdSettings>),
-        maxDirectLinkAdsPerDay: (adSettingsData as AdSettings)?.maxDirectLinkAdsPerDay ?? defaultAdSettings.maxDirectLinkAdsPerDay,
-        maxDirectLinkAdsPerSession: (adSettingsData as AdSettings)?.maxDirectLinkAdsPerSession ?? defaultAdSettings.maxDirectLinkAdsPerSession,
+        // Explicitly default social bar and direct link fields to handle stale Supabase data
+        adsterraSocialBarCode: (adSettingsData as AdSettings)?.adsterraSocialBarCode ?? defaultAdSettings.adsterraSocialBarCode,
+        adsterraSocialBarEnabled: (adSettingsData as AdSettings)?.adsterraSocialBarEnabled ?? defaultAdSettings.adsterraSocialBarEnabled,
+        adsterraDirectLink: (adSettingsData as AdSettings)?.adsterraDirectLink ?? defaultAdSettings.adsterraDirectLink,
+        adsterraDirectLinkEnabled: (adSettingsData as AdSettings)?.adsterraDirectLinkEnabled ?? defaultAdSettings.adsterraDirectLinkEnabled,
+        monetagSocialBarCode: (adSettingsData as AdSettings)?.monetagSocialBarCode ?? defaultAdSettings.monetagSocialBarCode,
+        monetagSocialBarEnabled: (adSettingsData as AdSettings)?.monetagSocialBarEnabled ?? defaultAdSettings.monetagSocialBarEnabled,
+        monetagDirectLink: (adSettingsData as AdSettings)?.monetagDirectLink ?? defaultAdSettings.monetagDirectLink,
+        monetagDirectLinkEnabled: (adSettingsData as AdSettings)?.monetagDirectLinkEnabled ?? defaultAdSettings.monetagDirectLinkEnabled,
+        maxDirectLinkAdsPerDay: Number((adSettingsData as AdSettings)?.maxDirectLinkAdsPerDay) || defaultAdSettings.maxDirectLinkAdsPerDay,
+        maxDirectLinkAdsPerSession: Number((adSettingsData as AdSettings)?.maxDirectLinkAdsPerSession) || defaultAdSettings.maxDirectLinkAdsPerSession,
+        directLinkMessageInterval: Number((adSettingsData as AdSettings)?.directLinkMessageInterval) || defaultAdSettings.directLinkMessageInterval,
+        directLinkInactivityMinutes: Number((adSettingsData as AdSettings)?.directLinkInactivityMinutes) || defaultAdSettings.directLinkInactivityMinutes,
       };
       setAdSettings(mergedAdSettings);
 
@@ -839,11 +850,28 @@ const AdminProfilePage: React.FC = () => {
                               setUploadProgress(`Uploading ${file.name}...`);
 
                               try {
+                                if (!supabase) {
+                                  throw new Error('Supabase client not available');
+                                }
+
+                                const { data: { session } } = await supabase.auth.getSession();
+                                
+                                if (!session) {
+                                  throw new Error('Not authenticated. Please login again.');
+                                }
+
                                 const formData = new FormData();
                                 formData.append('file', file);
                                 formData.append('type', type);
 
-                                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+                                const response = await fetch('/api/upload', {
+                                  method: 'POST',
+                                  body: formData,
+                                  headers: {
+                                    'Authorization': `Bearer ${session.access_token}`,
+                                  },
+                                  credentials: 'include',
+                                });
                                 if (!response.ok) throw new Error((await response.json()).error || 'Upload failed');
 
                                 const result = await response.json();
@@ -1123,13 +1151,6 @@ const AdminProfilePage: React.FC = () => {
                       <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
                       <div className="flex items-center space-x-2 pt-1"><Switch id="adsterraBannerEnabled" checked={adSettings.adsterraBannerEnabled} onCheckedChange={(checked) => handleAdSettingChange('adsterraBannerEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="adsterraBannerEnabled" className="text-sm font-medium">Enable Adsterra Banner Ad</Label></div>
                     </div>
-                     {/* Adsterra Native Banner */}
-                    <div className="border-b border-border/50 pb-4 space-y-2">
-                        <Label htmlFor="adsterraNativeBannerCode" className="font-medium text-sm">Native Banner Code</Label>
-                        <Textarea id="adsterraNativeBannerCode" value={adSettings.adsterraNativeBannerCode} onChange={(e) => handleAdSettingChange('adsterraNativeBannerCode', e.target.value)} placeholder="<!-- Adsterra Native Banner Code -->" className="min-h-[100px] font-mono text-xs" disabled={!adSettings.adsEnabledGlobally}/>
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
-                        <div className="flex items-center space-x-2 pt-1"><Switch id="adsterraNativeBannerEnabled" checked={adSettings.adsterraNativeBannerEnabled} onCheckedChange={(checked) => handleAdSettingChange('adsterraNativeBannerEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="adsterraNativeBannerEnabled" className="text-sm font-medium">Enable Adsterra Native Banner</Label></div>
-                    </div>
                     {/* Adsterra Social Bar */}
                     <div className="border-b border-border/50 pb-4 space-y-2">
                         <Label htmlFor="adsterraSocialBarCode" className="font-medium text-sm">Social Bar Code</Label>
@@ -1168,13 +1189,6 @@ const AdminProfilePage: React.FC = () => {
                       <Textarea id="monetagBannerCode" value={adSettings.monetagBannerCode} onChange={(e) => handleAdSettingChange('monetagBannerCode', e.target.value)} placeholder="<!-- Monetag Banner Code -->" className="min-h-[100px] font-mono text-xs" disabled={!adSettings.adsEnabledGlobally}/>
                       <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
                       <div className="flex items-center space-x-2 pt-1"><Switch id="monetagBannerEnabled" checked={adSettings.monetagBannerEnabled} onCheckedChange={(checked) => handleAdSettingChange('monetagBannerEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="monetagBannerEnabled" className="text-sm font-medium">Enable Monetag Banner Ad</Label></div>
-                    </div>
-                    {/* Monetag Native Banner */}
-                    <div className="border-b border-border/50 pb-4 space-y-2">
-                        <Label htmlFor="monetagNativeBannerCode" className="font-medium text-sm">Native Banner Code</Label>
-                        <Textarea id="monetagNativeBannerCode" value={adSettings.monetagNativeBannerCode} onChange={(e) => handleAdSettingChange('monetagNativeBannerCode', e.target.value)} placeholder="<!-- Monetag Native Banner Code -->" className="min-h-[100px] font-mono text-xs" disabled={!adSettings.adsEnabledGlobally}/>
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
-                        <div className="flex items-center space-x-2 pt-1"><Switch id="monetagNativeBannerEnabled" checked={adSettings.monetagNativeBannerEnabled} onCheckedChange={(checked) => handleAdSettingChange('monetagNativeBannerEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="monetagNativeBannerEnabled" className="text-sm font-medium">Enable Monetag Native Banner</Label></div>
                     </div>
                     {/* Monetag Social Bar */}
                     <div className="border-b border-border/50 pb-4 space-y-2">

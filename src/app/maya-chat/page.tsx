@@ -59,6 +59,13 @@ const BannerAdDisplay = dynamic(() => import("@/components/chat/BannerAdDisplay"
   ssr: false,
   loading: () => <div className="h-24" />
 });
+const SocialBarAdDisplay = dynamic(() => import("@/components/chat/SocialBarAdDisplay"), { 
+  ssr: false
+});
+const DirectLinkAd = dynamic(() => import("@/components/chat/DirectLinkAd"), { 
+  ssr: false
+});
+import { useDirectLinkAds } from "@/hooks/useDirectLinkAds";
 import { supabase } from "@/lib/supabaseClient";
 import { format, isToday } from "date-fns";
 import { useAdSettings } from "@/contexts/AdSettingsContext";
@@ -457,6 +464,15 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const { adSettings, isLoadingAdSettings } = useAdSettings();
   const { aiProfile: globalAIProfile, isLoadingAIProfile } = useAIProfile();
   const { mediaAssetsConfig, isLoadingMediaAssets } = useAIMediaAssets();
+  
+  // Direct link ads system
+  const { 
+    shouldShow: showDirectLinkAd, 
+    directLinkUrl, 
+    onUserMessage: onDirectLinkUserMessage, 
+    onAIResponse: onDirectLinkAIResponse, 
+    closeAd: closeDirectLinkAd 
+  } = useDirectLinkAds();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [aiMood, setAiMood] = useState<string>("neutral");
@@ -773,6 +789,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           };
 
           setMessages((prev) => [...prev, proactiveMessage]);
+          
+          // Track proactive AI message for direct link ads
+          onDirectLinkAIResponse();
+          
           setRecentInteractions((prevInteractions) =>
             [...prevInteractions, `AI: ${proactiveResult.message}`].slice(-10),
           );
@@ -978,6 +998,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
     // Gather user type data for intelligent AI behavior
     const userTypeData = getUserTypeData();
+    
+    // Track user message for direct link ads
+    onDirectLinkUserMessage();
 
     let imageAttemptedAndAllowed = false;
 
@@ -1335,6 +1358,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           status: "read",
         };
         setMessages((prev) => [...prev, newAiMessage]);
+        
+        // Track AI response for direct link ads
+        onDirectLinkAIResponse();
 
         // Schedule realistic read receipt after AI starts typing (not immediate)
         const readReceiptDelay = Math.random() * 3000 + 1000; // 1-4 seconds delay
@@ -1399,6 +1425,9 @@ const KruthikaChatPage: NextPage = React.memo(() => {
           isViewOnce: mediaType === "image", // All AI images are view-once
         };
         setMessages((prev) => [...prev, newAiMediaMessage]);
+        
+        // Track AI media message for direct link ads
+        onDirectLinkAIResponse();
 
         // Mark image as sent
         if (mediaType === "image") {
@@ -2183,6 +2212,12 @@ const KruthikaChatPage: NextPage = React.memo(() => {
       <DevToolsBlocker />
       <ChatStructuredData />
       <AIGirlfriendFAQSchema />
+      <SocialBarAdDisplay />
+      <DirectLinkAd 
+        isVisible={showDirectLinkAd} 
+        directLinkUrl={directLinkUrl} 
+        onClose={closeDirectLinkAd} 
+      />
       <div className="fixed inset-0 flex flex-col max-w-3xl mx-auto bg-[#E5DDD5] dark:bg-[#0D1418] shadow-2xl overflow-hidden" style={{ height: '100dvh' }}>
         <div className="flex-shrink-0 sticky top-0 z-10">
           <ChatHeader
@@ -2211,7 +2246,7 @@ const KruthikaChatPage: NextPage = React.memo(() => {
 
         {/* Banner Ad above input */}
         <div className="flex-shrink-0 border-t border-border/30 sticky bottom-16 z-10 bg-chat-bg-default">
-          <BannerAdDisplay adType="standard" placementKey="maya-chat-input" className="mb-0" />
+          <BannerAdDisplay placementKey="maya-chat-input" className="mb-0" />
         </div>
 
         <div className="flex-shrink-0 sticky bottom-0 z-10 bg-chat-input-bg">
