@@ -478,6 +478,10 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   const [aiMood, setAiMood] = useState<string>("neutral");
   const [isAiTyping, setIsAiTyping] = useState(false);
   const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
+  
+  // Track shared images to prevent duplicates - MUST be at component top level
+  const recentlySharedImages = useRef<Set<string>>(new Set());
+  const MAX_TRACKED_IMAGES = 20; // Keep track of last 20 images
 
   // Mobile optimizations and memory leak prevention
   useMobileOptimization();
@@ -1464,10 +1468,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         const userMessageCount = messages.filter(m => m.sender === 'user').length;
         return userMessageCount > 5 && Math.random() < 0.7; // 70% chance - higher engagement
       };
-
-      // Track shared images to prevent duplicates
-      const recentlySharedImages = useRef<Set<string>>(new Set());
-      const MAX_TRACKED_IMAGES = 20; // Keep track of last 20 images
 
       // Check for random image drop opportunity
       if (shouldDropRandomImage() && !aiResult.proactiveImageUrl) {
