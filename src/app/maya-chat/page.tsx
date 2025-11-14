@@ -1459,24 +1459,42 @@ const KruthikaChatPage: NextPage = React.memo(() => {
         );
       };
 
-      // Random image drop for engagement (10% chance after 5+ messages)
+      // Random image drop for engagement (70% chance after 5+ messages)
       const shouldDropRandomImage = () => {
         const userMessageCount = messages.filter(m => m.sender === 'user').length;
-        return userMessageCount > 5 && Math.random() < 0.1; // 10% chance
+        return userMessageCount > 5 && Math.random() < 0.7; // 70% chance - higher engagement
       };
+
+      // Track shared images to prevent duplicates
+      const recentlySharedImages = useRef<Set<string>>(new Set());
+      const MAX_TRACKED_IMAGES = 20; // Keep track of last 20 images
 
       // Check for random image drop opportunity
       if (shouldDropRandomImage() && !aiResult.proactiveImageUrl) {
         const randomImageUrl = getContextualImage(text, getTimeOfDay());
-        if (randomImageUrl) {
+        
+        // Prevent duplicate image sharing
+        if (randomImageUrl && !recentlySharedImages.current.has(randomImageUrl)) {
           const randomCaptions = [
             "btw dekho ye pic mil gayi 😊",
             "arre wait, ye pic share karna tha",
             "ohh forgot to share this",
             "look what i found 📸",
-            "random pic drop 😛"
+            "random pic drop 😛",
+            "ye dekho! 📷",
+            "just remembered this pic ✨",
+            "sharing this with you 💕"
           ];
           const randomCaption = randomCaptions[Math.floor(Math.random() * randomCaptions.length)];
+
+          // Add to tracked images
+          recentlySharedImages.current.add(randomImageUrl);
+          
+          // Clean up old entries if too many
+          if (recentlySharedImages.current.size > MAX_TRACKED_IMAGES) {
+            const firstItem = recentlySharedImages.current.values().next().value;
+            recentlySharedImages.current.delete(firstItem);
+          }
 
           await processAiMediaMessage("image", randomImageUrl, randomCaption);
         }

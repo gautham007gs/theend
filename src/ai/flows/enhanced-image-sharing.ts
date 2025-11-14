@@ -57,13 +57,13 @@ export function getImageSharingResponse(context: ImageSharingContext): ImageShar
   } else if (relationshipLevel < 0.3) {
     responseType = 'new_friend_decline';
   } else if (relationshipLevel < 0.6) {
-    shouldShare = Math.random() < 0.3; // 30% chance for developing friendship
+    shouldShare = Math.random() < 0.5; // 50% chance for developing friendship (increased)
     responseType = shouldShare ? 'casual_share' : 'shy_decline';
   } else if (relationshipLevel < 0.8) {
-    shouldShare = Math.random() < 0.6; // 60% chance for good friends
+    shouldShare = Math.random() < 0.75; // 75% chance for good friends (increased)
     responseType = shouldShare ? 'friend_share' : 'playful_decline';
   } else {
-    shouldShare = Math.random() < 0.8; // 80% chance for close friends
+    shouldShare = Math.random() < 0.9; // 90% chance for close friends (increased)
     responseType = shouldShare ? 'close_friend_share' : 'teasing_decline';
   }
 
@@ -168,6 +168,10 @@ function generatePlaceholderImageUrl(imageType: string, context: ImageSharingCon
   }
 }
 
+// Track recently shared images globally to prevent repetition
+const recentlySharedImageTypes = new Set<string>();
+const MAX_IMAGE_HISTORY = 10;
+
 // Handle when AI wants to proactively share images (mood-based, time-based)
 export function getProactiveImageShare(
   timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night',
@@ -176,11 +180,11 @@ export function getProactiveImageShare(
   language: string
 ): ImageSharingResponse | null {
   
-  // Only share proactively with close friends (relationship > 0.7)
-  if (relationshipLevel < 0.7) return null;
+  // Only share proactively with close friends (relationship > 0.6) - lowered threshold
+  if (relationshipLevel < 0.6) return null;
   
-  // Random chance for proactive sharing (5% chance)
-  if (Math.random() > 0.05) return null;
+  // Random chance for proactive sharing (12% chance - increased from 5%)
+  if (Math.random() > 0.12) return null;
 
   const proactiveMessages: Record<string, Record<string, string>> = {
     hindi: {
@@ -206,12 +210,26 @@ export function getProactiveImageShare(
   const langMessages = proactiveMessages[language as keyof typeof proactiveMessages] || proactiveMessages.english;
   const message = langMessages[timeOfDay];
   
-  // Choose appropriate image type for time
-  let imageType: 'selfie' | 'casual' | 'activity' | 'food' | 'place';
-  if (timeOfDay === 'morning') imageType = 'casual';
-  else if (timeOfDay === 'afternoon') imageType = 'selfie';
-  else if (timeOfDay === 'evening') imageType = 'place';
-  else imageType = 'casual';
+  // Choose appropriate image type for time with variety
+  const availableTypes: Array<'selfie' | 'casual' | 'activity' | 'food' | 'place'> = [];
+  
+  if (timeOfDay === 'morning') availableTypes.push('casual', 'food');
+  else if (timeOfDay === 'afternoon') availableTypes.push('selfie', 'activity');
+  else if (timeOfDay === 'evening') availableTypes.push('place', 'selfie');
+  else availableTypes.push('casual');
+
+  // Filter out recently used types for variety
+  const freshTypes = availableTypes.filter(t => !recentlySharedImageTypes.has(t));
+  const imageType = freshTypes.length > 0 
+    ? freshTypes[Math.floor(Math.random() * freshTypes.length)]
+    : availableTypes[Math.floor(Math.random() * availableTypes.length)];
+
+  // Track this image type
+  recentlySharedImageTypes.add(imageType);
+  if (recentlySharedImageTypes.size > MAX_IMAGE_HISTORY) {
+    const firstItem = recentlySharedImageTypes.values().next().value;
+    recentlySharedImageTypes.delete(firstItem);
+  }
 
   return {
     shouldShareImage: true,
