@@ -51,7 +51,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center px-3 py-2 bg-[#008069] dark:bg-[#1f2c33] border-b border-black/5 shadow-sm" style={{ minHeight: '60px', maxHeight: '60px' }}>
+    <header className="flex items-center px-3 py-2 bg-[#f0f2f5] dark:bg-[#202c33] border-b border-border/20 shadow-sm" style={{ minHeight: '60px', maxHeight: '60px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
@@ -59,7 +59,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           e.preventDefault();
           router.push('/');
         }} 
-        className="text-white hover:bg-white/10 mr-1 rounded-full transition-colors active:bg-white/20" 
+        className="text-[#54656f] hover:bg-[#54656f]/10 mr-1 rounded-full transition-colors active:bg-[#54656f]/20" 
         style={{ width: '40px', height: '40px', flexShrink: 0 }}
         aria-label="Go back"
       >
@@ -94,14 +94,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </Avatar>
       </button>
       <div className="flex-grow cursor-pointer min-w-0" onClick={onAvatarClick}>
-        <h1 className="font-medium text-[16px] text-white leading-tight truncate">{aiName}</h1>
-        <p className="text-[13px] text-white/85 leading-tight truncate">{onlineStatus}</p>
+        <h1 className="font-medium text-[16px] text-[#111b21] dark:text-white leading-tight truncate">{aiName}</h1>
+        <p className="text-[13px] text-[#667781] dark:text-[#8696a0] leading-tight truncate">{onlineStatus}</p>
       </div>
 
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/10 rounded-full transition-colors active:bg-white/20 ml-1" 
+        className="text-[#54656f] dark:text-[#aebac1] hover:bg-[#54656f]/10 rounded-full transition-colors active:bg-[#54656f]/20 ml-1" 
         aria-label="Video call" 
         onClick={() => {
           onVideoClick();
@@ -113,7 +113,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white hover:bg-white/10 rounded-full transition-colors active:bg-white/20" 
+        className="text-[#54656f] dark:text-[#aebac1] hover:bg-[#54656f]/10 rounded-full transition-colors active:bg-[#54656f]/20" 
         aria-label="Call" 
         onClick={() => {
           onCallClick();
@@ -128,7 +128,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:bg-white/10 rounded-full transition-colors active:bg-white/20" 
+            className="text-[#54656f] dark:text-[#aebac1] hover:bg-[#54656f]/10 rounded-full transition-colors active:bg-[#54656f]/20" 
             aria-label="More options"
             style={{ width: '40px', height: '40px', flexShrink: 0 }}
           >

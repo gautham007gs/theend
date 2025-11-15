@@ -68,19 +68,23 @@ export interface AdSettings {
 
   adsterraBannerCode: string;
   adsterraBannerEnabled: boolean;
-  adsterraPopunderCode: string;
-  adsterraPopunderEnabled: boolean;
+  adsterraNativeBannerCode: string;
+  adsterraNativeBannerEnabled: boolean;
   adsterraSocialBarCode: string;
   adsterraSocialBarEnabled: boolean;
+  adsterraPopunderCode: string;
+  adsterraPopunderEnabled: boolean;
   adsterraDirectLink: string;
   adsterraDirectLinkEnabled: boolean;
 
   monetagBannerCode: string;
   monetagBannerEnabled: boolean;
-  monetagPopunderCode: string;
-  monetagPopunderEnabled: boolean;
+  monetagNativeBannerCode: string;
+  monetagNativeBannerEnabled: boolean;
   monetagSocialBarCode: string;
   monetagSocialBarEnabled: boolean;
+  monetagPopunderCode: string;
+  monetagPopunderEnabled: boolean;
   monetagDirectLink: string;
   monetagDirectLinkEnabled: boolean;
 

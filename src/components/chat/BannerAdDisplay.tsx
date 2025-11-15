@@ -26,12 +26,30 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ placementKey, classNa
     }
 
     let selectedAdCode = "";
+    const isBlogPage = typeof window !== 'undefined' && window.location.pathname.startsWith('/blog');
 
-    // Only standard banners - prioritize Adsterra, fall back to Monetag
-    if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode) {
-      selectedAdCode = adSettings.adsterraBannerCode;
-    } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode) {
-      selectedAdCode = adSettings.monetagBannerCode;
+    // Check if this is a native banner placement (blog pages only)
+    if (placementKey.includes('native')) {
+      if (!isBlogPage) {
+        setIsVisible(false);
+        setAdCodeToInject(null);
+        scriptInjectedRef.current = false;
+        return;
+      }
+      
+      // Native banners - prioritize Adsterra, fall back to Monetag
+      if (adSettings.adsterraNativeBannerEnabled && adSettings.adsterraNativeBannerCode) {
+        selectedAdCode = adSettings.adsterraNativeBannerCode;
+      } else if (adSettings.monetagNativeBannerEnabled && adSettings.monetagNativeBannerCode) {
+        selectedAdCode = adSettings.monetagNativeBannerCode;
+      }
+    } else {
+      // Standard banners - prioritize Adsterra, fall back to Monetag
+      if (adSettings.adsterraBannerEnabled && adSettings.adsterraBannerCode) {
+        selectedAdCode = adSettings.adsterraBannerCode;
+      } else if (adSettings.monetagBannerEnabled && adSettings.monetagBannerCode) {
+        selectedAdCode = adSettings.monetagBannerCode;
+      }
     }
 
     if (selectedAdCode.trim()) {
@@ -42,7 +60,7 @@ const BannerAdDisplay: React.FC<BannerAdDisplayProps> = ({ placementKey, classNa
       setIsVisible(false);
       scriptInjectedRef.current = false;
     }
-  }, [adSettings, isLoadingAdSettings]);
+  }, [adSettings, isLoadingAdSettings, placementKey]);
 
   useEffect(() => {
     if (!isVisible || !adCodeToInject || scriptInjectedRef.current || isLoadingAdSettings) {

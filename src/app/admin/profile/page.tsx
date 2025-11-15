@@ -1158,6 +1158,13 @@ const AdminProfilePage: React.FC = () => {
                         <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
                         <div className="flex items-center space-x-2 pt-1"><Switch id="adsterraSocialBarEnabled" checked={adSettings.adsterraSocialBarEnabled} onCheckedChange={(checked) => handleAdSettingChange('adsterraSocialBarEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="adsterraSocialBarEnabled" className="text-sm font-medium">Enable Adsterra Social Bar</Label></div>
                     </div>
+                    {/* Adsterra Native Banner */}
+                    <div className="border-b border-border/50 pb-4 space-y-2">
+                      <Label htmlFor="adsterraNativeBannerCode" className="font-medium text-sm">Native Banner Code (Blog Pages Only)</Label>
+                      <Textarea id="adsterraNativeBannerCode" value={adSettings.adsterraNativeBannerCode} onChange={(e) => handleAdSettingChange('adsterraNativeBannerCode', e.target.value)} placeholder="<!-- Adsterra Native Banner Code -->" className="min-h-[100px] font-mono text-xs" disabled={!adSettings.adsEnabledGlobally}/>
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
+                      <div className="flex items-center space-x-2 pt-1"><Switch id="adsterraNativeBannerEnabled" checked={adSettings.adsterraNativeBannerEnabled} onCheckedChange={(checked) => handleAdSettingChange('adsterraNativeBannerEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="adsterraNativeBannerEnabled" className="text-sm font-medium">Enable Adsterra Native Banner</Label></div>
+                    </div>
                     {/* Adsterra Pop-under */}
                     <div className="space-y-2">
                       <Label htmlFor="adsterraPopunderCode" className="font-medium text-sm">Pop-under Script Code</Label>
@@ -1196,6 +1203,13 @@ const AdminProfilePage: React.FC = () => {
                         <Textarea id="monetagSocialBarCode" value={adSettings.monetagSocialBarCode} onChange={(e) => handleAdSettingChange('monetagSocialBarCode', e.target.value)} placeholder="<!-- Monetag Social Bar Code -->" className="min-h-[100px] font-mono text-xs" disabled={!adSettings.adsEnabledGlobally}/>
                         <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
                         <div className="flex items-center space-x-2 pt-1"><Switch id="monetagSocialBarEnabled" checked={adSettings.monetagSocialBarEnabled} onCheckedChange={(checked) => handleAdSettingChange('monetagSocialBarEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="monetagSocialBarEnabled" className="text-sm font-medium">Enable Monetag Social Bar</Label></div>
+                    </div>
+                    {/* Monetag Native Banner */}
+                    <div className="border-b border-border/50 pb-4 space-y-2">
+                      <Label htmlFor="monetagNativeBannerCode" className="font-medium text-sm">Native Banner Code (Blog Pages Only)</Label>
+                      <Textarea id="monetagNativeBannerCode" value={adSettings.monetagNativeBannerCode} onChange={(e) => handleAdSettingChange('monetagNativeBannerCode', e.target.value)} placeholder="<!-- Monetag Native Banner Code -->" className="min-h-[100px] font-mono text-xs" disabled={!adSettings.adsEnabledGlobally}/>
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center"><Info size={13} className="mr-1 shrink-0"/>{scriptPasteInstruction}</p>
+                      <div className="flex items-center space-x-2 pt-1"><Switch id="monetagNativeBannerEnabled" checked={adSettings.monetagNativeBannerEnabled} onCheckedChange={(checked) => handleAdSettingChange('monetagNativeBannerEnabled', checked)} disabled={!adSettings.adsEnabledGlobally}/><Label htmlFor="monetagNativeBannerEnabled" className="text-sm font-medium">Enable Monetag Native Banner</Label></div>
                     </div>
                     {/* Monetag Pop-under */}
                     <div className="space-y-2">

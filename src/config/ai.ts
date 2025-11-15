@@ -1,4 +1,3 @@
-
 import type { AIProfile, AvatarOption, AdminStatusDisplay, ManagedContactStatus, AdSettings, AIMediaAssetsConfig } from '@/types';
 
 // For AIProfile.avatarUrl, AvatarOption.url, and statusStoryImageUrl:
@@ -34,22 +33,26 @@ export const DEFAULT_MONETAG_DIRECT_LINK = "https://www.monetag.com/c/default?ke
 
 export const defaultAdSettings: AdSettings = {
   adsEnabledGlobally: true,
-  
+
   adsterraBannerCode: "<!-- Adsterra Banner Code Placeholder: Paste full script here -->",
   adsterraBannerEnabled: true,
-  adsterraPopunderCode: "<!-- Adsterra Pop-under Script Placeholder: Paste full script here -->",
-  adsterraPopunderEnabled: true,
+  adsterraNativeBannerCode: "", // Added for native banner option
+  adsterraNativeBannerEnabled: false, // Added for native banner option
   adsterraSocialBarCode: "<!-- Adsterra Social Bar Code Placeholder: Paste full script here -->",
   adsterraSocialBarEnabled: false,
+  adsterraPopunderCode: "<!-- Adsterra Pop-under Script Placeholder: Paste full script here -->",
+  adsterraPopunderEnabled: true,
   adsterraDirectLink: DEFAULT_ADSTERRA_DIRECT_LINK,
   adsterraDirectLinkEnabled: false,
 
   monetagBannerCode: "<!-- Monetag Banner Code Placeholder: Paste full script here -->",
   monetagBannerEnabled: true,
-  monetagPopunderCode: "<!-- Monetag Pop-under Script Placeholder: Paste full script here -->",
-  monetagPopunderEnabled: true,
+  monetagNativeBannerCode: "", // Added for native banner option
+  monetagNativeBannerEnabled: false, // Added for native banner option
   monetagSocialBarCode: "<!-- Monetag Social Bar Code Placeholder: Paste full script here -->",
   monetagSocialBarEnabled: false,
+  monetagPopunderCode: "<!-- Monetag Pop-under Script Placeholder: Paste full script here -->",
+  monetagPopunderEnabled: true,
   monetagDirectLink: DEFAULT_MONETAG_DIRECT_LINK,
   monetagDirectLinkEnabled: false,
 
@@ -68,19 +71,19 @@ export const defaultAIMediaAssetsConfig: AIMediaAssetsConfig = {
     { id: 'selfie_cafe', type: 'image', url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=600&h=800&fit=crop&crop=face', description: 'At the café where I work' },
     { id: 'selfie_college', type: 'image', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop&crop=face', description: 'College vibes' },
     { id: 'selfie_evening', type: 'image', url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=800&fit=crop&crop=face', description: 'Evening golden hour' },
-    
+
     // Lifestyle - creating FOMO and interest
     { id: 'food_mumbai', type: 'image', url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=600&h=400&fit=crop', description: 'Street food in Mumbai' },
     { id: 'cafe_work', type: 'image', url: 'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600&h=400&fit=crop', description: 'Working at the café' },
     { id: 'college_friends', type: 'image', url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop', description: 'Hanging with college friends' },
     { id: 'mumbai_rain', type: 'image', url: 'https://images.unsplash.com/photo-1571767942220-e72ee5e645c5?w=600&h=400&fit=crop', description: 'Mumbai monsoon vibes' },
     { id: 'study_session', type: 'image', url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&h=400&fit=crop', description: 'Psychology study session' },
-    
+
     // Emotional moments - for deeper connection
     { id: 'sunset_bandra', type: 'image', url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop', description: 'Beautiful Bandra sunset' },
     { id: 'temple_visit', type: 'image', url: 'https://images.unsplash.com/photo-1580894742597-87bc8789db3d?w=600&h=400&fit=crop', description: 'Temple visit with family' },
     { id: 'festival_prep', type: 'image', url: 'https://images.unsplash.com/photo-1604596725663-7ad4b85b7eee?w=600&h=400&fit=crop', description: 'Festival preparations at home' },
-    
+
     // Teasing/Flirty - strategically rare
     { id: 'mirror_selfie', type: 'image', url: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&h=800&fit=crop&crop=face', description: 'Quick mirror selfie' },
     { id: 'getting_ready', type: 'image', url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&h=400&fit=crop', description: 'Getting ready to go out' },
