@@ -51,7 +51,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center p-3 bg-gradient-to-r from-[#00a884] to-[#00d9a5] border-b border-white/10 shadow-lg backdrop-blur-sm" style={{ minHeight: '64px', maxHeight: '64px' }}>
+    <header className="flex items-center px-3 py-2 bg-[#008069] dark:bg-[#1f2c33] border-b border-black/5 shadow-sm" style={{ minHeight: '60px', maxHeight: '60px' }}>
       <Button 
         variant="ghost" 
         size="icon" 
@@ -59,26 +59,23 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           e.preventDefault();
           router.push('/');
         }} 
-        className="text-white/90 hover:bg-white/20 mr-2 rounded-full transition-all hover:scale-105" 
+        className="text-white hover:bg-white/10 mr-1 rounded-full transition-colors active:bg-white/20" 
         style={{ width: '40px', height: '40px', flexShrink: 0 }}
         aria-label="Go back"
       >
-        <ArrowLeft className="h-6 w-6" />
+        <ArrowLeft className="h-5 w-5" />
       </Button>
       <button 
         onClick={onAvatarClick} 
-        className={cn(
-            "flex items-center focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-transparent rounded-full p-1 mr-3 transition-all hover:scale-105",
-            aiName === "Kruthika" && "border-2 border-white shadow-lg shadow-white/30 p-0.5" 
-        )}
-        style={{ width: '48px', height: '48px', flexShrink: 0 }}
+        className="flex items-center focus:outline-none rounded-full mr-2.5 transition-opacity active:opacity-70"
+        style={{ width: '42px', height: '42px', flexShrink: 0 }}
         key={`avatar-header-wrapper-${aiName}-${avatarUrlToUse || 'default_wrapper_key_ch'}`}
         aria-label={`View ${aiName}'s profile`}
       >
         <Avatar 
-            className="h-10 w-10 cursor-pointer" 
+            className="h-[42px] w-[42px] cursor-pointer ring-0" 
             key={`avatar-comp-header-${aiName}-${avatarUrlToUse || 'default_avatar_comp_key_ch'}`}
-            style={{ width: '40px', height: '40px', flexShrink: 0, contain: 'layout size style' }}
+            style={{ width: '42px', height: '42px', flexShrink: 0 }}
         >
           <AvatarImage 
             src={avatarUrlToUse || undefined} 
@@ -86,53 +83,44 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             data-ai-hint="profile woman" 
             key={`chat-header-avatar-img-${aiName}-${avatarUrlToUse || 'no_avatar_fallback_img_ch'}`}
             onError={handleAvatarError}
-            width={40}
-            height={40}
+            width={42}
+            height={42}
             loading="eager"
             fetchPriority="high"
             decoding="sync"
-            style={{ width: '40px', height: '40px', objectFit: 'cover', aspectRatio: '1/1' }}
+            style={{ width: '42px', height: '42px', objectFit: 'cover', aspectRatio: '1/1' }}
           />
-          <AvatarFallback style={{ width: '40px', height: '40px' }}>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback style={{ width: '42px', height: '42px' }}>{(aiName || "K").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
       </button>
-      <div className="flex-grow cursor-pointer" onClick={onAvatarClick}>
-        <h1 className="font-semibold text-base text-white drop-shadow-md">{aiName}</h1>
-        <p className="text-xs text-white/80 drop-shadow-sm">{onlineStatus}</p>
-      </div >
+      <div className="flex-grow cursor-pointer min-w-0" onClick={onAvatarClick}>
+        <h1 className="font-medium text-[16px] text-white leading-tight truncate">{aiName}</h1>
+        <p className="text-[13px] text-white/85 leading-tight truncate">{onlineStatus}</p>
+      </div>
 
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white/90 hover:bg-white/20 rounded-full transition-all hover:scale-105" 
-        aria-label="Camera" 
-        onClick={() => {
-          router.push('/status');
-        }}
-      >
-        <Camera className="h-5 w-5" />
-      </Button>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="text-white/90 hover:bg-white/20 rounded-full transition-all hover:scale-105" 
+        className="text-white hover:bg-white/10 rounded-full transition-colors active:bg-white/20 ml-1" 
         aria-label="Video call" 
         onClick={() => {
           onVideoClick();
         }}
+        style={{ width: '40px', height: '40px', flexShrink: 0 }}
       >
-        <Video className="h-5 w-5" />
+        <Video className="h-[22px] w-[22px]" />
       </Button>
       <Button 
         variant="ghost" 
         size="icon" 
-        className="text-white/90 hover:bg-white/20 rounded-full transition-all hover:scale-105 mr-1" 
+        className="text-white hover:bg-white/10 rounded-full transition-colors active:bg-white/20" 
         aria-label="Call" 
         onClick={() => {
           onCallClick();
         }}
+        style={{ width: '40px', height: '40px', flexShrink: 0 }}
       >
-        <Phone className="h-5 w-5" />
+        <Phone className="h-[22px] w-[22px]" />
       </Button>
 
       <DropdownMenu>
@@ -140,10 +128,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white/90 hover:bg-white/20 rounded-full transition-all hover:scale-105" 
+            className="text-white hover:bg-white/10 rounded-full transition-colors active:bg-white/20" 
             aria-label="More options"
+            style={{ width: '40px', height: '40px', flexShrink: 0 }}
           >
-            <MoreVertical className="h-5 w-5" />
+            <MoreVertical className="h-[20px] w-[20px]" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
