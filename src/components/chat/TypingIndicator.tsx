@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -7,54 +8,48 @@ interface TypingIndicatorProps {
 
 const TypingIndicator: React.FC<TypingIndicatorProps> = ({ avatarUrl }) => {
   return (
-    <div className="flex items-end space-x-2">
-      <Avatar className="h-8 w-8 mb-0.5">
+    <div className="flex items-end space-x-2 mb-2">
+      <Avatar className="h-8 w-8 mb-0.5 flex-shrink-0">
         <AvatarImage src={avatarUrl} alt="AI Avatar" data-ai-hint="profile woman" />
         <AvatarFallback>AI</AvatarFallback>
       </Avatar>
-      <div className="flex items-center justify-center gap-1 bg-white dark:bg-gray-800 text-gray-500 rounded-tl-lg rounded-tr-lg rounded-br-lg px-4 py-2.5 shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] min-w-[60px]">
-        <span className="typing-dot typing-dot-1"></span>
-        <span className="typing-dot typing-dot-2"></span>
-        <span className="typing-dot typing-dot-3"></span>
+      <div className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg px-4 py-3 shadow-[0_1px_0.5px_rgba(0,0,0,0.13)] min-w-[65px]">
+        <span className="typing-dot"></span>
+        <span className="typing-dot typing-dot-delay-1"></span>
+        <span className="typing-dot typing-dot-delay-2"></span>
       </div>
       <style jsx>{`
         .typing-dot {
           display: inline-block;
-          width: 7px;
-          height: 7px;
-          background-color: #9CA3AF;
+          width: 8px;
+          height: 8px;
+          background-color: #90949c;
           border-radius: 50%;
-          animation: whatsapp-typing 1.4s infinite;
+          animation: whatsapp-bounce 1.4s infinite ease-in-out both;
         }
         
-        .typing-dot-1 {
-          animation-delay: 0s;
+        .typing-dot-delay-1 {
+          animation-delay: -0.32s;
         }
         
-        .typing-dot-2 {
-          animation-delay: 0.2s;
+        .typing-dot-delay-2 {
+          animation-delay: -0.16s;
         }
         
-        .typing-dot-3 {
-          animation-delay: 0.4s;
-        }
-        
-        @keyframes whatsapp-typing {
-          0% {
-            transform: translateY(0px);
-            opacity: 0.4;
+        @keyframes whatsapp-bounce {
+          0%, 80%, 100% {
+            transform: scale(0);
+            opacity: 0.5;
           }
-          28% {
-            transform: translateY(-7px);
+          40% {
+            transform: scale(1);
             opacity: 1;
           }
-          44% {
-            transform: translateY(0px);
-            opacity: 0.4;
-          }
-          100% {
-            transform: translateY(0px);
-            opacity: 0.4;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+          .typing-dot {
+            background-color: #8696a0;
           }
         }
       `}</style>

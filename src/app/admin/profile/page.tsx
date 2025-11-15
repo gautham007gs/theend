@@ -465,7 +465,7 @@ const AdminProfilePage: React.FC = () => {
         }
 
         const { data: { session } } = await supabase.auth.getSession();
-        
+
         if (!session) {
           toast({ title: "Error", description: "Not authenticated. Please login again.", variant: "destructive" });
           router.replace('/admin/login?returnUrl=/admin/profile');
@@ -532,7 +532,7 @@ const AdminProfilePage: React.FC = () => {
       }
 
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session) {
         throw new Error('Not authenticated. Please login again.');
       }
@@ -855,7 +855,7 @@ const AdminProfilePage: React.FC = () => {
                                 }
 
                                 const { data: { session } } = await supabase.auth.getSession();
-                                
+
                                 if (!session) {
                                   throw new Error('Not authenticated. Please login again.');
                                 }
