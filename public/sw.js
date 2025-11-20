@@ -39,7 +39,7 @@ self.addEventListener('install', (event) => {
           });
       })
       .then(() => self.skipWaiting())
-      .catch((error) => {
+      .catch(() => {
         // Still activate even if caching fails
         return self.skipWaiting();
       })
@@ -61,90 +61,10 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Handle chat history requests
-
-// Chat request handler for offline support
-async function handleChatRequest(request) {
-  try {
-    // CRITICAL: Check if we need to invalidate cache after ad interaction
-    const needsCacheInvalidation = await caches.match('__needs_cache_invalidation__');
-    if (needsCacheInvalidation) {
-      console.log('SW: Invalidating cache after ad interaction');
-      await caches.delete(CHAT_CACHE_NAME);
-      await caches.delete(CACHE_NAME);
-      await caches.delete('__needs_cache_invalidation__');
-    }
-
-    const response = await fetch(request);
-    if (response.ok) {
-      // Cache successful responses
-      const cache = await caches.open(CHAT_CACHE_NAME);
-      await cache.put(request.url + '_' + Date.now(), response.clone());
-
-      // Clean old entries
-      const keys = await cache.keys();
-      if (keys.length > MAX_CHAT_ENTRIES) {
-        const oldKeys = keys.slice(0, keys.length - MAX_CHAT_ENTRIES);
-        await Promise.all(oldKeys.map(key => cache.delete(key)));
-      }
-    }
-    return response;
-  } catch (error) {
-    // Return offline message
-    return new Response(JSON.stringify({
-      success: false,
-      response: "I'm currently offline, but I'll be back soon! Your message has been saved.",
-      offline: true
-    }), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
-}
-
-// Chat page handler with offline support
-async function handleChatPageRequest(request) {
-  try {
-    return await fetch(request);
-  } catch (error) {
-    const cache = await caches.open(CACHE_NAME);
-    return await cache.match(request) || new Response('Offline - cached version not available');
-  }
-}
-
   if (url.pathname.includes('/maya-chat')) {
     event.respondWith(handleChatPageRequest(request));
     return;
   }
-});
-
-// CRITICAL: Listen for cache invalidation messages from main thread
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'INVALIDATE_CACHE_AFTER_AD') {
-    console.log('SW: Received cache invalidation request');
-    caches.open('__needs_cache_invalidation__').then(cache => {
-      cache.put('__needs_cache_invalidation__', new Response('true'));
-    });
-  }
-
-  if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
-    console.log('SW: IMMEDIATE cache clearing initiated');
-    event.waitUntil(
-      caches.keys().then(names => {
-        return Promise.all(names.map(name => {
-          console.log('SW: Deleting cache:', name);
-          return caches.delete(name);
-        }));
-      }).then(() => {
-        console.log('SW: All caches cleared successfully');
-        // Send confirmation back to main thread
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({ type: 'CACHES_CLEARED' });
-          });
-        });
-      })
-    );
-  }
-});
 
   // Cache static assets aggressively (Cache First)
   if (url.pathname.startsWith('/_next/static/') ||
@@ -231,13 +151,61 @@ self.addEventListener('message', (event) => {
   }
 });
 
+// Chat request handler for offline support
+async function handleChatRequest(request) {
+  try {
+    // CRITICAL: Check if we need to invalidate cache after ad interaction
+    const needsCacheInvalidation = await caches.match('__needs_cache_invalidation__');
+    if (needsCacheInvalidation) {
+      console.log('SW: Invalidating cache after ad interaction');
+      await caches.delete(CHAT_CACHE_NAME);
+      await caches.delete(CACHE_NAME);
+      await caches.delete('__needs_cache_invalidation__');
+    }
+
+    const response = await fetch(request);
+    if (response.ok) {
+      // Cache successful responses
+      const cache = await caches.open(CHAT_CACHE_NAME);
+      await cache.put(request.url + '_' + Date.now(), response.clone());
+
+      // Clean old entries
+      const keys = await cache.keys();
+      if (keys.length > MAX_CHAT_ENTRIES) {
+        const oldKeys = keys.slice(0, keys.length - MAX_CHAT_ENTRIES);
+        await Promise.all(oldKeys.map(key => cache.delete(key)));
+      }
+    }
+    return response;
+  } catch (error) {
+    // Return offline message
+    return new Response(JSON.stringify({
+      success: false,
+      response: "I'm currently offline, but I'll be back soon! Your message has been saved.",
+      offline: true
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// Chat page handler with offline support
+async function handleChatPageRequest(request) {
+  try {
+    return await fetch(request);
+  } catch (error) {
+    const cache = await caches.open(CACHE_NAME);
+    return await cache.match(request) || new Response('Offline - cached version not available');
+  }
+}
+
 // Activate event with better cleanup
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== CACHE_NAME + '-api') {
+          if (cacheName !== CACHE_NAME && cacheName !== CACHE_NAME + '-api' && cacheName !== CHAT_CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
@@ -258,37 +226,60 @@ function handleBackgroundSync() {
   return Promise.resolve();
 }
 
+// CRITICAL: Listen for cache invalidation messages from main thread
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'INVALIDATE_CACHE_AFTER_AD') {
+    console.log('SW: Received cache invalidation request');
+    caches.open('__needs_cache_invalidation__').then(cache => {
+      cache.put('__needs_cache_invalidation__', new Response('true'));
+    });
+  }
+
+  if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
+    console.log('SW: IMMEDIATE cache clearing initiated');
+    event.waitUntil(
+      caches.keys().then(names => {
+        return Promise.all(names.map(name => {
+          console.log('SW: Deleting cache:', name);
+          return caches.delete(name);
+        }));
+      }).then(() => {
+        console.log('SW: All caches cleared successfully');
+        // Send confirmation back to main thread
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'CACHES_CLEARED' });
+          });
+        });
+      })
+    );
+  }
+});
+
 // OneSignal: Service worker for push notifications
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.service.js');
 
 // OneSignal initialization
 const oneSignalAppId = 'YOUR_ONESIGNAL_APP_ID'; // Replace with your actual OneSignal App ID
 
-self.addEventListener('install', function(e) {
-  // This event is handled by OneSignalSDK.service.js
-  // You can add custom logic here if needed, but it's often not necessary for basic OneSignal integration.
-  console.log('SW: Install event handled by OneSignalSDK.service.js');
-});
+// The following event listeners are handled by OneSignalSDK.service.js
+// and should not interfere with your custom logic if kept separate.
 
-self.addEventListener('activate', function(e) {
-  // This event is handled by OneSignalSDK.service.js
-  console.log('SW: Activate event handled by OneSignalSDK.service.js');
-  // Call OneSignal's own activate handler
-  self.registration.unregister() // To make sure OneSignal can register itself
-    .then(() => self.registration.register('/service-worker.js')) // Re-register your own SW
-    .then(() => console.log('SW: Service Worker re-registered successfully'));
-});
+// Example of how OneSignal's SDK might interact, though typically handled internally:
+// self.addEventListener('install', function(e) { ... });
+// self.addEventListener('activate', function(e) { ... });
+// self.addEventListener('push', function(e) { ... });
+// self.addEventListener('notificationclick', function(e) { ... });
 
-self.addEventListener('push', function(e) {
-  // This event is handled by OneSignalSDK.service.js
-  console.log('SW: Push event handled by OneSignalSDK.service.js');
+// Custom logic for OneSignal events can be added here if needed,
+// but the SDK usually manages these automatically.
+// For example, to override default notification click behavior:
+/*
+self.addEventListener('notificationclick', function(event) {
+  console.log('SW: Notification click. OneSignal SDK should handle this.');
+  // If you need to perform additional actions before or after OneSignal's default handling:
+  // event.notification.close(); // Close the notification
+  // clients.openWindow('/your-custom-page'); // Open a specific URL
+  // Then let OneSignal SDK continue its default action if needed.
 });
-
-self.addEventListener('notificationclick', function(e) {
-  // This event is handled by OneSignalSDK.service.js
-  console.log('SW: Notification click event handled by OneSignalSDK.service.js');
-});
-
-// Ensure your main service worker does not conflict with OneSignal's
-// If you have other custom event listeners, ensure they don't interfere.
-// The current structure separates concerns well by letting OneSignalSDK.service.js handle its own events.
+*/
