@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -14,7 +15,7 @@ import AccessibilityEnhancer from '@/components/AccessibilityEnhancer';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 import CookieConsent from '@/components/CookieConsent';
 
-// Optimize font loading - use fallback font immediately with aggressive caching
+// Optimize font loading
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -36,7 +37,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: getBaseUrl(),
   },
-
   title: {
     default: 'AI Girlfriend Free - Best AI Girlfriend 2025 | Kruthika AI Girlfriend Chat - No Sign Up',
     template: '%s | Kruthika AI Girlfriend'
@@ -100,7 +100,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" className={inter.className} data-scroll-behavior="smooth">
       <head>
@@ -118,13 +117,10 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
 
-        {/* Critical preconnects */}
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <link rel="preconnect" href="https://wubzdjzosbbbghdlfcgc.supabase.co" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://kruthika.fun" />
 
-        {/* Preload critical fonts FIRST for LCP text */}
         <link
           rel="preload"
           href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2"
@@ -132,21 +128,9 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-        <link
-          rel="preload"
-          href="https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
 
-        {/* Preload critical LCP image */}
         <link rel="preload" as="image" href="/kruthika-avatar.svg" type="image/svg+xml" fetchPriority="high" crossOrigin="anonymous" />
-
-        {/* Prefetch chat page */}
         <link rel="prefetch" href="/maya-chat" crossOrigin="anonymous" />
-
-        {/* NO ad scripts in head - all handled by components */}
 
         <StructuredData />
       </head>
