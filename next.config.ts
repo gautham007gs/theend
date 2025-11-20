@@ -168,10 +168,8 @@ const nextConfig: NextConfig = {
       'recharts'
     ],
 
-    optimizeCss: true,
     webpackBuildWorker: true,
-    cssChunking: 'strict',
-    inlineCss: true
+    cssChunking: 'strict'
   },
 
   // Turbopack configuration 
