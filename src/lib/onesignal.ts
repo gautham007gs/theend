@@ -18,22 +18,24 @@ export const initOneSignal = async () => {
       return;
     }
 
-    // Skip OneSignal on non-production domains to avoid domain mismatch
+    // Allow OneSignal on production domain and Replit dev domains
     const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
     const isProduction = hostname === 'kruthika.fun' || hostname === 'www.kruthika.fun';
     const isReplit = hostname.includes('replit.dev') || hostname.includes('replit.app') || hostname.includes('picard.replit.dev');
     
-    // Only run on production domain, skip everywhere else
-    if (!isProduction) {
-      console.log('ℹ️ OneSignal disabled on non-production domains. Will only work on kruthika.fun');
+    // Allow on production OR Replit dev domains for testing
+    if (!isProduction && !isReplit) {
+      console.log('ℹ️ OneSignal disabled on this domain. Will only work on kruthika.fun or Replit dev domains');
       return;
     }
+    
+    console.log('🌍 Running on:', isProduction ? 'Production' : 'Replit Dev Environment');
     
     console.log('🔄 Initializing OneSignal with App ID:', appId.substring(0, 8) + '...');
     
     await OneSignal.init({ 
       appId: appId,
-      allowLocalhostAsSecureOrigin: false, // Only allow production domain
+      allowLocalhostAsSecureOrigin: true, // Allow testing on dev environments
       serviceWorkerPath: '/OneSignalSDKWorker.js',
       serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
     });
