@@ -72,10 +72,14 @@ async function getRealPeakHours() {
     const { data: messages, error } = await supabase
       .from('messages_log')
       .select('created_at')
-      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-      .limit(10000);
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Only 1 day
+      .limit(5000) // Reduced limit
+      .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.warn('Peak hours query error:', error.message);
+      return [];
+    }
     if (!messages || messages.length === 0) return [];
 
     const hourCounts = messages.reduce((acc, msg) => {
@@ -160,13 +164,18 @@ async function getRealTopPages() {
 
 async function getRealUserJourney() {
   try {
+    // Reduce time range and add stricter limit to prevent timeout
     const { data: journeyData, error } = await supabase
       .from('user_journey_steps')
       .select('step_name, session_id')
-      .gte('completed_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-      .limit(5000);
+      .gte('completed_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Only 1 day instead of 7
+      .limit(1000) // Reduced from 5000
+      .order('completed_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.warn('User journey query error:', error.message);
+      return [];
+    }
     if (!journeyData || journeyData.length === 0) return [];
 
     const stepCounts = journeyData.reduce((acc, step) => {
@@ -233,12 +242,18 @@ async function getRealSessionMetrics() {
     const { data: sessions, error } = await supabase
       .from('user_sessions')
       .select('duration_seconds, messages_sent, session_id')
-      .gte('started_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
-      .limit(1000);
+      .gte('started_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Only 1 day
+      .limit(500) // Reduced limit
+      .order('started_at', { ascending: false });
 
     if (error) {
-      console.error('Session metrics error:', error);
-      throw error;
+      console.warn('Session metrics query error:', error.message);
+      return {
+        averageMessagesPerSession: 0,
+        averageSessionLength: 0,
+        bounceRate: 0,
+        retentionRate: 0
+      };
     }
     if (!sessions || sessions.length === 0) {
       return {
@@ -374,7 +389,39 @@ export async function GET(request: NextRequest) {
 
 async function getOverviewAnalytics(startDate: string) {
   try {
-    // Get real data from Supabase
+    // Get real data from Supabase with timeout protection
+    const queryPromises = [
+      supabase
+        .from('messages_log')
+        .select('created_at, sender_type, has_image')
+        .gte('created_at', startDate + 'T00:00:00Z')
+        .order('created_at', { ascending: false })
+        .limit(5000), // Reduced from 10000
+      supabase
+        .from('daily_activity_log')
+        .select('activity_date, user_pseudo_id')
+        .gte('activity_date', startDate)
+        .limit(2000), // Added limit
+      getRealDeviceBreakdown(),
+      getRealTopCountries(),
+      getRealPeakHours(),
+      getRealAdMetrics(),
+      getRealTopPages(),
+      getRealUserJourney(),
+      getRealCookieConsent(),
+      getRealSessionMetrics()
+    ];
+
+    // Add timeout wrapper to each promise
+    const withTimeout = <T>(promise: Promise<T>, timeoutMs: number = 5000): Promise<T> => {
+      return Promise.race([
+        promise,
+        new Promise<T>((_, reject) => 
+          setTimeout(() => reject(new Error('Query timeout')), timeoutMs)
+        )
+      ]);
+    };
+
     const [
       messagesResult,
       dailyUsersResult,
@@ -386,26 +433,18 @@ async function getOverviewAnalytics(startDate: string) {
       userJourney,
       cookieConsent,
       sessionMetrics
-    ] = await Promise.all([
-      supabase
-        .from('messages_log')
-        .select('created_at, sender_type, has_image')
-        .gte('created_at', startDate + 'T00:00:00Z')
-        .order('created_at', { ascending: false })
-        .limit(10000),
-      supabase
-        .from('daily_activity_log')
-        .select('activity_date, user_pseudo_id')
-        .gte('activity_date', startDate),
-      getRealDeviceBreakdown(),
-      getRealTopCountries(),
-      getRealPeakHours(),
-      getRealAdMetrics(),
-      getRealTopPages(),
-      getRealUserJourney(),
-      getRealCookieConsent(),
-      getRealSessionMetrics()
-    ]);
+    ] = await Promise.allSettled(queryPromises.map(p => withTimeout(p, 8000)))
+      .then(results => results.map((r, i) => {
+        if (r.status === 'fulfilled') return r.value;
+        console.warn(`Query ${i} failed or timed out:`, r.reason);
+        // Return safe defaults based on query type
+        if (i === 0 || i === 1) return { data: [], error: null };
+        if (i === 2) return { mobile: 0, desktop: 0, tablet: 0 };
+        if (i === 3 || i === 4 || i === 6 || i === 7) return [];
+        if (i === 5) return { impressions: 0, clicks: 0, ctr: 0, revenue: 0 };
+        if (i === 8) return { necessary: 0, analytics: 0, advertising: 0, personalization: 0, aiLearning: 0 };
+        return { averageMessagesPerSession: 0, averageSessionLength: 0, bounceRate: 0, retentionRate: 0 };
+      }));
 
     if (messagesResult.error) throw messagesResult.error;
     if (dailyUsersResult.error) throw dailyUsersResult.error;
