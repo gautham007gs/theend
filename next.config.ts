@@ -87,20 +87,31 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true, // Skip during build to reduce memory usage (checked in dev)
   },
+
   eslint: {
     ignoreDuringBuilds: true, // Skip during build to reduce memory usage (checked in dev)
   },
+
   // Vercel-specific optimizations
   // output: 'standalone', // Disabled for development - only enable for production deployment
   // swcMinify is deprecated in Next.js 14+, SWC is default now
   // Performance optimizations for high traffic and Google rankings
   skipMiddlewareUrlNormalize: true,
+
   skipTrailingSlashRedirect: true,
-  compress: true, // Enable Gzip/Brotli compression
+
+  // Enable Gzip/Brotli compression
+  compress: true,
+
   poweredByHeader: false,
   reactStrictMode: true,
-  productionBrowserSourceMaps: false, // Disable for faster builds
-  typedRoutes: false, // Disable for faster compilation
+
+  // Disable for faster builds
+  productionBrowserSourceMaps: false,
+
+  // Disable for faster compilation
+  typedRoutes: false,
+
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
       exclude: ['error', 'warn'],
@@ -109,6 +120,7 @@ const nextConfig: NextConfig = {
       properties: ['^data-test', '^data-testid']
     } : false,
   },
+
   modularizeImports: {
     'lucide-react': {
       transform: 'lucide-react/dist/esm/icons/{{member}}',
@@ -125,16 +137,19 @@ const nextConfig: NextConfig = {
   httpAgentOptions: {
     keepAlive: true,
   },
+
   // Configure for Replit environment
   // External packages for server-side rendering
   serverExternalPackages: ['@google-cloud/vertexai', 'google-auth-library'],
 
   experimental: {
     scrollRestoration: true,
+
     serverActions: {
       allowedOrigins: ['localhost:3000', '127.0.0.1:3000', '0.0.0.0:3000', 'localhost:5000', '127.0.0.1:5000', '0.0.0.0:5000', '*.replit.dev', '*.replit.app'],
       bodySizeLimit: '2mb',
     },
+
     optimizePackageImports: [
       'lucide-react',
       '@supabase/supabase-js',
@@ -152,15 +167,11 @@ const nextConfig: NextConfig = {
       'zod',
       'recharts'
     ],
+
     optimizeCss: true,
     webpackBuildWorker: true,
     cssChunking: 'strict',
-    inlineCss: true,
-    turbo: {
-      resolveAlias: {
-        'lucide-react': 'lucide-react/dist/esm/lucide-react.js'
-      }
-    },
+    inlineCss: true
   },
 
   // Turbopack configuration 
@@ -276,6 +287,7 @@ const nextConfig: NextConfig = {
 
   // Fix cross-origin warnings for Replit and allow all dev origins
   assetPrefix: process.env.NODE_ENV === 'production' ? undefined : undefined,
+
   allowedDevOrigins: [
     ...(process.env.REPLIT_DEV_DOMAIN ? [process.env.REPLIT_DEV_DOMAIN, `https://${process.env.REPLIT_DEV_DOMAIN}`] : []),
     '*.replit.dev',
@@ -284,6 +296,7 @@ const nextConfig: NextConfig = {
     '127.0.0.1:5000',
     '0.0.0.0:5000'
   ],
+
   images: {
     formats: ['image/avif', 'image/webp'], // AVIF first for better compression
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -353,6 +366,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+
   async headers() {
     return [
       {
@@ -438,10 +452,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
   // Additional configuration for Replit compatibility
   async rewrites() {
     return [];
   },
+
+  turbopack: {
+    resolveAlias: {
+      'lucide-react': 'lucide-react/dist/esm/lucide-react.js'
+    }
+  }
 };
 
 export default withBundleAnalyzer(nextConfig);
