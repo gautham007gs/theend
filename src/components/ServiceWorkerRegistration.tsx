@@ -7,22 +7,13 @@ export default function ServiceWorkerRegistration() {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       const registerSW = async () => {
         try {
-          // Unregister any existing workers first to ensure clean state
-          const registrations = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(registrations.map(reg => reg.unregister()));
-          
-          // Small delay to ensure clean slate
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Register with specific configuration
+          // Register service worker
           const registration = await navigator.serviceWorker.register('/sw.js', {
             scope: '/',
             updateViaCache: 'none'
           });
           
-          if (process.env.NODE_ENV === 'development') {
-            console.log('✅ Service Worker registered:', registration.scope);
-          }
+          console.log('✅ Service Worker registered successfully');
           
           // Handle updates
           registration.addEventListener('updatefound', () => {
@@ -30,25 +21,19 @@ export default function ServiceWorkerRegistration() {
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  if (process.env.NODE_ENV === 'development') {
-                    console.log('🔄 New Service Worker available');
-                  }
-                  // Optionally show update notification to user
-                  if (confirm('New version available! Reload to update?')) {
-                    window.location.reload();
-                  }
+                  console.log('🔄 New Service Worker available');
                 }
               });
             }
           });
           
-          // Ensure activation
-          await registration.update();
+          // Check for updates
+          registration.update().catch(() => {
+            // Silently fail update check
+          });
           
         } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Service Worker registration failed:', error);
-          }
+          console.log('SW registration failed:', error instanceof Error ? error.message : 'Unknown error');
         }
       };
       
@@ -58,11 +43,6 @@ export default function ServiceWorkerRegistration() {
       } else {
         window.addEventListener('load', registerSW, { once: true });
       }
-      
-      // Cleanup
-      return () => {
-        window.removeEventListener('load', registerSW);
-      };
     }
   }, []);
 

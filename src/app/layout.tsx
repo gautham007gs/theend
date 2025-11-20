@@ -25,37 +25,6 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en" className={inter.className} data-scroll-behavior="smooth">
-      <body>
-        <ErrorBoundary>
-          <GlobalStatusProvider>
-            <AIProfileProvider>
-              <AIMediaAssetsProvider>
-                <AdSettingsProvider>
-                  <ServiceWorkerRegistration />
-                  <StructuredData />
-                  <ClientComponentsWrapper />
-                  <AccessibilityEnhancer />
-                  {children}
-                  <OfflineIndicator />
-                  <CookieConsent />
-                  <Toaster />
-                </AdSettingsProvider>
-              </AIMediaAssetsProvider>
-            </AIProfileProvider>
-          </GlobalStatusProvider>
-        </ErrorBoundary>
-      </body>
-    </html>
-  );
-}
-
 const getBaseUrl = () => {
   if (process.env.NEXT_PUBLIC_BASE_URL) return process.env.NEXT_PUBLIC_BASE_URL;
   if (process.env.REPLIT_DEV_DOMAIN) return `https://${process.env.REPLIT_DEV_DOMAIN}`;
@@ -133,9 +102,9 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
+    <html lang="en" className={inter.className} data-scroll-behavior="smooth">
       <head>
-        <meta name="google-site-verification" content="your-google-verification-code" />
+        <meta name="google-site-verification" content="verification-for-kruthika-fun-search-console" />
         <meta name="theme-color" content="#0d8043" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
         <meta name="mobile-web-app-capable" content="yes" />

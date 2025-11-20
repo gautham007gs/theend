@@ -7,8 +7,8 @@ import { Cookie, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-const COOKIE_CONSENT_KEY = 'kruthika_cookie_consent_v2';
-const COOKIE_CONSENT_EXPIRY = 365; // days
+const COOKIE_CONSENT_KEY = 'kruthika_cookie_consent_v3';
+const COOKIE_CONSENT_EXPIRY = 365; // days - remember for 1 year
 
 interface CookieConsentProps {
   className?: string;
@@ -146,11 +146,11 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
             )}
           >
             <Card className={cn(
-              "w-full max-w-md mx-auto pointer-events-auto",
-              "bg-white/95 backdrop-blur-xl border border-gray-200/50 shadow-2xl rounded-2xl",
+              "w-full max-w-sm mx-auto pointer-events-auto",
+              "bg-white/98 backdrop-blur-xl border border-gray-200/50 shadow-lg rounded-xl",
               "transform transition-all duration-300",
-              "max-h-[90vh] overflow-y-auto", // More responsive height
-              showCustomize ? "pb-2" : "pb-1" // Add bottom padding when expanded
+              "max-h-[85vh] overflow-y-auto",
+              showCustomize ? "pb-2" : "pb-1"
             )}>
               <CardContent className="p-4 space-y-3 sm:p-5 sm:space-y-4">
                 {/* Compact Header */}
