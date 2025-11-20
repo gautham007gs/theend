@@ -2,14 +2,35 @@ import OneSignal from 'react-onesignal';
 
 export const initOneSignal = async () => {
   try {
+    const appId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
+    
+    if (!appId || appId === 'YOUR_ONESIGNAL_APP_ID') {
+      console.error('⚠️ OneSignal App ID not configured! Check your .env.local file');
+      return;
+    }
+    
+    console.log('🔄 Initializing OneSignal with App ID:', appId.substring(0, 8) + '...');
+    
     await OneSignal.init({ 
-      appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID || 'YOUR_ONESIGNAL_APP_ID',
+      appId: appId,
       allowLocalhostAsSecureOrigin: true,
+      serviceWorkerPath: '/OneSignalSDKWorker.js',
+      serviceWorkerUpdaterPath: '/OneSignalSDKWorker.js',
     });
     
-    console.log('OneSignal initialized successfully');
+    console.log('✅ OneSignal initialized successfully');
+    console.log('📱 Notification permission status:', Notification.permission);
+    
+    // Check if permission is already granted
+    if (Notification.permission === 'granted') {
+      console.log('✅ Notifications already enabled');
+    } else if (Notification.permission === 'default') {
+      console.log('ℹ️ User can be prompted for notification permission');
+    } else {
+      console.log('❌ Notification permission denied');
+    }
   } catch (error) {
-    console.error('OneSignal initialization error:', error);
+    console.error('❌ OneSignal initialization error:', error);
   }
 };
 

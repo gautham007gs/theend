@@ -452,17 +452,7 @@ const StatusPage: React.FC = () => {
         </Button>
       </div>
       
-      {/* Banner Ads - Absolute Bottom Footer */}
-      <div className="flex-shrink-0 bg-white border-t border-border/30">
-        <BannerAdDisplay
-          placementKey="status-banner"
-          className="mb-0"
-        />
-        <BannerAdDisplay
-          placementKey="status-native"
-          className="mb-0"
-        />
-      </div>
+      
     </div>
     </>
   );

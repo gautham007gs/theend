@@ -1,4 +1,3 @@
-
 const CACHE_NAME = 'kruthika-v4';
 const STATIC_ASSETS = [
   '/',
@@ -74,13 +73,13 @@ async function handleChatRequest(request) {
       await caches.delete(CACHE_NAME);
       await caches.delete('__needs_cache_invalidation__');
     }
-    
+
     const response = await fetch(request);
     if (response.ok) {
       // Cache successful responses
       const cache = await caches.open(CHAT_CACHE_NAME);
       await cache.put(request.url + '_' + Date.now(), response.clone());
-      
+
       // Clean old entries
       const keys = await cache.keys();
       if (keys.length > MAX_CHAT_ENTRIES) {
@@ -125,7 +124,7 @@ self.addEventListener('message', (event) => {
       cache.put('__needs_cache_invalidation__', new Response('true'));
     });
   }
-  
+
   if (event.data && event.data.type === 'CLEAR_ALL_CACHES') {
     console.log('SW: IMMEDIATE cache clearing initiated');
     event.waitUntil(
@@ -157,18 +156,18 @@ self.addEventListener('message', (event) => {
       url.pathname.endsWith('.js') ||
       url.pathname.endsWith('.woff2') ||
       url.pathname.endsWith('.woff')) {
-    
+
     event.respondWith(
       caches.match(request)
         .then((response) => {
           if (response) return response;
-          
+
           return fetch(request).then((fetchResponse) => {
             // Check if response is valid
             if (!fetchResponse || fetchResponse.status !== 200 || fetchResponse.type !== 'basic') {
               return fetchResponse;
             }
-            
+
             const responseClone = fetchResponse.clone();
             caches.open(CACHE_NAME)
               .then((cache) => cache.put(request, responseClone));
@@ -225,7 +224,7 @@ self.addEventListener('message', (event) => {
             }
             return fetchResponse;
           });
-          
+
           return response || fetchPromise;
         })
     );
@@ -258,3 +257,38 @@ function handleBackgroundSync() {
   // Handle offline actions when back online
   return Promise.resolve();
 }
+
+// OneSignal: Service worker for push notifications
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.service.js');
+
+// OneSignal initialization
+const oneSignalAppId = 'YOUR_ONESIGNAL_APP_ID'; // Replace with your actual OneSignal App ID
+
+self.addEventListener('install', function(e) {
+  // This event is handled by OneSignalSDK.service.js
+  // You can add custom logic here if needed, but it's often not necessary for basic OneSignal integration.
+  console.log('SW: Install event handled by OneSignalSDK.service.js');
+});
+
+self.addEventListener('activate', function(e) {
+  // This event is handled by OneSignalSDK.service.js
+  console.log('SW: Activate event handled by OneSignalSDK.service.js');
+  // Call OneSignal's own activate handler
+  self.registration.unregister() // To make sure OneSignal can register itself
+    .then(() => self.registration.register('/service-worker.js')) // Re-register your own SW
+    .then(() => console.log('SW: Service Worker re-registered successfully'));
+});
+
+self.addEventListener('push', function(e) {
+  // This event is handled by OneSignalSDK.service.js
+  console.log('SW: Push event handled by OneSignalSDK.service.js');
+});
+
+self.addEventListener('notificationclick', function(e) {
+  // This event is handled by OneSignalSDK.service.js
+  console.log('SW: Notification click event handled by OneSignalSDK.service.js');
+});
+
+// Ensure your main service worker does not conflict with OneSignal's
+// If you have other custom event listeners, ensure they don't interfere.
+// The current structure separates concerns well by letting OneSignalSDK.service.js handle its own events.
