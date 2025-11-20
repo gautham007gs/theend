@@ -1,0 +1,75 @@
+react-dom-client.development.js:25631 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+supabaseClient.ts:122 Supabase Client: Successfully initialized REAL Supabase client.
+onesignal.ts:12 🔄 Initializing OneSignal with App ID: c0cd67ff...
+onesignal.ts:12 🔄 Initializing OneSignal with App ID: c0cd67ff...
+performance.ts:103 The PerformanceObserver does not support buffered flag with the entryTypes argument.
+initializeWebVitals @ performance.ts:103
+intercept-console-error.js:57 ❌ OneSignal initialization error: Error: SDK already initialized
+    at init.ts:391:36
+    at t.init (OneSignal.ts:139:5)
+    at eval (index.js:36:9)
+    at OneSignal.ts:302:42
+    at t.push (OneSignal.ts:267:12)
+    at pageSdkInit.ts:21:23
+error @ intercept-console-error.js:57
+wubzdjzosbbbghdlfcgc.supabase.co/rest/v1/app_configurations?select=settings&id=eq.admin_own_status_config_v1:1  Failed to load resource: the server responded with a status of 406 ()
+intercept-console-error.js:57 ❌ OneSignal initialization error: Error: Can only be used on: https://kruthika.fun
+    at domain.ts:29:11
+    at app.ts:45:5
+    at async t.Pe (OneSignal.ts:68:11)
+    at async t.init (OneSignal.ts:139:5)
+error @ intercept-console-error.js:57
+ServiceWorkerRegistration.tsx:29 ✅ Service Worker registered successfully
+ServiceWorkerRegistration.tsx:29 ✅ Service Worker registered successfully
+ServiceWorkerRegistration.tsx:29 ✅ Service Worker registered successfully
+logger.ts:23 [AIProfileContext] fetchAIProfile: Starting to fetch AI profile...
+logger.ts:23 [AIProfileContext] fetchAIProfile: Fetched from Supabase - raw data: {
+  "settings": {
+    "name": "Kruthika",
+    "status": "🌸 Living my best life! Let's chat!🌸",
+    "avatarUrl": "/kruthika-avatar.svg",
+    "statusStoryText": "Ask me anything! 💬",
+    "statusStoryHasUpdate": true
+  }
+} error: null
+logger.ts:23 [AIProfileContext] fetchAIProfile: Raw profile settings from Supabase: {
+  "name": "Kruthika",
+  "status": "🌸 Living my best life! Let's chat!🌸",
+  "avatarUrl": "/kruthika-avatar.svg",
+  "statusStoryText": "Ask me anything! 💬",
+  "statusStoryHasUpdate": true
+}
+logger.ts:23 [AIProfileContext] fetchAIProfile: Set AI profile from Supabase (merged with defaults): {
+  "name": "Kruthika",
+  "avatarUrl": "/kruthika-avatar.svg",
+  "status": "🌸 Living my best life! Let's chat!🌸",
+  "statusStoryText": "Ask me anything! 💬",
+  "statusStoryHasUpdate": true
+}
+logger.ts:23 [AIProfileContext] AI profile backed up to local storage
+logger.ts:23 [AIProfileContext] fetchAIProfile: Finished fetching AI profile. Loading state: false
+(index):1 A preload for 'https://bd820eca-c672-474f-a78b-9a6f7936f627-00-1y3hirqekpl2h.picard.replit.dev/kruthika-avatar.svg' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+react-dom-client.development.js:17858 A preload for 'https://bd820eca-c672-474f-a78b-9a6f7936f627-00-1y3hirqekpl2h.picard.replit.dev/kruthika-avatar.svg' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+setProp @ react-dom-client.development.js:17858
+react-dom-client.development.js:19944 A preload for 'https://bd820eca-c672-474f-a78b-9a6f7936f627-00-1y3hirqekpl2h.picard.replit.dev/kruthika-avatar.svg' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+commitMount @ react-dom-client.development.js:19944
+pwa-validator.ts:6 
+🔧 PWA VALIDATION REPORT
+pwa-validator.ts:7 ══════════════════════════════════════════════════
+pwa-validator.ts:45 ✅ Manifest: Valid
+pwa-validator.ts:62 ✅ Service Worker: Registered
+pwa-validator.ts:76 ✅ HTTPS: Enabled
+pwa-validator.ts:99 ✅ Icons: All present
+pwa-validator.ts:112 ✅ Installability: App is installable
+pwa-validator.ts:130 ✅ Offline: Caching enabled
+pwa-validator.ts:21 
+📊 Score: 6/6 checks passed
+pwa-validator.ts:22 ══════════════════════════════════════════════════
+invoke.js:1 Loading the script 'https://realizationnewestfangs.com/f2/4b/0a/f24b0aaf975ee65a83aae9b19316ec90.js' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.onesignal.com https://onesignal.com *.onesignal.com *.replit.dev *.replit.app *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com https://perchincomenotorious.com https://preferencenail.com https://wayfarerorthodox.com https://weirdopt.com https://skinnycrawlinglax.com https://rashcolonizeexpand.com https://kettledroopingcontinuation.com https://torchfriendlypay.com https://creative-sb1.com https://sourshaped.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+value @ invoke.js:1
+invoke.js:1 Loading the script 'https://realizationnewestfangs.com/6c/c5/a6/6cc5a6c5de0572a755b1de572fc1ddc2.js' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.onesignal.com https://onesignal.com *.onesignal.com *.replit.dev *.replit.app *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com https://perchincomenotorious.com https://preferencenail.com https://wayfarerorthodox.com https://weirdopt.com https://skinnycrawlinglax.com https://rashcolonizeexpand.com https://kettledroopingcontinuation.com https://torchfriendlypay.com https://creative-sb1.com https://sourshaped.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+value @ invoke.js:1
+invoke.js:1 Loading the script 'https://realizationnewestfangs.com/f4/84/69/f484699f1263cf62c120995c61df49a9.js' violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.onesignal.com https://onesignal.com *.onesignal.com *.replit.dev *.replit.app *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com https://perchincomenotorious.com https://preferencenail.com https://wayfarerorthodox.com https://weirdopt.com https://skinnycrawlinglax.com https://rashcolonizeexpand.com https://kettledroopingcontinuation.com https://torchfriendlypay.com https://creative-sb1.com https://sourshaped.com". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+value @ invoke.js:1
+(index):1 The resource https://bd820eca-c672-474f-a78b-9a6f7936f627-00-1y3hirqekpl2h.picard.replit.dev/kruthika-avatar.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+(index):1 The resource https://bd820eca-c672-474f-a78b-9a6f7936f627-00-1y3hirqekpl2h.picard.replit.dev/_next/static/media/e4af272ccee01ff0-s.p.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
