@@ -52,7 +52,7 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.onesignal.com *.onesignal.com *.replit.dev *.replit.app *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com https://perchincomenotorious.com https://preferencenail.com https://wayfarerorthodox.com https://weirdopt.com https://skinnycrawlinglax.com https://rashcolonizeexpand.com https://kettledroopingcontinuation.com https://torchfriendlypay.com https://creative-sb1.com https://sourshaped.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://cdn.onesignal.com https://onesignal.com *.onesignal.com *.replit.dev *.replit.app *.adsterra.com *.monetag.io *.propellerads.com *.popads.net *.exoclick.com *.trafficjunky.com https://perchincomenotorious.com https://preferencenail.com https://wayfarerorthodox.com https://weirdopt.com https://skinnycrawlinglax.com https://rashcolonizeexpand.com https://kettledroopingcontinuation.com https://torchfriendlypay.com https://creative-sb1.com https://sourshaped.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
       "img-src 'self' data: blob: https: http: *.supabase.co *.supabase.io https://placehold.co https://i.imghippo.com https://images.unsplash.com",
       "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",

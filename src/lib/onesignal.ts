@@ -1,11 +1,35 @@
 import OneSignal from 'react-onesignal';
 
+let isOneSignalInitialized = false;
+
 export const initOneSignal = async () => {
   try {
+    // Prevent double initialization
+    if (isOneSignalInitialized) {
+      console.log('ℹ️ OneSignal already initialized, skipping...');
+      return;
+    }
+
     const appId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
     
     if (!appId || appId === 'YOUR_ONESIGNAL_APP_ID') {
-      console.error('⚠️ OneSignal App ID not configured! Check your .env.local file');
+      console.warn('⚠️ OneSignal App ID not configured! Check your .env.local file');
+      return;
+    }
+
+    // Skip OneSignal on non-production domains to avoid domain mismatch
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+    const isProduction = hostname === 'kruthika.fun' || hostname === 'www.kruthika.fun';
+    const isReplit = hostname.includes('replit.dev') || hostname.includes('replit.app');
+    
+    if (!isProduction && !isReplit) {
+      console.warn('⚠️ OneSignal skipped: Only works on kruthika.fun or Replit domains');
+      return;
+    }
+
+    // For Replit, only init if explicitly enabled
+    if (isReplit && !process.env.NEXT_PUBLIC_ENABLE_ONESIGNAL_ON_REPLIT) {
+      console.log('ℹ️ OneSignal disabled on Replit. Set NEXT_PUBLIC_ENABLE_ONESIGNAL_ON_REPLIT=true to enable.');
       return;
     }
     
@@ -17,6 +41,8 @@ export const initOneSignal = async () => {
       serviceWorkerPath: '/OneSignalSDKWorker.js',
       serviceWorkerUpdaterPath: '/OneSignalSDKWorker.js',
     });
+    
+    isOneSignalInitialized = true;
     
     console.log('✅ OneSignal initialized successfully');
     console.log('📱 Notification permission status:', Notification.permission);
@@ -31,6 +57,7 @@ export const initOneSignal = async () => {
     }
   } catch (error) {
     console.error('❌ OneSignal initialization error:', error);
+    isOneSignalInitialized = false;
   }
 };
 

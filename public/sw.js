@@ -256,30 +256,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// OneSignal: Service worker for push notifications
-importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.service.js');
-
-// OneSignal initialization
-const oneSignalAppId = 'YOUR_ONESIGNAL_APP_ID'; // Replace with your actual OneSignal App ID
-
-// The following event listeners are handled by OneSignalSDK.service.js
-// and should not interfere with your custom logic if kept separate.
-
-// Example of how OneSignal's SDK might interact, though typically handled internally:
-// self.addEventListener('install', function(e) { ... });
-// self.addEventListener('activate', function(e) { ... });
-// self.addEventListener('push', function(e) { ... });
-// self.addEventListener('notificationclick', function(e) { ... });
-
-// Custom logic for OneSignal events can be added here if needed,
-// but the SDK usually manages these automatically.
-// For example, to override default notification click behavior:
-/*
-self.addEventListener('notificationclick', function(event) {
-  console.log('SW: Notification click. OneSignal SDK should handle this.');
-  // If you need to perform additional actions before or after OneSignal's default handling:
-  // event.notification.close(); // Close the notification
-  // clients.openWindow('/your-custom-page'); // Open a specific URL
-  // Then let OneSignal SDK continue its default action if needed.
-});
-*/
+// OneSignal integration is handled by separate worker files:
+// - /OneSignalSDKWorker.js
+// - /OneSignalSDKUpdaterWorker.js
+// This service worker (sw.js) is for PWA functionality only
