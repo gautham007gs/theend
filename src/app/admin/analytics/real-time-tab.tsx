@@ -55,13 +55,13 @@ export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
 
     fetchRealTimeMetrics();
 
-    // Optimized: Changed from 5 seconds to 30 seconds to reduce server load
-    const interval = setInterval(fetchRealTimeMetrics, 30000);
+    // Polling every 2 minutes to reduce server load
+    const interval = setInterval(fetchRealTimeMetrics, 120000);
 
-    // Optimized: Simulated live counter animation now synced with real polling
+    // Update live counter less frequently
     const liveInterval = setInterval(() => {
       setLiveUsers(prev => Math.max(0, prev + Math.floor(Math.random() * 3 - 1)));
-    }, 15000);
+    }, 60000);
 
     return () => {
       clearInterval(interval);

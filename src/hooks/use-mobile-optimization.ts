@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useRef } from 'react';
@@ -14,7 +13,7 @@ export function useMobileOptimization() {
 
     // Use passive listeners for better scroll
     const options: AddEventListenerOptions = { passive: true };
-    
+
     const touchHandler = () => {};
     document.addEventListener('touchstart', touchHandler, options);
     document.addEventListener('touchmove', touchHandler, options);
@@ -33,12 +32,12 @@ export function useMobileOptimization() {
     } else {
       document.documentElement.style.setProperty('--animation-duration', '0.1s');
     }
-    
+
     document.documentElement.style.setProperty('touch-action', 'manipulation');
     document.documentElement.style.setProperty('-webkit-tap-highlight-color', 'rgba(0,0,0,0)');
     document.documentElement.style.setProperty('overflow-scrolling', 'touch');
     document.documentElement.style.setProperty('-webkit-overflow-scrolling', 'touch');
-    
+
     // GPU acceleration
     const chatContainer = document.querySelector('[data-chat-container]');
     if (chatContainer instanceof HTMLElement) {
@@ -90,7 +89,7 @@ export function useMessageCleanup(messages: any[], maxMessages: number = 50) {
   useEffect(() => {
     const isLowEnd = (performance as any).memory?.jsHeapSizeLimit < 1073741824;
     const limit = isLowEnd ? 30 : maxMessages;
-    
+
     if (messages.length > limit) {
       console.log(`Message count (${messages.length}) exceeds ${limit}, cleanup recommended`);
     }

@@ -9,15 +9,10 @@ import MaximumSecurity from '@/lib/enhanced-security';
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
-  // Apply MAXIMUM security protection
-  const enhancedSecurityCheck = await MaximumSecurity.secureRequest(request);
-  if (enhancedSecurityCheck) return enhancedSecurityCheck;
-
-  // Apply comprehensive API security (double layer)
+  // Apply security with rate limiting
   const securityCheck = await APISecurityManager.secureAPIRoute(request, {
     allowedMethods: ['POST'],
-    requireCSRF: false, // Will implement custom validation
-    rateLimit: { requests: 60, window: 60000 } // 60 requests per minute
+    rateLimit: { requests: 60, window: 60000 }
   });
 
   if (securityCheck) return securityCheck;
@@ -25,7 +20,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Validate and sanitize entire POST body with enhanced security
+    // Validate POST body
     const postValidation = await MaximumSecurity.validatePostData(request, body);
     if (!postValidation.valid) {
       logger.error('Security validation failed', {
