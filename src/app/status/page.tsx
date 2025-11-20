@@ -438,19 +438,8 @@ const StatusPage: React.FC = () => {
         )}
 
         </div>
-      
-      {/* Banner Ads - Fixed to Bottom */}
-      <div className="flex-shrink-0 sticky bottom-0 z-10 bg-white border-t border-border/30">
-        <BannerAdDisplay
-          placementKey="status-banner"
-          className="mb-0"
-        />
-        <BannerAdDisplay
-          placementKey="status-native"
-          className="mb-0"
-        />
-      </div>
 
+      {/* Camera Button */}
       <div className="p-5 border-t border-border/50 flex justify-end bg-background/95 backdrop-blur-sm">
         <Button
           variant="default"
@@ -461,6 +450,18 @@ const StatusPage: React.FC = () => {
         >
           <Camera size={26} />
         </Button>
+      </div>
+      
+      {/* Banner Ads - Absolute Bottom Footer */}
+      <div className="flex-shrink-0 bg-white border-t border-border/30">
+        <BannerAdDisplay
+          placementKey="status-banner"
+          className="mb-0"
+        />
+        <BannerAdDisplay
+          placementKey="status-native"
+          className="mb-0"
+        />
       </div>
     </div>
     </>
