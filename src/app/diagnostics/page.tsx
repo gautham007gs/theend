@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PerformanceDiagnostics } from '@/lib/performance-diagnostics';
+import { PerformanceMonitor } from '@/lib/performance';
 import { SEOOptimizer } from '@/lib/seo-optimizer';
 import { PWAValidator } from '@/lib/pwa-validator';
 
@@ -18,10 +18,11 @@ export default function DiagnosticsPage() {
     setLoading(true);
     
     // Performance
-    PerformanceDiagnostics.generateReport();
-    const resourceAnalysis = PerformanceDiagnostics.analyzeResourceLoading();
-    const memory = PerformanceDiagnostics.monitorMemory();
-    const network = PerformanceDiagnostics.detectNetworkQuality();
+    const monitor = PerformanceMonitor.getInstance();
+    monitor.generateReport();
+    const resourceAnalysis = monitor.analyzeResourceLoading();
+    const memory = monitor.monitorMemory();
+    const network = monitor.detectNetworkQuality();
     
     setPerformanceReport({ resourceAnalysis, memory, network });
 

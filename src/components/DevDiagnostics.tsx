@@ -5,9 +5,9 @@ import dynamic from 'next/dynamic';
 
 // Lazy load diagnostics in development only
 const PerformanceDiagnostics = dynamic(
-  () => import('@/lib/performance-diagnostics').then(mod => {
+  () => import('@/lib/performance').then(mod => {
     if (typeof window !== 'undefined') {
-      mod.PerformanceDiagnostics.initializeWebVitals();
+      mod.PerformanceMonitor.getInstance().initializeWebVitals();
     }
     return () => null;
   }),

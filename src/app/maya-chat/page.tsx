@@ -50,7 +50,6 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, Phone, Video, Info, X, ArrowLeft, MoreVertical } from "lucide-react";
 import dynamic from "next/dynamic";
 import { ScreenshotProtection } from "@/components/ScreenshotProtection";
-import { DevToolsBlocker } from "@/components/DevToolsBlocker";
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { ChatSkeleton } from '@/components/LoadingSkeleton';
 
@@ -2227,7 +2226,6 @@ const KruthikaChatPage: NextPage = React.memo(() => {
   return (
     <>
       <ScreenshotProtection />
-      <DevToolsBlocker />
       <ChatStructuredData />
       <AIGirlfriendFAQSchema />
       <SocialBarAdDisplay />

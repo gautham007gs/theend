@@ -226,8 +226,8 @@ export class AnalyticsTracker {
     // Batch all events except session_start for better performance
     if (event.eventType === 'session_start') {
       this.flushEvents();
-    } else if (this.eventQueue.length >= 10) {
-      // Flush when queue reaches 10 events
+    } else if (this.eventQueue.length >= 50) {
+      // Flush when queue reaches 50 events (increased from 10 for better efficiency)
       this.flushEvents();
     }
   }
@@ -368,9 +368,10 @@ export class AnalyticsTracker {
   }
 
   private startEventQueue() {
+    // Optimized: Increased from 10 seconds to 30 seconds to reduce API calls
     this.flushInterval = setInterval(() => {
       this.flushEvents();
-    }, 10000);
+    }, 30000);
   }
 
   private async flushEvents(immediate = false): Promise<void> {

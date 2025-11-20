@@ -7,8 +7,8 @@ interface AnalyticsEvent {
 
 class AnalyticsBatcher {
   private queue: AnalyticsEvent[] = [];
-  private batchSize = 20; // Increased for better efficiency
-  private flushInterval = 10000; // 10 seconds - reduced API calls
+  private batchSize = 50; // Optimized: Increased from 20 to 50 for better efficiency
+  private flushInterval = 30000; // Optimized: 30 seconds instead of 10 - significantly reduces API calls
   private timer: NodeJS.Timeout | null = null;
 
   constructor() {
