@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PerformanceMonitor } from '@/lib/performance';
-import { SEOOptimizer } from '@/lib/seo-optimizer';
+import { SEOOptimizer } from '@/lib/seo';
 import { PWAValidator } from '@/lib/pwa-validator';
 
 export default function DiagnosticsPage() {

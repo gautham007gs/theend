@@ -15,7 +15,7 @@ const PerformanceDiagnostics = dynamic(
 );
 
 const SEOOptimizer = dynamic(
-  () => import('@/lib/seo-optimizer').then(mod => {
+  () => import('@/lib/seo').then(mod => {
     if (typeof window !== 'undefined') {
       mod.SEOOptimizer.initialize();
     }

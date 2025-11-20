@@ -1,5 +1,9 @@
+/**
+ * Consolidated SEO Optimization System
+ * Merges seo-optimizer.ts and advanced-seo-boost.ts
+ * Simplified and optimized for production
+ */
 
-// Advanced SEO optimization utilities
 export class SEOOptimizer {
   // Generate dynamic meta tags based on page content
   static generateDynamicMeta(pageType: string, content?: any) {
@@ -22,28 +26,6 @@ export class SEOOptimizer {
     };
 
     return baseMeta[pageType as keyof typeof baseMeta] || baseMeta.home;
-  }
-
-  // Optimize images for SEO
-  static optimizeImageSEO(images: NodeListOf<HTMLImageElement>) {
-    images.forEach(img => {
-      // Add alt text if missing
-      if (!img.alt) {
-        const filename = img.src.split('/').pop()?.split('.')[0] || 'image';
-        img.alt = filename.replace(/-/g, ' ');
-      }
-
-      // Add loading attribute
-      if (!img.loading) {
-        img.loading = 'lazy';
-      }
-
-      // Add width/height to prevent CLS
-      if (!img.width || !img.height) {
-        img.width = img.naturalWidth || 800;
-        img.height = img.naturalHeight || 600;
-      }
-    });
   }
 
   // Generate breadcrumb JSON-LD
@@ -76,8 +58,70 @@ export class SEOOptimizer {
     return breadcrumbs;
   }
 
-  // Check and fix common SEO issues
+  // Optimize images for SEO
+  static optimizeImageSEO(images?: NodeListOf<HTMLImageElement>) {
+    if (typeof document === 'undefined') return;
+
+    const imagesToOptimize = images || document.querySelectorAll('img');
+    imagesToOptimize.forEach(img => {
+      // Add alt text if missing
+      if (!img.alt) {
+        const filename = img.src.split('/').pop()?.split('.')[0] || 'image';
+        img.alt = filename.replace(/-/g, ' ');
+      }
+
+      // Add loading attribute
+      if (!img.loading) {
+        img.loading = 'lazy';
+      }
+
+      // Add width/height to prevent CLS
+      if (!img.width || !img.height) {
+        img.width = img.naturalWidth || 800;
+        img.height = img.naturalHeight || 600;
+      }
+    });
+  }
+
+  // Generate schema markup for better SEO
+  static generateSchemaMarkup(): void {
+    if (typeof document === 'undefined') return;
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Kruthika.fun - AI Girlfriend Chat",
+      "description": "India's most realistic AI girlfriend with authentic conversations",
+      "url": "https://kruthika.fun",
+      "applicationCategory": "ChatApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Kruthika.fun"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "2847",
+        "bestRating": "5"
+      }
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
+  // Lightweight page audit (only for diagnostics page)
   static auditPage() {
+    if (typeof document === 'undefined') return [];
+
     const issues: string[] = [];
 
     // Check title length
@@ -107,41 +151,24 @@ export class SEOOptimizer {
       issues.push(`${imagesWithoutAlt} images missing alt text`);
     }
 
-    // Check internal links
-    const externalLinks = document.querySelectorAll('a[href^="http"]:not([rel*="noopener"])');
-    if (externalLinks.length > 0) {
-      issues.push(`${externalLinks.length} external links missing rel="noopener"`);
-    }
-
-    if (issues.length > 0) {
-      console.warn('🔍 SEO Issues Found:', issues);
-    } else {
-      console.log('✅ No SEO issues detected');
-    }
-
     return issues;
   }
 
-  // Initialize SEO optimizations
-  static initialize() {
+  // Simplified initialization (only run essentials)
+  static initialize(): void {
     if (typeof window === 'undefined') return;
 
-    // Optimize images
-    const images = document.querySelectorAll('img');
-    this.optimizeImageSEO(images);
-
-    // Run audit after page load
-    window.addEventListener('load', () => {
-      setTimeout(() => this.auditPage(), 1000);
-    });
-
-    console.log('🔍 SEO Optimizer initialized');
+    // Generate schema markup and optimize images
+    this.generateSchemaMarkup();
+    
+    // Optimize images after DOM is loaded
+    if (document.readyState === 'complete') {
+      this.optimizeImageSEO();
+    } else {
+      window.addEventListener('load', () => this.optimizeImageSEO(), { once: true });
+    }
   }
 }
 
-// Auto-initialize
-if (typeof window !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    SEOOptimizer.initialize();
-  });
-}
+// Legacy export for backward compatibility
+export const AdvancedSEOBoost = SEOOptimizer;

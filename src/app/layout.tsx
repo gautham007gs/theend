@@ -13,7 +13,6 @@ import StructuredData from '@/components/StructuredData';
 import AccessibilityEnhancer from '@/components/AccessibilityEnhancer';
 import ClientComponentsWrapper from '@/components/ClientComponentsWrapper';
 import CookieConsent from '@/components/CookieConsent';
-import '@/lib/emergency-recovery'; // Emergency freeze recovery with auto-reload
 
 // Optimize font loading - use fallback font immediately with aggressive caching
 const inter = Inter({
