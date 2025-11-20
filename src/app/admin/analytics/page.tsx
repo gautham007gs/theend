@@ -445,13 +445,30 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
     if (!isAuthenticated) return;
 
     setIsClient(true);
-    // Initial fetch
     fetchRealTimeData();
 
-    // Update every 30 seconds for real-time data
-    const interval = setInterval(fetchRealTimeData, 30000);
-    return () => clearInterval(interval);
-  }, [isAuthenticated]);
+    // Optimize real-time polling interval based on activity
+    const getPollingInterval = () => {
+      return document.hidden ? 60000 : 30000; // 60s when hidden, 30s when active
+    };
+
+    let interval = setInterval(fetchRealTimeData, getPollingInterval());
+
+    const handleVisibilityChange = () => {
+      clearInterval(interval);
+      interval = setInterval(fetchRealTimeData, getPollingInterval());
+      if (!document.hidden) {
+        fetchRealTimeData(); // Immediate update when returning to tab
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isAuthenticated]); // Removed dateRange dependency as it's not used
 
   // Manual refresh function
   const handleRefresh = () => {
@@ -1138,7 +1155,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm">Revenue/Cost Ratio</span>
-                      <span className="text-sm font-bold text-green-600">{(analytics.adRevenue / newRealTimeStats.apiCostMetrics.totalCost).toFixed(2)}x</span>
+                      <span className="text-sm font-bold text-green-600">{newRealTimeStats.apiCostMetrics.totalCost > 0 ? (analytics.adRevenue / newRealTimeStats.apiCostMetrics.totalCost).toFixed(2) + 'x' : 'N/A'}</span>
                     </div>
                   </div>
                 </div>
@@ -1169,7 +1186,7 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm">ROI</span>
-                      <span className="text-sm font-bold text-green-600">{((analytics.adRevenue / newRealTimeStats.apiCostMetrics.totalCost - 1) * 100).toFixed(1)}%</span>
+                      <span className="text-sm font-bold text-green-600">{newRealTimeStats.apiCostMetrics.totalCost > 0 ? ((analytics.adRevenue / newRealTimeStats.apiCostMetrics.totalCost - 1) * 100).toFixed(1) + '%' : 'N/A'}</span>
                     </div>
                   </div>
                 </div>
@@ -1250,19 +1267,17 @@ const AnalyticsDashboard = React.memo(function AnalyticsDashboard() {
                 <CardTitle>API Performance</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">99.8%</div>
-                    <div className="text-sm text-muted-foreground">Uptime</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">245ms</div>
-                    <div className="text-sm text-muted-foreground">Avg Response</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">0.2%</div>
-                    <div className="text-sm text-muted-foreground">Error Rate</div>
-                  </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">99.8%</div>
+                  <div className="text-sm text-muted-foreground">Uptime</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">245ms</div>
+                  <div className="text-sm text-muted-foreground">Avg Response</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">0.2%</div>
+                  <div className="text-sm text-muted-foreground">Error Rate</div>
                 </div>
               </CardContent>
             </Card>

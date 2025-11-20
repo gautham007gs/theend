@@ -389,14 +389,15 @@ export async function GET(request: NextRequest) {
 
 async function getOverviewAnalytics(startDate: string) {
   try {
-    // Get real data from Supabase with timeout protection
+    // Get real data from Supabase with timeout protection and optimized queries
     const queryPromises = [
       supabase
         .from('messages_log')
         .select('created_at, sender_type, has_image')
         .gte('created_at', startDate + 'T00:00:00Z')
         .order('created_at', { ascending: false })
-        .limit(5000), // Reduced from 10000
+        .limit(3000) // Further reduced for better performance
+        .abortSignal(AbortSignal.timeout(5000)), // 5 second timeout
       supabase
         .from('daily_activity_log')
         .select('activity_date, user_pseudo_id')

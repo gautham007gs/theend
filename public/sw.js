@@ -1,10 +1,13 @@
 
-const CACHE_NAME = 'kruthika-v3';
+const CACHE_NAME = 'kruthika-v4';
 const STATIC_ASSETS = [
   '/',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/kruthika-avatar.svg',
   '/chat-bg.png',
-  '/og-image.png',
-  '/manifest.json'
+  '/og-image.png'
 ];
 
 // Chat history offline support
@@ -20,15 +23,29 @@ const CACHE_STRATEGIES = {
 
 // Install event with improved asset caching
 self.addEventListener('install', (event) => {
+  console.log('🔧 Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(STATIC_ASSETS).catch(err => {
-          console.log('Cache failed for some assets:', err);
-          // Continue even if some assets fail to cache
-        });
+        console.log('📦 Caching static assets');
+        return cache.addAll(STATIC_ASSETS)
+          .then(() => {
+            console.log('✅ All assets cached successfully');
+          })
+          .catch(err => {
+            console.warn('⚠️ Some assets failed to cache:', err);
+            // Cache assets individually as fallback
+            return Promise.allSettled(
+              STATIC_ASSETS.map(url => 
+                cache.add(url).catch(e => console.warn(`Failed to cache ${url}:`, e))
+              )
+            );
+          });
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('✅ Service Worker installed, activating...');
+        return self.skipWaiting();
+      })
   );
 });
 

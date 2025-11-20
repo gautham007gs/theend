@@ -29,8 +29,12 @@ export function useMobileOptimization() {
     if (isLowEnd) {
       document.documentElement.style.setProperty('--animation-duration', '0s');
       document.documentElement.classList.add('reduce-motion');
+      
+      // Disable expensive CSS features on low-end devices
+      document.documentElement.style.setProperty('backdrop-filter', 'none');
+      document.documentElement.style.setProperty('box-shadow', 'none');
     } else {
-      document.documentElement.style.setProperty('--animation-duration', '0.1s');
+      document.documentElement.style.setProperty('--animation-duration', '0.15s');
     }
 
     document.documentElement.style.setProperty('touch-action', 'manipulation');
