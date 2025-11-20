@@ -1,12 +1,23 @@
 'use client';
 
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, Clock, Zap, Users, MessageSquare, Globe, Activity } from 'lucide-react';
 import ClientOnly from '@/components/ClientOnly';
 import { useState, useEffect } from 'react';
+
+// Lazy load heavy chart components
+const ResponsiveContainer = dynamic(() => import('recharts').then(mod => mod.ResponsiveContainer), { ssr: false });
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import('recharts').then(mod => mod.Bar), { ssr: false });
+const AreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), { ssr: false });
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(mod => mod.CartesianGrid), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(mod => mod.YAxis), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(mod => mod.Tooltip), { ssr: false });
 
 interface RealTimeTabProps {
   newRealTimeStats: {
@@ -55,8 +66,8 @@ export function RealTimeTab({ newRealTimeStats, peakHours }: RealTimeTabProps) {
 
     fetchRealTimeMetrics();
 
-    // Polling every 2 minutes to reduce server load
-    const interval = setInterval(fetchRealTimeMetrics, 120000);
+    // Polling every 5 minutes to reduce server load
+    const interval = setInterval(fetchRealTimeMetrics, 300000);
 
     // Update live counter less frequently
     const liveInterval = setInterval(() => {

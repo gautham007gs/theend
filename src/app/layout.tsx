@@ -102,7 +102,7 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html lang="en">
       <head>
         <meta name="google-site-verification" content="your-google-verification-code" />
         <meta name="theme-color" content="#0d8043" />

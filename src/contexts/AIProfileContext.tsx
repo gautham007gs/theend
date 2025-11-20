@@ -78,7 +78,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         let fetchedProfile = data.settings as Partial<AIProfile>; 
         logger.dev("[AIProfileContext] fetchAIProfile: Raw profile settings from Supabase:", JSON.stringify(fetchedProfile, null, 2));
 
-        if (!fetchedProfile.avatarUrl || typeof fetchedProfile.avatarUrl !== 'string' || fetchedProfile.avatarUrl.trim() === '' || (!fetchedProfile.avatarUrl.startsWith('http') && !fetchedProfile.avatarUrl.startsWith('data:'))) {
+        if (!fetchedProfile.avatarUrl || typeof fetchedProfile.avatarUrl !== 'string' || fetchedProfile.avatarUrl.trim() === '') {
             console.warn(`[AIProfileContext] fetchAIProfile: Fetched avatarUrl ('${fetchedProfile.avatarUrl}') is invalid or empty. Falling back to default AI avatarUrl: ${defaultAIProfile.avatarUrl}`);
             fetchedProfile.avatarUrl = defaultAIProfile.avatarUrl;
         }
@@ -144,7 +144,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
         : currentProfileForUpdate.avatarUrl;
 
     // Validate and fallback to default if the processed URL is still invalid or undefined
-    if (!processedAvatarUrl || typeof processedAvatarUrl !== 'string' || (!processedAvatarUrl.startsWith('http') && !processedAvatarUrl.startsWith('data:'))) {
+    if (!processedAvatarUrl || typeof processedAvatarUrl !== 'string' || processedAvatarUrl.trim() === '') {
         console.warn(`[AIProfileContext updateAIProfile] Processed avatarUrl ('${processedAvatarUrl}') is invalid. Falling back to default: ${defaultAIProfile.avatarUrl}`);
         processedAvatarUrl = defaultAIProfile.avatarUrl;
     }
@@ -201,7 +201,7 @@ export const AIProfileProvider: React.FC<{ children: ReactNode }> = ({ children 
     // Defer profile fetch to prevent blocking initial render
     const timer = setTimeout(() => {
       fetchAIProfile();
-    }, 100);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 

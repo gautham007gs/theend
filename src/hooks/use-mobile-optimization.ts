@@ -46,7 +46,7 @@ export function useMobileOptimization() {
     }
 
     // Memory cleanup for low-end devices
-    const memoryInterval = isLowEnd ? 15000 : 30000;
+    const memoryInterval = isLowEnd ? 30000 : 60000;
     const memoryCleanup = setInterval(() => {
       if ('memory' in performance && (performance as any).memory) {
         const memory = (performance as any).memory;

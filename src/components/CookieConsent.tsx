@@ -46,7 +46,7 @@ export const CookieConsent: React.FC<CookieConsentProps> = ({ className }) => {
       if (!hasConsented) {
         setShowBanner(true); // Use this state to control the actual display of the banner
       }
-    }, 2000);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
