@@ -1,16 +1,18 @@
-
 'use client';
 
 import { useEffect } from 'react';
 
 export default function AccessibilityEnhancer() {
   useEffect(() => {
-    // Skip to main content
+    if (typeof window === 'undefined') return;
+
+    // Add skip to main content link
     const skipLink = document.createElement('a');
     skipLink.href = '#main-content';
-    skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-pink-500 focus:text-white';
     skipLink.textContent = 'Skip to main content';
-    document.body.prepend(skipLink);
+    skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 focus:bg-white focus:text-black';
+    skipLink.setAttribute('aria-label', 'Skip to main content');
+    document.body.insertBefore(skipLink, document.body.firstChild);
 
     // Add main landmark if missing
     if (!document.querySelector('main')) {
@@ -22,14 +24,38 @@ export default function AccessibilityEnhancer() {
     // Enhance focus visibility
     document.documentElement.classList.add('focus-visible');
 
-    // Add aria-labels to interactive elements without text
-    document.querySelectorAll('button:not([aria-label]), a:not([aria-label])').forEach(el => {
-      const imgAlt = el.querySelector('img')?.getAttribute('alt');
-      const svgTitle = el.querySelector('svg title')?.textContent;
-      if (!el.textContent?.trim() && !imgAlt && !svgTitle) {
-        el.setAttribute('aria-label', 'Interactive element');
-      }
-    });
+    // Add ARIA labels to interactive elements without them
+    const addAriaLabels = () => {
+      // Buttons without aria-label
+      document.querySelectorAll('button:not([aria-label])').forEach((button) => {
+        const text = button.textContent?.trim();
+        if (text) {
+          button.setAttribute('aria-label', text);
+        }
+      });
+
+      // Links without aria-label
+      document.querySelectorAll('a:not([aria-label])').forEach((link) => {
+        const text = link.textContent?.trim();
+        if (text && text.length > 0) {
+          link.setAttribute('aria-label', text);
+        }
+      });
+
+      // Images without alt text
+      document.querySelectorAll('img:not([alt])').forEach((img) => {
+        const src = img.getAttribute('src');
+        if (src) {
+          const filename = src.split('/').pop()?.split('.')[0] || 'image';
+          img.setAttribute('alt', filename.replace(/-/g, ' '));
+        }
+      });
+    };
+
+    // Run initially and on DOM changes
+    addAriaLabels();
+    const observer = new MutationObserver(addAriaLabels);
+    observer.observe(document.body, { childList: true, subtree: true });
 
     // Keyboard navigation enhancement
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,12 +66,16 @@ export default function AccessibilityEnhancer() {
         });
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
 
+    // Cleanup
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      skipLink.remove();
+      observer.disconnect();
+      if (skipLink.parentNode) {
+        skipLink.parentNode.removeChild(skipLink);
+      }
     };
   }, []);
 

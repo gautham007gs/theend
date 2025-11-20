@@ -23,27 +23,25 @@ const CACHE_STRATEGIES = {
 
 // Install event with improved asset caching
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('📦 Caching static assets');
-        return cache.addAll(STATIC_ASSETS)
+        // Cache critical assets first
+        const criticalAssets = ['/', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+        return cache.addAll(criticalAssets)
           .then(() => {
-            console.log('✅ All assets cached successfully');
-          })
-          .catch(err => {
-            console.warn('⚠️ Some assets failed to cache:', err);
-            // Cache assets individually as fallback
+            // Then cache remaining assets individually
+            const remainingAssets = STATIC_ASSETS.filter(url => !criticalAssets.includes(url));
             return Promise.allSettled(
-              STATIC_ASSETS.map(url => 
-                cache.add(url).catch(e => console.warn(`Failed to cache ${url}:`, e))
+              remainingAssets.map(url => 
+                cache.add(url).catch(() => null) // Silently fail non-critical assets
               )
             );
           });
       })
-      .then(() => {
-        console.log('✅ Service Worker installed, activating...');
+      .then(() => self.skipWaiting())
+      .catch((error) => {
+        // Still activate even if caching fails
         return self.skipWaiting();
       })
   );

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -23,21 +22,35 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error Boundary caught an error:', error, errorInfo);
-    this.setState({ errorInfo });
+    // Only log minimal info in production
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error caught by boundary:', error, errorInfo);
+    } else {
+      // In production, just log error type without sensitive details
+      console.error('Application error:', error.name);
+    }
+
+    // Report to monitoring service if available
+    if (typeof window !== 'undefined' && (window as any).reportError) {
+      (window as any).reportError({
+        type: error.name,
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
+    }
   }
 
   // Auto-recovery attempt
   private attemptRecovery = () => {
     console.log('🔄 Attempting error recovery...');
-    
+
     // Clear potentially corrupted cache
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem('messages_kruthika');
         localStorage.removeItem('aiMood_kruthika');
         sessionStorage.clear();
-        
+
         // Reload specific modules
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistration().then(registration => {
@@ -46,10 +59,10 @@ class ErrorBoundary extends React.Component<
             }
           });
         }
-        
+
         console.log('✅ Error recovery completed');
         this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-        
+
         // Refresh page after 2 seconds
         setTimeout(() => {
           window.location.reload();
