@@ -1,0 +1,20 @@
+(index):1 Refused to execute script from 'https://www.kruthika.fun/_next/static/css/ebe9cfead52f9222.css' because its MIME type ('text/css') is not executable, and strict MIME type checking is enabled.
+1052.cfa746fafe7aec66.js:1 ⚠️ OneSignal App ID not configured! Check your .env.local file
+d @ 1052.cfa746fafe7aec66.js:1
+wubzdjzosbbbghdlfcgc.supabase.co/rest/v1/app_configurations?select=settings&id=eq.admin_own_status_config_v1:1  Failed to load resource: the server responded with a status of 406 ()
+(index):1 A preload for 'https://www.kruthika.fun/kruthika-avatar.svg' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+framework-ff30e0d3-c93ded3534573b00.js:1 A preload for 'https://www.kruthika.fun/kruthika-avatar.svg' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+sc @ framework-ff30e0d3-c93ded3534573b00.js:1
+framework-ff30e0d3-c93ded3534573b00.js:1 A preload for 'https://www.kruthika.fun/kruthika-avatar.svg' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+o5 @ framework-ff30e0d3-c93ded3534573b00.js:1
+(index):1 The resource https://www.kruthika.fun/kruthika-avatar.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+impr.gif?sid=H4sIAAAAAAAC_1RTz28cNRT2Lj8O5dTmAJWQ2AOHFjVbezyemVUPqGkpjZKWKg3KCSH_3JidnRnGMztpBFJFBK…:1  GET https://kettledroopingcontinuation.com/impr.gif?sid=H4sIAAAAAAAC_1RTz28cNRT2Lj8O5dTmAJWQ2AOHFjVbezyemVUPqGkpjZKWKg3KCSH_3JidnRnGMztpBFJFBKoQhwgJVDjNvk3TlkYIegdVG26VkLJcmkv-B47c0CaRAs-yv-_5s6X3rM9fDcsDRKHk--mNdN3GMb_I2rh1bsUmKq1c6-Zyi-A2vtRasUngX2qtBf751uUsi_WKFgu2uMho2KZB69zC9eUbixdase3p1vta9tLzrSuredrXF4nvtfF0tG5zw3N7fAVstkMIbnseazPaDmAt_3_uylPg-ClQgwN0BqyanN79-R5YOYak_8tV7XpFml14r1_GvEhzGKiHHya9JK0S6J9QkzfAJA-PT0PqJgjdb0KaPDxuENLB1rRBEHaCmhc4iGT7qG4QgxHxPRAx6ASEeg2qwRh0PAbLxyDTDbCqC1LB_E1I-g_mE2X5kcSn0gQ1f3wDbHWESX_7ss0LHcOaqcGujcF2x5CVYyjWXwFbjUEWX4BVf6KZz7-DpP94TiddHpd5CVbtv01Dxn2B2azwSDjrU-rPRiZks1z4lEnOVNDxD1_GmjFw14ByOm0DStOEMmtCX-23lGaSEOF7BAci1F6gKfOw8f3IMM4Ug1JOC9-EItsEGW-CzL_cKhPphp3tKXh02NnO1GrRG2wVeakfHXGPHmY75cdZ7AUhCzs-GRLI8rvQs99PUOPsxt7MN3tnn-xdfzFB6J-lPXYG8vIZuNX9pwGTHaY6WoQmMIJE2ghCA4_rIAi1NExpJryAdDyBqcGS0cAYYnBAfRzyiGrWIVp5htBICGG0kBHuhBGmrCM41oaFLKIdHWAcUsl9ijHziFSKUUkUJzwggfADzrGmxggZsA5RzAs9wiOPGIWJjLA2PsY8oDjEQvgcnGqDKyYI7e7CQNVQaQSVQ1BxBJVFUBUIqkH9QMXOc_W2il0pyDF6x0jrUVp0h_xBWnR1goDnm5Crestmn7oNkEVztG4cGqXThYuiHnGh6mF2gE5PndW4v8Cgp_dbHo8CToXn6UgSPwx1xCOqWCAxjQIhKDhbg3XNQ0us2wla_MxCZifo_KMnIPguuHgXpH0TePk68GoUehHwVehgWE92enlZrNoeb5syAZXWkBUvQ3GnMYwP0MxoaXnu2aHLP3rxLWj5HB0HyLyGLK_hE_sHgm58b7SUVmhrKa0c-vWDrLB9u84Lmya3C17oV39a0HeqNFfzV93m48tyKkzpzrJ2xSJPlE26Dj2Zs0rp_FqaS41-m3crWtwq3epcmSdltnjryrX5fpZr52yajIHbCTr199cg7QTN_P7D4b9m7zwFmd0Fl53U6VIEIkMQWwSxPtnnogb3n1yc8KG7B928AbzYgKRfwyCvYRDXwONNcOVLoyLLn7_7Fz0MEHFjJOIcbYk4n-p2v-V3uCTEUD8kQRgJE2GqRBhi6klfCU6hcBP71tzg3wAAAP__OkiQB5QFAAA= 403 (Forbidden)
+Image
+eval @ VM71:1
+(anonymous) @ VM69:20
+(anonymous) @ VM69:25
+(anonymous) @ invoke.js:1
+setInterval
+hw @ invoke.js:1
+hi.<computed> @ invoke.js:1
+(index):1 The resource https://www.kruthika.fun/kruthika-avatar.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
