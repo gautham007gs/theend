@@ -1,3 +1,4 @@
+
 import OneSignal from 'react-onesignal';
 
 let isOneSignalInitialized = false;
@@ -20,16 +21,11 @@ export const initOneSignal = async () => {
     // Skip OneSignal on non-production domains to avoid domain mismatch
     const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
     const isProduction = hostname === 'kruthika.fun' || hostname === 'www.kruthika.fun';
-    const isReplit = hostname.includes('replit.dev') || hostname.includes('replit.app');
+    const isReplit = hostname.includes('replit.dev') || hostname.includes('replit.app') || hostname.includes('picard.replit.dev');
     
-    if (!isProduction && !isReplit) {
-      console.warn('⚠️ OneSignal skipped: Only works on kruthika.fun or Replit domains');
-      return;
-    }
-
-    // For Replit, only init if explicitly enabled
-    if (isReplit && !process.env.NEXT_PUBLIC_ENABLE_ONESIGNAL_ON_REPLIT) {
-      console.log('ℹ️ OneSignal disabled on Replit. Set NEXT_PUBLIC_ENABLE_ONESIGNAL_ON_REPLIT=true to enable.');
+    // Only run on production domain, skip everywhere else
+    if (!isProduction) {
+      console.log('ℹ️ OneSignal disabled on non-production domains. Will only work on kruthika.fun');
       return;
     }
     
@@ -37,9 +33,9 @@ export const initOneSignal = async () => {
     
     await OneSignal.init({ 
       appId: appId,
-      allowLocalhostAsSecureOrigin: true,
+      allowLocalhostAsSecureOrigin: false, // Only allow production domain
       serviceWorkerPath: '/OneSignalSDKWorker.js',
-      serviceWorkerUpdaterPath: '/OneSignalSDKWorker.js',
+      serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
     });
     
     isOneSignalInitialized = true;
@@ -63,6 +59,10 @@ export const initOneSignal = async () => {
 
 export const subscribeUser = async () => {
   try {
+    if (!isOneSignalInitialized) {
+      console.warn('⚠️ OneSignal not initialized. Cannot subscribe user.');
+      return;
+    }
     await OneSignal.Slidedown.promptPush();
   } catch (error) {
     console.error('OneSignal subscription error:', error);
@@ -71,6 +71,10 @@ export const subscribeUser = async () => {
 
 export const setUserTag = async (key: string, value: string) => {
   try {
+    if (!isOneSignalInitialized) {
+      console.warn('⚠️ OneSignal not initialized. Cannot set user tag.');
+      return;
+    }
     await OneSignal.User.addTag(key, value);
   } catch (error) {
     console.error('OneSignal tag error:', error);
@@ -79,6 +83,10 @@ export const setUserTag = async (key: string, value: string) => {
 
 export const setUserId = async (userId: string) => {
   try {
+    if (!isOneSignalInitialized) {
+      console.warn('⚠️ OneSignal not initialized. Cannot set user ID.');
+      return;
+    }
     await OneSignal.login(userId);
   } catch (error) {
     console.error('OneSignal login error:', error);
